@@ -4,6 +4,9 @@ import com.denfop.Config;
 import com.denfop.IUCore;
 import com.denfop.IUItem;
 import com.denfop.Ic2Items;
+import com.denfop.api.vein.Type;
+import com.denfop.api.vein.Vein;
+import com.denfop.api.vein.VeinSystem;
 import com.denfop.audio.AudioSource;
 import com.denfop.audio.PositionSpec;
 import com.denfop.componets.QEComponent;
@@ -55,7 +58,6 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
     public boolean furnace;
     public int chance;
     public int col;
-    public boolean vein;
     public List<ItemStack> list;
     public AudioSource audioSource;
     public double getblock;
@@ -63,7 +65,7 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
     public boolean analyzer;
     public int progress;
     public EnumQuarryModules list_modules;
-
+    public Vein vein;
     public TileEntityBaseQuantumQuarry(String name, int coef) {
 
         this.progress = 0;
@@ -77,7 +79,6 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
         this.outputSlot = new InvSlotOutput(this, "output", 24);
         this.list = new ArrayList<>();
         this.analyzer = false;
-        this.vein = false;
         this.chance = 0;
         this.col = 1;
         this.furnace = false;
@@ -99,7 +100,6 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
         this.col = nbttagcompound.getInteger("col");
         this.chance = nbttagcompound.getInteger("chance");
         this.getblock = nbttagcompound.getDouble("getblock");
-        this.vein = nbttagcompound.getBoolean("vein");
         this.furnace = nbttagcompound.getBoolean("furnace");
         int type = nbttagcompound.getInteger("list_modules");
         if (type != -1) {
@@ -115,7 +115,6 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
 
     public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound) {
         super.writeToNBT(nbttagcompound);
-        nbttagcompound.setBoolean("vein", this.vein);
         nbttagcompound.setBoolean("furnace", this.furnace);
         nbttagcompound.setDouble("getblock", this.getblock);
         nbttagcompound.setInteger("progress", this.progress);
@@ -141,6 +140,7 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
         this.inputslot.update();
         this.inputslotA.update();
         this.inputslotB.update();
+        this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
     }
 
     protected void onUnloaded() {
@@ -156,16 +156,7 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
     @Override
     public void onPlaced(final ItemStack stack, final EntityLivingBase placer, final EnumFacing facing) {
         super.onPlaced(stack, placer, facing);
-        int chunkx =
-                this.getWorld().getChunkFromBlockCoords(this.pos).x * 16;
-        int chunkz = this.getWorld().getChunkFromBlockCoords(this.pos).z * 16;
-        if (getWorld().getTileEntity(new BlockPos(chunkx, 0, chunkz)) != null && getWorld().getTileEntity(new BlockPos(
-                chunkx,
-                0,
-                chunkz
-        )) instanceof TileEntityVein) {
-            this.vein = true;
-        }
+        this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
     }
 
     protected void updateEntityServer() {
@@ -173,48 +164,19 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
         double proccent = this.consume;
 
 
-        if (this.analyzer && this.vein) {
-
-            int chunkx =
-                    this.getWorld().getChunkFromBlockCoords(this.pos).x * 16;
-            int chunkz = this.getWorld().getChunkFromBlockCoords(this.pos).z * 16;
-
-            if (this.getWorld().getTileEntity(new BlockPos(chunkx, 0, chunkz)) != null && this
-                    .getWorld()
-                    .getTileEntity(new BlockPos(chunkx, 0, chunkz)) instanceof TileEntityVein) {
-                TileEntityVein tile = (TileEntityVein) this.getWorld().getTileEntity(new BlockPos(chunkx, 0, chunkz));
-                assert tile != null;
-                if (tile.number > 0) {
-                    if (this.energy.getEnergy() >= proccent && this.outputSlot.canAdd(new ItemStack(IUItem.heavyore, 1,
-                                    this
-                                            .getWorld()
-                                            .getBlockState(new BlockPos(chunkx, 0, chunkz))
-                                            .getBlock()
-                                            .getMetaFromState(this.getWorld().getBlockState(new BlockPos(chunkx, 0, chunkz)))
-                            )
-                    )) {
-                        final ItemStack stack = new ItemStack(IUItem.heavyore, 1,
-                                this
-                                        .getWorld()
-                                        .getBlockState(new BlockPos(chunkx, 0, chunkz))
-                                        .getBlock()
-                                        .getMetaFromState(this.getWorld().getBlockState(new BlockPos(chunkx, 0, chunkz)))
-                        );
-                        if (!list(this.list_modules, stack)) {
-                            this.setActive(true);
-                            this.energy.useEnergy(proccent);
-                            this.getblock++;
-                            this.outputSlot.add(stack);
-                            tile.number--;
-                        }
-                    }
-
+        if (this.analyzer && this.vein.get()) {
+            if (this.vein.getType() == Type.VEIN && this.vein.getCol() > 0) {
+                final ItemStack stack = new ItemStack(IUItem.heavyore, 1, vein.getMeta());
+                if (!list(this.list_modules, stack)) {
+                    this.setActive(true);
+                    this.energy.useEnergy(proccent);
+                    this.getblock++;
+                    this.outputSlot.add(stack);
+                    this.vein.removeCol(1);
                 }
             }
-
-
         }
-        if (this.analyzer && !vein && !Config.enableonlyvein) {
+        if (this.analyzer && !Config.enableonlyvein) {
             double col = this.col;
             int chance2 = this.chance;
             boolean furnace = this.furnace;

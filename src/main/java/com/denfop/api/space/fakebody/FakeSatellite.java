@@ -5,14 +5,17 @@ import com.denfop.api.space.IBaseResource;
 import com.denfop.api.space.IBody;
 import com.denfop.api.space.ISatellite;
 import com.denfop.api.space.SpaceNet;
+import com.denfop.api.space.rovers.EnumTypeUpgrade;
 import com.denfop.api.space.rovers.IRovers;
 import com.denfop.api.space.rovers.IRoversItem;
 import com.denfop.api.space.rovers.Rovers;
+import com.denfop.api.space.upgrades.SpaceUpgradeSystem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class FakeSatellite implements IFakeSatellite {
 
@@ -27,11 +30,19 @@ public class FakeSatellite implements IFakeSatellite {
         this.player = player;
         this.planet = planet;
         this.rovers = rovers;
-        this.time = 36000;
+        int temp = SpaceUpgradeSystem.system.getModules(EnumTypeUpgrade.PROTECTION, this.rovers.getItemStack()) != null ?
+                SpaceUpgradeSystem.system.getModules(EnumTypeUpgrade.PROTECTION, this.rovers.getItemStack()).number * 600 : 0;
+        this.time = 1800 + temp;
         this.data = data;
         this.end = false;
     }
-
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FakeSatellite that = (FakeSatellite) o;
+        return Objects.equals(player, that.player) && Objects.equals(planet, that.planet);
+    }
     public FakeSatellite(FakePlayer player, String name) {
         this.readNBT(player, name);
     }

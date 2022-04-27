@@ -1,5 +1,6 @@
 package com.powerutils;
 
+import com.denfop.Config;
 import com.denfop.api.qe.NodeQEStats;
 import com.denfop.api.qe.QENet;
 import com.denfop.componets.AdvEnergy;
@@ -63,7 +64,7 @@ public class TileEntityQEConverter extends TileEntityInventory implements IHasGu
                 5, false
         )));
         this.energy.setDirections(Util.allFacings, Util.allFacings);
-        this.energy2 = this.addComponent(new QEComponent(this, 40000 / 16, Util.allFacings,
+        this.energy2 = this.addComponent(new QEComponent(this, 40000D / 16, Util.allFacings,
                 Util.allFacings,
                 5,
                 5, false
@@ -129,8 +130,9 @@ public class TileEntityQEConverter extends TileEntityInventory implements IHasGu
         } else {
 
             if (energy2.getEnergy() > 0 && energy.getEnergy() < energy.getCapacity()) {
-                double k = energy.addEnergy(energy2.getEnergy() * 16) / 16;
-                energy2.useEnergy(k);
+                double add = Math.min(energy.getFreeEnergy(), energy2.getEnergy() * 16);
+                energy2.addEnergy(add / 16);
+                energy.useEnergy(add);
             }
 
         }

@@ -1,6 +1,5 @@
 package com.denfop.qe;
 
-import com.denfop.Config;
 import com.denfop.api.qe.IQEAcceptor;
 import com.denfop.api.qe.IQEConductor;
 import com.denfop.api.qe.IQEEmitter;
@@ -23,10 +22,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 public class QENetLocal {
-    private static final EnumFacing[] directions;
+    private static EnumFacing[] directions;
     private final World world;
     private final EnergyPathMap energySourceToEnergyPathMap;
 
@@ -34,9 +32,7 @@ public class QENetLocal {
     private final Map<IQETile, TileEntity> energyTileTileEntityMap;
     private final Map<BlockPos, IQETile> chunkCoordinatesIQETileMap;
     private final List<IQESource> sources;
-    private final List<IQETile> energyTileList;
     private final WaitingList waitingList;
-    private final List<BlockPos> listFromCoord;
     QENetLocal(final World world) {
         this.energySourceToEnergyPathMap = new EnergyPathMap();
         this.sources = new ArrayList<>();
@@ -44,23 +40,21 @@ public class QENetLocal {
         this.world = world;
         this.chunkCoordinatesIQETileMap = new HashMap<>();
         this.chunkCoordinatesMap= new HashMap<>();
-        this.energyTileList= new ArrayList<>();
         this.energyTileTileEntityMap = new HashMap<>();
-        this.listFromCoord = new ArrayList<>();
     }
 
     public void addTile(IQETile tile1) {
-        this.addTileEntity(getTileFromIQE(tile1).getPos(), tile1);
-        this.energyTileList.add(tile1);
+
+            this.addTileEntity(getTileFromIQE(tile1).getPos(), tile1);
+
 
     }
 
     public void addTileEntity(final BlockPos coords, final IQETile tile) {
-        if (this.listFromCoord.contains(coords))
+        if (this.chunkCoordinatesIQETileMap.containsKey(coords))
             return;
 
         TileEntity te = getTileFromIQE(tile);
-        this.listFromCoord.add(coords);
         this.energyTileTileEntityMap.put(tile,te);
         this.chunkCoordinatesMap.put(tile, coords);
         this.chunkCoordinatesIQETileMap.put(coords, tile);
@@ -72,17 +66,19 @@ public class QENetLocal {
             this.sources.add((IQESource) tile);
         }
     }
+
     public void removeTile(IQETile tile1) {
-        this.removeTileEntity(tile1);
-        this.energyTileList.remove(tile1);
+
+            this.removeTileEntity(tile1);
 
     }
+
+
     public void removeTileEntity(IQETile tile) {
-        if (!this.energyTileList.contains(tile) ) {
+        if (!this.energyTileTileEntityMap.containsKey(tile) ) {
             return;
         }
         final BlockPos coord = this.chunkCoordinatesMap.get(tile);
-        this.listFromCoord.remove(coord);
         this.chunkCoordinatesMap.remove(tile);
         this.energyTileTileEntityMap.remove(tile,this.energyTileTileEntityMap.get(tile));
         this.chunkCoordinatesIQETileMap.remove(coord,tile);
@@ -101,8 +97,9 @@ public class QENetLocal {
         if (!this.energySourceToEnergyPathMap.containsKey(energySource)) {
             this.energySourceToEnergyPathMap.put(energySource, this.discover(energySource));
         }
-        List<EnergyPath> activeEnergyPaths = new Vector<>();
-        for (final EnergyPath energyPath : this.energySourceToEnergyPathMap.get(energySource)) {
+        List<EnergyPath> activeEnergyPaths = new ArrayList<>();
+        final List<EnergyPath> energyPaths = this.energySourceToEnergyPathMap.get(energySource);
+        for (final EnergyPath energyPath : energyPaths) {
             assert energyPath.target instanceof IQESink;
             final IQESink energySink = (IQESink) energyPath.target;
             if (energySink.getDemandedQE() <= 0.0) {
@@ -114,48 +111,48 @@ public class QENetLocal {
         }
 
 
-        final Map<EnergyPath, Long> suppliedEnergyPaths = new HashMap<>();
+        final Map<EnergyPath, Double> suppliedEnergyPaths = new HashMap<>();
         while (!activeEnergyPaths.isEmpty() && amount > 0) {
             double energyConsumed = 0;
 
             final List<EnergyPath> currentActiveEnergyPaths = activeEnergyPaths;
-            activeEnergyPaths = new Vector<>();
-            for (final EnergyPath energyPath2 : currentActiveEnergyPaths) {
-                final IQESink energySink2 = (IQESink) energyPath2.target;
+            activeEnergyPaths = new ArrayList<>();
+            for (EnergyPath energyPath2 : currentActiveEnergyPaths) {
+                IQESink energySink2 = (IQESink)energyPath2.target;
+                double energyProvided = Math.floor(Math.round(amount));
+                double adding = Math.min(energyProvided, energySink2.getDemandedQE());
+                if (adding <= 0.0D)
+                    adding = energySink2.getDemandedQE();
+                if (adding <= 0.0D)
+                    continue;
+                double energyReturned = energySink2.injectQE(energyPath2.targetDirection, adding,0);
+                if (energyReturned == 0.0D) {
+                    activeEnergyPaths.add(energyPath2);
+                } else if (energyReturned >= energyProvided) {
+                    energyReturned = energyProvided;
+                }
+                energyConsumed += adding;
+                energyConsumed-=energyReturned;
 
-
-                double adding = Math.min(amount, energySink2.getDemandedQE());
-
-                if (adding <= 0.0) {
+                double energyInjected = adding - energyReturned;
+                if (!suppliedEnergyPaths.containsKey(energyPath2)) {
+                    suppliedEnergyPaths.put(energyPath2, energyInjected);
                     continue;
                 }
-
-
-                double energyReturned = energySink2.injectQE(energyPath2.targetDirection, adding, 0);
-                if (energyReturned == 0.0) {
-                    activeEnergyPaths.add(energyPath2);
-                } else if (energyReturned >= amount) {
-                    energyReturned = amount;
-                }
-                energyConsumed += (adding - energyReturned );
-                final double energyInjected = (adding - energyReturned);
-                if (!suppliedEnergyPaths.containsKey(energyPath2)) {
-                    suppliedEnergyPaths.put(energyPath2, (long) energyInjected);
-                    energyPath2.totalEnergyConducted = (long) energyInjected;
-                } else {
-                    suppliedEnergyPaths.replace(energyPath2,
-                            (long) (energyInjected + suppliedEnergyPaths.get(energyPath2))
-                    );
-                    energyPath2.totalEnergyConducted =  suppliedEnergyPaths.get(energyPath2);
-                }
-
-
+                suppliedEnergyPaths.replace(energyPath2,
+                        energyInjected +  suppliedEnergyPaths.get(energyPath2)
+                );
             }
             if (energyConsumed == 0 && !activeEnergyPaths.isEmpty()) {
                 activeEnergyPaths.remove(activeEnergyPaths.size() - 1);
             }
-
+            for (Map.Entry<EnergyPath, Double> entry : suppliedEnergyPaths.entrySet()) {
+                EnergyPath energyPath3 = entry.getKey();
+                double energyInjected2 = entry.getValue();
+                energyPath3.totalEnergyConducted = (long)(energyPath3.totalEnergyConducted + energyInjected2);
+            }
             amount -= energyConsumed;
+            amount = Math.max(0,amount);
         }
         return amount;
     }
@@ -200,8 +197,8 @@ public class QENetLocal {
     private List<EnergyPath> discover(final IQESource emitter) {
         final Map<IQETile, EnergyBlockLink> reachedTileEntities = new HashMap<>();
         final LinkedList<IQETile> tileEntitiesToCheck = new LinkedList<>();
-        tileEntitiesToCheck.add(emitter);
 
+            tileEntitiesToCheck.add(emitter);
 
         while (!tileEntitiesToCheck.isEmpty()) {
             final IQETile currentTileEntity = tileEntitiesToCheck.remove();
@@ -274,28 +271,28 @@ public class QENetLocal {
     private List<EnergyTarget> getValidReceivers(final IQETile emitter, final boolean reverse) {
         final List<EnergyTarget> validReceivers = new LinkedList<>();
 
-        for (final EnumFacing direction : directions) {
-            final IQETile target2 = getNeighbor(emitter, direction);
-            if (target2 != null) {
-                final EnumFacing inverseDirection2 = direction.getOpposite();
-                if (reverse) {
-                    if (emitter instanceof IQEAcceptor && target2 instanceof IQEEmitter) {
-                        final IQEEmitter sender2 = (IQEEmitter) target2;
-                        final IQEAcceptor receiver2 = (IQEAcceptor) emitter;
-                        if (sender2.emitsQETo(receiver2, inverseDirection2) && receiver2.acceptsQEFrom(sender2,
-                                direction)) {
+            for (final EnumFacing direction : QENetLocal.directions) {
+                final IQETile target2 = getNeighbor(emitter, direction);
+                if (target2 != null) {
+                    final EnumFacing inverseDirection2 = direction.getOpposite();
+                    if (reverse) {
+                        if (emitter instanceof IQEAcceptor && target2 instanceof IQEEmitter) {
+                            final IQEEmitter sender2 = (IQEEmitter) target2;
+                            final IQEAcceptor receiver2 = (IQEAcceptor) emitter;
+                            if (sender2.emitsQETo(receiver2, inverseDirection2) && receiver2.acceptsQEFrom(sender2,
+                                    direction)) {
+                                validReceivers.add(new EnergyTarget(target2, inverseDirection2));
+                            }
+                        }
+                    } else if (emitter instanceof IQEEmitter && target2 instanceof IQEAcceptor) {
+                        final IQEEmitter sender2 = (IQEEmitter) emitter;
+                        final IQEAcceptor receiver2 = (IQEAcceptor) target2;
+                        if (sender2.emitsQETo(receiver2, direction) && receiver2.acceptsQEFrom(sender2, inverseDirection2)) {
                             validReceivers.add(new EnergyTarget(target2, inverseDirection2));
                         }
                     }
-                } else if (emitter instanceof IQEEmitter && target2 instanceof IQEAcceptor) {
-                    final IQEEmitter sender2 = (IQEEmitter) emitter;
-                    final IQEAcceptor receiver2 = (IQEAcceptor) target2;
-                    if (sender2.emitsQETo(receiver2, direction) && receiver2.acceptsQEFrom(sender2, inverseDirection2)) {
-                        validReceivers.add(new EnergyTarget(target2, inverseDirection2));
-                    }
                 }
             }
-        }
 
         //
 
@@ -340,38 +337,42 @@ public class QENetLocal {
 
     public void onTickEnd() {
         if(this.world.provider.getWorldTime() % 20 == 0)
-        if (this.waitingList.hasWork()) {
-            final List<IQETile> tiles = this.waitingList.getPathTiles();
-            for (final IQETile tile : tiles) {
-                final List<IQESource> sources = this.discoverFirstPathOrSources(tile);
-                if (sources.size() > 0) {
-                    this.energySourceToEnergyPathMap.removeAll(sources);
-                }
-            }
-            this.waitingList.clear();
-        }
-        for (IQESource entry : this.sources) {
-            if (entry != null) {
-
-
-                double offer =entry.getOfferedQE();
-                if (offer > 0) {
-                    for (double packetAmount = 1, i = 0; i < packetAmount; ++i) {
-                        offer =entry.getOfferedQE();
-                        if (offer < 1) {
-                            break;
-                        }
-                        final double removed = offer - this.emitEnergyFrom(entry, offer);
-                        if (removed <= 0) {
-                            break;
-                        }
-
-                        entry.drawQE(removed);
+            if (this.waitingList.hasWork()) {
+                final List<IQETile> tiles = this.waitingList.getPathTiles();
+                for (final IQETile tile : tiles) {
+                    final List<IQESource> sources = this.discoverFirstPathOrSources(tile);
+                    if (sources.size() > 0) {
+                        this.energySourceToEnergyPathMap.removeAll(sources);
                     }
                 }
-
+                this.waitingList.clear();
             }
-        }
+        if(this.world.provider.getWorldTime() % 5 == 0)
+            for (IQESource entry : this.sources) {
+                if (entry != null) {
+                    if (this.energySourceToEnergyPathMap.containsKey(entry))
+                        for (EnergyPath path : this.energySourceToEnergyPathMap.get(entry)) {
+                            path.totalEnergyConducted = 0L;
+                        }
+
+                    double offer = entry.getOfferedQE();
+                    if (offer > 0) {
+                        for (double packetAmount = 1, i = 0; i < packetAmount; ++i) {
+                            offer = entry.getOfferedQE();
+                            if (offer < 1) {
+                                break;
+                            }
+                            final double removed = offer - this.emitEnergyFrom(entry, offer);
+                            if (removed <= 0) {
+                                break;
+                            }
+
+                            entry.drawQE(removed);
+                        }
+                    }
+
+                }
+            }
     }
 
 
@@ -387,7 +388,7 @@ public class QENetLocal {
 
         return this.chunkCoordinatesIQETileMap.get(pos);
     }
-    public NodeQEStats getNodeStats(final IQETile tile) {
+    public NodeQEStats getNodeQEStats(final IQETile tile) {
         final double emitted = this.getTotalEnergyEmitted(tile);
         final double received = this.getTotalEnergySunken(tile);
         return new NodeQEStats(received, emitted);
@@ -413,13 +414,11 @@ public class QENetLocal {
         this.waitingList.clear();
         this.chunkCoordinatesIQETileMap.clear();
         this.chunkCoordinatesMap.clear();
-        this.energyTileList.clear();
         this.energyTileTileEntityMap.clear();
-        this.listFromCoord.clear();
     }
 
     static {
-        directions = EnumFacing.values();
+        QENetLocal.directions = EnumFacing.values();
     }
 
 
@@ -460,6 +459,7 @@ public class QENetLocal {
 
         EnergyPathMap() {
             this.senderPath = new HashMap<>();
+
         }
 
         public void put(final IQESource par1, final List<EnergyPath> par2) {
@@ -596,9 +596,6 @@ public class QENetLocal {
         public void clear() {
             if (this.paths.isEmpty()) {
                 return;
-            }
-            for (PathLogic path : this.paths) {
-                path.clear();
             }
             this.paths.clear();
         }

@@ -14,7 +14,4 @@ public interface ISENet {
 
     void removeTile(ISETile var1);
 
-    NodeSEStats getNodeStats(ISETile var1, World world);
-
-
 }

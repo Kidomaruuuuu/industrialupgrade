@@ -7,7 +7,8 @@ public enum EnumLevels {
     FOURTH,
     FIVE,
     SIX,
-    SEVEN
+    SEVEN,
+    NONE
 
 
 }

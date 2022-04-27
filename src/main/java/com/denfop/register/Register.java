@@ -11,7 +11,6 @@ import com.denfop.blocks.BlockOre;
 import com.denfop.blocks.BlockPrecious;
 import com.denfop.blocks.BlockPreciousOre;
 import com.denfop.blocks.BlockThoriumOre;
-import com.denfop.blocks.BlockVein;
 import com.denfop.blocks.BlocksAlloy;
 import com.denfop.blocks.BlocksIngot;
 import com.denfop.blocks.BlocksRadiationOre;
@@ -640,7 +639,6 @@ public class Register {
         IUItem.ore = new BlockOre();
         IUItem.heavyore = new BlockHeavyOre();
         IUItem.radiationore = new BlocksRadiationOre();
-        IUItem.vein = new BlockVein();
         IUItem.oilblock = new BlockOil();
         IUItem.toriyore = new BlockThoriumOre();
         IUItem.itemSSP = new ItemIUCrafring();

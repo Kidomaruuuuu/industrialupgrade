@@ -22,9 +22,6 @@ public class ContainerOilGetter extends ContainerFullInv<TileEntityOilGetter> {
         List<String> ret = super.getNetworkedFields();
         ret.add("energy");
         ret.add("fluidTank");
-        ret.add("number");
-        ret.add("max");
-        ret.add("notoil");
         return ret;
     }
 

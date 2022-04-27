@@ -39,9 +39,7 @@ public class EnergyNetLocal {
         this.world = world;
         this.chunkCoordinatesIEnergyTileMap = new HashMap<>();
         this.chunkCoordinatesMap= new HashMap<>();
-        this.energyTileList= new ArrayList<>();
         this.energyTileTileEntityMap = new HashMap<>();
-        this.listFromCoord = new ArrayList<>();
     }
 
 
@@ -55,19 +53,18 @@ public class EnergyNetLocal {
                 this.sources.add((IEnergySource) tile1);
             }
 
-            this.energyTileList.addAll(tiles);
+
         }else {
             this.addTileEntity(getTileFromIEnergy(tile1).getPos(), tile1);
-            this.energyTileList.add(tile1);
+
         }
     }
 
     public void addTileEntity(final BlockPos coords, final IEnergyTile tile) {
-        if (this.listFromCoord.contains(coords))
+        if (this.chunkCoordinatesIEnergyTileMap.containsKey(coords))
             return;
 
         TileEntity te = getTileFromIEnergy(tile);
-        this.listFromCoord.add(coords);
         this.energyTileTileEntityMap.put(tile,te);
         this.chunkCoordinatesMap.put(tile, coords);
         this.chunkCoordinatesIEnergyTileMap.put(coords, tile);
@@ -80,12 +77,11 @@ public class EnergyNetLocal {
         }
     }
     public void addTileEntity(final BlockPos coords, final IEnergyTile tile,final IEnergyTile tile1) {
-        if (this.listFromCoord.contains(coords))
+        if (this.chunkCoordinatesIEnergyTileMap.containsKey(coords))
             return;
 
         TileEntity te = getTileFromIEnergy(tile);
         TileEntity te1 = getTileFromIEnergy(tile1);
-        this.listFromCoord.add(coords);
         this.energyTileTileEntityMap.put(tile,te);
         this.energyTileTileEntityMap.put(tile1,te1);
         this.chunkCoordinatesMap.put(tile, coords);
@@ -114,17 +110,14 @@ public class EnergyNetLocal {
                 this.removeTileEntity(coord1, tile1,tile);
 
             }
-            this.energyTileList.removeAll(tiles);
         } else {
             this.removeTileEntity(tile1);
-            this.energyTileList.remove(tile1);
         }
     }
     public void removeTileEntity(BlockPos coord, IEnergyTile tile,IEnergyTile tile1) {
-        if (!this.listFromCoord.contains(coord) ) {
+        if (!this.chunkCoordinatesIEnergyTileMap.containsKey(coord) ) {
             return;
         }
-        this.listFromCoord.remove(coord);
         this.chunkCoordinatesMap.remove(tile,coord);
         this.chunkCoordinatesIEnergyTileMap.remove(coord);
         this.energyTileTileEntityMap.remove(tile1,this.energyTileTileEntityMap.get(tile1));
@@ -141,11 +134,10 @@ public class EnergyNetLocal {
     }
 
     public void removeTileEntity(IEnergyTile tile) {
-        if (!this.energyTileList.contains(tile) ) {
+        if (!this.energyTileTileEntityMap.containsKey(tile) ) {
             return;
         }
         final BlockPos coord = this.chunkCoordinatesMap.get(tile);
-        this.listFromCoord.remove(coord);
         this.chunkCoordinatesMap.remove(tile);
         this.energyTileTileEntityMap.remove(tile,this.energyTileTileEntityMap.get(tile));
         this.chunkCoordinatesIEnergyTileMap.remove(coord,tile);
@@ -213,7 +205,8 @@ public class EnergyNetLocal {
                     } else if (energyReturned >= energyProvided - energyLoss) {
                         energyReturned = energyProvided - energyLoss;
                     }
-                    energyConsumed += adding - energyReturned + energyLoss;
+                    energyConsumed += adding;
+                    energyConsumed-=energyReturned;
                     double energyInjected = adding - energyReturned;
                     if (!suppliedEnergyPaths.containsKey(energyPath2)) {
                         suppliedEnergyPaths.put(energyPath2, energyInjected);
@@ -233,6 +226,7 @@ public class EnergyNetLocal {
             }
             totalInvLoss = newTotalInvLoss;
             amount -= energyConsumed;
+            amount = Math.max(0,amount);
         }
         boolean ret = false;
         for (Map.Entry<EnergyPath, Double> entry : suppliedEnergyPaths.entrySet()) {
@@ -527,6 +521,7 @@ public class EnergyNetLocal {
     }
 
     public void explodeTiles(IEnergySink sink) {
+        assert !(sink instanceof IEnergySource);
         removeTile(sink);
         if (sink instanceof IMetaDelegate) {
             IMetaDelegate meta = (IMetaDelegate)sink;
@@ -587,7 +582,6 @@ public class EnergyNetLocal {
         this.waitingList.clear();
         this.chunkCoordinatesIEnergyTileMap.clear();
         this.chunkCoordinatesMap.clear();
-        this.energyTileList.clear();
     }
 
     private final World world;
@@ -597,9 +591,7 @@ public class EnergyNetLocal {
     private final Map<IEnergyTile, TileEntity> energyTileTileEntityMap;
     private final Map<BlockPos, IEnergyTile> chunkCoordinatesIEnergyTileMap;
     private final List<IEnergySource> sources;
-    private final List<IEnergyTile> energyTileList;
     private final EnergyNetLocal.WaitingList waitingList;
-    private final List<BlockPos> listFromCoord;
 
     static class EnergyTarget {
         final IEnergyTile tileEntity;
@@ -773,8 +765,7 @@ public class EnergyNetLocal {
         public void clear() {
             if (this.paths.isEmpty())
                 return;
-            for (EnergyNetLocal.PathLogic path : this.paths)
-                path.clear();
+
             this.paths.clear();
         }
 

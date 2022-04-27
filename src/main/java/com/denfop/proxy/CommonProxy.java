@@ -13,6 +13,7 @@ import com.denfop.api.research.ResearchSystem;
 import com.denfop.api.space.BaseSpaceSystem;
 import com.denfop.api.space.SpaceInit;
 import com.denfop.api.space.SpaceNet;
+import com.denfop.api.vein.VeinSystem;
 import com.denfop.blocks.BlocksItems;
 import com.denfop.blocks.FluidName;
 import com.denfop.blocks.mechanism.BlockAdminPanel;
@@ -323,12 +324,13 @@ public class CommonProxy implements IGuiHandler {
         if (!Config.disableUpdateCheck) {
             MinecraftForge.EVENT_BUS.register(new EventUpdate());
         }
-
+        SpaceNet.instance = new BaseSpaceSystem();
+        SpaceInit.init();
         if (Config.experiment) {
             ResearchSystem.instance = new BaseResearchSystem();
-            SpaceNet.instance = new BaseSpaceSystem();
-            SpaceInit.init();
+
         }
+
     }
 
     public void postInit(FMLPostInitializationEvent event) {

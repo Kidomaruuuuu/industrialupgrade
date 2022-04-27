@@ -21,6 +21,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TileSolarGeneratorEnergy extends TileEntityInventory implements IHasGui, INetworkClientTileEntityEventListener {
@@ -30,18 +31,20 @@ public class TileSolarGeneratorEnergy extends TileEntityInventory implements IHa
     public final ItemStack itemstack = new ItemStack(IUItem.sunnarium, 1, 4);
     public final double maxSunEnergy;
     public final double cof;
-    private final String name;
     public boolean work;
     public SEComponent sunenergy;
-
-    public TileSolarGeneratorEnergy(double cof, String name) {
+    public List<Double> lst;
+    public TileSolarGeneratorEnergy(double cof) {
 
         this.maxSunEnergy = 2500;
         this.cof = cof;
         this.outputSlot = new InvSlotOutput(this, "output", 1);
         this.input = new InvSlotGenSunarrium(this);
-        this.name = name;
         this.work = true;
+        this.lst = new ArrayList<>();
+        this.lst.add(0D);
+        this.lst.add(0D);
+        this.lst.add(0D);
         this.sunenergy = this.addComponent(SEComponent
                 .asBasicSource(this, 10000, 1));
     }
@@ -79,6 +82,12 @@ public class TileSolarGeneratorEnergy extends TileEntityInventory implements IHa
 
     }
 
+    @Override
+    protected void onLoaded() {
+        super.onLoaded();
+        this.lst= this.input.coefday();
+    }
+
     public void updateEntityServer() {
 
         super.updateEntityServer();
@@ -101,7 +110,6 @@ public class TileSolarGeneratorEnergy extends TileEntityInventory implements IHa
 
     public void energy(long tick) {
         double k = 0;
-        List<Double> lst = input.coefday();
         if (this.getWorld().provider.isDaytime()) {
             if (tick <= 1000L) {
                 k = 5;
@@ -161,10 +169,7 @@ public class TileSolarGeneratorEnergy extends TileEntityInventory implements IHa
     }
 
 
-    public String getName() {
 
-        return Localization.translate(this.name);
-    }
 
     public ContainerBase<? extends TileSolarGeneratorEnergy> getGuiContainer(EntityPlayer entityPlayer) {
         return new ContainerSolarGeneratorEnergy(entityPlayer, this);

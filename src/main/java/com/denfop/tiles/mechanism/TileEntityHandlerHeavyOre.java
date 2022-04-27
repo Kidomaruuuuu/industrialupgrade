@@ -7,13 +7,16 @@ import com.denfop.api.Recipes;
 import com.denfop.api.heat.IHeatEmitter;
 import com.denfop.api.heat.event.HeatTileLoadEvent;
 import com.denfop.api.heat.event.HeatTileUnloadEvent;
+import com.denfop.api.recipe.BaseMachineRecipe;
+import com.denfop.api.recipe.Input;
 import com.denfop.container.ContainerHandlerHeavyOre;
 import com.denfop.gui.GUIHandlerHeavyOre;
-import com.denfop.invslot.InvSlotProcessable;
 import com.denfop.tiles.base.TileEntityBaseHandlerHeavyOre;
 import com.denfop.tiles.base.TileEntityElectricMachine;
 import com.denfop.utils.ModUtils;
 import ic2.api.recipe.IRecipeInputFactory;
+import ic2.api.recipe.RecipeOutput;
+import ic2.api.upgrade.IUpgradeItem;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
@@ -42,10 +45,58 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
 
     public TileEntityHandlerHeavyOre() {
         super(1, 300, 3);
-        this.inputSlotA = new InvSlotProcessable(this, "inputA", Recipes.handlerore, 1);
-        this.auto = false;
-    }
+     }
+    public void updateEntityServer() {
+        super.updateEntityServer();
+        boolean needsInvUpdate = false;
+        if (!this.inputSlotA.isEmpty() && output != null && this.outputSlot.canAdd(this.output.output.items) && this.energy.getEnergy() >= this.energyConsume && output.output.metadata != null) {
 
+            if (output.output.metadata.getShort("temperature") == 0 || output.output.metadata.getInteger("temperature") > this.temperature) {
+                return;
+            }
+
+            setActive(true);
+            if (this.progress == 0) {
+                IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
+            }
+            this.progress = (short) (this.progress + 1);
+            this.energy.useEnergy(energyConsume);
+            double k = this.progress;
+
+            this.guiProgress = (k / this.operationLength);
+            if (this.progress >= this.operationLength) {
+                this.guiProgress = 0;
+                operate(output);
+                needsInvUpdate = true;
+                this.progress = 0;
+                IC2.network.get(true).initiateTileEntityEvent(this, 2, true);
+            }
+        } else {
+            if (this.progress != 0 && getActive()) {
+                IC2.network.get(true).initiateTileEntityEvent(this, 1, true);
+            }
+            if (output == null) {
+                this.progress = 0;
+            }
+            setActive(false);
+
+        }
+        if (this.temperature > 0) {
+            this.temperature--;
+        }
+        for (int i = 0; i < this.upgradeSlot.size(); i++) {
+            ItemStack stack = this.upgradeSlot.get(i);
+            if (stack != null && stack.getItem() instanceof IUpgradeItem) {
+                if (((IUpgradeItem) stack.getItem()).onTick(stack, this)) {
+                    needsInvUpdate = true;
+                }
+            }
+        }
+
+        if (needsInvUpdate) {
+            super.markDirty();
+        }
+    }
     public static void init() {
         addhandlerore(
                 new ItemStack(IUItem.heavyore),
@@ -121,7 +172,16 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
             nbt.setInteger("input" + i, col[i]);
         }
         final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
-        Recipes.handlerore.addRecipe(input.forStack(container), nbt, false, output);
+        Recipes.recipes.addRecipe(
+                "handlerho",
+                new BaseMachineRecipe(
+                        new Input(
+                                input.forStack(container)
+                        ),
+                        new RecipeOutput(nbt,  output)
+                )
+        );
+
 
     }
 
@@ -155,15 +215,7 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
         this.auto = nbttagcompound.getBoolean("auto");
     }
 
-    @Override
-    public void updateEntityServer() {
-        super.updateEntityServer();
-        if (this.auto) {
-            if (this.temperature + 2 <= this.maxtemperature) {
-                this.temperature += 2;
-            }
-        }
-    }
+
 
     @Override
     public World getWorldTile() {
@@ -292,6 +344,21 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
     public double injectHeat(final EnumFacing var1, final double var2, final double var4) {
         this.setHeatStored(var2);
         return 0.0D;
+    }
+
+    @Override
+    public void onUpdate() {
+
+    }
+
+    @Override
+    public BaseMachineRecipe getRecipeOutput() {
+        return this.output;
+    }
+
+    @Override
+    public void setRecipeOutput(final BaseMachineRecipe output) {
+        this.output = output;
     }
 
 }

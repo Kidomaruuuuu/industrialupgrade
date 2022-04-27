@@ -93,13 +93,21 @@ public class TileEntityAlloySmelter extends TileEntityDoubleElectricMachine impl
                 input.forOreDict("ingotMagnesium", 1),
                 new ItemStack(IUItem.alloysingot, 1, 8), 2000
         );
-
+        addAlloysmelter(
+                input.forOreDict("ingotAluminum", 1),
+                input.forOreDict("ingotMagnesium", 1),
+                new ItemStack(IUItem.alloysingot, 1, 8), 2000
+        );
         addAlloysmelter(
                 input.forOreDict("ingotAluminium", 1),
                 input.forOreDict("ingotTitanium", 1),
                 new ItemStack(IUItem.alloysingot, 1, 1), 5000
         );
-
+        addAlloysmelter(
+                input.forOreDict("ingotAluminum", 1),
+                input.forOreDict("ingotTitanium", 1),
+                new ItemStack(IUItem.alloysingot, 1, 1), 5000
+        );
         addAlloysmelter(
                 input.forStack(new ItemStack(Items.IRON_INGOT), 1),
                 input.forOreDict("ingotManganese", 1),

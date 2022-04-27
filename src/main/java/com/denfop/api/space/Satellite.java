@@ -4,6 +4,7 @@ import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Satellite implements ISatellite {
 
@@ -38,7 +39,13 @@ public class Satellite implements ISatellite {
         this.colonies = colonies;
         SpaceNet.instance.addSatellite(this);
     }
-
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Satellite asteroid = (Satellite) o;
+        return Objects.equals(name, asteroid.name);
+    }
     @Override
     public String getName() {
         return this.name;

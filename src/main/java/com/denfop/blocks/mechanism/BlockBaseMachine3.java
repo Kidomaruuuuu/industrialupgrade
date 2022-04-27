@@ -6,6 +6,7 @@ import com.denfop.tiles.base.TileEntityAirCollector;
 import com.denfop.tiles.base.TileEntityAntiMagnet;
 import com.denfop.tiles.base.TileEntityAntiUpgradeBlock;
 import com.denfop.tiles.base.TileEntityAutoSpawner;
+import com.denfop.tiles.base.TileEntityCombinerSEGenerators;
 import com.denfop.tiles.base.TileEntityCooling;
 import com.denfop.tiles.base.TileEntityRadiationPurifier;
 import com.denfop.tiles.base.TileEntityWaterGenerator;
@@ -42,6 +43,7 @@ public enum BlockBaseMachine3 implements ITeBlock, ITeBlockSpecialItem {
     watergenerator(TileEntityWaterGenerator.class, 9),
     cooling(TileEntityCooling.class, 10),
     aircollector(TileEntityAirCollector.class,11),
+    combiner_se_generators(TileEntityCombinerSEGenerators.class,12),
     ;
 
 

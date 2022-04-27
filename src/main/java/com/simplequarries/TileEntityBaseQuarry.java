@@ -2,6 +2,7 @@ package com.simplequarries;
 
 import com.denfop.IUCore;
 import com.denfop.Ic2Items;
+import com.denfop.api.vein.Vein;
 import com.denfop.audio.AudioSource;
 import com.denfop.audio.PositionSpec;
 import com.denfop.componets.QEComponent;
@@ -72,7 +73,7 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
     public boolean furnace;
     public int chance;
     public int col;
-
+    public Vein vein;
     public TileEntityBaseQuarry(String name, double coef, int index) {
         this.name = name;
         this.energyconsume = 500 * coef;
@@ -86,7 +87,7 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
         this.input = new InvSlotBaseQuarry(this, index);
         this.constenergyconsume = 500 * coef;
         this.min_y = 0;
-        this.max_y = 256;
+        this.max_y = this.getWorld().provider.getHeight();
         this.exp_max_storage = 5000;
         this.exp_storage = 0;
         this.chance = 0;
@@ -473,7 +474,7 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
 
                 break;
             case 2:
-                this.max_y = Math.min(256, this.max_y + 1);
+                this.max_y = Math.min(this.getWorld().provider.getHeight(), this.max_y + 1);
                 if (this.min_y > this.max_y) {
                     this.min_y = this.max_y;
                 }

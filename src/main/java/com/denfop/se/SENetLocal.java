@@ -6,8 +6,6 @@ import com.denfop.api.se.ISEEmitter;
 import com.denfop.api.se.ISESink;
 import com.denfop.api.se.ISESource;
 import com.denfop.api.se.ISETile;
-import com.denfop.api.se.NodeSEStats;
-import ic2.api.energy.NodeStats;
 import ic2.api.info.ILocatable;
 import ic2.core.IC2;
 import net.minecraft.init.Blocks;
@@ -23,10 +21,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 public class SENetLocal {
-    private static final EnumFacing[] directions;
+    private static EnumFacing[] directions;
     private final World world;
     private final EnergyPathMap energySourceToEnergyPathMap;
 
@@ -34,9 +31,7 @@ public class SENetLocal {
     private final Map<ISETile, TileEntity> energyTileTileEntityMap;
     private final Map<BlockPos, ISETile> chunkCoordinatesISETileMap;
     private final List<ISESource> sources;
-    private final List<ISETile> energyTileList;
     private final WaitingList waitingList;
-    private final List<BlockPos> listFromCoord;
     SENetLocal(final World world) {
         this.energySourceToEnergyPathMap = new EnergyPathMap();
         this.sources = new ArrayList<>();
@@ -44,23 +39,21 @@ public class SENetLocal {
         this.world = world;
         this.chunkCoordinatesISETileMap = new HashMap<>();
         this.chunkCoordinatesMap= new HashMap<>();
-        this.energyTileList= new ArrayList<>();
         this.energyTileTileEntityMap = new HashMap<>();
-        this.listFromCoord = new ArrayList<>();
     }
 
     public void addTile(ISETile tile1) {
-            this.addTileEntity(getTileFromISE(tile1).getPos(), tile1);
-            this.energyTileList.add(tile1);
+
+        this.addTileEntity(getTileFromISE(tile1).getPos(), tile1);
+
 
     }
 
     public void addTileEntity(final BlockPos coords, final ISETile tile) {
-        if (this.listFromCoord.contains(coords))
+        if (this.chunkCoordinatesISETileMap.containsKey(coords))
             return;
 
         TileEntity te = getTileFromISE(tile);
-        this.listFromCoord.add(coords);
         this.energyTileTileEntityMap.put(tile,te);
         this.chunkCoordinatesMap.put(tile, coords);
         this.chunkCoordinatesISETileMap.put(coords, tile);
@@ -72,17 +65,19 @@ public class SENetLocal {
             this.sources.add((ISESource) tile);
         }
     }
+
     public void removeTile(ISETile tile1) {
-            this.removeTileEntity(tile1);
-            this.energyTileList.remove(tile1);
+
+        this.removeTileEntity(tile1);
 
     }
+
+
     public void removeTileEntity(ISETile tile) {
-        if (!this.energyTileList.contains(tile) ) {
+        if (!this.energyTileTileEntityMap.containsKey(tile) ) {
             return;
         }
         final BlockPos coord = this.chunkCoordinatesMap.get(tile);
-        this.listFromCoord.remove(coord);
         this.chunkCoordinatesMap.remove(tile);
         this.energyTileTileEntityMap.remove(tile,this.energyTileTileEntityMap.get(tile));
         this.chunkCoordinatesISETileMap.remove(coord,tile);
@@ -101,8 +96,9 @@ public class SENetLocal {
         if (!this.energySourceToEnergyPathMap.containsKey(energySource)) {
             this.energySourceToEnergyPathMap.put(energySource, this.discover(energySource));
         }
-        List<EnergyPath> activeEnergyPaths = new Vector<>();
-        for (final EnergyPath energyPath : this.energySourceToEnergyPathMap.get(energySource)) {
+        List<EnergyPath> activeEnergyPaths = new ArrayList<>();
+        final List<EnergyPath> energyPaths = this.energySourceToEnergyPathMap.get(energySource);
+        for (final EnergyPath energyPath : energyPaths) {
             assert energyPath.target instanceof ISESink;
             final ISESink energySink = (ISESink) energyPath.target;
             if (energySink.getDemandedSE() <= 0.0) {
@@ -118,63 +114,31 @@ public class SENetLocal {
             double energyConsumed = 0;
 
             final List<EnergyPath> currentActiveEnergyPaths = activeEnergyPaths;
-            activeEnergyPaths = new Vector<>();
-            for (final EnergyPath energyPath2 : currentActiveEnergyPaths) {
-                final ISESink energySink2 = (ISESink) energyPath2.target;
-
-
-                double adding = Math.min(amount, energySink2.getDemandedSE());
-
-                if (adding <= 0.0) {
+            activeEnergyPaths = new ArrayList<>();
+            for (EnergyPath energyPath2 : currentActiveEnergyPaths) {
+                ISESink energySink2 = (ISESink)energyPath2.target;
+                double energyProvided = Math.floor(Math.round(amount));
+                double adding = Math.min(energyProvided, energySink2.getDemandedSE());
+                if (adding <= 0.0D)
+                    adding = energySink2.getDemandedSE();
+                if (adding <= 0.0D)
                     continue;
-                }
-
-
-                double energyReturned = energySink2.injectSE(energyPath2.targetDirection, adding, 0);
-                if (energyReturned == 0.0) {
+                double energyReturned = energySink2.injectSE(energyPath2.targetDirection, adding,0);
+                if (energyReturned == 0.0D) {
                     activeEnergyPaths.add(energyPath2);
-                } else if (energyReturned >= amount) {
-                    energyReturned = amount;
+                } else if (energyReturned >= energyProvided) {
+                    energyReturned = energyProvided;
                 }
-                energyConsumed += (adding - energyReturned );
-
+                energyConsumed += adding;
+                energyConsumed-=energyReturned;
             }
             if (energyConsumed == 0 && !activeEnergyPaths.isEmpty()) {
                 activeEnergyPaths.remove(activeEnergyPaths.size() - 1);
             }
-
             amount -= energyConsumed;
+            amount = Math.max(0,amount);
         }
         return amount;
-    }
-
-    public double getTotalEnergyEmitted(final ISETile tileEntity) {
-        double ret = 0.0;
-        if (tileEntity instanceof ISEConductor) {
-            for (final EnergyPath energyPath : this.energySourceToEnergyPathMap.getPaths((ISEAcceptor) tileEntity)) {
-                if (energyPath.conductors.contains(tileEntity)) {
-                    ret += energyPath.totalEnergyConducted;
-                }
-            }
-        }
-        if (tileEntity instanceof ISESource && this.energySourceToEnergyPathMap.containsKey((ISESource)tileEntity)) {
-            for (final EnergyPath energyPath2 : this.energySourceToEnergyPathMap.get((ISESource)tileEntity)) {
-                ret += energyPath2.totalEnergyConducted;
-            }
-        }
-        return ret;
-    }
-
-    public double getTotalEnergySunken(final ISETile tileEntity) {
-        double ret = 0.0;
-        if (tileEntity instanceof ISEConductor || tileEntity instanceof ISESink) {
-            for (final EnergyPath energyPath : this.energySourceToEnergyPathMap.getPaths((ISEAcceptor) tileEntity)) {
-                if ((tileEntity instanceof ISESink && energyPath.target == tileEntity) || (tileEntity instanceof ISEConductor && energyPath.conductors.contains(tileEntity))) {
-                    ret += energyPath.totalEnergyConducted;
-                }
-            }
-        }
-        return ret;
     }
     public TileEntity  getTileFromISE(ISETile tile){
         if(tile instanceof TileEntity)
@@ -188,8 +152,8 @@ public class SENetLocal {
     private List<EnergyPath> discover(final ISESource emitter) {
         final Map<ISETile, EnergyBlockLink> reachedTileEntities = new HashMap<>();
         final LinkedList<ISETile> tileEntitiesToCheck = new LinkedList<>();
-            tileEntitiesToCheck.add(emitter);
 
+        tileEntitiesToCheck.add(emitter);
 
         while (!tileEntitiesToCheck.isEmpty()) {
             final ISETile currentTileEntity = tileEntitiesToCheck.remove();
@@ -262,28 +226,28 @@ public class SENetLocal {
     private List<EnergyTarget> getValidReceivers(final ISETile emitter, final boolean reverse) {
         final List<EnergyTarget> validReceivers = new LinkedList<>();
 
-            for (final EnumFacing direction : directions) {
-                final ISETile target2 = getNeighbor(emitter, direction);
-                if (target2 != null) {
-                    final EnumFacing inverseDirection2 = direction.getOpposite();
-                    if (reverse) {
-                        if (emitter instanceof ISEAcceptor && target2 instanceof ISEEmitter) {
-                            final ISEEmitter sender2 = (ISEEmitter) target2;
-                            final ISEAcceptor receiver2 = (ISEAcceptor) emitter;
-                            if (sender2.emitsSETo(receiver2, inverseDirection2) && receiver2.acceptsSEFrom(sender2,
-                                    direction)) {
-                                validReceivers.add(new EnergyTarget(target2, inverseDirection2));
-                            }
-                        }
-                    } else if (emitter instanceof ISEEmitter && target2 instanceof ISEAcceptor) {
-                        final ISEEmitter sender2 = (ISEEmitter) emitter;
-                        final ISEAcceptor receiver2 = (ISEAcceptor) target2;
-                        if (sender2.emitsSETo(receiver2, direction) && receiver2.acceptsSEFrom(sender2, inverseDirection2)) {
+        for (final EnumFacing direction : SENetLocal.directions) {
+            final ISETile target2 = getNeighbor(emitter, direction);
+            if (target2 != null) {
+                final EnumFacing inverseDirection2 = direction.getOpposite();
+                if (reverse) {
+                    if (emitter instanceof ISEAcceptor && target2 instanceof ISEEmitter) {
+                        final ISEEmitter sender2 = (ISEEmitter) target2;
+                        final ISEAcceptor receiver2 = (ISEAcceptor) emitter;
+                        if (sender2.emitsSETo(receiver2, inverseDirection2) && receiver2.acceptsSEFrom(sender2,
+                                direction)) {
                             validReceivers.add(new EnergyTarget(target2, inverseDirection2));
                         }
                     }
+                } else if (emitter instanceof ISEEmitter && target2 instanceof ISEAcceptor) {
+                    final ISEEmitter sender2 = (ISEEmitter) emitter;
+                    final ISEAcceptor receiver2 = (ISEAcceptor) target2;
+                    if (sender2.emitsSETo(receiver2, direction) && receiver2.acceptsSEFrom(sender2, inverseDirection2)) {
+                        validReceivers.add(new EnergyTarget(target2, inverseDirection2));
+                    }
                 }
             }
+        }
 
         //
 
@@ -328,38 +292,42 @@ public class SENetLocal {
 
     public void onTickEnd() {
         if(this.world.provider.getWorldTime() % 20 == 0)
-        if (this.waitingList.hasWork()) {
-            final List<ISETile> tiles = this.waitingList.getPathTiles();
-            for (final ISETile tile : tiles) {
-                final List<ISESource> sources = this.discoverFirstPathOrSources(tile);
-                if (sources.size() > 0) {
-                    this.energySourceToEnergyPathMap.removeAll(sources);
-                }
-            }
-            this.waitingList.clear();
-        }
-        for (ISESource entry : this.sources) {
-            if (entry != null) {
-
-
-                double offer =entry.getOfferedSE();
-                if (offer > 0) {
-                    for (double packetAmount = 1, i = 0; i < packetAmount; ++i) {
-                        offer =entry.getOfferedSE();
-                        if (offer < 1) {
-                            break;
-                        }
-                        final double removed = offer - this.emitEnergyFrom(entry, offer);
-                        if (removed <= 0) {
-                            break;
-                        }
-
-                        entry.drawSE(removed);
+            if (this.waitingList.hasWork()) {
+                final List<ISETile> tiles = this.waitingList.getPathTiles();
+                for (final ISETile tile : tiles) {
+                    final List<ISESource> sources = this.discoverFirstPathOrSources(tile);
+                    if (sources.size() > 0) {
+                        this.energySourceToEnergyPathMap.removeAll(sources);
                     }
                 }
-
+                this.waitingList.clear();
             }
-        }
+        if(this.world.provider.getWorldTime() % 5 == 0)
+            for (ISESource entry : this.sources) {
+                if (entry != null) {
+                    if (this.energySourceToEnergyPathMap.containsKey(entry))
+                        for (EnergyPath path : this.energySourceToEnergyPathMap.get(entry)) {
+                            path.totalEnergyConducted = 0L;
+                        }
+
+                    double offer = entry.getOfferedSE();
+                    if (offer > 0) {
+                        for (double packetAmount = 1, i = 0; i < packetAmount; ++i) {
+                            offer = entry.getOfferedSE();
+                            if (offer < 1) {
+                                break;
+                            }
+                            final double removed = offer - this.emitEnergyFrom(entry, offer);
+                            if (removed <= 0) {
+                                break;
+                            }
+
+                            entry.drawSE(removed);
+                        }
+                    }
+
+                }
+            }
     }
 
 
@@ -374,11 +342,6 @@ public class SENetLocal {
     public ISETile getTileEntity(BlockPos pos) {
 
         return this.chunkCoordinatesISETileMap.get(pos);
-    }
-    public NodeSEStats getNodeStats(final ISETile tile) {
-        final double emitted = this.getTotalEnergyEmitted(tile);
-        final double received = this.getTotalEnergySunken(tile);
-        return new NodeSEStats(received, emitted);
     }
 
 
@@ -401,13 +364,11 @@ public class SENetLocal {
         this.waitingList.clear();
         this.chunkCoordinatesISETileMap.clear();
         this.chunkCoordinatesMap.clear();
-        this.energyTileList.clear();
         this.energyTileTileEntityMap.clear();
-        this.listFromCoord.clear();
     }
 
     static {
-        directions = EnumFacing.values();
+        SENetLocal.directions = EnumFacing.values();
     }
 
 
@@ -448,6 +409,7 @@ public class SENetLocal {
 
         EnergyPathMap() {
             this.senderPath = new HashMap<>();
+
         }
 
         public void put(final ISESource par1, final List<EnergyPath> par2) {
@@ -473,17 +435,6 @@ public class SENetLocal {
                 this.remove(ISESource);
             }
         }
-
-        public List<EnergyPath> getPaths(final ISEAcceptor par1) {
-            final List<EnergyPath> paths = new ArrayList<>();
-            for (final ISESource source : this.getSources(par1)) {
-                if (this.containsKey(source)) {
-                    paths.addAll(this.get(source));
-                }
-            }
-            return paths;
-        }
-
         public List<ISESource> getSources(final ISEAcceptor par1) {
             final List<ISESource> source = new ArrayList<>();
             for (final Map.Entry<ISESource,List<EnergyPath>> entry : this.senderPath.entrySet()) {
@@ -584,9 +535,6 @@ public class SENetLocal {
         public void clear() {
             if (this.paths.isEmpty()) {
                 return;
-            }
-            for (PathLogic path : this.paths) {
-                path.clear();
             }
             this.paths.clear();
         }

@@ -4,6 +4,7 @@ import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Planet implements IPlanet {
 
@@ -40,7 +41,13 @@ public class Planet implements IPlanet {
         this.colonies = colonies;
         SpaceNet.instance.addPlanet(this);
     }
-
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Planet asteroid = (Planet) o;
+        return Objects.equals(name, asteroid.name);
+    }
     @Override
     public String getName() {
         return this.name;

@@ -2,6 +2,7 @@ package com.denfop.integration.jei.handlerho;
 
 
 import com.denfop.api.Recipes;
+import com.denfop.api.recipe.BaseMachineRecipe;
 import ic2.api.recipe.IRecipeInput;
 import ic2.api.recipe.MachineRecipe;
 import net.minecraft.block.Block;
@@ -35,7 +36,7 @@ public class HandlerHOHandler {
 
     public static HandlerHOHandler addRecipe(
             ItemStack input,
-            ArrayList<ItemStack> output,
+            List<ItemStack> output,
             final NBTTagCompound metaData
     ) {
         HandlerHOHandler recipe = new HandlerHOHandler(input, output, metaData);
@@ -59,8 +60,12 @@ public class HandlerHOHandler {
     }
 
     public static void initRecipes() {
-        for (MachineRecipe<IRecipeInput, Collection<ItemStack>> container : Recipes.handlerore.getRecipes()) {
-            addRecipe(container.getInput().getInputs().get(0), new ArrayList<>(container.getOutput()), container.getMetaData());
+        for (BaseMachineRecipe container : Recipes.recipes.getRecipeList("handlerho")) {
+            addRecipe(
+                    container.input.getInputs().get(0).getInputs().get(0),
+                    container.getOutput().items,container.getOutput().metadata
+            );
+
 
         }
     }

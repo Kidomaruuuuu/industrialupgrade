@@ -8,7 +8,10 @@ public interface IColonieBuilding {
 
     NBTTagCompound writeTag(NBTTagCompound tag);
 
+    IColonie getColonie();
 
     void work();
+
+    void remove();
 
 }

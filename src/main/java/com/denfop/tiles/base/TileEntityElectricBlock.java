@@ -74,7 +74,7 @@ public class TileEntityElectricBlock extends TileEntityInventory implements IHas
     public boolean wireless;
     public EntityPlayer player;
     public double output;
-    public String UUID = null;
+    public String UUID = "";
     public double energy2;
     public boolean rf;
     public boolean rfeu = false;
@@ -677,6 +677,7 @@ public class TileEntityElectricBlock extends TileEntityInventory implements IHas
             NBTTagCompound nbt = StackUtil.getOrCreateNbtData(stack);
             this.energy.addEnergy(nbt.getDouble("energy"));
             this.energy2 = nbt.getDouble("energy2");
+            this.UUID = placer.getName();
         }
     }
 
@@ -685,6 +686,7 @@ public class TileEntityElectricBlock extends TileEntityInventory implements IHas
         if (!(getWorld()).isRemote) {
             this.energy.addEnergy(eustored);
             this.energy2 = eustored1;
+
         }
     }
 

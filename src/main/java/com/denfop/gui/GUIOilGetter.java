@@ -27,10 +27,11 @@ public class GUIOilGetter extends GuiIC2<ContainerOilGetter> {
         TankGauge.createNormal(this, 96, 22, container.base.fluidTank).drawForeground(par1, par2);
 
         String tooltip;
-        if (!this.container.base.notoil) {
+        if (!this.container.base.getVein().get()) {
 
 
-            tooltip = Localization.translate("iu.fluidneft") + ": " + this.container.base.number + "/" + this.container.base.max
+            tooltip =
+                    Localization.translate("iu.fluidneft") + ": " + this.container.base.getVein().getCol() + "/" + this.container.base.getVein().getMaxCol()
                     + Localization.translate("ic2.generic.text.mb");
         } else {
             tooltip = Localization.translate("iu.notfindoil");
@@ -46,8 +47,8 @@ public class GUIOilGetter extends GuiIC2<ContainerOilGetter> {
         TankGauge.createNormal(this, 96, 22, container.base.fluidTank).drawBackground(xOffset, yOffset);
 
         int temp = 0;
-        if (this.container.base.max > 0) {
-            temp = 14 * this.container.base.number / this.container.base.max;
+        if (this.container.base.getVein().getMaxCol() > 0) {
+            temp = 14 * this.container.base.getVein().getCol() / this.container.base.getVein().getMaxCol();
         }
         temp = Math.min(14, temp);
         this.mc.getTextureManager().bindTexture(getTexture());

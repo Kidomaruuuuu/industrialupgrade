@@ -10,4 +10,6 @@ public interface IFakePlayer {
 
     boolean matched(String name);
 
+    NBTTagCompound writeNBT();
+
 }

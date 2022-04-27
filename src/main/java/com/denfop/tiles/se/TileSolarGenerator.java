@@ -12,7 +12,7 @@ public class TileSolarGenerator extends TileSolarGeneratorEnergy {
 
     public TileSolarGenerator() {
 
-        super(cof, "blockSolarGeneratorEnergy.name");
+        super(cof);
 
     }
 

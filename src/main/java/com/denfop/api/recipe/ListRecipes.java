@@ -49,6 +49,7 @@ public class ListRecipes implements IRecipes {
         this.addRecipeManager("farmer", 1, true);
         this.addRecipeManager("scrap", 1, true);
         this.addRecipeManager("comb_macerator", 1, true);
+        this.addRecipeManager("handlerho", 1, true);
     }
 
     public IBaseRecipe getRecipe(String name) {
@@ -62,7 +63,13 @@ public class ListRecipes implements IRecipes {
             this.map_recipes.put(name, lst);
         }
     }
-
+    public void addRecipeManager(String name, int size, boolean consume, boolean require) {
+        this.map_recipe_managers.put(name, new RecipeManager(name, size, consume,require));
+        if (!this.map_recipes.containsKey(name)) {
+            List<BaseMachineRecipe> lst = new ArrayList<>();
+            this.map_recipes.put(name, lst);
+        }
+    }
     public void removeRecipe(String name, RecipeOutput output) {
         List<BaseMachineRecipe> recipes = this.map_recipes.get(name);
         recipes.removeIf(recipe -> recipe.getOutput().items.get(0).isItemEqual(output.items.get(0)));

@@ -4,14 +4,16 @@ public interface IBuildingHouse extends IColonieBuilding {
 
     EnumHousesLevel getLevel();
 
-    int getPeoples();
+    int getPeople();
 
     void setPeoples(int peoples);
 
     int getEnergy();
 
-    int getMaxPeoples();
+    int getMaxPeople();
 
-    void addPeoples(int peoples);
+    void addPeople(int peoples);
+
+    int getWorkers();
 
 }

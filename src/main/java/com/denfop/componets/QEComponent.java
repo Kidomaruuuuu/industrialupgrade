@@ -356,11 +356,8 @@ public class QEComponent extends TileEntityComponent {
     }
 
     private double getSourceEnergy() {
-        if (this.fullEnergy) {
-            return this.storage >= EnergyNet.instance.getPowerFromTier(this.sourceTier) ? this.storage : 0.0D;
-        } else {
-            return this.storage;
-        }
+
+        return this.storage;
     }
 
     private int getPacketCount() {

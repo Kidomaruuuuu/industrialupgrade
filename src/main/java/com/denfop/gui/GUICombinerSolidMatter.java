@@ -2,6 +2,7 @@ package com.denfop.gui;
 
 import com.denfop.Constants;
 import com.denfop.container.ContainerCombinerSolidMatter;
+import ic2.api.upgrade.IUpgradableBlock;
 import ic2.core.GuiIC2;
 import net.minecraft.util.ResourceLocation;
 
@@ -21,7 +22,12 @@ public class GUICombinerSolidMatter extends GuiIC2<ContainerCombinerSolidMatter>
         int xoffset = (this.width - this.xSize) / 2;
         int yoffset = (this.height - this.ySize) / 2;
         drawTexturedModalRect(xoffset, yoffset, 0, 0, this.xSize, this.ySize);
-        this.drawBackgroundAndTitle(f, x - this.guiLeft, y - this.guiTop);
+        if (this.container.base != null) {
+            this.mc.getTextureManager().bindTexture(new ResourceLocation("ic2", "textures/gui/infobutton.png"));
+            this.drawTexturedRect(3.0D, 3.0D, 10.0D, 10.0D, 0.0D, 0.0D);
+        }
+        this.mc.getTextureManager().bindTexture(getTexture());
+
 
 
     }

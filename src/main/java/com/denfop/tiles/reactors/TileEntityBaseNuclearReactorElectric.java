@@ -74,7 +74,7 @@ public abstract class TileEntityBaseNuclearReactorElectric extends TileEntityInv
     protected List<IEnergyTile> subTiles = new ArrayList<>();
 
     public TileEntityBaseNuclearReactorElectric(int sizeX, int sizeY, String background, double coef) {
-        this.updateTicker = IC2.random.nextInt(this.getTickRate());
+        this.updateTicker = 0;
         this.reactorSlot = new InvSlotReactor(this, "reactor", sizeX * sizeY);
         this.getblock = false;
         this.sizeX = sizeX;
@@ -333,7 +333,7 @@ public abstract class TileEntityBaseNuclearReactorElectric extends TileEntityInv
                 }
 
                 if (power >= 0.7F) {
-                    List list1 = this.getWorld().getEntitiesWithinAABB(
+                    List<EntityLivingBase> list1 = this.getWorld().getEntitiesWithinAABB(
                             EntityLivingBase.class,
                             new AxisAlignedBB(
                                     this.getPos().getX() - 3,
@@ -345,9 +345,8 @@ public abstract class TileEntityBaseNuclearReactorElectric extends TileEntityInv
                             )
                     );
 
-                    for (Object o : list1) {
-                        Entity ent = (Entity) o;
-                        ent.attackEntityFrom(
+                    for (EntityLivingBase o : list1) {
+                        o.attackEntityFrom(
                                 IC2DamageSource.radiation,
                                 (float) ((int) ((float) this.getWorld().rand.nextInt(4) * this.hem))
                         );

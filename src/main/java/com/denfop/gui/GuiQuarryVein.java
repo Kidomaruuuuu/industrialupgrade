@@ -2,6 +2,8 @@ package com.denfop.gui;
 
 import com.denfop.Constants;
 import com.denfop.IUItem;
+import com.denfop.api.vein.Type;
+import com.denfop.api.vein.Vein;
 import com.denfop.container.ContainerQuarryVein;
 import com.denfop.tiles.base.TileEntityQuarryVein;
 import com.denfop.tiles.base.TileEntityVein;
@@ -59,13 +61,9 @@ public class GuiQuarryVein extends GuiIC2<ContainerQuarryVein> {
     List<String> getList() {
         List<String> lst = new ArrayList<>();
         final Biome biome = this.container.base.getWorld().getBiomeForCoordsBody(this.container.base.getPos());
-        String n = this.container.base.level > 1 ?
-                (TextFormatting.GREEN + "+" + ((this.container.base.level - 1) * 3) + "%") : "";
         lst.add(Localization.translate("iu.biome") + biome.getBiomeName());
-        lst.add(Localization.translate("iu.gettingvein") + getChance(biome) + "%" + n);
-        n = this.container.base.level > 1 ?
-                (TextFormatting.GREEN + "+" + ((this.container.base.level - 1) * 2) + "%") : "";
-        lst.add(Localization.translate("iu.gettingvein1") + 20 + "%" + n);
+        lst.add(Localization.translate("iu.gettingvein") + getChance(biome) + "%");
+        lst.add(Localization.translate("iu.gettingvein1") + 20 + "%");
 
         return lst;
     }
@@ -163,7 +161,7 @@ public class GuiQuarryVein extends GuiIC2<ContainerQuarryVein> {
                 break;
         }
         handleUpgradeTooltip1(par1, par2);
-        if (this.container.base.analysis) {
+        if (this.container.base.progress < 1200) {
             this.fontRenderer.drawString(
                     (this.container.base.progress * 100 / 1200) + "%",
                     29,
@@ -174,8 +172,9 @@ public class GuiQuarryVein extends GuiIC2<ContainerQuarryVein> {
 
         }
         handleUpgradeTooltip(par1, par2);
-        if (!this.container.base.analysis) {
-            if (this.container.base.empty) {
+        if (this.container.base.vein != null)
+        if (this.container.base.vein.get()) {
+            if (this.container.base.vein.getType() == Type.EMPTY) {
                 this.fontRenderer.drawString(
                         Localization.translate("iu.empty"),
                         29,
@@ -189,21 +188,14 @@ public class GuiQuarryVein extends GuiIC2<ContainerQuarryVein> {
                         32,
                         ModUtils.convertRGBcolorToInt(13, 229, 34)
                 );
-                TileEntityQuarryVein quarry = this.container.base;
-                BlockPos pos = new BlockPos(quarry.x, quarry.y, quarry.z);
-                int col = 0;
-                int colmax = 0;
-                boolean isOil = false;
-                String name_vein = "";
-                if (quarry.getWorld().getTileEntity(pos) instanceof TileEntityVein) {
-                    TileEntityVein vein = (TileEntityVein) quarry.getWorld().getTileEntity(pos);
-                    col = container.base.number;
-                    colmax = container.base.max;
-                    name_vein = new ItemStack(IUItem.heavyore, 1, vein.getBlockMetadata()).getDisplayName();
-                } else if (quarry.getWorld().getTileEntity(pos) instanceof TileOilBlock) {
-                    col = container.base.number;
-                    isOil = true;
-                    colmax = container.base.max;
+                Vein vein = this.container.base.vein;
+                int col = vein.getCol();
+                int colmax = vein.getMaxCol();
+                boolean isOil = vein.getType() == Type.OIL;
+                String name_vein;
+                if (!isOil) {
+                    name_vein = new ItemStack(IUItem.heavyore, 1, vein.getMeta()).getDisplayName();
+                } else {
                     name_vein = Localization.translate("iu.fluidneft");
                 }
                 new AdvArea(this, 20, 54, 68, 72).withTooltip(name_vein + " " + col + (isOil ? "mb" : "") + "/" + colmax + (isOil
@@ -251,8 +243,9 @@ public class GuiQuarryVein extends GuiIC2<ContainerQuarryVein> {
                     85 - chargeLevel, 48, chargeLevel
             );
         }
-        if (!this.container.base.analysis) {
-            if (!this.container.base.empty) {
+        if (this.container.base.vein != null)
+        if (this.container.base.vein.get()) {
+            if (this.container.base.vein.getType() != Type.EMPTY) {
                 RenderHelper.enableGUIStandardItemLighting();
                 GL11.glPushMatrix();
                 GL11.glColor4f(0.1F, 1, 0.1F, 1);
@@ -263,11 +256,8 @@ public class GuiQuarryVein extends GuiIC2<ContainerQuarryVein> {
                 this.zLevel = 100.0F;
                 mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
                 ItemStack stack;
-                TileEntityQuarryVein quarry = this.container.base;
-                BlockPos pos = new BlockPos(quarry.x, quarry.y, quarry.z);
-                if (quarry.getWorld().getTileEntity(pos) instanceof TileEntityVein) {
-                    TileEntityVein vein = (TileEntityVein) quarry.getWorld().getTileEntity(pos);
-                    stack = new ItemStack(IUItem.heavyore, 1, vein.getBlockMetadata());
+                if (this.container.base.vein.getType() == Type.VEIN) {
+                    stack = new ItemStack(IUItem.heavyore, 1, this.container.base.vein.getMeta());
 
                 } else {
                     stack = new ItemStack(IUItem.oilblock);

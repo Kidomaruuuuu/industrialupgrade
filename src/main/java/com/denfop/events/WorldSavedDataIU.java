@@ -5,10 +5,22 @@ import com.denfop.api.space.IBody;
 import com.denfop.api.space.SpaceNet;
 import com.denfop.api.space.fakebody.FakePlayer;
 import com.denfop.api.space.fakebody.SpaceOperation;
+import com.denfop.api.vein.IVein;
+import com.denfop.api.vein.Vein;
+import com.denfop.api.vein.VeinSystem;
+import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
+import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldSavedData;
 
 import javax.annotation.Nonnull;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,13 +29,22 @@ public class WorldSavedDataIU extends WorldSavedData {
 
     public int col;
     private NBTTagCompound tagCompound = new NBTTagCompound();
+    World world;
 
     public WorldSavedDataIU() {
         super(Constants.MOD_ID);
     }
 
+    public WorldSavedDataIU(String name) {
+        super(name);
+    }
+
+    public void setWorld(final World world) {
+        this.world = world;
+    }
+
     @Override
-    public void readFromNBT(final NBTTagCompound compound) {
+    public void readFromNBT(@Nonnull NBTTagCompound compound) {
         this.col = compound.getInteger("col");
         for (int i = 0; i < this.col; i++) {
             final NBTTagCompound nbt = compound.getCompoundTag(String.valueOf(i));
@@ -43,15 +64,40 @@ public class WorldSavedDataIU extends WorldSavedData {
             SpaceNet.instance.getFakeSpaceSystem().loadSpaceOperation(spaceOperations, player);
 
         }
+
+         if(compound.hasKey("vein")) {
+             final NBTTagCompound tag = compound.getCompoundTag("vein");
+             int size = tag.getInteger("max");
+            for (int i = 0; i < size; i++) {
+                final NBTTagCompound tag1 = tag.getCompoundTag(String.valueOf(i));
+                VeinSystem.system.addVein(tag1);
+            }
+
+        }else{
+             compound.setTag("vein",new NBTTagCompound());
+         }
+        if(compound.hasKey("colonies")) {
+            NBTTagCompound tag1 = compound.getCompoundTag("colonies");
+            int size = tag1.getInteger("col");
+            for(int i =0; i <size;i++ ){
+                final NBTTagCompound tag2 = tag1.getCompoundTag(String.valueOf(i));
+                SpaceNet.instance.getColonieNet().addColonie(tag2);
+            }
+        }else{
+            compound.setTag("colonies",new NBTTagCompound());
+        }
+        
     }
 
-    public NBTTagCompound getTagCompound() {
+    public NBTTagCompound getTagCompound()  {
+
         return this.tagCompound;
     }
 
     @Nonnull
     @Override
-    public NBTTagCompound writeToNBT(@Nonnull final NBTTagCompound compound) {
+    public NBTTagCompound writeToNBT(@Nonnull NBTTagCompound compound) {
+        compound = new NBTTagCompound();
         List<FakePlayer> list = SpaceNet.instance.getFakeSpaceSystem().getFakePlayers();
         int i = 0;
         for (FakePlayer player : list) {
@@ -70,6 +116,26 @@ public class WorldSavedDataIU extends WorldSavedData {
             i++;
         }
         compound.setInteger("col", i);
+        SpaceNet.instance.getFakeSpaceSystem().unload();
+        final List<Vein> list1 = VeinSystem.system.getVeinsList();
+        NBTTagCompound tag = new NBTTagCompound();
+        for(int i1 =0; i1 < list1.size();i1++){
+            tag.setTag(String.valueOf(i1),list1.get(i1).writeTag());
+        }
+        tag.setInteger("max",list1.size());
+        compound.setTag("vein",tag);
+        VeinSystem.system.unload();
+        NBTTagCompound tag1 = new NBTTagCompound();
+        tag1.setInteger("col", SpaceNet.instance.getColonieNet().getList().size());
+        List<FakePlayer> list2 = SpaceNet.instance.getColonieNet().getList();
+        i = 0;
+        for (FakePlayer player : list2) {
+            tag1.setTag(String.valueOf(i),SpaceNet.instance.getColonieNet().writeNBT(tag1,player));
+            i++;
+        }
+
+        compound.setTag("colonies",tag1);
+        SpaceNet.instance.getColonieNet().unload();
         this.tagCompound = compound;
         return compound;
     }

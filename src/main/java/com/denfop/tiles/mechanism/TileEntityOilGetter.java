@@ -1,11 +1,13 @@
 package com.denfop.tiles.mechanism;
 
 import com.denfop.IUItem;
+import com.denfop.api.vein.Type;
+import com.denfop.api.vein.Vein;
+import com.denfop.api.vein.VeinSystem;
 import com.denfop.blocks.FluidName;
 import com.denfop.container.ContainerOilGetter;
 import com.denfop.gui.GUIOilGetter;
 import com.denfop.tiles.base.TileEntityElectricLiquidTankInventory;
-import com.denfop.tiles.base.TileOilBlock;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.IUpgradeItem;
 import ic2.api.upgrade.UpgradableProperty;
@@ -17,10 +19,9 @@ import ic2.core.block.invslot.InvSlotConsumableLiquid;
 import ic2.core.block.invslot.InvSlotConsumableLiquidByList;
 import ic2.core.block.invslot.InvSlotUpgrade;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -34,7 +35,6 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class TileEntityOilGetter extends TileEntityElectricLiquidTankInventory implements IUpgradableBlock {
@@ -42,13 +42,10 @@ public class TileEntityOilGetter extends TileEntityElectricLiquidTankInventory i
     private static final List<AxisAlignedBB> aabbs = Collections.singletonList(new AxisAlignedBB(0, 0.0D, -1.0, 1.0, 2.0D,
             2.0
     ));
-    public static int heading;
     public final int defaultTier;
     public final InvSlotUpgrade upgradeSlot;
     public final InvSlotConsumableLiquid containerslot;
-    public int number;
-    public int max;
-    public boolean notoil = true;
+    private Vein vein;
 
     public TileEntityOilGetter() {
         super("", 50000, 14, 20, Fluids.fluidPredicate(FluidName.fluidneft.getInstance()));
@@ -58,7 +55,6 @@ public class TileEntityOilGetter extends TileEntityElectricLiquidTankInventory i
         );
         this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
         this.defaultTier = 14;
-        heading = 2;
     }
 
     private static int applyModifier(int extra) {
@@ -66,30 +62,29 @@ public class TileEntityOilGetter extends TileEntityElectricLiquidTankInventory i
         return ret > 2.147483647E9D ? 2147483647 : (int) ret;
     }
 
+    public Vein getVein() {
+        return vein;
+    }
+
+
+    @Override
+    public void onPlaced(final ItemStack stack, final EntityLivingBase placer, final EnumFacing facing) {
+        super.onPlaced(stack, placer, facing);
+        this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
+    }
+
+    @Override
+    protected void onLoaded() {
+        super.onLoaded();
+        this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
+    }
+
     @Override
     protected ItemStack getPickBlock(final EntityPlayer player, final RayTraceResult target) {
         return new ItemStack(IUItem.oilgetter);
     }
 
-    public void readFromNBT(NBTTagCompound nbttagcompound) {
-        super.readFromNBT(nbttagcompound);
 
-        this.number = nbttagcompound.getInteger("number");
-        this.max = nbttagcompound.getInteger("max");
-        this.notoil = nbttagcompound.getBoolean("notoil");
-        heading = nbttagcompound.getInteger("heading");
-
-    }
-
-    public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound) {
-        super.writeToNBT(nbttagcompound);
-
-        nbttagcompound.setInteger("number", number);
-        nbttagcompound.setInteger("max", max);
-        nbttagcompound.setBoolean("notoil", notoil);
-        nbttagcompound.setInteger("heading", heading);
-        return nbttagcompound;
-    }
 
     @SideOnly(Side.CLIENT)
     protected boolean shouldSideBeRendered(EnumFacing side, BlockPos otherPos) {
@@ -123,7 +118,8 @@ public class TileEntityOilGetter extends TileEntityElectricLiquidTankInventory i
 
     public void updateEntityServer() {
         super.updateEntityServer();
-
+        if(this.vein.getType() == Type.EMPTY)
+            return;
         boolean needsInvUpdate = false;
         for (int i = 0; i < this.upgradeSlot.size(); i++) {
             ItemStack stack = this.upgradeSlot.get(i);
@@ -133,7 +129,7 @@ public class TileEntityOilGetter extends TileEntityElectricLiquidTankInventory i
                 }
             }
         }
-        MutableObject<ItemStack> output = new MutableObject();
+        MutableObject<ItemStack> output = new MutableObject<>();
         if (this.containerslot.transferFromTank(this.fluidTank, output, true)
                 && (output.getValue() == null || this.outputSlot.canAdd(output.getValue()))) {
             this.containerslot.transferFromTank(this.fluidTank, output, false);
@@ -142,8 +138,7 @@ public class TileEntityOilGetter extends TileEntityElectricLiquidTankInventory i
                 this.outputSlot.add(output.getValue());
             }
         }
-        get_oil_max();
-        if (this.energy.getEnergy() >= 10 && !notoil) {
+        if (this.energy.getEnergy() >= 10 && this.vein.getType() == Type.OIL && this.vein.get()) {
             get_oil();
             initiate(0);
         } else {
@@ -157,39 +152,14 @@ public class TileEntityOilGetter extends TileEntityElectricLiquidTankInventory i
         }
 
     }
-
-    private void get_oil_max() {
-        Map map = this.getWorld().getChunkFromBlockCoords(this.pos).tileEntities;
-        for (Object o : map.values()) {
-            TileEntity tile = (TileEntity) o;
-            if (tile instanceof TileOilBlock) {
-                TileOilBlock tile1 = (TileOilBlock) tile;
-                this.max = tile1.max;
-                this.number = tile1.number;
-                notoil = false;
-                return;
-            } else {
-                notoil = true;
-            }
-        }
-    }
-
     private void get_oil() {
-        Map map = this.getWorld().getChunkFromBlockCoords(this.pos).tileEntities;
-        for (Object o : map.values()) {
-            TileEntity tile = (TileEntity) o;
-            if (tile instanceof TileOilBlock) {
-                TileOilBlock tile1 = (TileOilBlock) tile;
-                if (tile1.number >= 1) {
+                if (vein.getCol() >= 1) {
                     if (this.fluidTank.getFluidAmount() + 1 <= this.fluidTank.getCapacity()) {
                         fill(new FluidStack(FluidName.fluidneft.getInstance(), 1), true);
-                        tile1.number -= 1;
+                        vein.removeCol(1);
                         this.energy.useEnergy(10);
                     }
                 }
-            }
-
-        }
     }
 
     @Override

@@ -62,8 +62,8 @@
 	  "aircollector": {
         "model": "industrialupgrade:basemachine/aircollector"
       },
-	  "per_quantum_quarry": {
-        "model": "industrialupgrade:basemachine/per_quantum_quarry"
+	  "combiner_se_generators": {
+        "model": "industrialupgrade:basemachine/combiner_se_generators"
       },
 	  "per_quantum_quarry_active": {
         "model": "industrialupgrade:basemachine/per_quantum_quarry_active"

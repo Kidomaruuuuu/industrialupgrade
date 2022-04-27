@@ -3,6 +3,7 @@ package com.denfop.gui;
 import com.denfop.Constants;
 import com.denfop.IUItem;
 import com.denfop.api.Recipes;
+import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.container.ContainerHandlerHeavyOre;
 import com.denfop.utils.ModUtils;
 import ic2.api.recipe.RecipeOutput;
@@ -35,15 +36,7 @@ public class GUIHandlerHeavyOre extends GuiIC2<ContainerHandlerHeavyOre> {
                         this.container.base.getMaxTemperature()) + "°C")
                 .drawForeground(par1, par2);
 
-        final RecipeOutput output = this.container.base.inputSlotA.process();
-        if (output != null) {
-            if (!Recipes.mechanism.hasHeaters(this.container.base) && this.container.base.getTemperature() < output.metadata.getShort(
-                    "temperature")) {
-                new AdvArea(this, 33, 50, 51, 68)
-                        .withTooltip(Localization.translate("iu.needheaters"))
-                        .drawForeground(par1, par2);
-            }
-        }
+
         String tooltip2 =
                 ModUtils.getString(Math.min(
                         this.container.base.energy.getEnergy(),

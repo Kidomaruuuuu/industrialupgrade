@@ -3,7 +3,6 @@ package com.denfop.se;
 
 import com.denfop.api.se.ISENet;
 import com.denfop.api.se.ISETile;
-import com.denfop.api.se.NodeSEStats;
 import com.denfop.componets.SEComponent;
 import ic2.core.block.TileEntityBlock;
 import net.minecraft.tileentity.TileEntity;
@@ -64,6 +63,7 @@ public class SENetGlobal implements ISENet {
         }
         if (var1.getTileEntity(var2) instanceof TileEntityBlock) {
             TileEntityBlock tile = (TileEntityBlock) var1.getTileEntity(var2);
+            assert tile != null;
             if (tile.hasComponent(SEComponent.class)) {
                 return tile.getComponent(SEComponent.class).getDelegate();
             }
@@ -88,14 +88,7 @@ public class SENetGlobal implements ISENet {
         local.removeTile(var1);
     }
 
-    @Override
-    public NodeSEStats getNodeStats(final ISETile var1, World world) {
-        final SENetLocal local = getForWorld(world);
-        if (local == null) {
-            return new NodeSEStats(0.0, 0.0);
-        }
-        return local.getNodeStats(var1);
-    }
+
 
 
 }

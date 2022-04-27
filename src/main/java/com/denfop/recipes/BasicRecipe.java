@@ -4654,6 +4654,22 @@ public class BasicRecipe {
                 Ic2Items.iridiumOre
 
         );
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(IUItem.basemachine2, 1, 12),
+                "ABC",
+                "EDE",
+                "CBA",
+                'A',
+               OreDictionary.getOres("doubleplateFerromanganese"),
+                'B',
+                OreDictionary.getOres("doubleplateNichrome"),
+                'C',
+                OreDictionary.getOres("doubleplateDuralumin"),
+                'E',
+                IUItem.cirsuitQuantum,
+                'D',
+                IUItem.ImpblockSE
+        );
     }
 
 }

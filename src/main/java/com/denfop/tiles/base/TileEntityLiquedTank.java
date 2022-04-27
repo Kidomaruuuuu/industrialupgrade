@@ -142,6 +142,9 @@ public class TileEntityLiquedTank extends TileEntityInventory implements IHasGui
     public void updateEntityServer() {
         super.updateEntityServer();
         boolean needsInvUpdate = false;
+        if(this.getFluidTank().getFluidAmount() == 0)
+            return;
+
         if (this.world.provider.getWorldTime() % 10 == 0) {
             IC2.network.get(true).updateTileEntityField(this, "fluidTank");
         }
@@ -154,7 +157,7 @@ public class TileEntityLiquedTank extends TileEntityInventory implements IHasGui
                 }
             }
         }
-        MutableObject<ItemStack> output = new MutableObject();
+        MutableObject<ItemStack> output = new MutableObject<>();
         if (this.containerslot.transferFromTank(this.fluidTank, output, true)
                 && (output.getValue() == null || this.outputSlot.canAdd(output.getValue()))) {
             this.containerslot.transferFromTank(this.fluidTank, output, false);
@@ -163,7 +166,7 @@ public class TileEntityLiquedTank extends TileEntityInventory implements IHasGui
             }
         }
         if (this.needsFluid()) {
-            output = new MutableObject();
+            output = new MutableObject<>();
             if (this.containerslot1.transferToTank(
                     this.fluidTank,
                     output,

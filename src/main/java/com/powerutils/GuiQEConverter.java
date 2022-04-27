@@ -76,7 +76,10 @@ public class GuiQEConverter extends GuiIC2<ContainerQEConverter> {
             this.fontRenderer.drawString("IN: " + ModUtils.getString(this.tileentity.differenceenergy1) + " EU/t", 9, 50,
                     13487565
             );
-            this.fontRenderer.drawString("OUT: " + ModUtils.getString(this.tileentity.differenceenergy) + " QE/t", 9, 60,
+            this.fontRenderer.drawString("OUT: " + ModUtils.getString(Math.min( this.tileentity.differenceenergy,
+                            this.tileentity.energy2.getCapacity())) + " " +
+                            "QE/t", 9,
+                    60,
                     13487565
             );
         } else {
@@ -86,7 +89,7 @@ public class GuiQEConverter extends GuiIC2<ContainerQEConverter> {
                     40,
                     13487565
             );
-            this.fontRenderer.drawString("IN: " + ModUtils.getString(this.tileentity.differenceenergy1) + " QE/t", 9, 50,
+            this.fontRenderer.drawString("IN: " + ModUtils.getString( this.tileentity.differenceenergy1) + " QE/t", 9, 50,
                     13487565
             );
             this.fontRenderer.drawString("OUT: " + ModUtils.getString(this.tileentity.differenceenergy) + " EU/t", 9, 60,

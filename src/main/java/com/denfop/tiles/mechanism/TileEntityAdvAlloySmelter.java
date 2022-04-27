@@ -49,17 +49,24 @@ public class TileEntityAdvAlloySmelter extends TileEntityTripleElectricMachine i
     public static void init() {
         addAlloysmelter("ingotCopper", "ingotZinc", "ingotLead", new ItemStack(IUItem.alloysingot, 1, 3), 4500);
         addAlloysmelter("ingotAluminium", "ingotMagnesium", "ingotManganese", new ItemStack(IUItem.alloysingot, 1, 5), 4000);
+        addAlloysmelter("ingotAluminum", "ingotMagnesium", "ingotManganese", new ItemStack(IUItem.alloysingot, 1, 5), 4000);
 
         addAlloysmelter("ingotAluminium",
                 "ingotCopper", "ingotTin",
                 new ItemStack(IUItem.alloysingot, 1, 0), 3000
         );
-
+        addAlloysmelter("ingotAluminum",
+                "ingotCopper", "ingotTin",
+                new ItemStack(IUItem.alloysingot, 1, 0), 3000
+        );
         addAlloysmelter("ingotAluminium",
                 "ingotVanady", "ingotCobalt",
                 new ItemStack(IUItem.alloysingot, 1, 6), 4500
         );
-
+        addAlloysmelter("ingotAluminum",
+                "ingotVanady", "ingotCobalt",
+                new ItemStack(IUItem.alloysingot, 1, 6), 4500
+        );
         addAlloysmelter("ingotChromium",
                 "ingotTungsten", "ingotNickel",
                 new ItemStack(IUItem.alloysingot, 1, 7), 5000

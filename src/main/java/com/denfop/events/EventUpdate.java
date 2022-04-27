@@ -41,7 +41,7 @@ public class EventUpdate {
         if (!this.playerNotified && this.thread.isComplete()) {
             this.playerNotified = true;
             FMLCommonHandler.instance().bus().unregister(this);
-            if (this.thread.getVersion().equals(Constants.MOD_VERSION)) {
+            if (this.thread.getVersion().equals(Constants.MOD_VERSION) || Constants.MOD_VERSION.contains("build")) {
 
                 return;
             }

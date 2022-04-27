@@ -4,6 +4,7 @@ import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Asteroid implements IAsteroid {
 
@@ -83,5 +84,15 @@ public class Asteroid implements IAsteroid {
     public ISystem getSystem() {
         return this.system;
     }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Asteroid asteroid = (Asteroid) o;
+        return Objects.equals(name, asteroid.name);
+    }
+
+
 
 }

@@ -6,18 +6,26 @@ import com.denfop.api.space.SpaceNet;
 import com.denfop.api.space.research.IResearchTable;
 import com.denfop.api.space.research.event.ResearchTableLoadEvent;
 import com.denfop.events.WorldSavedDataIU;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 
 public class EventHandlerPlanet {
 
+    private boolean load;
+
+    public EventHandlerPlanet(){
+        this.load = false;
+    }
     @SubscribeEvent
-    public void tick(final TickEvent.ServerTickEvent event) {
+    public void tick(final TickEvent.WorldTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
+            if(event.world.provider.getWorldTime() % 20 == 0)
             SpaceNet.instance.getFakeSpaceSystem().working();
         }
 
@@ -37,7 +45,7 @@ public class EventHandlerPlanet {
 
     @SubscribeEvent
     public void loadWorld(final WorldEvent.Load event) {
-        if (event.getWorld().provider.getDimension() == 0) {
+        if (event.getWorld().provider.getDimension() == 0 && !event.getWorld().isRemote && !this.load) {
 
             WorldSavedDataIU data = (WorldSavedDataIU) Objects.requireNonNull(event.getWorld().getMapStorage())
                     .getOrLoadData(
@@ -46,28 +54,32 @@ public class EventHandlerPlanet {
                     );
             if (data == null) {
                 data = new WorldSavedDataIU();
-                event.getWorld().getPerWorldStorage().setData(Constants.MOD_ID, data);
+                data.setWorld(event.getWorld());
+                event.getWorld().getMapStorage().setData(Constants.MOD_ID, data);
+                data.markDirty();
             } else {
-                data.deserializeNBT(data.getTagCompound());
+                data.setWorld(event.getWorld());
+                data.markDirty();
             }
+            this.load = true;
         }
     }
 
     @SubscribeEvent
     public void loadWorld(final WorldEvent.Unload event) {
 
-        if (event.getWorld().provider.getDimension() == 0) {
+        if (event.getWorld().provider.getDimension() == 0 && !event.getWorld().isRemote && this.load) {
 
             WorldSavedDataIU data = (WorldSavedDataIU) Objects.requireNonNull(event.getWorld().getMapStorage())
                     .getOrLoadData(
                             WorldSavedDataIU.class,
                             Constants.MOD_ID
                     );
-            if (data == null) {
-                data = new WorldSavedDataIU();
-                data.serializeNBT();
-                Objects.requireNonNull(event.getWorld().getMapStorage()).setData(Constants.MOD_ID, new WorldSavedDataIU());
-            }
+
+                Objects.requireNonNull(event.getWorld().getMapStorage()).setData(Constants.MOD_ID, data);
+                data.markDirty();
+            this.load = false;
+
         }
     }
 

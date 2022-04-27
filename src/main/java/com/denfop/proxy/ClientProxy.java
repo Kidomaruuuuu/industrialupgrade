@@ -55,7 +55,7 @@ import java.util.ArrayList;
 
 public class ClientProxy extends CommonProxy {
 
-    public static final ArrayList<IModelRegister> modelList = new ArrayList();
+    public static final ArrayList<IModelRegister> modelList = new ArrayList<>();
 
     public void preInit(FMLPreInitializationEvent event) {
         super.preInit(event);
@@ -78,7 +78,6 @@ public class ClientProxy extends CommonProxy {
                 }
             }
         }
-        final EntityRendererStreak streak = new EntityRendererStreak(Minecraft.getMinecraft().getRenderManager());
         RenderingRegistry.registerEntityRenderingHandler(
                 EntityStreak.class,
                 renderManager -> new EntityRendererStreak(renderManager) {
@@ -144,11 +143,7 @@ public class ClientProxy extends CommonProxy {
             final int y,
             final int z
     ) {
-        if (ID == 4) {
-            if (player.inventory.armorInventory.get(2).getItem() == IUItem.quantumBodyarmor) {
-                return new GuiColor(player);
-            }
-        }
+
         return null;
     }
 

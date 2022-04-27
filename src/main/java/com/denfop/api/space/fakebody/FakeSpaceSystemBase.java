@@ -181,7 +181,7 @@ public class FakeSpaceSystemBase implements IFakeSpaceSystemBase {
 
                 fakePlanet.setTime(1);
                 ElectricItem.manager.use(fakePlanet.getRover().getItemStack(), 100, null);
-                if (fakePlanet.getTime() % 3000 == 0) {
+                if (fakePlanet.getTime() % 150 == 0) {
                     if (!this.fakePlanetListMap.containsKey(fakePlanet)) {
                         this.fakePlanetListMap.put(fakePlanet, new ArrayList<>());
                     } else {
@@ -237,7 +237,7 @@ public class FakeSpaceSystemBase implements IFakeSpaceSystemBase {
                     if (table.getContainerBlock() != null) {
                         this.fakePlanetListMap.remove(fakePlanet);
                         this.fakePlanetList.remove(fakePlanet);
-                        fakePlanet.getData().addInformation(Math.abs(fakePlanet.getTime() - 36000) / 36000);
+                        fakePlanet.getData().addInformation(Math.abs(fakePlanet.getTime() - 1800) / 1800);
                         table.getSpaceBody().get(fakePlanet.getPlanet()).setOperation(EnumOperation.FAIL);
                         removeFakeBodyFromPlayer(table, fakePlanet.getPlanet());
                         fakePlanet.remove();
@@ -264,7 +264,7 @@ public class FakeSpaceSystemBase implements IFakeSpaceSystemBase {
                             false
                     );
                 }
-                if (fakeSatellite.getTime() % 3000 == 0) {
+                if (fakeSatellite.getTime() % 150 == 0) {
                     if (!this.fakeSatelliteListMap.containsKey(fakeSatellite)) {
                         this.fakeSatelliteListMap.put(fakeSatellite, new ArrayList<>());
                     } else {
@@ -306,7 +306,7 @@ public class FakeSpaceSystemBase implements IFakeSpaceSystemBase {
                     if (table.getContainerBlock() != null) {
                         this.fakeSatelliteListMap.remove(fakeSatellite);
                         this.fakeSatelliteList.remove(fakeSatellite);
-                        fakeSatellite.getData().addInformation(Math.abs(fakeSatellite.getTime() - 36000) / 36000);
+                        fakeSatellite.getData().addInformation(Math.abs(fakeSatellite.getTime() - 1800) / 1800);
                         table.getSpaceBody().get(fakeSatellite.getSatellite()).setOperation(EnumOperation.FAIL);
                         removeFakeBodyFromPlayer(table, fakeSatellite.getSatellite());
                         fakeSatellite.remove();
@@ -320,7 +320,7 @@ public class FakeSpaceSystemBase implements IFakeSpaceSystemBase {
 
                 fakePlanet.setTime(1);
                 ElectricItem.manager.use(fakePlanet.getRover().getItemStack(), 100, null);
-                if (fakePlanet.getTime() % 3000 == 0) {
+                if (fakePlanet.getTime() % 150 == 0) {
                     if (!this.fakeAsteroidListMap.containsKey(fakePlanet)) {
                         this.fakeAsteroidListMap.put(fakePlanet, new ArrayList<>());
                     } else {
@@ -376,7 +376,7 @@ public class FakeSpaceSystemBase implements IFakeSpaceSystemBase {
                     if (table.getContainerBlock() != null) {
                         this.fakeAsteroidListMap.remove(fakePlanet);
                         this.fakeAsteroids.remove(fakePlanet);
-                        fakePlanet.getData().addInformation(Math.abs(fakePlanet.getTime() - 36000) / 36000);
+                        fakePlanet.getData().addInformation(Math.abs(fakePlanet.getTime() - 1800) / 1800);
                         table.getSpaceBody().get(fakePlanet.getAsteroid()).setOperation(EnumOperation.FAIL);
                         removeFakeBodyFromPlayer(table, fakePlanet.getAsteroid());
                         fakePlanet.remove();
@@ -476,21 +476,23 @@ public class FakeSpaceSystemBase implements IFakeSpaceSystemBase {
 
     @Override
     public void loadDataFromPlayer(final FakePlayer player) {
-        this.addFakePlayer(player);
-        final NBTTagCompound tag = player.getTag().getCompoundTag("space_iu");
-        for (IPlanet body : SpaceNet.instance.getPlanetList()) {
-            if (tag.hasKey(body.getName())) {
-                this.addFakePlanet(new FakePlanet(player, body.getName()));
+        if(!this.fakePlayerList.contains(player)) {
+            this.addFakePlayer(player);
+            final NBTTagCompound tag = player.getTag().getCompoundTag("space_iu");
+            for (IPlanet body : SpaceNet.instance.getPlanetList()) {
+                if (tag.hasKey(body.getName())) {
+                    this.addFakePlanet(new FakePlanet(player, body.getName()));
+                }
             }
-        }
-        for (ISatellite body : SpaceNet.instance.getSatelliteList()) {
-            if (tag.hasKey(body.getName())) {
-                this.addFakeSatellite(new FakeSatellite(player, body.getName()));
+            for (ISatellite body : SpaceNet.instance.getSatelliteList()) {
+                if (tag.hasKey(body.getName())) {
+                    this.addFakeSatellite(new FakeSatellite(player, body.getName()));
+                }
             }
-        }
-        for (IAsteroid body : SpaceNet.instance.getAsteroidList()) {
-            if (tag.hasKey(body.getName())) {
-                this.addFakeAsteroid(new FakeAsteroid(player, body.getName()));
+            for (IAsteroid body : SpaceNet.instance.getAsteroidList()) {
+                if (tag.hasKey(body.getName())) {
+                    this.addFakeAsteroid(new FakeAsteroid(player, body.getName()));
+                }
             }
         }
     }
@@ -636,6 +638,21 @@ public class FakeSpaceSystemBase implements IFakeSpaceSystemBase {
         }
         int chance = this.rand.nextInt(newlist.size());
         return newlist.get(chance);
+    }
+
+    @Override
+    public void unload() {
+        this.fakePlanetList.clear();
+        this.fakeSatelliteList.clear();
+        this.fakePlanetListMap.clear();
+        this.fakeSatelliteListMap .clear();
+        this.entityPlayerListMap .clear();
+        this.MapEntityPlayer.clear();
+        this.fakePlayerList.clear();
+        this.fakePlayerMapMap.clear();
+        this.fakeBodyMap.clear();
+        this.fakeAsteroids.clear();
+        this.fakeAsteroidListMap.clear();
     }
 
 

@@ -11,6 +11,7 @@ import com.denfop.api.recipe.ListRecipes;
 import com.denfop.api.se.SENet;
 import com.denfop.api.upgrade.BaseUpgradeSystem;
 import com.denfop.api.upgrade.UpgradeSystem;
+import com.denfop.api.vein.VeinSystem;
 import com.denfop.audio.AudioManager;
 import com.denfop.blocks.BlockIUFluid;
 import com.denfop.blocks.mechanism.BlockAdminPanel;
@@ -266,6 +267,7 @@ public final class IUCore {
         CoolNet.instance = CoolNetGlobal.initialize();
         QENet.instance = QENetGlobal.initialize();
         SENet.instance = SENetGlobal.initialize();
+        new VeinSystem();
     }
 
     @SubscribeEvent

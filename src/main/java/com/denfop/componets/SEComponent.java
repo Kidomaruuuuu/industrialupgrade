@@ -206,6 +206,7 @@ public class SEComponent extends TileEntityComponent {
 
     public void setCapacity(double capacity) {
         this.capacity = capacity;
+        this.storage = Math.min(this.storage, this.capacity);
     }
 
     public double getEnergy() {

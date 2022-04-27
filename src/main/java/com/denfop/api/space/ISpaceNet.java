@@ -37,4 +37,6 @@ public interface ISpaceNet {
 
     List<IAsteroid> getAsteroidList();
 
+    List<IBody> getBodyList();
+
 }

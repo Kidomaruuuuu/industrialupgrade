@@ -48,7 +48,6 @@ public class TileEntitySintezator extends TileEntityInventory implements IEnergy
     public double generating;
     public double genDay;
     public double genNight;
-    public boolean initialized;
     public boolean sunIsUp;
     public boolean skyIsVisible;
     public short facing;

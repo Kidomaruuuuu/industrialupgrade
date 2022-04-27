@@ -30,7 +30,7 @@ public class BaseSpaceSystem implements ISpaceNet {
     List<IStar> starList;
     List<ISystem> systemList;
     Map<String, IBody> bodyMap;
-
+    List<IBody> bodies;
     public BaseSpaceSystem() {
         this.planetISatelliteMap = new HashMap<>();
         this.systemIBodyMap = new HashMap<>();
@@ -42,6 +42,7 @@ public class BaseSpaceSystem implements ISpaceNet {
         this.starListMap = new HashMap<>();
         this.starList = new ArrayList<>();
         this.bodyMap = new HashMap<>();
+        this.bodies = new ArrayList<>();
         FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);
         this.spaceSystemBase = new FakeSpaceSystemBase();
@@ -59,6 +60,11 @@ public class BaseSpaceSystem implements ISpaceNet {
     @Override
     public List<IAsteroid> getAsteroidList() {
         return this.asteroidList;
+    }
+
+    @Override
+    public List<IBody> getBodyList() {
+        return this.bodies;
     }
 
     @Override
@@ -97,6 +103,7 @@ public class BaseSpaceSystem implements ISpaceNet {
         this.systemIPlanetMap.put(planet, planet.getSystem());
         this.systemIBodyMap.put(planet, planet.getSystem());
         this.bodyMap.put(planet.getName(), planet);
+        this.bodies.add(planet);
         if (this.starListMap.containsKey(planet.getStar())) {
             List<IPlanet> planetList = this.starListMap.get(planet.getStar());
             planetList.add(planet);
@@ -108,6 +115,7 @@ public class BaseSpaceSystem implements ISpaceNet {
     @Override
     public void addAsteroid(final IAsteroid asteroid) {
         this.asteroidList.add(asteroid);
+        this.bodies.add(asteroid);
         this.systemIBodyMap.put(asteroid, asteroid.getSystem());
         this.bodyMap.put(asteroid.getName(), asteroid);
 
@@ -126,6 +134,7 @@ public class BaseSpaceSystem implements ISpaceNet {
         this.satelliteList.add(satellite);
         this.systemIBodyMap.put(satellite, satellite.getSystem());
         this.bodyMap.put(satellite.getName(), satellite);
+        this.bodies.add(satellite);
         if (this.planetISatelliteMap.containsKey(satellite.getPlanet())) {
             List<ISatellite> satelliteList = this.planetISatelliteMap.get(satellite.getPlanet());
             satelliteList.add(satellite);

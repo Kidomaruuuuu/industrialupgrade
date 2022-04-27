@@ -29,10 +29,11 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Locale;
 
-public class BlockOil extends BlockCore implements IModelRegister, ITileEntityProvider {
+public class BlockOil extends BlockCore implements IModelRegister {
 
     public static final PropertyEnum<Type> VARIANT = PropertyEnum.create("type", Type.class);
 
@@ -49,6 +50,7 @@ public class BlockOil extends BlockCore implements IModelRegister, ITileEntityPr
         GameRegistry.registerTileEntity(TileOilBlock.class, "oilblock");
     }
 
+    @Nonnull
     protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, VARIANT);
     }
@@ -118,11 +120,6 @@ public class BlockOil extends BlockCore implements IModelRegister, ITileEntityPr
         return true;
     }
 
-    @Nullable
-    @Override
-    public TileEntity createNewTileEntity(final World worldIn, final int meta) {
-        return new TileOilBlock();
-    }
 
     public enum Type implements IStringSerializable {
         oil(0),

@@ -1,6 +1,9 @@
 package com.denfop.api.space.fakebody;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.util.Constants;
+
+import java.util.Objects;
 
 public class FakePlayer implements IFakePlayer {
 
@@ -26,5 +29,23 @@ public class FakePlayer implements IFakePlayer {
     public boolean matched(final String name) {
         return this.name.equals(name);
     }
+
+    @Override
+    public NBTTagCompound writeNBT() {
+        NBTTagCompound tag = new NBTTagCompound();
+        tag.setString("name",this.getName());
+        tag.setTag("tag",this.getTag());
+        return tag;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FakePlayer player = (FakePlayer) o;
+        return matched(player.name);
+    }
+
+
 
 }
