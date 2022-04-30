@@ -2,7 +2,7 @@ package com.denfop.gui;
 
 import com.denfop.Constants;
 import com.denfop.container.ContainerElectricBlock;
-import com.denfop.utils.ListInformation;
+import com.denfop.utils.ListInformationUtils;
 import com.denfop.utils.ModUtils;
 import ic2.core.GuiIC2;
 import ic2.core.IC2;
@@ -122,7 +122,7 @@ public class GuiElectricBlock extends GuiIC2<ContainerElectricBlock> {
         if (mouseX >= 0 && mouseX <= 12 && mouseY >= 0 && mouseY <= 12) {
             List<String> text = new ArrayList<>();
             text.add(Localization.translate("iu.electricstorageinformation"));
-            List<String> compatibleUpgrades = ListInformation.storageinform;
+            List<String> compatibleUpgrades = ListInformationUtils.storageinform;
             Iterator<String> var5 = compatibleUpgrades.iterator();
             String itemstack;
             while (var5.hasNext()) {

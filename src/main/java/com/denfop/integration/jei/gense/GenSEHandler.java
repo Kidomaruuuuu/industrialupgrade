@@ -2,8 +2,6 @@ package com.denfop.integration.jei.gense;
 
 
 import com.denfop.api.Recipes;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -53,13 +51,6 @@ public class GenSEHandler {
         }
     }
 
-    private static ItemStack is(Item item) { // Побочный метод.
-        return new ItemStack(item);
-    }
-
-    private static ItemStack is(Block block) { // Побочный метод.
-        return new ItemStack(block);
-    }
 
     public ItemStack getOutput() { // Получатель выходного предмета рецепта.
         return output.copy();

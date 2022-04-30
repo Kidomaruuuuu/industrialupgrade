@@ -2,14 +2,12 @@ package com.denfop.proxy;
 
 
 import com.denfop.Constants;
-import com.denfop.IUItem;
 import com.denfop.api.IFluidModelProvider;
 import com.denfop.api.IModelRegister;
 import com.denfop.blocks.FluidName;
-import com.denfop.gui.GuiColor;
 import com.denfop.render.EntityRendererStreak;
 import com.denfop.render.EntityStreak;
-import com.denfop.render.EventDarkQuantumSuitEffect;
+import com.denfop.render.EventStreakEffect;
 import com.denfop.render.IUModelLoader;
 import com.denfop.render.ModelCable;
 import com.denfop.render.ModelCoolPipes;
@@ -23,7 +21,7 @@ import com.denfop.render.oilquarry.TileEntityQuarryOilRender;
 import com.denfop.render.oilrefiner.TileEntityOilRefinerRender;
 import com.denfop.render.sintezator.TileEntitySintezatorRender;
 import com.denfop.render.tank.TileEntityTankRender;
-import com.denfop.render.tile.TileEntityPanelRender;
+import com.denfop.render.tile.TileEntityAdminPanelRender;
 import com.denfop.tiles.base.TileEntityAdminSolarPanel;
 import com.denfop.tiles.base.TileEntityAdvOilRefiner;
 import com.denfop.tiles.base.TileEntityDoubleMolecular;
@@ -45,7 +43,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -154,15 +151,13 @@ public class ClientProxy extends CommonProxy {
 
     public void init(FMLInitializationEvent event) {
         super.init(event);
-        MinecraftForge.EVENT_BUS.register(new EventDarkQuantumSuitEffect());
-        FMLCommonHandler.instance().bus().register(new EventDarkQuantumSuitEffect());
-
+        MinecraftForge.EVENT_BUS.register(new EventStreakEffect());
 
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySintezator.class, new TileEntitySintezatorRender());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityQuarryVein.class, new TileEntityQuarryOilRender());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMolecularTransformer.class, new TileEntityMolecularRender());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAdminSolarPanel.class, new TileEntityPanelRender());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAdminSolarPanel.class, new TileEntityAdminPanelRender());
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityOilRefiner.class, new TileEntityOilRefinerRender());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDoubleMolecular.class, new TileEntityDoubleMolecularRender());

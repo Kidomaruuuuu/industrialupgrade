@@ -7,7 +7,7 @@ import com.denfop.api.upgrade.EnumUpgrades;
 import com.denfop.api.upgrade.IUpgradeItem;
 import com.denfop.api.upgrade.UpgradeSystem;
 import com.denfop.api.upgrade.event.EventItemLoad;
-import com.denfop.utils.EnumInfoUpgradeModules;
+import com.denfop.items.EnumInfoUpgradeModules;
 import com.denfop.utils.ModUtils;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -110,8 +110,13 @@ public class ItemKatana extends ItemTool implements IElectricItem, IUpgradeItem,
         return new ModelResourceLocation(loc, null);
     }
 
+    @Nonnull
     @Override
-    public ActionResult<ItemStack> onItemRightClick(final World worldIn, final EntityPlayer playerIn, final EnumHand handIn) {
+    public ActionResult<ItemStack> onItemRightClick(
+            @Nonnull final World worldIn,
+            final EntityPlayer playerIn,
+            @Nonnull final EnumHand handIn
+    ) {
         final NBTTagCompound nbt = ModUtils.nbt(playerIn.getHeldItem(handIn));
         switch (nbt.getString("type")) {
             case "":
@@ -131,19 +136,19 @@ public class ItemKatana extends ItemTool implements IElectricItem, IUpgradeItem,
     }
 
     @Override
-    public void getSubItems(final CreativeTabs subs, final NonNullList<ItemStack> items) {
+    public void getSubItems(@Nonnull final CreativeTabs subs, @Nonnull final NonNullList<ItemStack> items) {
         if (this.isInCreativeTab(subs)) {
             ItemStack stack = new ItemStack(this, 1);
 
 
             ElectricItem.manager.charge(stack, 2.147483647E9D, 2147483647, true, false);
             items.add(stack);
-            ItemStack itemstack = new ItemStack(this, 1, getMaxDamage());
+            ItemStack itemstack = new ItemStack(this, 1, 27);
             items.add(itemstack);
         }
     }
 
-    public boolean canHarvestBlock(IBlockState state, ItemStack itemStack) {
+    public boolean canHarvestBlock(IBlockState state, @Nonnull ItemStack itemStack) {
         Material material = state.getMaterial();
         Iterator var4 = this.toolClasses.iterator();
 
@@ -174,7 +179,7 @@ public class ItemKatana extends ItemTool implements IElectricItem, IUpgradeItem,
         return 0;
     }
 
-    public boolean drainSaber(ItemStack itemStack, double amount, EntityLivingBase entity) {
+    public boolean drainSaber(ItemStack itemStack, double amount) {
         int saberenergy = (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.SABERENERGY, itemStack) ?
                 UpgradeSystem.system.getModules(EnumInfoUpgradeModules.SABERENERGY, itemStack).number : 0);
 
@@ -187,7 +192,7 @@ public class ItemKatana extends ItemTool implements IElectricItem, IUpgradeItem,
         return this.maxCharge;
     }
 
-    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
+    public boolean isBookEnchantable(@Nonnull ItemStack stack, @Nonnull ItemStack book) {
         return true;
     }
 
@@ -196,11 +201,11 @@ public class ItemKatana extends ItemTool implements IElectricItem, IUpgradeItem,
         return true;
     }
 
-    public boolean onDroppedByPlayer(ItemStack item, EntityPlayer player) {
+    public boolean onDroppedByPlayer(@Nonnull ItemStack item, @Nonnull EntityPlayer player) {
         return true;
     }
 
-    public float getDestroySpeed(ItemStack itemStack, IBlockState state) {
+    public float getDestroySpeed(@Nonnull ItemStack itemStack, @Nonnull IBlockState state) {
 
         this.soundTicker++;
         if (this.soundTicker % 4 == 0) {
@@ -211,10 +216,11 @@ public class ItemKatana extends ItemTool implements IElectricItem, IUpgradeItem,
 
     }
 
+    @Nonnull
     @Override
     public Multimap<String, AttributeModifier> getAttributeModifiers(
-            final EntityEquipmentSlot p_getAttributeModifiers_1_,
-            final ItemStack stack
+            @Nonnull final EntityEquipmentSlot p_getAttributeModifiers_1_,
+            @Nonnull final ItemStack stack
     ) {
         if (p_getAttributeModifiers_1_ != EntityEquipmentSlot.MAINHAND) {
             return super.getAttributeModifiers(p_getAttributeModifiers_1_, stack);
@@ -238,9 +244,9 @@ public class ItemKatana extends ItemTool implements IElectricItem, IUpgradeItem,
     }
 
     @Override
-    public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase source) {
+    public boolean hitEntity(@Nonnull ItemStack stack, @Nonnull EntityLivingBase target, @Nonnull EntityLivingBase source) {
         if (IC2.platform.isSimulating()) {
-            if (!drainSaber(stack, 400.0D, source)) {
+            if (!drainSaber(stack, 400.0D)) {
                 return false;
             }
             int vampires = (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.VAMPIRES, stack) ?
@@ -288,7 +294,7 @@ public class ItemKatana extends ItemTool implements IElectricItem, IUpgradeItem,
                                 target.setItemStackToSlot(slot, ItemStack.EMPTY);
                             }
 
-                            drainSaber(stack, 2000.0D, source);
+                            drainSaber(stack, 2000.0D);
                         }
                     }
                 }
@@ -314,13 +320,13 @@ public class ItemKatana extends ItemTool implements IElectricItem, IUpgradeItem,
     }
 
     @Override
-    public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, EntityPlayer player) {
-        return drainSaber(stack, 80.0D, player);
+    public boolean onBlockStartBreak(@Nonnull ItemStack stack, @Nonnull BlockPos pos, @Nonnull EntityPlayer player) {
+        return drainSaber(stack, 80.0D);
     }
 
 
     @Override
-    public void onUpdate(ItemStack itemStack, World world, Entity entity, int slot, boolean par5) {
+    public void onUpdate(@Nonnull ItemStack itemStack, @Nonnull World world, @Nonnull Entity entity, int slot, boolean par5) {
         NBTTagCompound nbt = ModUtils.nbt(itemStack);
 
         if (!UpgradeSystem.system.hasInMap(itemStack)) {

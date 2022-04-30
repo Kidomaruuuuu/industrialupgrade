@@ -9,11 +9,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GUIWitherMaker extends GuiIC2<ContainerBaseWitherMaker> {
+public class GuiWitherMaker extends GuiIC2<ContainerBaseWitherMaker> {
 
     public final ContainerBaseWitherMaker container;
 
-    public GUIWitherMaker(
+    public GuiWitherMaker(
             ContainerBaseWitherMaker container1
     ) {
         super(container1);
@@ -58,7 +58,7 @@ public class GUIWitherMaker extends GuiIC2<ContainerBaseWitherMaker> {
     }
 
     public ResourceLocation getTexture() {
-        return new ResourceLocation(Constants.TEXTURES, "textures/gui/GUIWitherMaker.png");
+        return new ResourceLocation(Constants.TEXTURES, "textures/gui/GuiWitherMaker.png");
     }
 
 }

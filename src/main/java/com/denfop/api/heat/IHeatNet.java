@@ -14,7 +14,5 @@ public interface IHeatNet {
 
     void removeTile(IHeatTile var1);
 
-    NodeHeatStats getNodeStats(IHeatTile var1);
-
 
 }

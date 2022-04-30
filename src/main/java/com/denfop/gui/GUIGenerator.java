@@ -10,18 +10,18 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
-public class GUIGenerator extends GuiIC2<ContainerGenerator> {
+public class GuiGenerator extends GuiIC2<ContainerGenerator> {
 
     private static final ResourceLocation background;
 
     static {
-        background = new ResourceLocation(Constants.MOD_ID, "textures/gui/GUIGenerator.png");
+        background = new ResourceLocation(Constants.MOD_ID, "textures/gui/GuiGenerator.png");
     }
 
     public ContainerGenerator container;
     public String name;
 
-    public GUIGenerator(ContainerGenerator container1) {
+    public GuiGenerator(ContainerGenerator container1) {
         super(container1);
         this.container = container1;
         this.name = Localization.translate(this.container.base.getName());
@@ -39,7 +39,7 @@ public class GUIGenerator extends GuiIC2<ContainerGenerator> {
 
     @Override
     protected ResourceLocation getTexture() {
-        return new ResourceLocation(Constants.MOD_ID, "textures/gui/GUIGenerator.png");
+        return new ResourceLocation(Constants.MOD_ID, "textures/gui/GuiGenerator.png");
     }
 
     protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {

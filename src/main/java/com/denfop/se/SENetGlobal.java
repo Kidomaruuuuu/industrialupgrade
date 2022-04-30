@@ -89,6 +89,4 @@ public class SENetGlobal implements ISENet {
     }
 
 
-
-
 }

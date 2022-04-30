@@ -4,6 +4,7 @@ import com.denfop.IUItem;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
+import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.api.upgrade.IUpgradeItem;
 import com.denfop.api.upgrade.IUpgradeWithBlackList;
 import com.denfop.api.upgrade.UpgradeItemInform;
@@ -11,14 +12,13 @@ import com.denfop.api.upgrade.UpgradeSystem;
 import com.denfop.api.upgrade.event.EventItemBlackListLoad;
 import com.denfop.api.upgrade.event.EventItemLoad;
 import com.denfop.container.ContainerDoubleElectricMachine;
-import com.denfop.gui.GUIUpgradeBlock;
-import com.denfop.items.modules.QuarryModule;
-import com.denfop.items.modules.UpgradeModule;
-import com.denfop.utils.EnumInfoUpgradeModules;
+import com.denfop.gui.GuiUpgradeBlock;
+import com.denfop.items.EnumInfoUpgradeModules;
+import com.denfop.items.modules.ItemQuarryModule;
+import com.denfop.items.modules.ItemUpgradeModule;
 import com.denfop.utils.ModUtils;
 import ic2.api.item.ElectricItem;
 import ic2.api.recipe.IRecipeInputFactory;
-import ic2.api.recipe.RecipeOutput;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
@@ -50,290 +50,6 @@ public class TileEntityUpgradeBlock extends TileEntityDoubleElectricMachine {
     }
 
     public static void init() {
-        addupgrade(IUItem.nanodrill, new ItemStack(IUItem.upgrademodule, 1, 13));
-        addupgrade(IUItem.nanodrill, new ItemStack(IUItem.upgrademodule, 1, 3));
-        addupgrade(IUItem.nanodrill, new ItemStack(IUItem.upgrademodule, 1, 16));
-        addupgrade(IUItem.nanodrill, new ItemStack(IUItem.upgrademodule, 1, 6));
-        addupgrade(IUItem.quantumdrill, new ItemStack(IUItem.upgrademodule, 1, 6));
-        addupgrade(IUItem.quantumdrill, new ItemStack(IUItem.upgrademodule, 1, 13));
-        addupgrade(IUItem.quantumdrill, new ItemStack(IUItem.upgrademodule, 1, 3));
-        addupgrade(IUItem.quantumdrill, new ItemStack(IUItem.upgrademodule, 1, 16));
-        addupgrade(IUItem.spectraldrill, new ItemStack(IUItem.upgrademodule, 1, 13));
-        addupgrade(IUItem.spectraldrill, new ItemStack(IUItem.upgrademodule, 1, 3));
-        addupgrade(IUItem.spectraldrill, new ItemStack(IUItem.upgrademodule, 1, 16));
-        addupgrade(IUItem.spectraldrill, new ItemStack(IUItem.upgrademodule, 1, 6));
-        addupgrade(IUItem.nanoaxe, new ItemStack(IUItem.upgrademodule, 1, 13));
-        addupgrade(IUItem.nanoaxe, new ItemStack(IUItem.upgrademodule, 1, 3));
-        addupgrade(IUItem.nanoaxe, new ItemStack(IUItem.upgrademodule, 1, 16));
-        addupgrade(IUItem.nanoaxe, new ItemStack(IUItem.upgrademodule, 1, 6));
-        addupgrade(IUItem.quantumaxe, new ItemStack(IUItem.upgrademodule, 1, 6));
-        addupgrade(IUItem.quantumaxe, new ItemStack(IUItem.upgrademodule, 1, 13));
-        addupgrade(IUItem.quantumaxe, new ItemStack(IUItem.upgrademodule, 1, 3));
-        addupgrade(IUItem.quantumaxe, new ItemStack(IUItem.upgrademodule, 1, 16));
-        addupgrade(IUItem.spectralaxe, new ItemStack(IUItem.upgrademodule, 1, 13));
-        addupgrade(IUItem.spectralaxe, new ItemStack(IUItem.upgrademodule, 1, 3));
-        addupgrade(IUItem.spectralaxe, new ItemStack(IUItem.upgrademodule, 1, 16));
-        addupgrade(IUItem.spectralaxe, new ItemStack(IUItem.upgrademodule, 1, 6));
-        addupgrade(IUItem.nanopickaxe, new ItemStack(IUItem.upgrademodule, 1, 13));
-        addupgrade(IUItem.nanopickaxe, new ItemStack(IUItem.upgrademodule, 1, 3));
-        addupgrade(IUItem.nanopickaxe, new ItemStack(IUItem.upgrademodule, 1, 16));
-        addupgrade(IUItem.nanopickaxe, new ItemStack(IUItem.upgrademodule, 1, 6));
-        addupgrade(IUItem.quantumpickaxe, new ItemStack(IUItem.upgrademodule, 1, 6));
-        addupgrade(IUItem.quantumpickaxe, new ItemStack(IUItem.upgrademodule, 1, 13));
-        addupgrade(IUItem.quantumpickaxe, new ItemStack(IUItem.upgrademodule, 1, 3));
-        addupgrade(IUItem.quantumpickaxe, new ItemStack(IUItem.upgrademodule, 1, 16));
-        addupgrade(IUItem.spectralpickaxe, new ItemStack(IUItem.upgrademodule, 1, 13));
-        addupgrade(IUItem.spectralpickaxe, new ItemStack(IUItem.upgrademodule, 1, 3));
-        addupgrade(IUItem.spectralpickaxe, new ItemStack(IUItem.upgrademodule, 1, 16));
-        addupgrade(IUItem.spectralpickaxe, new ItemStack(IUItem.upgrademodule, 1, 6));
-        addupgrade(IUItem.nanoshovel, new ItemStack(IUItem.upgrademodule, 1, 13));
-        addupgrade(IUItem.nanoshovel, new ItemStack(IUItem.upgrademodule, 1, 3));
-        addupgrade(IUItem.nanoshovel, new ItemStack(IUItem.upgrademodule, 1, 16));
-        addupgrade(IUItem.nanoshovel, new ItemStack(IUItem.upgrademodule, 1, 6));
-        addupgrade(IUItem.quantumshovel, new ItemStack(IUItem.upgrademodule, 1, 6));
-        addupgrade(IUItem.quantumshovel, new ItemStack(IUItem.upgrademodule, 1, 13));
-        addupgrade(IUItem.quantumshovel, new ItemStack(IUItem.upgrademodule, 1, 3));
-        addupgrade(IUItem.quantumshovel, new ItemStack(IUItem.upgrademodule, 1, 16));
-        addupgrade(IUItem.spectralshovel, new ItemStack(IUItem.upgrademodule, 1, 13));
-        addupgrade(IUItem.spectralshovel, new ItemStack(IUItem.upgrademodule, 1, 3));
-        addupgrade(IUItem.spectralshovel, new ItemStack(IUItem.upgrademodule, 1, 16));
-        addupgrade(IUItem.spectralshovel, new ItemStack(IUItem.upgrademodule, 1, 6));
-        addupgrade(IUItem.ultDDrill, new ItemStack(IUItem.upgrademodule, 1, 13));
-        addupgrade(IUItem.ultDDrill, new ItemStack(IUItem.upgrademodule, 1, 3));
-        addupgrade(IUItem.ultDDrill, new ItemStack(IUItem.upgrademodule, 1, 16));
-        addupgrade(IUItem.ultDDrill, new ItemStack(IUItem.upgrademodule, 1, 6));
-        addupgrade(IUItem.advancedSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 0));
-        addupgrade(IUItem.advancedSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 1));
-        addupgrade(IUItem.advancedSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 2));
-        addupgrade(IUItem.advancedSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 15));
-        addupgrade(IUItem.hybridSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 0));
-        addupgrade(IUItem.hybridSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 1));
-        addupgrade(IUItem.hybridSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 2));
-        addupgrade(IUItem.hybridSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 15));
-        addupgrade(IUItem.ultimateSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 0));
-        addupgrade(IUItem.ultimateSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 1));
-        addupgrade(IUItem.ultimateSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 2));
-        addupgrade(IUItem.ultimateSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 15));
-        addupgrade(IUItem.spectralSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 0));
-        addupgrade(IUItem.spectralSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 1));
-        addupgrade(IUItem.spectralSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 2));
-        addupgrade(IUItem.spectralSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 15));
-        addupgrade(IUItem.singularSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 0));
-        addupgrade(IUItem.singularSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 1));
-        addupgrade(IUItem.singularSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 2));
-        addupgrade(IUItem.singularSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 15));
-        addupgrade(IUItem.quantumBodyarmor, new ItemStack(IUItem.upgrademodule, 1, 2));
-        addupgrade(IUItem.quantumBodyarmor, new ItemStack(IUItem.upgrademodule, 1, 7));
-        addupgrade(IUItem.quantumBodyarmor, new ItemStack(IUItem.upgrademodule, 1, 14));
-        addupgrade(IUItem.quantumHelmet, new ItemStack(IUItem.upgrademodule, 1, 2));
-        addupgrade(IUItem.quantumHelmet, new ItemStack(IUItem.upgrademodule, 1, 8));
-        addupgrade(IUItem.quantumLeggings, new ItemStack(IUItem.upgrademodule, 1, 2));
-        addupgrade(IUItem.quantumLeggings, new ItemStack(IUItem.upgrademodule, 1, 9));
-        addupgrade(IUItem.quantumBoots, new ItemStack(IUItem.upgrademodule, 1, 2));
-        addupgrade(IUItem.quantumBoots, new ItemStack(IUItem.upgrademodule, 1, 10));
-        addupgrade(IUItem.nano_bow, new ItemStack(IUItem.upgrademodule, 1, 4));
-        addupgrade(IUItem.nano_bow, new ItemStack(IUItem.upgrademodule, 1, 11));
-        addupgrade(IUItem.quantum_bow, new ItemStack(IUItem.upgrademodule, 1, 4));
-        addupgrade(IUItem.quantum_bow, new ItemStack(IUItem.upgrademodule, 1, 11));
-        addupgrade(IUItem.spectral_bow, new ItemStack(IUItem.upgrademodule, 1, 4));
-        addupgrade(IUItem.spectral_bow, new ItemStack(IUItem.upgrademodule, 1, 11));
-        addupgrade(IUItem.spectralSaber, new ItemStack(IUItem.upgrademodule, 1, 5));
-        addupgrade(IUItem.spectralSaber, new ItemStack(IUItem.upgrademodule, 1, 12));
-        addupgrade(IUItem.quantumSaber, new ItemStack(IUItem.upgrademodule, 1, 5));
-        addupgrade(IUItem.quantumSaber, new ItemStack(IUItem.upgrademodule, 1, 12));
-        addupgrade(IUItem.spectralSaber, new ItemStack(IUItem.upgrademodule, 1, 17));
-        addupgrade(IUItem.spectralSaber, new ItemStack(IUItem.upgrademodule, 1, 19));
-        addupgrade(IUItem.quantumSaber, new ItemStack(IUItem.upgrademodule, 1, 17));
-        addupgrade(IUItem.quantumSaber, new ItemStack(IUItem.upgrademodule, 1, 19));
-        addupgrade(IUItem.spectralSaber, new ItemStack(IUItem.upgrademodule, 1, 20));
-        addupgrade(IUItem.spectralSaber, new ItemStack(IUItem.upgrademodule, 1, 23));
-        addupgrade(IUItem.quantumSaber, new ItemStack(IUItem.upgrademodule, 1, 20));
-        addupgrade(IUItem.quantumSaber, new ItemStack(IUItem.upgrademodule, 1, 23));
-        addupgrade(IUItem.spectralSaber, new ItemStack(IUItem.upgrademodule, 1, 24));
-        addupgrade(IUItem.quantumSaber, new ItemStack(IUItem.upgrademodule, 1, 24));
-        addupgrade(IUItem.nanodrill, new ItemStack(IUItem.upgrademodule, 1, 21));
-        addupgrade(IUItem.quantumdrill, new ItemStack(IUItem.upgrademodule, 1, 21));
-        addupgrade(IUItem.spectraldrill, new ItemStack(IUItem.upgrademodule, 1, 21));
-        addupgrade(IUItem.nanopickaxe, new ItemStack(IUItem.upgrademodule, 1, 21));
-        addupgrade(IUItem.quantumpickaxe, new ItemStack(IUItem.upgrademodule, 1, 21));
-        addupgrade(IUItem.spectralpickaxe, new ItemStack(IUItem.upgrademodule, 1, 21));
-        addupgrade(IUItem.nanoshovel, new ItemStack(IUItem.upgrademodule, 1, 21));
-        addupgrade(IUItem.quantumshovel, new ItemStack(IUItem.upgrademodule, 1, 21));
-        addupgrade(IUItem.spectralshovel, new ItemStack(IUItem.upgrademodule, 1, 21));
-        addupgrade(IUItem.ultDDrill, new ItemStack(IUItem.upgrademodule, 1, 21));
-        addupgrade(IUItem.quantumBodyarmor, new ItemStack(IUItem.upgrademodule, 1, 18));
-        addupgrade(IUItem.quantumHelmet, new ItemStack(IUItem.upgrademodule, 1, 18));
-        addupgrade(IUItem.quantumLeggings, new ItemStack(IUItem.upgrademodule, 1, 18));
-        addupgrade(IUItem.quantumBoots, new ItemStack(IUItem.upgrademodule, 1, 18));
-        addupgrade(IUItem.quantumBodyarmor, new ItemStack(IUItem.upgrademodule, 1, 22));
-        addupgrade(IUItem.quantumHelmet, new ItemStack(IUItem.upgrademodule, 1, 22));
-        addupgrade(IUItem.quantumLeggings, new ItemStack(IUItem.upgrademodule, 1, 22));
-        addupgrade(IUItem.quantumBoots, new ItemStack(IUItem.upgrademodule, 1, 22));
-        addupgrade(IUItem.quantumBodyarmor, new ItemStack(IUItem.upgrademodule, 1, 25));
-        addupgrade(IUItem.quantumHelmet, new ItemStack(IUItem.upgrademodule, 1, 25));
-        addupgrade(IUItem.quantumLeggings, new ItemStack(IUItem.upgrademodule, 1, 25));
-        addupgrade(IUItem.quantumBoots, new ItemStack(IUItem.upgrademodule, 1, 25));
-        addupgrade(IUItem.advancedSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 18));
-        addupgrade(IUItem.hybridSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 18));
-        addupgrade(IUItem.ultimateSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 18));
-        addupgrade(IUItem.spectralSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 18));
-        addupgrade(IUItem.singularSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 18));
-        addupgrade(IUItem.advancedSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 22));
-        addupgrade(IUItem.hybridSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 22));
-        addupgrade(IUItem.ultimateSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 22));
-        addupgrade(IUItem.spectralSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 22));
-        addupgrade(IUItem.singularSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 22));
-        addupgrade(IUItem.advancedSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 25));
-        addupgrade(IUItem.hybridSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 25));
-        addupgrade(IUItem.ultimateSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 25));
-        addupgrade(IUItem.spectralSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 25));
-        addupgrade(IUItem.singularSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 25));
-        addupgrade(IUItem.advancedSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 8));
-        addupgrade(IUItem.hybridSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 8));
-        addupgrade(IUItem.ultimateSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 8));
-        addupgrade(IUItem.spectralSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 8));
-        addupgrade(IUItem.singularSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 8));
-        addupgrade(IUItem.NanoBodyarmor, new ItemStack(IUItem.upgrademodule, 1, 18));
-        addupgrade(IUItem.NanoHelmet, new ItemStack(IUItem.upgrademodule, 1, 18));
-        addupgrade(IUItem.NanoLeggings, new ItemStack(IUItem.upgrademodule, 1, 18));
-        addupgrade(IUItem.NanoBoots, new ItemStack(IUItem.upgrademodule, 1, 18));
-        addupgrade(IUItem.NanoBodyarmor, new ItemStack(IUItem.upgrademodule, 1, 22));
-        addupgrade(IUItem.NanoHelmet, new ItemStack(IUItem.upgrademodule, 1, 22));
-        addupgrade(IUItem.NanoLeggings, new ItemStack(IUItem.upgrademodule, 1, 22));
-        addupgrade(IUItem.NanoBoots, new ItemStack(IUItem.upgrademodule, 1, 22));
-        addupgrade(IUItem.NanoBodyarmor, new ItemStack(IUItem.upgrademodule, 1, 25));
-        addupgrade(IUItem.NanoHelmet, new ItemStack(IUItem.upgrademodule, 1, 25));
-        addupgrade(IUItem.NanoLeggings, new ItemStack(IUItem.upgrademodule, 1, 25));
-        addupgrade(IUItem.NanoBoots, new ItemStack(IUItem.upgrademodule, 1, 25));
-        addupgrade(IUItem.NanoBodyarmor, new ItemStack(IUItem.upgrademodule, 1, 2));
-        addupgrade(IUItem.NanoBodyarmor, new ItemStack(IUItem.upgrademodule, 1, 7));
-        addupgrade(IUItem.NanoBodyarmor, new ItemStack(IUItem.upgrademodule, 1, 14));
-        addupgrade(IUItem.NanoHelmet, new ItemStack(IUItem.upgrademodule, 1, 2));
-        addupgrade(IUItem.NanoHelmet, new ItemStack(IUItem.upgrademodule, 1, 8));
-        addupgrade(IUItem.NanoLeggings, new ItemStack(IUItem.upgrademodule, 1, 2));
-        addupgrade(IUItem.NanoLeggings, new ItemStack(IUItem.upgrademodule, 1, 9));
-        addupgrade(IUItem.NanoBoots, new ItemStack(IUItem.upgrademodule, 1, 2));
-        addupgrade(IUItem.NanoBoots, new ItemStack(IUItem.upgrademodule, 1, 10));
-        addupgrade(IUItem.nanodrill, new ItemStack(IUItem.module9, 1, 12));
-        addupgrade(IUItem.quantumdrill, new ItemStack(IUItem.module9, 1, 12));
-        addupgrade(IUItem.spectraldrill, new ItemStack(IUItem.module9, 1, 12));
-        addupgrade(IUItem.nanopickaxe, new ItemStack(IUItem.module9, 1, 12));
-        addupgrade(IUItem.quantumpickaxe, new ItemStack(IUItem.module9, 1, 12));
-        addupgrade(IUItem.spectralpickaxe, new ItemStack(IUItem.module9, 1, 12));
-        addupgrade(IUItem.nanoshovel, new ItemStack(IUItem.module9, 1, 12));
-        addupgrade(IUItem.quantumshovel, new ItemStack(IUItem.module9, 1, 12));
-        addupgrade(IUItem.spectralshovel, new ItemStack(IUItem.module9, 1, 12));
-        addupgrade(IUItem.nanoaxe, new ItemStack(IUItem.module9, 1, 12));
-        addupgrade(IUItem.quantumaxe, new ItemStack(IUItem.module9, 1, 12));
-        addupgrade(IUItem.spectralaxe, new ItemStack(IUItem.module9, 1, 12));
-        addupgrade(IUItem.ultDDrill, new ItemStack(IUItem.module9, 1, 12));
-        addupgrade(IUItem.nanodrill, new ItemStack(IUItem.upgrademodule, 1, 26));
-        addupgrade(IUItem.quantumdrill, new ItemStack(IUItem.upgrademodule, 1, 26));
-        addupgrade(IUItem.spectraldrill, new ItemStack(IUItem.upgrademodule, 1, 26));
-        addupgrade(IUItem.nanopickaxe, new ItemStack(IUItem.upgrademodule, 1, 26));
-        addupgrade(IUItem.quantumpickaxe, new ItemStack(IUItem.upgrademodule, 1, 26));
-        addupgrade(IUItem.spectralpickaxe, new ItemStack(IUItem.upgrademodule, 1, 26));
-        addupgrade(IUItem.nanoshovel, new ItemStack(IUItem.upgrademodule, 1, 26));
-        addupgrade(IUItem.quantumshovel, new ItemStack(IUItem.upgrademodule, 1, 26));
-        addupgrade(IUItem.spectralshovel, new ItemStack(IUItem.upgrademodule, 1, 26));
-        addupgrade(IUItem.nanoaxe, new ItemStack(IUItem.upgrademodule, 1, 26));
-        addupgrade(IUItem.quantumaxe, new ItemStack(IUItem.upgrademodule, 1, 26));
-        addupgrade(IUItem.spectralaxe, new ItemStack(IUItem.upgrademodule, 1, 26));
-        addupgrade(IUItem.ultDDrill, new ItemStack(IUItem.upgrademodule, 1, 26));
-        addupgrade(IUItem.nanodrill, new ItemStack(IUItem.upgrademodule, 1, 27));
-        addupgrade(IUItem.quantumdrill, new ItemStack(IUItem.upgrademodule, 1, 27));
-        addupgrade(IUItem.spectraldrill, new ItemStack(IUItem.upgrademodule, 1, 27));
-        addupgrade(IUItem.nanopickaxe, new ItemStack(IUItem.upgrademodule, 1, 27));
-        addupgrade(IUItem.quantumpickaxe, new ItemStack(IUItem.upgrademodule, 1, 27));
-        addupgrade(IUItem.spectralpickaxe, new ItemStack(IUItem.upgrademodule, 1, 27));
-        addupgrade(IUItem.nanoshovel, new ItemStack(IUItem.upgrademodule, 1, 27));
-        addupgrade(IUItem.quantumshovel, new ItemStack(IUItem.upgrademodule, 1, 27));
-        addupgrade(IUItem.spectralshovel, new ItemStack(IUItem.upgrademodule, 1, 27));
-        addupgrade(IUItem.nanoaxe, new ItemStack(IUItem.upgrademodule, 1, 27));
-        addupgrade(IUItem.quantumaxe, new ItemStack(IUItem.upgrademodule, 1, 27));
-        addupgrade(IUItem.spectralaxe, new ItemStack(IUItem.upgrademodule, 1, 27));
-        addupgrade(IUItem.ultDDrill, new ItemStack(IUItem.upgrademodule, 1, 27));
-
-        addupgrade(IUItem.nanopickaxe, new ItemStack(IUItem.upgrademodule, 1, 28));
-        addupgrade(IUItem.quantumpickaxe, new ItemStack(IUItem.upgrademodule, 1, 28));
-        addupgrade(IUItem.spectralpickaxe, new ItemStack(IUItem.upgrademodule, 1, 28));
-        addupgrade(IUItem.nanopickaxe, new ItemStack(IUItem.upgrademodule, 1, 35));
-        addupgrade(IUItem.quantumpickaxe, new ItemStack(IUItem.upgrademodule, 1, 35));
-        addupgrade(IUItem.spectralpickaxe, new ItemStack(IUItem.upgrademodule, 1, 35));
-        addupgrade(IUItem.nanopickaxe, new ItemStack(IUItem.upgrademodule, 1, 36));
-        addupgrade(IUItem.quantumpickaxe, new ItemStack(IUItem.upgrademodule, 1, 36));
-        addupgrade(IUItem.spectralpickaxe, new ItemStack(IUItem.upgrademodule, 1, 36));
-        addupgrade(IUItem.nanoaxe, new ItemStack(IUItem.upgrademodule, 1, 28));
-        addupgrade(IUItem.quantumaxe, new ItemStack(IUItem.upgrademodule, 1, 28));
-        addupgrade(IUItem.spectralaxe, new ItemStack(IUItem.upgrademodule, 1, 28));
-        addupgrade(IUItem.nanoaxe, new ItemStack(IUItem.upgrademodule, 1, 35));
-        addupgrade(IUItem.quantumaxe, new ItemStack(IUItem.upgrademodule, 1, 35));
-        addupgrade(IUItem.spectralaxe, new ItemStack(IUItem.upgrademodule, 1, 35));
-        addupgrade(IUItem.nanoaxe, new ItemStack(IUItem.upgrademodule, 1, 36));
-        addupgrade(IUItem.quantumaxe, new ItemStack(IUItem.upgrademodule, 1, 36));
-        addupgrade(IUItem.spectralaxe, new ItemStack(IUItem.upgrademodule, 1, 36));
-        addupgrade(IUItem.nanoshovel, new ItemStack(IUItem.upgrademodule, 1, 28));
-        addupgrade(IUItem.quantumshovel, new ItemStack(IUItem.upgrademodule, 1, 28));
-        addupgrade(IUItem.spectralshovel, new ItemStack(IUItem.upgrademodule, 1, 28));
-        addupgrade(IUItem.nanoshovel, new ItemStack(IUItem.upgrademodule, 1, 35));
-        addupgrade(IUItem.quantumshovel, new ItemStack(IUItem.upgrademodule, 1, 35));
-        addupgrade(IUItem.spectralshovel, new ItemStack(IUItem.upgrademodule, 1, 35));
-        addupgrade(IUItem.nanoshovel, new ItemStack(IUItem.upgrademodule, 1, 36));
-        addupgrade(IUItem.quantumshovel, new ItemStack(IUItem.upgrademodule, 1, 36));
-        addupgrade(IUItem.spectralshovel, new ItemStack(IUItem.upgrademodule, 1, 36));
-        addupgrade(IUItem.ultDDrill, new ItemStack(IUItem.upgrademodule, 1, 28));
-        addupgrade(IUItem.ultDDrill, new ItemStack(IUItem.upgrademodule, 1, 35));
-        addupgrade(IUItem.ultDDrill, new ItemStack(IUItem.upgrademodule, 1, 36));
-        addupgrade(IUItem.ultDDrill, new ItemStack(IUItem.upgrademodule, 1, 39));
-        addupgrade(IUItem.ultDDrill, new ItemStack(IUItem.upgrademodule, 1, 31));
-        addupgrade(IUItem.ultDDrill, new ItemStack(IUItem.upgrademodule, 1, 37));
-        addupgrade(IUItem.nanopickaxe, new ItemStack(IUItem.upgrademodule, 1, 39));
-        addupgrade(IUItem.quantumpickaxe, new ItemStack(IUItem.upgrademodule, 1, 39));
-        addupgrade(IUItem.spectralpickaxe, new ItemStack(IUItem.upgrademodule, 1, 39));
-        addupgrade(IUItem.nanopickaxe, new ItemStack(IUItem.upgrademodule, 1, 31));
-        addupgrade(IUItem.quantumpickaxe, new ItemStack(IUItem.upgrademodule, 1, 31));
-        addupgrade(IUItem.spectralpickaxe, new ItemStack(IUItem.upgrademodule, 1, 31));
-        addupgrade(IUItem.nanopickaxe, new ItemStack(IUItem.upgrademodule, 1, 37));
-        addupgrade(IUItem.quantumpickaxe, new ItemStack(IUItem.upgrademodule, 1, 37));
-        addupgrade(IUItem.spectralpickaxe, new ItemStack(IUItem.upgrademodule, 1, 37));
-        addupgrade(IUItem.nanoaxe, new ItemStack(IUItem.upgrademodule, 1, 39));
-        addupgrade(IUItem.quantumaxe, new ItemStack(IUItem.upgrademodule, 1, 39));
-        addupgrade(IUItem.spectralaxe, new ItemStack(IUItem.upgrademodule, 1, 39));
-        addupgrade(IUItem.nanoaxe, new ItemStack(IUItem.upgrademodule, 1, 31));
-        addupgrade(IUItem.quantumaxe, new ItemStack(IUItem.upgrademodule, 1, 31));
-        addupgrade(IUItem.spectralaxe, new ItemStack(IUItem.upgrademodule, 1, 31));
-        addupgrade(IUItem.nanoaxe, new ItemStack(IUItem.upgrademodule, 1, 37));
-        addupgrade(IUItem.quantumaxe, new ItemStack(IUItem.upgrademodule, 1, 37));
-        addupgrade(IUItem.spectralaxe, new ItemStack(IUItem.upgrademodule, 1, 37));
-        addupgrade(IUItem.nanodrill, new ItemStack(IUItem.upgrademodule, 1, 39));
-        addupgrade(IUItem.quantumdrill, new ItemStack(IUItem.upgrademodule, 1, 39));
-        addupgrade(IUItem.spectraldrill, new ItemStack(IUItem.upgrademodule, 1, 39));
-        addupgrade(IUItem.nanodrill, new ItemStack(IUItem.upgrademodule, 1, 31));
-        addupgrade(IUItem.quantumdrill, new ItemStack(IUItem.upgrademodule, 1, 31));
-        addupgrade(IUItem.spectraldrill, new ItemStack(IUItem.upgrademodule, 1, 31));
-        addupgrade(IUItem.nanodrill, new ItemStack(IUItem.upgrademodule, 1, 37));
-        addupgrade(IUItem.quantumdrill, new ItemStack(IUItem.upgrademodule, 1, 37));
-        addupgrade(IUItem.spectraldrill, new ItemStack(IUItem.upgrademodule, 1, 37));
-
-        addupgrade(IUItem.quantumBodyarmor, new ItemStack(IUItem.upgrademodule, 1, 30));
-        addupgrade(IUItem.NanoBodyarmor, new ItemStack(IUItem.upgrademodule, 1, 30));
-        addupgrade(IUItem.quantumBodyarmor, new ItemStack(IUItem.upgrademodule, 1, 33));
-        addupgrade(IUItem.NanoBodyarmor, new ItemStack(IUItem.upgrademodule, 1, 33));
-        addupgrade(IUItem.quantumBoots, new ItemStack(IUItem.upgrademodule, 1, 34));
-        addupgrade(IUItem.NanoBoots, new ItemStack(IUItem.upgrademodule, 1, 34));
-
-        addupgrade(IUItem.advancedSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 29));
-        addupgrade(IUItem.hybridSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 29));
-        addupgrade(IUItem.ultimateSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 29));
-        addupgrade(IUItem.spectralSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 29));
-        addupgrade(IUItem.singularSolarHelmet, new ItemStack(IUItem.upgrademodule, 1, 29));
-        addupgrade(IUItem.quantumHelmet, new ItemStack(IUItem.upgrademodule, 1, 29));
-        addupgrade(IUItem.NanoHelmet, new ItemStack(IUItem.upgrademodule, 1, 29));
-        addupgrade(IUItem.quantumSaber, new ItemStack(IUItem.upgrademodule, 1, 38));
-        addupgrade(IUItem.spectralSaber, new ItemStack(IUItem.upgrademodule, 1, 38));
-        addupgrade(IUItem.nano_bow, new ItemStack(IUItem.upgrademodule, 1, 32));
-        addupgrade(IUItem.quantum_bow, new ItemStack(IUItem.upgrademodule, 1, 32));
-        addupgrade(IUItem.spectral_bow, new ItemStack(IUItem.upgrademodule, 1, 32));
 
     }
 
@@ -341,7 +57,7 @@ public class TileEntityUpgradeBlock extends TileEntityDoubleElectricMachine {
         NBTTagCompound nbt = ModUtils.nbt();
         nbt.setString(
                 "mode_module",
-                fill.getItem() instanceof UpgradeModule ? UpgradeModule.getType(fill.getItemDamage()).name : "blacklist"
+                fill.getItem() instanceof ItemUpgradeModule ? ItemUpgradeModule.getType(fill.getItemDamage()).name : "blacklist"
         );
         final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
         Recipes.recipes.addRecipe(
@@ -395,7 +111,7 @@ public class TileEntityUpgradeBlock extends TileEntityDoubleElectricMachine {
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUIUpgradeBlock(new ContainerDoubleElectricMachine(entityPlayer, this, type));
+        return new GuiUpgradeBlock(new ContainerDoubleElectricMachine(entityPlayer, this, type));
     }
 
     @Override
@@ -413,12 +129,12 @@ public class TileEntityUpgradeBlock extends TileEntityDoubleElectricMachine {
         NBTTagCompound nbt1 = ModUtils.nbt(stack1);
 
 
-        if (module.getItem() instanceof UpgradeModule) {
+        if (module.getItem() instanceof ItemUpgradeModule) {
             if (!nbt1.getBoolean("canupgrade")) {
                 this.energy.addEnergy(energyConsume * operationLength);
                 return null;
             }
-            EnumInfoUpgradeModules type = UpgradeModule.getType(module.getItemDamage());
+            EnumInfoUpgradeModules type = ItemUpgradeModule.getType(module.getItemDamage());
             int min = 0;
             for (int i = 0; i < 4; i++) {
                 if (nbt1.getString("mode_module" + i).equals(type.name)) {
@@ -453,7 +169,7 @@ public class TileEntityUpgradeBlock extends TileEntityDoubleElectricMachine {
 
 
         NBTTagCompound nbt1 = ModUtils.nbt(stack1);
-        if (module.getItem() instanceof UpgradeModule) {
+        if (module.getItem() instanceof ItemUpgradeModule) {
             int Damage = stack1.getItemDamage();
             double newCharge = ElectricItem.manager.getCharge(stack1);
             final Map<Enchantment, Integer> enchantmentMap = EnchantmentHelper.getEnchantments(stack1);
@@ -478,7 +194,7 @@ public class TileEntityUpgradeBlock extends TileEntityDoubleElectricMachine {
             stack.setItemDamage(Damage);
         }
 
-        if (module.getItem() instanceof QuarryModule && module.getItemDamage() == 12) {
+        if (module.getItem() instanceof ItemQuarryModule && module.getItemDamage() == 12) {
             int Damage = stack1.getItemDamage();
             NBTTagCompound nbt2 = ModUtils.nbt(module);
             double newCharge = ElectricItem.manager.getCharge(stack1);

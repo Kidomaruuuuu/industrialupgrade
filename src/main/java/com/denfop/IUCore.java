@@ -7,6 +7,7 @@ import com.denfop.api.Recipes;
 import com.denfop.api.cooling.CoolNet;
 import com.denfop.api.heat.HeatNet;
 import com.denfop.api.qe.QENet;
+import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.ListRecipes;
 import com.denfop.api.se.SENet;
 import com.denfop.api.upgrade.BaseUpgradeSystem;
@@ -60,16 +61,15 @@ import com.denfop.heat.HeatNetGlobal;
 import com.denfop.integration.avaritia.BlockAvaritiaSolarPanel;
 import com.denfop.integration.botania.BlockBotSolarPanel;
 import com.denfop.integration.de.BlockDESolarPanel;
-import com.denfop.integration.thaumcraft.blockThaumcraftSolarPanel;
+import com.denfop.integration.thaumcraft.BlockThaumSolarPanel;
 import com.denfop.items.energy.ItemQuantumSaber;
 import com.denfop.items.energy.ItemSpectralSaber;
 import com.denfop.items.modules.EnumModule;
 import com.denfop.network.NetworkManager;
-import com.denfop.potion.PotionEmitting;
 import com.denfop.proxy.CommonProxy;
 import com.denfop.qe.QENetGlobal;
 import com.denfop.se.SENetGlobal;
-import com.denfop.tabs.IUTab;
+import com.denfop.tabs.TabCore;
 import com.denfop.utils.KeyboardIU;
 import com.denfop.utils.Keys;
 import com.denfop.utils.ModUtils;
@@ -80,7 +80,6 @@ import ic2.api.recipe.MachineRecipe;
 import ic2.core.IC2;
 import ic2.core.block.ITeBlock;
 import ic2.core.block.TeBlockRegistry;
-import ic2.core.item.tool.ItemNanoSaber;
 import ic2.core.util.SideGateway;
 import ic2.core.util.Util;
 import net.minecraft.block.material.Material;
@@ -123,19 +122,21 @@ import java.util.logging.Level;
 @Mod(modid = Constants.MOD_ID, name = Constants.MOD_NAME, dependencies = Constants.MOD_DEPS, version = Constants.MOD_VERSION, acceptedMinecraftVersions = "[1.12,1.12.2]", certificateFingerprint = Constants.MOD_CERTIFICATE)
 public final class IUCore {
 
-    public static final CreativeTabs SSPTab = new IUTab(0, "IUTab");
-    public static final CreativeTabs tabssp1 = new IUTab(1, "ModuleTab");
-    public static final CreativeTabs ItemTab = new IUTab(2, "ItemTab");
-    public static final CreativeTabs OreTab = new IUTab(3, "OreTab");
-    public static final CreativeTabs EnergyTab = new IUTab(4, "EnergyTab");
-    public static final CreativeTabs RecourseTab = new IUTab(5, "ResourceTab");
-    public static final CreativeTabs ReactorsTab = new IUTab(6, "ReactorsTab");
-    public static final CreativeTabs UpgradeTab = new IUTab(7, "UpgradeTab");
+    public static final CreativeTabs SSPTab = new TabCore(0, "IUTab");
+    public static final CreativeTabs tabssp1 = new TabCore(1, "ModuleTab");
+    public static final CreativeTabs ItemTab = new TabCore(2, "ItemTab");
+    public static final CreativeTabs OreTab = new TabCore(3, "OreTab");
+    public static final CreativeTabs EnergyTab = new TabCore(4, "EnergyTab");
+    public static final CreativeTabs RecourseTab = new TabCore(5, "ResourceTab");
+    public static final CreativeTabs ReactorsTab = new TabCore(6, "ReactorsTab");
+    public static final CreativeTabs UpgradeTab = new TabCore(7, "UpgradeTab");
 
     public static final Map<Integer, EnumModule> modules = new HashMap<>();
     public static final List<ItemStack> list = new ArrayList<>();
     public static final List<ItemStack> get_ore = new ArrayList<>();
     public static final List<ItemStack> get_ingot = new ArrayList<>();
+    public static final List<ItemStack> get_crushed = new ArrayList<>();
+    public static final List<ItemStack> get_comb_crushed = new ArrayList<>();
     public static Logger log;
     @SidedProxy(clientSide = "com.denfop.proxy.ClientProxy", serverSide = "com.denfop.proxy.CommonProxy")
     public static CommonProxy proxy;
@@ -150,13 +151,12 @@ public final class IUCore {
     )
     public static KeyboardIU keyboard;
     public static SideGateway<NetworkManager> network;
-    private static ic2.core.util.Config config;
 
     static {
         FluidRegistry.enableUniversalBucket();
         IUCore.instance = new IUCore();
         Keys.instance = IUCore.keyboard;
-        IUCore.network = new SideGateway("com.denfop.network.NetworkManager", "com.denfop.network.NetworkManagerClient");
+        IUCore.network = new SideGateway<>("com.denfop.network.NetworkManager", "com.denfop.network.NetworkManagerClient");
 
     }
 
@@ -247,7 +247,7 @@ public final class IUCore {
             register(BlockDESolarPanel.class, BlockDESolarPanel.IDENTITY);
         }
         if (Config.Thaumcraft) {
-            register(blockThaumcraftSolarPanel.class, blockThaumcraftSolarPanel.IDENTITY);
+            register(BlockThaumSolarPanel.class, BlockThaumSolarPanel.IDENTITY);
         }
 
 
@@ -281,18 +281,17 @@ public final class IUCore {
     @Mod.EventHandler
     public void load(final FMLPreInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(this);
+        ModUtils.log = event.getModLog();
         IUCore.log = event.getModLog();
         Config.loadNormalConfig(event.getSuggestedConfigurationFile());
         UpgradeSystem.system = new BaseUpgradeSystem();
         Recipes.recipes = new ListRecipes();
         proxy.regrecipemanager();
-        PotionEmitting.init();
         MinecraftForge.EVENT_BUS.register(new TickHandlerIU());
         if (Config.experiment) {
             new TickHandler();
         }
 
-        FMLCommonHandler.instance().bus().register(new TickHandlerIU());
         IUCore.audioManager.initialize();
         Keys.instance = IUCore.keyboard;
         proxy.preInit(event);
@@ -302,9 +301,9 @@ public final class IUCore {
     @Mod.EventHandler
     public void init(final FMLInitializationEvent event) {
         proxy.init(event);
-
         proxy.registerRecipe();
         initENet();
+
     }
 
     @SubscribeEvent
@@ -326,59 +325,6 @@ public final class IUCore {
 
             }
 
-        }
-
-        if (oreClass.startsWith("ingot")) {
-            String temp = oreClass.substring(5);
-            String tempore = "ore" + temp;
-            if (get_ingot == null) {
-                if (OreDictionary.getOres(tempore).size() >= 1) {
-                    get_ingot.add(OreDictionary.getOres(oreClass).get(0));
-                }
-
-            } else {
-                if (OreDictionary.getOres(tempore).size() >= 1) {
-                    if (!get_ingot.contains(OreDictionary.getOres(oreClass).get(0))) {
-                        get_ingot.add(OreDictionary.getOres(oreClass).get(0));
-
-                    }
-                }
-            }
-        }
-        if (oreClass.startsWith("gem")) {
-            String temp = oreClass.substring(3);
-            String tempore = "ore" + temp;
-            if (get_ingot == null) {
-                if (OreDictionary.getOres(tempore).size() >= 1) {
-                    get_ingot.add(OreDictionary.getOres(oreClass).get(0));
-                }
-
-            } else {
-                if (OreDictionary.getOres(tempore).size() >= 1) {
-                    if (!get_ingot.contains(OreDictionary.getOres(oreClass).get(0))) {
-                        get_ingot.add(OreDictionary.getOres(oreClass).get(0));
-
-                    }
-                }
-            }
-        }
-
-        if (oreClass.startsWith("shard")) {
-            String temp = oreClass.substring(5);
-            String tempore = "ore" + temp;
-            if (get_ingot == null) {
-                if (OreDictionary.getOres(tempore).size() >= 1) {
-                    get_ingot.add(OreDictionary.getOres(oreClass).get(0));
-                }
-
-            } else {
-                if (OreDictionary.getOres(tempore).size() >= 1) {
-                    if (!get_ingot.contains(OreDictionary.getOres(oreClass).get(0))) {
-                        get_ingot.add(OreDictionary.getOres(oreClass).get(0));
-
-                    }
-                }
-            }
         }
         if (oreClass.startsWith("ore")) {
             if (oreClass.equals("oreChargedCertusQuartz")) {
@@ -457,25 +403,15 @@ public final class IUCore {
         addInList1(new ItemStack(Items.COAL));
         addInList1(new ItemStack(Items.GLOWSTONE_DUST));
 
-        addInList(new ItemStack(Items.DIAMOND));
-        addInList(new ItemStack(Items.EMERALD));
-        addInList(new ItemStack(Items.REDSTONE));
-        addInList(new ItemStack(Items.DYE, 1, 4));
-        addInList(new ItemStack(Items.COAL));
-        addInList(new ItemStack(Items.GLOWSTONE_DUST));
+
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).isItemEqual(Ic2Items.iridiumOre)) {
                 list.remove(i);
             }
         }
         list.add(new ItemStack(IUItem.ore, 1, 14));
-        for (int i = 0; i < get_ingot.size(); i++) {
-            if (get_ingot.get(i).isItemEqual(Ic2Items.iridiumOre)) {
-                get_ingot.remove(i);
-                break;
-            }
-        }
-        get_ingot.add(new ItemStack(IUItem.iuingot, 1, 14));
+
+
         addOre("oreCoal");
         addOre("oreIron");
         addOre("oreGold");
@@ -507,6 +443,31 @@ public final class IUCore {
         removeOre("oreCrystalOrder");
         removeOre("oreCrystalEntropy");
         removeOre("oreCrystalTaint");
+        for (ItemStack stack : IUCore.list) {
+            BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput("macerator", false, stack);
+            if (recipe != null) {
+                this.get_crushed.add(recipe.getOutput().items.get(0));
+            } else {
+                this.get_crushed.add(stack);
+            }
+        }
+        this.get_comb_crushed.clear();
+        for (ItemStack stack : IUCore.list) {
+            BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput("comb_macerator", false, stack);
+            if (recipe != null) {
+                this.get_comb_crushed.add(recipe.getOutput().items.get(0));
+            } else {
+                this.get_comb_crushed.add(stack);
+            }
+        }
+        for (ItemStack stack : IUCore.list) {
+            BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput("furnace", false, stack);
+            if (recipe != null) {
+                this.get_ingot.add(recipe.getOutput().items.get(0));
+            } else {
+                this.get_ingot.add(stack);
+            }
+        }
         final Iterable<? extends MachineRecipe<IRecipeInput, Collection<ItemStack>>> recipe = ic2.api.recipe.Recipes.compressor.getRecipes();
         final Iterator<? extends MachineRecipe<IRecipeInput, Collection<ItemStack>>> iter = recipe.iterator();
         List<MachineRecipe<IRecipeInput, Collection<ItemStack>>> lst = new ArrayList<>();

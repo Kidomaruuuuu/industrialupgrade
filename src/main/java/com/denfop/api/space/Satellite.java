@@ -17,9 +17,9 @@ public class Satellite implements ISatellite {
     private final boolean pressure;
     private final int temperature;
     private final EnumType type;
-    List<IBaseResource> baseResourceList;
     private final boolean oxygen;
     private final boolean colonies;
+    List<IBaseResource> baseResourceList;
 
     public Satellite(
             String name, ISystem system, ResourceLocation textureLocation, EnumLevels levels, IPlanet planet, int temperature
@@ -39,13 +39,19 @@ public class Satellite implements ISatellite {
         this.colonies = colonies;
         SpaceNet.instance.addSatellite(this);
     }
+
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Satellite asteroid = (Satellite) o;
         return Objects.equals(name, asteroid.name);
     }
+
     @Override
     public String getName() {
         return this.name;

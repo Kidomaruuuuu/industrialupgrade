@@ -5,7 +5,6 @@ import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class InputFluid implements IInput {
 
@@ -34,7 +33,6 @@ public class InputFluid implements IInput {
     public List<FluidStack> getFluidInputs() {
         return this.inputsfluid;
     }
-
 
 
 }

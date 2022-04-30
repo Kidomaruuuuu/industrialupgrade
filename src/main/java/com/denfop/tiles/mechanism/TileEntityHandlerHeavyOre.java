@@ -9,13 +9,13 @@ import com.denfop.api.heat.event.HeatTileLoadEvent;
 import com.denfop.api.heat.event.HeatTileUnloadEvent;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
+import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.container.ContainerHandlerHeavyOre;
-import com.denfop.gui.GUIHandlerHeavyOre;
+import com.denfop.gui.GuiHandlerHeavyOre;
 import com.denfop.tiles.base.TileEntityBaseHandlerHeavyOre;
 import com.denfop.tiles.base.TileEntityElectricMachine;
 import com.denfop.utils.ModUtils;
 import ic2.api.recipe.IRecipeInputFactory;
-import ic2.api.recipe.RecipeOutput;
 import ic2.api.upgrade.IUpgradeItem;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
@@ -45,58 +45,8 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
 
     public TileEntityHandlerHeavyOre() {
         super(1, 300, 3);
-     }
-    public void updateEntityServer() {
-        super.updateEntityServer();
-        boolean needsInvUpdate = false;
-        if (!this.inputSlotA.isEmpty() && output != null && this.outputSlot.canAdd(this.output.output.items) && this.energy.getEnergy() >= this.energyConsume && output.output.metadata != null) {
-
-            if (output.output.metadata.getShort("temperature") == 0 || output.output.metadata.getInteger("temperature") > this.temperature) {
-                return;
-            }
-
-            setActive(true);
-            if (this.progress == 0) {
-                IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
-            }
-            this.progress = (short) (this.progress + 1);
-            this.energy.useEnergy(energyConsume);
-            double k = this.progress;
-
-            this.guiProgress = (k / this.operationLength);
-            if (this.progress >= this.operationLength) {
-                this.guiProgress = 0;
-                operate(output);
-                needsInvUpdate = true;
-                this.progress = 0;
-                IC2.network.get(true).initiateTileEntityEvent(this, 2, true);
-            }
-        } else {
-            if (this.progress != 0 && getActive()) {
-                IC2.network.get(true).initiateTileEntityEvent(this, 1, true);
-            }
-            if (output == null) {
-                this.progress = 0;
-            }
-            setActive(false);
-
-        }
-        if (this.temperature > 0) {
-            this.temperature--;
-        }
-        for (int i = 0; i < this.upgradeSlot.size(); i++) {
-            ItemStack stack = this.upgradeSlot.get(i);
-            if (stack != null && stack.getItem() instanceof IUpgradeItem) {
-                if (((IUpgradeItem) stack.getItem()).onTick(stack, this)) {
-                    needsInvUpdate = true;
-                }
-            }
-        }
-
-        if (needsInvUpdate) {
-            super.markDirty();
-        }
     }
+
     public static void init() {
         addhandlerore(
                 new ItemStack(IUItem.heavyore),
@@ -121,7 +71,8 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
         );
         addhandlerore(
                 new ItemStack(IUItem.heavyore, 1, 5),
-                new ItemStack[]{new ItemStack(Blocks.QUARTZ_ORE), new ItemStack(IUItem.ore,
+                new ItemStack[]{new ItemStack(Blocks.QUARTZ_ORE), new ItemStack(
+                        IUItem.ore,
                         1, 12
                 )},
                 (short) 2500, 84, 16
@@ -178,11 +129,63 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
                         new Input(
                                 input.forStack(container)
                         ),
-                        new RecipeOutput(nbt,  output)
+                        new RecipeOutput(nbt, output)
                 )
         );
 
 
+    }
+
+    public void updateEntityServer() {
+        super.updateEntityServer();
+        boolean needsInvUpdate = false;
+        if (!this.inputSlotA.isEmpty() && output != null && this.outputSlot.canAdd(this.output.output.items) && this.energy.getEnergy() >= this.energyConsume && output.output.metadata != null) {
+
+            if (output.output.metadata.getShort("temperature") == 0 || output.output.metadata.getInteger("temperature") > this.temperature) {
+                return;
+            }
+
+            setActive(true);
+            if (this.progress == 0) {
+                IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
+            }
+            this.progress = (short) (this.progress + 1);
+            this.energy.useEnergy(energyConsume);
+            double k = this.progress;
+
+            this.guiProgress = (k / this.operationLength);
+            if (this.progress >= this.operationLength) {
+                this.guiProgress = 0;
+                operate(output);
+                needsInvUpdate = true;
+                this.progress = 0;
+                IC2.network.get(true).initiateTileEntityEvent(this, 2, true);
+            }
+        } else {
+            if (this.progress != 0 && getActive()) {
+                IC2.network.get(true).initiateTileEntityEvent(this, 1, true);
+            }
+            if (output == null) {
+                this.progress = 0;
+            }
+            setActive(false);
+
+        }
+        if (this.temperature > 0) {
+            this.temperature--;
+        }
+        for (int i = 0; i < this.upgradeSlot.size(); i++) {
+            ItemStack stack = this.upgradeSlot.get(i);
+            if (stack != null && stack.getItem() instanceof IUpgradeItem) {
+                if (((IUpgradeItem) stack.getItem()).onTick(stack, this)) {
+                    needsInvUpdate = true;
+                }
+            }
+        }
+
+        if (needsInvUpdate) {
+            super.markDirty();
+        }
     }
 
     @Override
@@ -216,7 +219,6 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
     }
 
 
-
     @Override
     public World getWorldTile() {
         return this.getWorld();
@@ -244,7 +246,7 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUIHandlerHeavyOre(new ContainerHandlerHeavyOre(entityPlayer, this));
+        return new GuiHandlerHeavyOre(new ContainerHandlerHeavyOre(entityPlayer, this));
     }
 
     public String getStartSoundFile() {

@@ -81,4 +81,5 @@ public interface IFakeSpaceSystemBase {
     IBaseResource getBaseResource(FakeAsteroid planet, int percent);
 
     void unload();
+
 }

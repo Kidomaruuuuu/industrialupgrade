@@ -4,13 +4,13 @@ import com.denfop.IUItem;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
+import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.componets.SEComponent;
 import com.denfop.container.ContainerDoubleElectricMachine;
-import com.denfop.gui.GUISunnariumPanelMaker;
+import com.denfop.gui.GuiSunnariumPanelMaker;
 import com.denfop.tiles.base.EnumDoubleElectricMachine;
 import com.denfop.tiles.base.TileEntityDoubleElectricMachine;
 import ic2.api.recipe.IRecipeInputFactory;
-import ic2.api.recipe.RecipeOutput;
 import ic2.api.upgrade.IUpgradeItem;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.IC2;
@@ -228,7 +228,7 @@ public class TileEntitySunnariumPanelMaker extends TileEntityDoubleElectricMachi
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUISunnariumPanelMaker(new ContainerDoubleElectricMachine(entityPlayer, this, type));
+        return new GuiSunnariumPanelMaker(new ContainerDoubleElectricMachine(entityPlayer, this, type));
 
     }
 

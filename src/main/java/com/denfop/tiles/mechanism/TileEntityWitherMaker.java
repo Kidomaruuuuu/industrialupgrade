@@ -4,12 +4,12 @@ import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.InvSlotRecipes;
+import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.container.ContainerBaseWitherMaker;
-import com.denfop.gui.GUIWitherMaker;
+import com.denfop.gui.GuiWitherMaker;
 import com.denfop.tiles.base.TileEntityBaseWitherMaker;
 import ic2.api.recipe.IRecipeInput;
 import ic2.api.recipe.IRecipeInputFactory;
-import ic2.api.recipe.RecipeOutput;
 import ic2.api.upgrade.UpgradableProperty;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
@@ -62,7 +62,7 @@ public class TileEntityWitherMaker extends TileEntityBaseWitherMaker {
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUIWitherMaker(new ContainerBaseWitherMaker(entityPlayer, this));
+        return new GuiWitherMaker(new ContainerBaseWitherMaker(entityPlayer, this));
     }
 
     public String getStartSoundFile() {

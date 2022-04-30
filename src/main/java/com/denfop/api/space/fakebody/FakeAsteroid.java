@@ -37,17 +37,20 @@ public class FakeAsteroid implements IFakeAsteroid {
         this.end = false;
     }
 
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        FakeAsteroid that = (FakeAsteroid) o;
-        return Objects.equals(player, that.player) && Objects.equals(planet, that.planet);
-    }
-
-
     public FakeAsteroid(FakePlayer player, String name) {
         this.readNBT(player, name);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        FakeAsteroid that = (FakeAsteroid) o;
+        return Objects.equals(player, that.player) && Objects.equals(planet, that.planet);
     }
 
     @Override

@@ -86,14 +86,6 @@ public abstract class TileEntityBaseLiquedMachine extends TileEntityElectricMach
         return this.fluidTank[num];
     }
 
-    public int getTankAmount(int num) {
-        return this.fluidTank[num].getFluidAmount();
-    }
-
-    public FluidStack getFluidStackfromTank1(int num) {
-        return this.fluidTank[num].getFluid();
-    }
-
     public double gaugeLiquidScaled(double i, int num) {
         return this.fluidTank[num].getFluidAmount() <= 0 ? 0 :
                 this.fluidTank[num].getFluidAmount() * i / this.fluidTank[num].getCapacity();
@@ -104,22 +96,6 @@ public abstract class TileEntityBaseLiquedMachine extends TileEntityElectricMach
 
         for (final boolean b : drain) {
             if (b) {
-                fluidlist.add(name[0]);
-            }
-
-        }
-        Fluid[] fluid = new Fluid[fluidlist.size()];
-        for (int i = 0; i < fluidlist.size(); i++) {
-            fluid[i] = fluidlist.get(i);
-        }
-        return fluid;
-    }
-
-    public Fluid[] getFluidsFill(boolean[] fill, Fluid[] name) {
-        List<Fluid> fluidlist = new ArrayList<>();
-
-        for (final boolean b : fill) {
-            if (!b) {
                 fluidlist.add(name[0]);
             }
 
@@ -146,7 +122,7 @@ public abstract class TileEntityBaseLiquedMachine extends TileEntityElectricMach
         for (FluidTank tank : fluidTank) {
             if (!tank.equals(fluidTank[0])) {
                 for (InvSlotConsumableLiquidByListRemake slot : this.containerslot) {
-                    if(tank.getFluidAmount() >= 1000 && !slot.isEmpty()) {
+                    if (tank.getFluidAmount() >= 1000 && !slot.isEmpty()) {
                         slot.processFromTank(tank, this.outputSlot);
                         needsInvUpdate = true;
                     }

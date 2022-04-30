@@ -9,7 +9,7 @@ public enum QEType implements IIdProvider {
     qcable(0, 0, 0.25F, 0.02D, Integer.MAX_VALUE);
 
     public static final QEType[] values = values();
-    private static final Map<String, QEType> nameMap = new HashMap();
+    private static final Map<String, QEType> nameMap = new HashMap<>();
 
     static {
 
@@ -37,13 +37,10 @@ public enum QEType implements IIdProvider {
         return nameMap.get(name);
     }
 
-    public String getName(int insulation) {
-        return this.getName() + "_qcable";
+    public String getName() {
+        return this.name() + "_qcable";
     }
 
-    public String getName() {
-        return this.name();
-    }
 
     public int getId() {
         return this.ordinal();

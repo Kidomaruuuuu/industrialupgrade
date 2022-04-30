@@ -1,6 +1,6 @@
 package com.denfop.api.recipe;
 
-import ic2.api.recipe.RecipeOutput;
+
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidTank;
 

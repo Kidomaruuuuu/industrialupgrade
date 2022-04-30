@@ -7,7 +7,6 @@ import com.denfop.audio.AudioSource;
 import com.denfop.container.ContainerGenStone;
 import com.denfop.tiles.base.TileEntityElectricMachine;
 import ic2.api.network.INetworkTileEntityEventListener;
-import ic2.api.recipe.RecipeOutput;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.IUpgradeItem;
 import ic2.core.ContainerBase;

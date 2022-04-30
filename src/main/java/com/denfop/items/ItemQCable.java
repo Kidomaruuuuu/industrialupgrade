@@ -39,8 +39,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -49,9 +47,8 @@ import java.util.Set;
 
 public class ItemQCable extends ItemIC2 implements IMultiItem<QEType>, IBoxable, IModelRegister {
 
-    public static final List<ItemStack> variants = new ArrayList();
+    public static final List<ItemStack> variants = new ArrayList<>();
     protected static final String NAME = "qe_iu_item";
-    private static final NumberFormat lossFormat = new DecimalFormat("0.00#");
     String[] name = {"qcable"};
 
 
@@ -63,7 +60,7 @@ public class ItemQCable extends ItemIC2 implements IMultiItem<QEType>, IBoxable,
 
         for (QEType type : var1) {
             for (int insulation = 0; insulation <= type.maxInsulation; ++insulation) {
-                variants.add(getCable(type, insulation));
+                variants.add(getCable(type));
             }
         }
         this.setCreativeTab(IUCore.ItemTab);
@@ -74,17 +71,11 @@ public class ItemQCable extends ItemIC2 implements IMultiItem<QEType>, IBoxable,
     @Nonnull
     @SideOnly(Side.CLIENT)
     public static ModelResourceLocation getModelLocation(ItemStack stack) {
-        StringBuilder loc = new StringBuilder();
-        loc.append(Constants.MOD_ID);
-        loc.append(':');
-        loc.append("qcable").append("/").append(getName(stack));
+        final String loc = Constants.MOD_ID +
+                ':' +
+                "qcable" + "/" + getName(stack);
 
-        return new ModelResourceLocation(loc.toString(), null);
-    }
-
-    public static ItemStack getCable(QEType type, int insulation, int k) {
-
-        return variants.get(type.getId());
+        return new ModelResourceLocation(loc, null);
     }
 
     private static QEType getCableType(ItemStack stack) {
@@ -101,8 +92,7 @@ public class ItemQCable extends ItemIC2 implements IMultiItem<QEType>, IBoxable,
 
     private static String getName(ItemStack stack) {
         QEType type = getCableType(stack);
-        int insulation = getInsulation(stack);
-        return type.getName(insulation);
+        return type.getName();
     }
 
     @SideOnly(Side.CLIENT)
@@ -135,7 +125,7 @@ public class ItemQCable extends ItemIC2 implements IMultiItem<QEType>, IBoxable,
     }
 
     public ItemStack getItemStack(QEType type) {
-        return getCable(type, 0);
+        return getCable(type);
     }
 
     public ItemStack getItemStack(String variant) {
@@ -174,7 +164,7 @@ public class ItemQCable extends ItemIC2 implements IMultiItem<QEType>, IBoxable,
         if (type == null) {
             return null;
         } else if (insulation >= 0 && insulation <= type.maxInsulation) {
-            return getCable(type, insulation);
+            return getCable(type);
         } else {
             IC2.log.warn(LogCategory.Item, "Invalid cable insulation: %d", insulation);
             return null;
@@ -193,7 +183,7 @@ public class ItemQCable extends ItemIC2 implements IMultiItem<QEType>, IBoxable,
         }
     }
 
-    public ItemStack getCable(QEType type, int insulation) {
+    public ItemStack getCable(QEType type) {
         return new ItemStack(this, 1, type.getId());
     }
 
@@ -206,12 +196,13 @@ public class ItemQCable extends ItemIC2 implements IMultiItem<QEType>, IBoxable,
     }
 
 
+    @Nonnull
     public EnumActionResult onItemUse(
-            EntityPlayer player,
+            @Nonnull EntityPlayer player,
             World world,
-            BlockPos pos,
-            EnumHand hand,
-            EnumFacing side,
+            @Nonnull BlockPos pos,
+            @Nonnull EnumHand hand,
+            @Nonnull EnumFacing side,
             float hitX,
             float hitY,
             float hitZ
@@ -258,9 +249,9 @@ public class ItemQCable extends ItemIC2 implements IMultiItem<QEType>, IBoxable,
         }
     }
 
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> itemList) {
+    public void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> itemList) {
         if (this.isInCreativeTab(tab)) {
-            List<ItemStack> variants = new ArrayList(ItemQCable.variants);
+            List<ItemStack> variants = new ArrayList<>(ItemQCable.variants);
 
 
             itemList.addAll(variants);
@@ -272,7 +263,7 @@ public class ItemQCable extends ItemIC2 implements IMultiItem<QEType>, IBoxable,
     }
 
     public Set<ItemStack> getAllStacks() {
-        return new HashSet(variants);
+        return new HashSet<>(variants);
     }
 
     public boolean canBeStoredInToolbox(ItemStack itemstack) {

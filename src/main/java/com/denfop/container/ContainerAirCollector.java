@@ -1,6 +1,5 @@
 package com.denfop.container;
 
-import com.denfop.tiles.base.TileEntityAdvOilRefiner;
 import com.denfop.tiles.base.TileEntityAirCollector;
 import ic2.core.ContainerFullInv;
 import ic2.core.slot.SlotInvSlot;

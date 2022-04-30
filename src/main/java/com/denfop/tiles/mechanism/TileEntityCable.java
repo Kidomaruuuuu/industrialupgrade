@@ -47,7 +47,7 @@ import java.util.List;
 
 public class TileEntityCable extends TileEntityBlock implements IEnergyConductor, INetworkTileEntityEventListener {
 
-    public static final IUnlistedProperty<TileEntityCable.CableRenderState> renderStateProperty = new UnlistedProperty(
+    public static final IUnlistedProperty<TileEntityCable.CableRenderState> renderStateProperty = new UnlistedProperty<>(
             "renderstate",
             TileEntityCable.CableRenderState.class
     );
@@ -159,7 +159,6 @@ public class TileEntityCable extends TileEntityBlock implements IEnergyConductor
                     sp + th
             ));
             EnumFacing[] var5 = EnumFacing.VALUES;
-            int var6 = var5.length;
 
             for (EnumFacing facing : var5) {
                 boolean hasConnection = (this.connectivity & 1 << facing.ordinal()) != 0;
@@ -267,7 +266,7 @@ public class TileEntityCable extends TileEntityBlock implements IEnergyConductor
             ) || tile instanceof IEnergyEmitter && ((IEnergyEmitter) tile).emitsEnergyTo(
                     this,
                     dir.getOpposite()
-            )) && this.canInteractWith(tile, dir)) {
+            )) && this.canInteractWith()) {
                 newConnectivity = (byte) (newConnectivity | mask);
             }
 
@@ -318,8 +317,8 @@ public class TileEntityCable extends TileEntityBlock implements IEnergyConductor
 
 
     public void tryRemoveInsulation(boolean simulate) {
-        if (simulate) {
-        } else {
+
+        if (!simulate) {
             if (this.insulation == this.cableType.minColoredInsulation) {
                 CableFoam foam = this.foam;
                 this.foam = CableFoam.None;
@@ -340,14 +339,14 @@ public class TileEntityCable extends TileEntityBlock implements IEnergyConductor
     }
 
     public boolean acceptsEnergyFrom(IEnergyEmitter emitter, EnumFacing direction) {
-        return this.canInteractWith(emitter, direction);
+        return this.canInteractWith();
     }
 
     public boolean emitsEnergyTo(IEnergyAcceptor receiver, EnumFacing direction) {
-        return this.canInteractWith(receiver, direction);
+        return this.canInteractWith();
     }
 
-    public boolean canInteractWith(IEnergyTile tile, EnumFacing side) {
+    public boolean canInteractWith() {
 
         return true;
     }
@@ -385,7 +384,7 @@ public class TileEntityCable extends TileEntityBlock implements IEnergyConductor
 
 
     public List<String> getNetworkedFields() {
-        List<String> ret = new ArrayList();
+        List<String> ret = new ArrayList<>();
         ret.add("cableType");
         ret.add("insulation");
         ret.add("foam");
@@ -457,18 +456,16 @@ public class TileEntityCable extends TileEntityBlock implements IEnergyConductor
                 }
 
                 if (foam == CableFoam.Soft) {
-                    this.continuousUpdate = new IWorldTickCallback() {
-                        public void onTick(World world) {
-                            if (world.rand.nextFloat() < BlockFoam.getHardenChance(
-                                    world,
-                                    TileEntityCable.this.pos,
-                                    TileEntityCable.this.getBlockType().getState(TeBlock.cable),
-                                    FoamType.normal
-                            )) {
-                                TileEntityCable.this.changeFoam(CableFoam.Hardened, false);
-                            }
-
+                    this.continuousUpdate = world1 -> {
+                        if (world1.rand.nextFloat() < BlockFoam.getHardenChance(
+                                world1,
+                                TileEntityCable.this.pos,
+                                TileEntityCable.this.getBlockType().getState(TeBlock.cable),
+                                FoamType.normal
+                        )) {
+                            TileEntityCable.this.changeFoam(CableFoam.Hardened, false);
                         }
+
                     };
                     IC2.tickHandler.requestContinuousWorldTick(world, this.continuousUpdate);
                 }

@@ -1,7 +1,5 @@
 package com.denfop.tiles.mechanism;
 
-import com.denfop.api.Recipes;
-import com.denfop.invslot.InvSlotProcessableMultiGeneric;
 import com.denfop.tiles.base.EnumMultiMachine;
 import com.denfop.tiles.base.TileEntityMultiMachine;
 import ic2.core.init.Localization;
@@ -14,7 +12,7 @@ public class TileEntityQuadAssamplerScrap extends TileEntityMultiMachine {
                 EnumMultiMachine.QUAD_AssamplerScrap.lenghtOperation,
                 3
         );
-     }
+    }
 
 
     @Override

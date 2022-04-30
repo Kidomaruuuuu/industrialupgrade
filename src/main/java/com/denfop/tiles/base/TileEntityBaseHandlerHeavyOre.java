@@ -6,9 +6,7 @@ import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.audio.AudioSource;
-import com.denfop.invslot.InvSlotProcessable;
 import ic2.api.network.INetworkTileEntityEventListener;
-import ic2.api.recipe.RecipeOutput;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.IUpgradeItem;
 import ic2.core.IC2;
@@ -37,11 +35,12 @@ public abstract class TileEntityBaseHandlerHeavyOre extends TileEntityElectricMa
     public short temperature;
     public AudioSource audioSource;
     public InvSlotRecipes inputSlotA;
+    public BaseMachineRecipe output;
     protected boolean needTemperature;
     protected short progress;
     protected double guiProgress;
     private ITemperature source;
-    public BaseMachineRecipe output;
+
     public TileEntityBaseHandlerHeavyOre(int energyPerTick, int length, int outputSlots) {
         this(energyPerTick, length, outputSlots, 1);
     }
@@ -77,12 +76,6 @@ public abstract class TileEntityBaseHandlerHeavyOre extends TileEntityElectricMa
     public void setSource(final ITemperature source) {
         this.source = source;
     }
-
-    @Override
-    public boolean requairedTemperature() {
-        return this.needTemperature;
-    }
-
 
 
     public void readFromNBT(NBTTagCompound nbttagcompound) {
@@ -160,8 +153,7 @@ public abstract class TileEntityBaseHandlerHeavyOre extends TileEntityElectricMa
 
     public BaseMachineRecipe getOutput() {
 
-         this.output = this.inputSlotA.process();
-
+        this.output = this.inputSlotA.process();
 
 
         return this.output;

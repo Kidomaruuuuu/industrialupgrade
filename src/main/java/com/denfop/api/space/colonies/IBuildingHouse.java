@@ -1,6 +1,6 @@
 package com.denfop.api.space.colonies;
 
-public interface IBuildingHouse extends IColonieBuilding {
+public interface IBuildingHouse extends IColonyBuilding {
 
     EnumHousesLevel getLevel();
 

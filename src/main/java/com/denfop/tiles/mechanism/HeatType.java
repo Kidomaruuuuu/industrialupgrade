@@ -43,13 +43,10 @@ public enum HeatType implements IIdProvider {
         return nameMap.get(name);
     }
 
-    public String getName(int insulation) {
-        return this.getName() + "_pipes";
+    public String getName() {
+        return this.name() + "_pipes";
     }
 
-    public String getName() {
-        return this.name();
-    }
 
     public int getId() {
         return this.ordinal();

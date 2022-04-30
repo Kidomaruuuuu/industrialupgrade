@@ -4,13 +4,13 @@ import com.denfop.IUItem;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
+import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.container.ContainerDoubleElectricMachine;
-import com.denfop.gui.GUIPainting;
+import com.denfop.gui.GuiPainting;
 import com.denfop.utils.ModUtils;
 import ic2.api.item.ElectricItem;
 import ic2.api.item.IElectricItem;
 import ic2.api.recipe.IRecipeInputFactory;
-import ic2.api.recipe.RecipeOutput;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.init.Localization;
 import ic2.core.util.StackUtil;
@@ -222,7 +222,7 @@ public class TileEntityPainting extends TileEntityDoubleElectricMachine {
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUIPainting(new ContainerDoubleElectricMachine(entityPlayer, this, type));
+        return new GuiPainting(new ContainerDoubleElectricMachine(entityPlayer, this, type));
     }
 
     public String getStartSoundFile() {

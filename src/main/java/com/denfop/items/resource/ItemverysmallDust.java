@@ -15,11 +15,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Locale;
 
-public class ItemverysmallDust extends ItemMulti<ItemverysmallDust.Types> implements IModelRegister {
+public class ItemVerySmallDust extends ItemMulti<ItemVerySmallDust.Types> implements IModelRegister {
 
     protected static final String NAME = "verysmalldust";
 
-    public ItemverysmallDust() {
+    public ItemVerySmallDust() {
         super(null, Types.class);
         this.setCreativeTab(IUCore.RecourseTab);
         BlocksItems.registerItem((Item) this, IUCore.getIdentifier(NAME)).setUnlocalizedName(NAME);

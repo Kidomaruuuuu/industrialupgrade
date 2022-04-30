@@ -1,12 +1,13 @@
 package com.denfop.tiles.mechanism;
 
+import com.denfop.IUCore;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
+import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.tiles.base.EnumMultiMachine;
 import com.denfop.tiles.base.TileEntityMultiMachine;
 import ic2.api.recipe.IRecipeInputFactory;
-import ic2.api.recipe.RecipeOutput;
 import ic2.core.init.Localization;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
@@ -49,6 +50,7 @@ public class TileEntityCombMacerator extends TileEntityMultiMachine {
 
 
         stack.setCount(3);
+        IUCore.get_comb_crushed.add(stack);
         final IRecipeInputFactory input1 = ic2.api.recipe.Recipes.inputFactory;
         Recipes.recipes.addRecipe(
                 "comb_macerator",

@@ -10,11 +10,11 @@ import java.util.List;
 public class Storage implements IStorage {
 
     private final StorageBuilding storageBuilding;
-    private int max;
-    private int fluidmax;
     private final int maxvaluefluid;
     List<ItemStack> itemStackList;
     List<FluidStack> fluidStackList;
+    private int max;
+    private int fluidmax;
 
     public Storage(final StorageBuilding storageBuilding) {
         this.itemStackList = new ArrayList<>();
@@ -24,11 +24,13 @@ public class Storage implements IStorage {
         this.maxvaluefluid = 10000;
         this.storageBuilding = storageBuilding;
     }
-    public Storage(NBTTagCompound tag, final StorageBuilding storageBuilding){
+
+    public Storage(NBTTagCompound tag, final StorageBuilding storageBuilding) {
         this.maxvaluefluid = 10000;
         this.storageBuilding = storageBuilding;
         this.readNBT(tag);
     }
+
     @Override
     public StorageBuilding getStorageBuilding() {
         return this.storageBuilding;
@@ -162,18 +164,18 @@ public class Storage implements IStorage {
 
     @Override
     public NBTTagCompound writeNBT(final NBTTagCompound tag) {
-        tag.setInteger("max",this.max);
-        tag.setInteger("fluidmax",this.fluidmax);
+        tag.setInteger("max", this.max);
+        tag.setInteger("fluidmax", this.fluidmax);
         NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setInteger("col",this.getStacks().size());
-        for(int i = 0; i < this.getStacks().size();i++){
-            nbt.setTag(String.valueOf(i),this.getStacks().get(i).writeToNBT(new NBTTagCompound()));
+        nbt.setInteger("col", this.getStacks().size());
+        for (int i = 0; i < this.getStacks().size(); i++) {
+            nbt.setTag(String.valueOf(i), this.getStacks().get(i).writeToNBT(new NBTTagCompound()));
         }
         tag.setTag("stacks", nbt);
         NBTTagCompound nbt1 = new NBTTagCompound();
-        nbt1.setInteger("col_fluid",this.getStacks().size());
-        for(int i = 0; i < this.getFluidStacks().size();i++){
-            nbt1.setTag(String.valueOf(i),this.getFluidStacks().get(i).writeToNBT(new NBTTagCompound()));
+        nbt1.setInteger("col_fluid", this.getStacks().size());
+        for (int i = 0; i < this.getFluidStacks().size(); i++) {
+            nbt1.setTag(String.valueOf(i), this.getFluidStacks().get(i).writeToNBT(new NBTTagCompound()));
         }
         tag.setTag("fluids", nbt1);
         return tag;
@@ -186,14 +188,14 @@ public class Storage implements IStorage {
         NBTTagCompound nbt = tag.getCompoundTag("stacks");
         int size = nbt.getInteger("col");
         this.itemStackList = new ArrayList<>();
-        for(int i = 0; i < size;i++){
-            this.itemStackList.add(new ItemStack( nbt.getCompoundTag(String.valueOf(i))));
+        for (int i = 0; i < size; i++) {
+            this.itemStackList.add(new ItemStack(nbt.getCompoundTag(String.valueOf(i))));
         }
         NBTTagCompound nbt1 = tag.getCompoundTag("fluids");
         size = nbt1.getInteger("col_fluid");
         this.fluidStackList = new ArrayList<>();
-        for(int i = 0; i < size;i++){
-            this.fluidStackList.add(FluidStack.loadFluidStackFromNBT( nbt.getCompoundTag(String.valueOf(i))));
+        for (int i = 0; i < size; i++) {
+            this.fluidStackList.add(FluidStack.loadFluidStackFromNBT(nbt.getCompoundTag(String.valueOf(i))));
         }
     }
 

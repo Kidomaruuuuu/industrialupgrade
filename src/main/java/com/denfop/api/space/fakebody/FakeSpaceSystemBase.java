@@ -13,7 +13,6 @@ import com.denfop.api.space.upgrades.SpaceUpgradeSystem;
 import ic2.api.item.ElectricItem;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,7 +38,6 @@ public class FakeSpaceSystemBase implements IFakeSpaceSystemBase {
     private final Random rand;
 
     public FakeSpaceSystemBase() {
-        FMLCommonHandler.instance().bus().register(new EventHandlerPlanet());
         MinecraftForge.EVENT_BUS.register(new EventHandlerPlanet());
         this.fakePlanetList = new ArrayList<>();
         this.fakeSatelliteList = new ArrayList<>();
@@ -476,7 +474,7 @@ public class FakeSpaceSystemBase implements IFakeSpaceSystemBase {
 
     @Override
     public void loadDataFromPlayer(final FakePlayer player) {
-        if(!this.fakePlayerList.contains(player)) {
+        if (!this.fakePlayerList.contains(player)) {
             this.addFakePlayer(player);
             final NBTTagCompound tag = player.getTag().getCompoundTag("space_iu");
             for (IPlanet body : SpaceNet.instance.getPlanetList()) {
@@ -645,8 +643,8 @@ public class FakeSpaceSystemBase implements IFakeSpaceSystemBase {
         this.fakePlanetList.clear();
         this.fakeSatelliteList.clear();
         this.fakePlanetListMap.clear();
-        this.fakeSatelliteListMap .clear();
-        this.entityPlayerListMap .clear();
+        this.fakeSatelliteListMap.clear();
+        this.entityPlayerListMap.clear();
         this.MapEntityPlayer.clear();
         this.fakePlayerList.clear();
         this.fakePlayerMapMap.clear();

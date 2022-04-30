@@ -11,7 +11,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GUIElectrolyzer extends GuiIC2<ContainerElectrolyzer> {
+public class GuiElectrolyzer extends GuiIC2<ContainerElectrolyzer> {
 
     private static final ResourceLocation background;
 
@@ -21,7 +21,7 @@ public class GUIElectrolyzer extends GuiIC2<ContainerElectrolyzer> {
 
     public ContainerElectrolyzer container;
 
-    public GUIElectrolyzer(ContainerElectrolyzer container1) {
+    public GuiElectrolyzer(ContainerElectrolyzer container1) {
         super(container1);
         this.container = container1;
 

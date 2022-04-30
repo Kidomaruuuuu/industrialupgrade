@@ -2,16 +2,15 @@ package com.denfop.gui;
 
 import com.denfop.Constants;
 import com.denfop.container.ContainerCombinerSolidMatter;
-import ic2.api.upgrade.IUpgradableBlock;
 import ic2.core.GuiIC2;
 import net.minecraft.util.ResourceLocation;
 
 
-public class GUICombinerSolidMatter extends GuiIC2<ContainerCombinerSolidMatter> {
+public class GuiCombinerSolidMatter extends GuiIC2<ContainerCombinerSolidMatter> {
 
     public final ContainerCombinerSolidMatter container;
 
-    public GUICombinerSolidMatter(ContainerCombinerSolidMatter container1) {
+    public GuiCombinerSolidMatter(ContainerCombinerSolidMatter container1) {
         super(container1);
         this.container = container1;
     }
@@ -27,7 +26,6 @@ public class GUICombinerSolidMatter extends GuiIC2<ContainerCombinerSolidMatter>
             this.drawTexturedRect(3.0D, 3.0D, 10.0D, 10.0D, 0.0D, 0.0D);
         }
         this.mc.getTextureManager().bindTexture(getTexture());
-
 
 
     }

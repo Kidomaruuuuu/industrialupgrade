@@ -14,7 +14,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
-public class GUISolarGeneratorEnergy extends GuiIC2<ContainerSolarGeneratorEnergy> {
+public class GuiSolarGeneratorEnergy extends GuiIC2<ContainerSolarGeneratorEnergy> {
 
     private static final ResourceLocation background = new ResourceLocation(
             Constants.MOD_ID,
@@ -23,7 +23,7 @@ public class GUISolarGeneratorEnergy extends GuiIC2<ContainerSolarGeneratorEnerg
     private final ContainerSolarGeneratorEnergy container;
     private final String name;
 
-    public GUISolarGeneratorEnergy(ContainerSolarGeneratorEnergy container1) {
+    public GuiSolarGeneratorEnergy(ContainerSolarGeneratorEnergy container1) {
         super(container1);
         this.ySize = 196;
         this.container = container1;

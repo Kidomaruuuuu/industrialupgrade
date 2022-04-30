@@ -36,15 +36,21 @@ public class FakeSatellite implements IFakeSatellite {
         this.data = data;
         this.end = false;
     }
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        FakeSatellite that = (FakeSatellite) o;
-        return Objects.equals(player, that.player) && Objects.equals(planet, that.planet);
-    }
+
     public FakeSatellite(FakePlayer player, String name) {
         this.readNBT(player, name);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        FakeSatellite that = (FakeSatellite) o;
+        return Objects.equals(player, that.player) && Objects.equals(planet, that.planet);
     }
 
     @Override

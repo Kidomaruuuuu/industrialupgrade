@@ -10,11 +10,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GUIPlasticPlateCreator extends GuiIC2<ContainerPlasticPlateCreator> {
+public class GuiPlasticPlateCreator extends GuiIC2<ContainerPlasticPlateCreator> {
 
     public final ContainerPlasticPlateCreator container;
 
-    public GUIPlasticPlateCreator(ContainerPlasticPlateCreator container1) {
+    public GuiPlasticPlateCreator(ContainerPlasticPlateCreator container1) {
         super(container1);
         this.container = container1;
     }

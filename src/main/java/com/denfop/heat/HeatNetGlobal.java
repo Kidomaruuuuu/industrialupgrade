@@ -3,7 +3,6 @@ package com.denfop.heat;
 
 import com.denfop.api.heat.IHeatNet;
 import com.denfop.api.heat.IHeatTile;
-import com.denfop.api.heat.NodeHeatStats;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -78,15 +77,6 @@ public class HeatNetGlobal implements IHeatNet {
     public void removeTile(final IHeatTile var1) {
         final HeatNetLocal local = getForWorld(var1.getWorldTile());
         local.removeTile(var1);
-    }
-
-    @Override
-    public NodeHeatStats getNodeStats(final IHeatTile var1) {
-        final HeatNetLocal local = getForWorld(var1.getWorldTile());
-        if (local == null) {
-            return new NodeHeatStats(0.0, 0.0);
-        }
-        return local.getNodeStats(var1);
     }
 
 

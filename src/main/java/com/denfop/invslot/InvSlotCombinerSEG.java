@@ -2,12 +2,8 @@ package com.denfop.invslot;
 
 
 import com.denfop.IUItem;
-import com.denfop.items.ItemSolidMatter;
 import com.denfop.tiles.base.TileEntityCombinerSEGenerators;
-import com.denfop.tiles.base.TileEntityCombinerSolidMatter;
-import com.denfop.tiles.solidmatter.EnumSolidMatter;
 import ic2.core.block.invslot.InvSlot;
-import ic2.core.util.StackUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -27,8 +23,8 @@ public class InvSlotCombinerSEG extends InvSlot {
         this.tile.count = 0;
         this.tile.coef = 0;
         for (int i = 0; i < this.size(); i++) {
-            if(!this.get(i).isEmpty()){
-                this.tile.count += Math.min(this.get(i).getCount(),4);
+            if (!this.get(i).isEmpty()) {
+                this.tile.count += Math.min(this.get(i).getCount(), 4);
                 Item item = this.get(i).getItem();
                 if (Item.getItemFromBlock(IUItem.AdvblockSE).equals(item)) {
                     this.tile.coef += 2;
@@ -49,8 +45,8 @@ public class InvSlotCombinerSEG extends InvSlot {
         this.tile.count = 0;
         this.tile.coef = 0;
         for (int i = 0; i < this.size(); i++) {
-            if(!this.get(i).isEmpty()){
-                this.tile.count += Math.min(this.get(i).getCount(),4);
+            if (!this.get(i).isEmpty()) {
+                this.tile.count += Math.min(this.get(i).getCount(), 4);
                 Item item = this.get(i).getItem();
                 if (Item.getItemFromBlock(IUItem.AdvblockSE).equals(item)) {
                     this.tile.coef += 2;
@@ -67,7 +63,7 @@ public class InvSlotCombinerSEG extends InvSlot {
     public boolean accepts(ItemStack itemStack) {
         return itemStack.getItem().equals(Item.getItemFromBlock(IUItem.AdvblockSE))
                 || itemStack.getItem().equals(Item.getItemFromBlock(IUItem.blockSE))
-                ||  itemStack.getItem().equals(Item.getItemFromBlock(IUItem.ImpblockSE))
+                || itemStack.getItem().equals(Item.getItemFromBlock(IUItem.ImpblockSE))
                 ;
     }
 
@@ -83,7 +79,7 @@ public class InvSlotCombinerSEG extends InvSlot {
         double maxEnergy = 0;
         for (int i = 0; i < size(); i++) {
             if (!get(i).isEmpty()) {
-                maxEnergy += 10000 * Math.min(get(i).stackSize,4);
+                maxEnergy += 10000 * Math.min(get(i).stackSize, 4);
             }
 
         }

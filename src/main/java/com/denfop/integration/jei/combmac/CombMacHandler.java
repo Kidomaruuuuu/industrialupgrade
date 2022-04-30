@@ -3,14 +3,9 @@ package com.denfop.integration.jei.combmac;
 
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
-import ic2.api.recipe.IRecipeInput;
-import ic2.api.recipe.MachineRecipe;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class CombMacHandler {
@@ -64,13 +59,6 @@ public class CombMacHandler {
 
     }
 
-    private static ItemStack is(Item item) { // Побочный метод.
-        return new ItemStack(item);
-    }
-
-    private static ItemStack is(Block block) { // Побочный метод.
-        return new ItemStack(block);
-    }
 
     public ItemStack getInput() { // Получатель входного предмета рецепта.
         return input;

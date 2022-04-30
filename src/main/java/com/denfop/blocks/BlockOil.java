@@ -4,11 +4,8 @@ package com.denfop.blocks;
 import com.denfop.Constants;
 import com.denfop.IUCore;
 import com.denfop.api.IModelRegister;
-import com.denfop.tiles.base.TileOilBlock;
-import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -17,21 +14,18 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Locale;
+import java.util.Objects;
 
 public class BlockOil extends BlockCore implements IModelRegister {
 
@@ -47,7 +41,6 @@ public class BlockOil extends BlockCore implements IModelRegister {
         setSoundType(SoundType.STONE);
         setDefaultState(this.blockState.getBaseState().withProperty(VARIANT, Type.oil));
         setHarvestLevel("pickaxe", 2);
-        GameRegistry.registerTileEntity(TileOilBlock.class, "oilblock");
     }
 
     @Nonnull
@@ -55,7 +48,7 @@ public class BlockOil extends BlockCore implements IModelRegister {
         return new BlockStateContainer(this, VARIANT);
     }
 
-    public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> items) {
+    public void getSubBlocks(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> items) {
         for (int i = 0; i < (Type.values()).length; i++) {
             items.add(new ItemStack(this, 1, i));
         }
@@ -77,20 +70,21 @@ public class BlockOil extends BlockCore implements IModelRegister {
         return Type.values()[meta].getRarity();
     }
 
+    @Nonnull
     public IBlockState getStateFromMeta(int meta) {
         return getDefaultState().withProperty(VARIANT, Type.values()[meta]);
     }
 
     public int getMetaFromState(IBlockState state) {
-        return ((Type) state.getValue((IProperty) VARIANT)).getMetadata();
+        return state.getValue(VARIANT).getMetadata();
     }
 
     public int damageDropped(IBlockState state) {
-        return ((Type) state.getValue((IProperty) VARIANT)).getMetadata();
+        return state.getValue(VARIANT).getMetadata();
     }
 
-    public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
-        return ((Type) state.getValue((IProperty) VARIANT)).getLight();
+    public int getLightValue(IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos) {
+        return state.getValue(VARIANT).getLight();
     }
 
     @SideOnly(Side.CLIENT)
@@ -108,7 +102,7 @@ public class BlockOil extends BlockCore implements IModelRegister {
         setRegistryName("veinoil");
         ForgeRegistries.BLOCKS.register(this);
         ItemBlockCore itemBlock = new ItemBlockCore(this);
-        itemBlock.setRegistryName(getRegistryName());
+        itemBlock.setRegistryName(Objects.requireNonNull(getRegistryName()));
         ForgeRegistries.ITEMS.register(itemBlock);
         IUCore.proxy.addIModelRegister(this);
 
@@ -142,6 +136,7 @@ public class BlockOil extends BlockCore implements IModelRegister {
             return this.metadata;
         }
 
+        @Nonnull
         public String getName() {
             return this.name;
         }

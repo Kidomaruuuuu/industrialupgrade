@@ -37,6 +37,7 @@ import net.minecraftforge.common.ISpecialArmor;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,12 +71,11 @@ public class ItemAdvJetpack extends ItemArmorElectric implements IElectricItem, 
 
     @SideOnly(Side.CLIENT)
     public static ModelResourceLocation getModelLocation1(String name, String extraName) {
-        StringBuilder loc = new StringBuilder();
-        loc.append(Constants.MOD_ID);
-        loc.append(':');
-        loc.append("armour").append("/").append(name + extraName);
+        final String loc = Constants.MOD_ID +
+                ':' +
+                "armour" + "/" + name + extraName;
 
-        return new ModelResourceLocation(loc.toString(), null);
+        return new ModelResourceLocation(loc, null);
     }
 
     public void setDamage(ItemStack stack, int damage) {
@@ -249,13 +249,6 @@ public class ItemAdvJetpack extends ItemArmorElectric implements IElectricItem, 
         return false;
     }
 
-    public Item getChargedItem(ItemStack itemStack) {
-        return this;
-    }
-
-    public Item getEmptyItem(ItemStack itemStack) {
-        return this;
-    }
 
     public double getMaxCharge(ItemStack itemStack) {
         return maxStorage;
@@ -269,21 +262,18 @@ public class ItemAdvJetpack extends ItemArmorElectric implements IElectricItem, 
         return this.TransferLimit;
     }
 
-    public void addInformation(ItemStack itemStack, EntityPlayer player, List info, boolean b) {
-    }
-
     @Override
     public void getSubItems(final CreativeTabs p_150895_1_, final NonNullList<ItemStack> var3) {
         if (this.isInCreativeTab(p_150895_1_)) {
             final ItemStack var4 = new ItemStack(this, 1);
             ElectricItem.manager.charge(var4, 2.147483647E9, Integer.MAX_VALUE, true, false);
             var3.add(var4);
-            var3.add(new ItemStack(this, 1, this.getMaxDamage()));
+            var3.add(new ItemStack(this, 1, 27));
         }
     }
 
 
-    public void onArmorTick(World world, EntityPlayer player, ItemStack itemStack) {
+    public void onArmorTick(@Nonnull World world, EntityPlayer player, @Nonnull ItemStack itemStack) {
         if (player.inventory.armorInventory.get(2).isItemEqual(itemStack)) {
             NBTTagCompound nbtData = StackUtil.getOrCreateNbtData(itemStack);
             boolean hoverMode = nbtData.getBoolean("hoverMode");
@@ -383,16 +373,20 @@ public class ItemAdvJetpack extends ItemArmorElectric implements IElectricItem, 
         return true;
     }
 
-    public ArmorProperties getProperties(EntityLivingBase player, ItemStack armor, DamageSource source, double damage, int slot) {
+    public ArmorProperties getProperties(
+            EntityLivingBase player,
+            @Nonnull ItemStack armor,
+            DamageSource source,
+            double damage,
+            int slot
+    ) {
         return new ArmorProperties(0, 0.0D, 0);
     }
 
-    public int getArmorDisplay(EntityPlayer player, ItemStack armor, int slot) {
+    public int getArmorDisplay(EntityPlayer player, @Nonnull ItemStack armor, int slot) {
         return 0;
     }
 
-    public void damageArmor(EntityLivingBase entity, ItemStack stack, DamageSource source, int damage, int slot) {
-    }
 
     public List<String> getHudInfo(ItemStack stack, boolean advanced) {
         List<String> info = new ArrayList<>();

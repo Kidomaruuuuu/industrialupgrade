@@ -10,11 +10,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GUIPump extends GuiIC2<ContainerPump> {
+public class GuiPump extends GuiIC2<ContainerPump> {
 
     public final ContainerPump container;
 
-    public GUIPump(ContainerPump container1) {
+    public GuiPump(ContainerPump container1) {
         super(container1);
         this.container = container1;
     }
@@ -55,7 +55,7 @@ public class GUIPump extends GuiIC2<ContainerPump> {
 
 
     public ResourceLocation getTexture() {
-        return new ResourceLocation(Constants.MOD_ID, "textures/gui/GUIPump.png");
+        return new ResourceLocation(Constants.MOD_ID, "textures/gui/GuiPump.png");
     }
 
 }

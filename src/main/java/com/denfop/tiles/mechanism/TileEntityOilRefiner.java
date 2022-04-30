@@ -3,7 +3,7 @@ package com.denfop.tiles.mechanism;
 import com.denfop.IUItem;
 import com.denfop.blocks.FluidName;
 import com.denfop.container.ContainerOilRefiner;
-import com.denfop.gui.GUIOilRefiner;
+import com.denfop.gui.GuiOilRefiner;
 import com.denfop.tiles.base.TileEntityBaseLiquedMachine;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
@@ -101,7 +101,7 @@ public class TileEntityOilRefiner extends TileEntityBaseLiquedMachine {
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUIOilRefiner(new ContainerOilRefiner(entityPlayer, this));
+        return new GuiOilRefiner(new ContainerOilRefiner(entityPlayer, this));
     }
 
     public void updateEntityServer() {

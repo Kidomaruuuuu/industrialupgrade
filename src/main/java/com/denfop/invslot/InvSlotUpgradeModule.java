@@ -3,7 +3,7 @@ package com.denfop.invslot;
 
 import com.denfop.items.modules.EnumSpawnerModules;
 import com.denfop.items.modules.EnumSpawnerType;
-import com.denfop.items.modules.SpawnerModules;
+import com.denfop.items.modules.ItemSpawnerModules;
 import com.denfop.tiles.base.TileEntityAutoSpawner;
 import ic2.core.block.invslot.InvSlot;
 import net.minecraft.item.ItemStack;
@@ -14,7 +14,7 @@ public class InvSlotUpgradeModule extends InvSlot {
     private int stackSizeLimit;
 
     public InvSlotUpgradeModule(TileEntityAutoSpawner base1) {
-        super(base1, "UpgradeModule", InvSlot.Access.I, 4, InvSlot.InvSide.TOP);
+        super(base1, "ItemUpgradeModule", InvSlot.Access.I, 4, InvSlot.InvSide.TOP);
         this.tile = base1;
         this.stackSizeLimit = 1;
     }
@@ -111,7 +111,7 @@ public class InvSlotUpgradeModule extends InvSlot {
 
     public boolean accepts(ItemStack itemStack) {
 
-        return itemStack.getItem() instanceof SpawnerModules;
+        return itemStack.getItem() instanceof ItemSpawnerModules;
     }
 
     public int getStackSizeLimit() {

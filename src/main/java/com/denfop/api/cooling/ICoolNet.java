@@ -15,5 +15,4 @@ public interface ICoolNet {
     void removeTile(ICoolTile var1);
 
 
-
 }

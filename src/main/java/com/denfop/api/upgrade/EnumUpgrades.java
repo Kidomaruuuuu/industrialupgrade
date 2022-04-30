@@ -1,6 +1,6 @@
 package com.denfop.api.upgrade;
 
-import com.denfop.utils.EnumInfoUpgradeModules;
+import com.denfop.items.EnumInfoUpgradeModules;
 
 import java.util.Arrays;
 import java.util.List;

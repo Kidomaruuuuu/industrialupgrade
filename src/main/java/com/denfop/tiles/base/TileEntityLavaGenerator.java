@@ -1,7 +1,7 @@
 package com.denfop.tiles.base;
 
 import com.denfop.container.ContainerLavaGenerator;
-import com.denfop.gui.GUILavaGenerator;
+import com.denfop.gui.GuiLavaGenerator;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
@@ -29,7 +29,6 @@ import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -154,17 +153,14 @@ public class TileEntityLavaGenerator extends TileEntityElectricMachine implement
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUILavaGenerator(new ContainerLavaGenerator(entityPlayer, this));
+        return new GuiLavaGenerator(new ContainerLavaGenerator(entityPlayer, this));
     }
 
     public void onGuiClosed(EntityPlayer player) {
     }
 
     public List<String> getNetworkedFields() {
-        List<String> ret = new ArrayList<>();
-
-        ret.addAll(super.getNetworkedFields());
-        return ret;
+        return super.getNetworkedFields();
     }
 
     public void onNetworkUpdate(String field) {

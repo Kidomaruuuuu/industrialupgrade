@@ -4,7 +4,7 @@ package com.denfop.tiles.base;
 import com.denfop.IUCore;
 import com.denfop.audio.AudioSource;
 import com.denfop.container.ContainerStorageExp;
-import com.denfop.gui.GUIStorageExp;
+import com.denfop.gui.GuiStorageExp;
 import com.denfop.invslot.InvSlotExpStorage;
 import com.denfop.utils.ExperienceUtils;
 import ic2.api.network.INetworkClientTileEntityEventListener;
@@ -75,7 +75,7 @@ public class TileEntityStorageExp extends TileEntityInventory implements IHasGui
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUIStorageExp(new ContainerStorageExp(entityPlayer, this));
+        return new GuiStorageExp(new ContainerStorageExp(entityPlayer, this));
     }
 
     public ContainerBase<? extends TileEntityStorageExp> getGuiContainer(EntityPlayer entityPlayer) {

@@ -18,7 +18,6 @@ import net.minecraft.nbt.NBTTagCompound;
 public abstract class TileEntityElectricMachine extends TileEntityInventory implements IHasGui, INetworkTileEntityEventListener {
 
 
-
     public int tier;
     public double guiChargeLevel = 0;
     public AudioSource audioSource;

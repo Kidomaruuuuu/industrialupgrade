@@ -4,8 +4,6 @@ import com.denfop.items.modules.EnumBaseType;
 import com.denfop.items.modules.EnumModule;
 import com.denfop.items.modules.ItemBaseModules;
 import com.denfop.tiles.base.TileEntityCombinerSEGenerators;
-import com.denfop.tiles.base.TileSolarGeneratorEnergy;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlot;
 import net.minecraft.item.ItemStack;
 
@@ -30,7 +28,7 @@ public class InvSlotGenCombinerSunarrium extends InvSlot {
     @Override
     public void put(final int index, final ItemStack content) {
         super.put(index, content);
-        this.tile.lst= this.coefday();
+        this.tile.lst = this.coefday();
     }
 
     public List<Double> coefday() {

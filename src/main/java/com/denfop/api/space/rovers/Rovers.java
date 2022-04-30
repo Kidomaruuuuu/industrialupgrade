@@ -27,5 +27,17 @@ public class Rovers implements IRovers {
         return this.stack;
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Rovers rovers = (Rovers) o;
+        return stack.isItemEqual(rovers.stack);
+    }
+
 
 }

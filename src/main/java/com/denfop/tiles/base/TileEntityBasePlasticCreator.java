@@ -6,9 +6,8 @@ import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.audio.AudioSource;
 import com.denfop.container.ContainerPlasticCreator;
-import com.denfop.gui.GUIPlasticCreator;
+import com.denfop.gui.GuiPlasticCreator;
 import ic2.api.network.INetworkTileEntityEventListener;
-import ic2.api.recipe.RecipeOutput;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.IUpgradeItem;
 import ic2.api.upgrade.UpgradableProperty;
@@ -54,12 +53,8 @@ public class TileEntityBasePlasticCreator extends TileEntityElectricLiquidTankIn
     protected short progress;
     protected double guiProgress;
 
-    public TileEntityBasePlasticCreator(int energyPerTick, int length) {
-        this(energyPerTick, length, 1);
-    }
-
     public TileEntityBasePlasticCreator(int energyPerTick, int length, int aDefaultTier) {
-        super("", energyPerTick * length, 1, 12, Fluids.fluidPredicate(FluidRegistry.WATER));
+        super(energyPerTick * length, 1, 12, Fluids.fluidPredicate(FluidRegistry.WATER));
         this.progress = 0;
         this.defaultEnergyConsume = this.energyConsume = energyPerTick;
         this.defaultOperationLength = this.operationLength = length;
@@ -225,7 +220,7 @@ public class TileEntityBasePlasticCreator extends TileEntityElectricLiquidTankIn
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUIPlasticCreator(new ContainerPlasticCreator(entityPlayer, this));
+        return new GuiPlasticCreator(new ContainerPlasticCreator(entityPlayer, this));
 
     }
 

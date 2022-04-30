@@ -3,14 +3,9 @@ package com.denfop.tiles.base;
 import com.denfop.IUItem;
 import com.denfop.componets.SEComponent;
 import com.denfop.container.ContainerCombinerSE;
-import com.denfop.container.ContainerCombinerSolidMatter;
-import com.denfop.gui.GUICombinerSE;
-import com.denfop.gui.GUICombinerSolidMatter;
+import com.denfop.gui.GuiCombinerSE;
 import com.denfop.invslot.InvSlotCombinerSEG;
 import com.denfop.invslot.InvSlotGenCombinerSunarrium;
-import com.denfop.invslot.InvSlotGenSunarrium;
-import com.denfop.invslot.InvSlotSolidMatter;
-import com.denfop.tiles.solidmatter.EnumSolidMatter;
 import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
@@ -18,23 +13,18 @@ import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
-import ic2.core.block.comp.Energy;
 import ic2.core.block.invslot.InvSlotOutput;
 import ic2.core.block.invslot.InvSlotUpgrade;
-import net.minecraft.block.material.MapColor;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -48,10 +38,11 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
     public final InvSlotOutput outputSlot;
     public final SEComponent sunenergy;
     public final InvSlotGenCombinerSunarrium input;
+    public final ItemStack itemstack = new ItemStack(IUItem.sunnarium, 1, 4);
     public int count;
     public List<Double> lst;
-    public final ItemStack itemstack = new ItemStack(IUItem.sunnarium, 1, 4);
     public int coef = 0;
+
     public TileEntityCombinerSEGenerators() {
         this.inputSlot = new InvSlotCombinerSEG(this);
         this.input = new InvSlotGenCombinerSunarrium(this);
@@ -93,7 +84,6 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
     }
 
 
-
     public void readFromNBT(NBTTagCompound nbttagcompound) {
         super.readFromNBT(nbttagcompound);
 
@@ -108,7 +98,7 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
     protected void onLoaded() {
         super.onLoaded();
         this.inputSlot.update();
-        this.lst= this.input.coefday();
+        this.lst = this.input.coefday();
     }
 
 
@@ -122,6 +112,7 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
 
         return false;
     }
+
     public void energy(long tick) {
         double k = 0;
         if (this.getWorld().provider.isDaytime()) {
@@ -167,12 +158,13 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
         }
 
     }
+
     protected void updateEntityServer() {
         super.updateEntityServer();
         boolean update = onUpdateUpgrade();
         long tick = this.getWorld().provider.getWorldTime() % 24000L;
         energy(tick);
-        while(this.outputSlot.canAdd(itemstack) && this.sunenergy.getEnergy() >= 2500) {
+        while (this.outputSlot.canAdd(itemstack) && this.sunenergy.getEnergy() >= 2500) {
             this.outputSlot.add(itemstack);
             this.sunenergy.addEnergy(-2500);
         }
@@ -204,7 +196,7 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUICombinerSE(new ContainerCombinerSE(entityPlayer, this));
+        return new GuiCombinerSE(new ContainerCombinerSE(entityPlayer, this));
     }
 
     public ContainerBase<? extends TileEntityCombinerSEGenerators> getGuiContainer(EntityPlayer entityPlayer) {

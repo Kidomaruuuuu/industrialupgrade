@@ -6,7 +6,6 @@ import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.componets.SEComponent;
 import com.denfop.container.ContainerSunnariumMaker;
 import ic2.api.network.INetworkTileEntityEventListener;
-import ic2.api.recipe.RecipeOutput;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.IUpgradeItem;
 import ic2.core.ContainerBase;
@@ -86,7 +85,7 @@ public abstract class TileEntityBaseSunnariumMaker extends TileEntityElectricMac
         super.onLoaded();
         if (IC2.platform.isSimulating()) {
             setOverclockRates();
-           this.getOutput();
+            this.getOutput();
         }
     }
 
@@ -112,7 +111,8 @@ public abstract class TileEntityBaseSunnariumMaker extends TileEntityElectricMac
 
         BaseMachineRecipe output = this.output;
 
-        if (output != null&& this.outputSlot.canAdd(output.output.items)  && this.outputSlot.canAdd(output.output.items) &&  this.energy.canUseEnergy(energyConsume) && this.sunenergy.canUseEnergy(5)) {
+        if (output != null && this.outputSlot.canAdd(output.output.items) && this.outputSlot.canAdd(output.output.items) && this.energy.canUseEnergy(
+                energyConsume) && this.sunenergy.canUseEnergy(5)) {
             setActive(true);
             if (this.progress == 0) {
                 IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
@@ -186,7 +186,7 @@ public abstract class TileEntityBaseSunnariumMaker extends TileEntityElectricMac
             }
             operateOnce(processResult);
 
-           getOutput();
+            getOutput();
             if (this.output == null) {
                 break;
             }

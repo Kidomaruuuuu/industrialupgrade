@@ -9,8 +9,5 @@ public class TileEntityAdvancedMatter extends TileEntityMultiMatter {
         super(900000F, 12, 8000000);
     }
 
-    public String getInventoryName() {
-        return "iu.blockMatter1.name";
-    }
 
 }

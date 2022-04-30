@@ -1,10 +1,8 @@
 package com.denfop.tiles.mechanism;
 
 
-import com.denfop.invslot.InvSlotProcessableMultiGeneric;
 import com.denfop.tiles.base.EnumMultiMachine;
 import com.denfop.tiles.base.TileEntityMultiMachine;
-import ic2.api.recipe.Recipes;
 import ic2.core.init.Localization;
 
 public class TileEntityQuadExtractor extends TileEntityMultiMachine {
@@ -15,7 +13,7 @@ public class TileEntityQuadExtractor extends TileEntityMultiMachine {
                 EnumMultiMachine.QUAD_EXTRACTOR.lenghtOperation,
                 0
         );
-     }
+    }
 
     @Override
     public EnumMultiMachine getMachine() {

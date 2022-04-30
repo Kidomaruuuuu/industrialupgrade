@@ -11,7 +11,6 @@ import net.minecraft.util.math.Vec3d;
 
 public class Vector3 {
 
-    public static Vector3 zero = new Vector3();
     public static Vector3 one = new Vector3(1.0D, 1.0D, 1.0D);
     public static Vector3 down = new Vector3(0.0D, -1.0D, 0.0D);
     public static Vector3 center = new Vector3(0.5D, 0.5D, 0.5D);
@@ -26,12 +25,6 @@ public class Vector3 {
         this.x = d;
         this.y = d1;
         this.z = d2;
-    }
-
-    public Vector3(Vector3 vec) {
-        this.x = vec.x;
-        this.y = vec.y;
-        this.z = vec.z;
     }
 
 

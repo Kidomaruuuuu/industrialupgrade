@@ -5,12 +5,12 @@ import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.InvSlotRecipes;
+import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.container.ContainerPlasticCreator;
-import com.denfop.gui.GUIPlasticCreator;
+import com.denfop.gui.GuiPlasticCreator;
 import com.denfop.tiles.base.TileEntityBasePlasticCreator;
 import com.denfop.utils.ModUtils;
 import ic2.api.recipe.IRecipeInputFactory;
-import ic2.api.recipe.RecipeOutput;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
@@ -66,7 +66,7 @@ public class TileEntityPlasticCreator extends TileEntityBasePlasticCreator {
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUIPlasticCreator(new ContainerPlasticCreator(entityPlayer, this));
+        return new GuiPlasticCreator(new ContainerPlasticCreator(entityPlayer, this));
 
     }
 

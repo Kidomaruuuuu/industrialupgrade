@@ -69,8 +69,9 @@ public class GuiHeatMachine extends GuiIC2<ContainerHeatMachine> {
         int yOffset = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(xOffset, yOffset, 0, 0, this.xSize, this.ySize);
         int temperature = 0;
-        if(this.container.base.getMaxTemperature() > 0)
+        if (this.container.base.getMaxTemperature() > 0) {
             temperature = 38 * this.container.base.getTemperature() / this.container.base.getMaxTemperature();
+        }
         if (temperature > 0) {
             drawTexturedModalRect(this.guiLeft + 53, this.guiTop + 42, 176, 104, temperature + 1, 11);
         }
@@ -86,19 +87,11 @@ public class GuiHeatMachine extends GuiIC2<ContainerHeatMachine> {
         x -= this.guiLeft;
         y -= this.guiTop;
         for (final GuiElement<?> guiElement : this.elements) {
-            GuiElement<?> element = guiElement;
-            if (element.isEnabled()) {
-                element.drawBackground(x, y);
+            if (guiElement.isEnabled()) {
+                guiElement.drawBackground(x, y);
             }
         }
-        /*    GuiUtils.drawContinuousTexturedBox(BUTTON_TEXTURES, this.guiLeft +19, this.guiTop + 42, 0, 46, 11, 11, 200, 20, 2
-                , 3, 2
-            , 2, this.zLevel);
-        if (this.container.base.auto)
-            this.drawCenteredString(mc.fontRenderer, "x", this.guiLeft + 19 + 11 / 2 + 1, this.guiTop + 42 + 1, 14737632);
 
-        this.drawString(mc.fontRenderer, Localization.translate("iu.auto"), this.guiLeft +19 ,this.guiTop +42 + 11, 14737632);
-*/
 
     }
 

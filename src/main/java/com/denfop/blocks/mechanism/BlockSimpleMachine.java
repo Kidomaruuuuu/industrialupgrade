@@ -30,8 +30,7 @@ public enum BlockSimpleMachine implements ITeBlock {
     extractor_iu(TileEntityExtractor.class, 3),
     metalformer_iu(TileEntityMetalFormer.class, 4),
     recycler_iu(TileEntityRecycler.class, 5),
-    generator_matter(TileEntityMatter.class,6);
-    ;
+    generator_matter(TileEntityMatter.class, 6);
 
 
     public static final ResourceLocation IDENTITY = IUCore.getIdentifier("simplemachine");

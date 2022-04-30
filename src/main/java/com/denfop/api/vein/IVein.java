@@ -5,34 +5,34 @@ import net.minecraft.util.math.ChunkPos;
 
 public interface IVein {
 
-  int getMeta();
+    int getMeta();
 
-  Type getType();
+    void setMeta(int meta);
 
-  ChunkPos getChunk();
+    Type getType();
 
-  int getCol();
+    void setType(Type type);
 
-  void setCol(int col);
+    ChunkPos getChunk();
 
-  int getMaxCol();
+    int getCol();
 
-  void removeCol(int col);
+    void setCol(int col);
 
-  void setMaxCol(int maxcol);
+    int getMaxCol();
 
-  boolean canMining();
+    void setMaxCol(int maxcol);
 
-  NBTTagCompound writeTag();
+    void removeCol(int col);
 
-  void setType(Type type);
+    boolean canMining();
 
-  void setMeta(int meta);
+    NBTTagCompound writeTag();
 
-  boolean equals(Object o);
+    boolean equals(Object o);
 
-  boolean get();
+    boolean get();
 
-  void setFind(boolean find);
+    void setFind(boolean find);
 
 }

@@ -1,6 +1,6 @@
 package com.denfop.api.space;
 
-import com.denfop.api.space.colonies.IColonieNet;
+import com.denfop.api.space.colonies.IColonyNet;
 import com.denfop.api.space.fakebody.IFakeSpaceSystemBase;
 import com.denfop.api.space.research.IResearchSystem;
 
@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface ISpaceNet {
 
-    IColonieNet getColonieNet();
+    IColonyNet getColonieNet();
 
     List<IPlanet> getPlanetList();
 

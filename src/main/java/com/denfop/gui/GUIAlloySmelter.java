@@ -7,7 +7,6 @@ import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.container.ContainerDoubleElectricMachine;
 import com.denfop.utils.ModUtils;
-import ic2.api.recipe.RecipeOutput;
 import ic2.core.GuiIC2;
 import ic2.core.init.Localization;
 import net.minecraft.client.renderer.GlStateManager;

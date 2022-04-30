@@ -1,11 +1,9 @@
 package com.denfop.gui;
 
 import com.denfop.Constants;
-import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.container.ContainerBaseMolecular;
 import com.denfop.utils.ModUtils;
-import ic2.api.recipe.RecipeOutput;
 import ic2.core.GuiIC2;
 import ic2.core.IC2;
 import ic2.core.init.Localization;
@@ -62,7 +60,7 @@ public class GuiMolecularTransformer extends GuiIC2<ContainerBaseMolecular> {
                         this.guiTop + 25 + 11, 4210752
                 );
                 this.fontRenderer.drawString(energyPerOperation + ModUtils.getString(output1.output.metadata.getDouble("energy")) +
-                        " EU",
+                                " EU",
                         this.guiLeft + 60, this.guiTop + 25 + 22, 4210752
                 );
                 if (this.container.base.getProgress() * 100 <= 100) {
@@ -127,7 +125,8 @@ public class GuiMolecularTransformer extends GuiIC2<ContainerBaseMolecular> {
                             this.guiTop + 25 + 11,
                             4210752
                     );
-                    this.fontRenderer.drawString(energyPerOperation + ModUtils.getString(output1.output.metadata.getDouble("energy") * size) + " EU",
+                    this.fontRenderer.drawString(energyPerOperation + ModUtils.getString(output1.output.metadata.getDouble(
+                                    "energy") * size) + " EU",
                             this.guiLeft + 60, this.guiTop + 25 + 22, 4210752
                     );
                     if (this.container.base.getProgress() * 100 <= 100) {

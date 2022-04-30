@@ -14,12 +14,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
-public class GUIDieselGenerator extends GuiIC2<ContainerDieselGenerator> {
+public class GuiDieselGenerator extends GuiIC2<ContainerDieselGenerator> {
 
     public ContainerDieselGenerator container;
     public String name;
 
-    public GUIDieselGenerator(ContainerDieselGenerator container1) {
+    public GuiDieselGenerator(ContainerDieselGenerator container1) {
         super(container1);
         this.container = container1;
         this.name = Localization.translate((container.base).getName());
@@ -64,9 +64,8 @@ public class GUIDieselGenerator extends GuiIC2<ContainerDieselGenerator> {
         x -= this.guiLeft;
         y -= this.guiTop;
         for (final GuiElement<?> guiElement : this.elements) {
-            GuiElement<?> element = guiElement;
-            if (element.isEnabled()) {
-                element.drawBackground(x, y);
+            if (guiElement.isEnabled()) {
+                guiElement.drawBackground(x, y);
             }
         }
 

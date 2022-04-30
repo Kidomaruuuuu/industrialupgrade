@@ -83,6 +83,7 @@ public class TileEntityAntiMagnet extends TileEntityInventory {
                         ).equals(this.pos))) {
                             if (getWorld().getTileEntity(new BlockPos(x, y, z)) instanceof TileEntityMagnet) {
                                 TileEntityMagnet tile = (TileEntityMagnet) getWorld().getTileEntity(new BlockPos(x, y, z));
+                                assert tile != null;
                                 if (!tile.player.equals(this.player)) {
                                     tile.work = false;
                                 }

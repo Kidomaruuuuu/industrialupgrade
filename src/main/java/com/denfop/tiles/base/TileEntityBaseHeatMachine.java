@@ -96,11 +96,6 @@ public class TileEntityBaseHeatMachine extends TileEntityElectricMachine impleme
     }
 
     @Override
-    public boolean requairedTemperature() {
-        return false;
-    }
-
-    @Override
     public void onNetworkEvent(final EntityPlayer entityPlayer, final int i) {
         if (i == 0) {
             this.maxtemperature = (short) (this.maxtemperature + 1000);
@@ -162,9 +157,11 @@ public class TileEntityBaseHeatMachine extends TileEntityElectricMachine impleme
             }
         }
         setActive(Recipes.mechanism.process(this));
-        if(this.world.provider.getWorldTime() % 60 == 0)
-            if(this.temperature > 0)
+        if (this.world.provider.getWorldTime() % 60 == 0) {
+            if (this.temperature > 0) {
                 this.temperature--;
+            }
+        }
     }
 
 
@@ -182,7 +179,7 @@ public class TileEntityBaseHeatMachine extends TileEntityElectricMachine impleme
         return hasFluid && fluid.equals(FluidRegistry.LAVA);
     }
 
-    public boolean canDrain(Fluid fluid) {
+    public boolean canDrain() {
         return hasFluid;
     }
 
@@ -248,7 +245,7 @@ public class TileEntityBaseHeatMachine extends TileEntityElectricMachine impleme
         if (resource == null || !resource.isFluidEqual(getFluidTank().getFluid())) {
             return null;
         }
-        if (!canDrain(resource.getFluid())) {
+        if (!canDrain()) {
             return null;
         }
         return getFluidTank().drain(resource.amount, doDrain);
@@ -257,7 +254,7 @@ public class TileEntityBaseHeatMachine extends TileEntityElectricMachine impleme
     @Nullable
     @Override
     public FluidStack drain(final int maxDrain, final boolean doDrain) {
-        if (!canDrain(null)) {
+        if (!canDrain()) {
             return null;
         }
         return getFluidTank().drain(maxDrain, doDrain);

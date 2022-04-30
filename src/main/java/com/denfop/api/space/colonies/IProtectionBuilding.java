@@ -1,6 +1,7 @@
 package com.denfop.api.space.colonies;
 
-public interface IProtectionBuilding extends IColonieBuilding{
+public interface IProtectionBuilding extends IColonyBuilding {
 
     int getProtection();
+
 }

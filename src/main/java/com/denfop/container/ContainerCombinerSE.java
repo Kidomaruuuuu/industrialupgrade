@@ -1,12 +1,9 @@
 package com.denfop.container;
 
 import com.denfop.tiles.base.TileEntityCombinerSEGenerators;
-import com.denfop.tiles.base.TileEntityCombinerSolidMatter;
 import ic2.core.ContainerFullInv;
 import ic2.core.slot.SlotInvSlot;
 import net.minecraft.entity.player.EntityPlayer;
-
-import java.util.List;
 
 public class ContainerCombinerSE extends ContainerFullInv<TileEntityCombinerSEGenerators> {
 
@@ -21,7 +18,7 @@ public class ContainerCombinerSE extends ContainerFullInv<TileEntityCombinerSEGe
 
         }
         for (int i = 0; i < 4; i++) {
-            addSlotToContainer(new SlotInvSlot(tileEntity1.input, i, 70, 8+ i * 18));
+            addSlotToContainer(new SlotInvSlot(tileEntity1.input, i, 70, 8 + i * 18));
         }
         for (int i = 0; i < 9; i++) {
             int count = i / 3;
@@ -29,7 +26,6 @@ public class ContainerCombinerSE extends ContainerFullInv<TileEntityCombinerSEGe
 
         }
     }
-
 
 
 }

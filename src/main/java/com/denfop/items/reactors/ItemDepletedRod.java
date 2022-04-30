@@ -9,7 +9,6 @@ import ic2.api.reactor.IReactorComponent;
 import ic2.core.init.BlocksItems;
 import ic2.core.item.ItemIC2;
 import ic2.core.item.type.IRadioactiveItemType;
-import ic2.core.ref.IItemModelProvider;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -62,11 +61,6 @@ public class ItemDepletedRod extends ItemIC2 implements IReactorComponent, IMode
     @SideOnly(Side.CLIENT)
     public void registerModels(String name) {
         this.registerModel(0, name, "depleted");
-    }
-
-    @SideOnly(Side.CLIENT)
-    public void doModelGuf() {
-        ((IItemModelProvider) this).registerModels(null);
     }
 
     @SideOnly(Side.CLIENT)

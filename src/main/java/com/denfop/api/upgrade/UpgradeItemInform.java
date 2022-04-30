@@ -1,6 +1,6 @@
 package com.denfop.api.upgrade;
 
-import com.denfop.utils.EnumInfoUpgradeModules;
+import com.denfop.items.EnumInfoUpgradeModules;
 import com.denfop.utils.ModUtils;
 import ic2.core.init.Localization;
 import net.minecraft.util.text.TextFormatting;

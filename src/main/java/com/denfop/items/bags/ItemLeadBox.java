@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
@@ -27,6 +26,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nonnull;
 
 public class ItemLeadBox extends Item implements IHandHeldInventory, IModelRegister {
 
@@ -46,19 +47,18 @@ public class ItemLeadBox extends Item implements IHandHeldInventory, IModelRegis
 
     @SideOnly(Side.CLIENT)
     public static ModelResourceLocation getModelLocation1(String name) {
-        StringBuilder loc = new StringBuilder();
-        loc.append(Constants.MOD_ID);
-        loc.append(':');
-        loc.append("bags").append("/").append(name);
+        final String loc = Constants.MOD_ID +
+                ':' +
+                "bags" + "/" + name;
 
-        return new ModelResourceLocation(loc.toString(), null);
+        return new ModelResourceLocation(loc, null);
     }
 
     @Override
     public void onUpdate(
-            final ItemStack stack,
-            final World worldIn,
-            final Entity entityIn,
+            @Nonnull final ItemStack stack,
+            @Nonnull final World worldIn,
+            @Nonnull final Entity entityIn,
             final int itemSlot,
             final boolean isSelected
     ) {
@@ -89,6 +89,7 @@ public class ItemLeadBox extends Item implements IHandHeldInventory, IModelRegis
         }
     }
 
+    @Nonnull
     public String getUnlocalizedName() {
         return "item." + this.internalName + ".name";
     }
@@ -105,14 +106,15 @@ public class ItemLeadBox extends Item implements IHandHeldInventory, IModelRegis
     }
 
     @Override
-    public void getSubItems(final CreativeTabs p_150895_1_, final NonNullList<ItemStack> var3) {
+    public void getSubItems(@Nonnull final CreativeTabs p_150895_1_, @Nonnull final NonNullList<ItemStack> var3) {
         if (this.isInCreativeTab(p_150895_1_)) {
             final ItemStack var4 = new ItemStack(this, 1);
             var3.add(var4);
         }
     }
 
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+    @Nonnull
+    public ActionResult<ItemStack> onItemRightClick(@Nonnull World world, @Nonnull EntityPlayer player, @Nonnull EnumHand hand) {
 
         ItemStack stack = StackUtil.get(player, hand);
         if (IC2.platform.isSimulating()) {
@@ -124,7 +126,7 @@ public class ItemLeadBox extends Item implements IHandHeldInventory, IModelRegis
         return new ActionResult<>(EnumActionResult.PASS, player.getHeldItem(hand));
     }
 
-    public boolean onDroppedByPlayer(ItemStack stack, EntityPlayer player) {
+    public boolean onDroppedByPlayer(@Nonnull ItemStack stack, EntityPlayer player) {
         if (!player.getEntityWorld().isRemote && !StackUtil.isEmpty(stack) && player.openContainer instanceof ContainerLeadBox) {
             HandHeldLeadBox toolbox = ((ContainerLeadBox) player.openContainer).base;
             if (toolbox.isThisContainer(stack)) {
@@ -136,10 +138,6 @@ public class ItemLeadBox extends Item implements IHandHeldInventory, IModelRegis
         return true;
     }
 
-    @SideOnly(Side.CLIENT)
-    public EnumRarity getRarity(ItemStack stack) {
-        return EnumRarity.UNCOMMON;
-    }
 
     public IHasGui getInventory(EntityPlayer player, ItemStack stack) {
         return new HandHeldLeadBox(player, stack, this.slots);

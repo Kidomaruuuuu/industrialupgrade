@@ -2,12 +2,12 @@ package com.denfop.invslot;
 
 import cofh.redstoneflux.api.IEnergyContainerItem;
 import com.denfop.Config;
-import com.denfop.items.modules.AdditionModule;
 import com.denfop.items.modules.EnumBaseType;
 import com.denfop.items.modules.EnumModule;
+import com.denfop.items.modules.ItemAdditionModule;
 import com.denfop.items.modules.ItemBaseModules;
+import com.denfop.items.modules.ItemModuleType;
 import com.denfop.items.modules.ItemModuleTypePanel;
-import com.denfop.items.modules.ModuleType;
 import com.denfop.tiles.panels.entity.EnumSolarPanels;
 import com.denfop.tiles.panels.entity.EnumType;
 import com.denfop.tiles.panels.entity.TileEntitySolarPanel;
@@ -49,17 +49,17 @@ public class InvSlotPanel extends InvSlot implements IChargingSlot {
     public boolean accepts(final ItemStack stack) {
         return stack.getItem() instanceof ItemBaseModules
                 || stack.getItem() instanceof ItemModuleTypePanel
-                || stack.getItem() instanceof AdditionModule
+                || stack.getItem() instanceof ItemAdditionModule
                 || stack.getItem() instanceof IElectricItem
                 || stack.getItem() instanceof IEnergyContainerItem
-                || stack.getItem() instanceof ModuleType
+                || stack.getItem() instanceof ItemModuleType
                 ;
     }
 
     public void getrfmodule() {
         TileEntitySolarPanel tile = (TileEntitySolarPanel) base;
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null && this.get(i).getItemDamage() == 4 && this.get(i).getItem() instanceof AdditionModule) {
+            if (this.get(i) != null && this.get(i).getItemDamage() == 4 && this.get(i).getItem() instanceof ItemAdditionModule) {
                 tile.getmodulerf = true;
                 return;
             }
@@ -72,7 +72,7 @@ public class InvSlotPanel extends InvSlot implements IChargingSlot {
 
         List<Integer> list1 = new ArrayList<>();
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null && this.get(i).getItem() instanceof ModuleType) {
+            if (this.get(i) != null && this.get(i).getItem() instanceof ItemModuleType) {
                 list1.add(get(i).getItemDamage() + 1);
             } else {
                 list1.add(0);
@@ -109,7 +109,7 @@ public class InvSlotPanel extends InvSlot implements IChargingSlot {
     public void personality() {
         TileEntitySolarPanel tile = (TileEntitySolarPanel) base;
         for (int m = 0; m < this.size(); m++) {
-            if (this.get(m) != null && this.get(m).getItem() instanceof AdditionModule) {
+            if (this.get(m) != null && this.get(m).getItem() instanceof ItemAdditionModule) {
                 int kk = get(m).getItemDamage();
                 if (kk == 0) {
                     tile.personality = true;
@@ -126,7 +126,7 @@ public class InvSlotPanel extends InvSlot implements IChargingSlot {
     public void time() {
         TileEntitySolarPanel tile = (TileEntitySolarPanel) base;
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null && this.get(i).getItemDamage() == 9 && this.get(i).getItem() instanceof AdditionModule) {
+            if (this.get(i) != null && this.get(i).getItemDamage() == 9 && this.get(i).getItem() instanceof ItemAdditionModule) {
                 tile.time = 14400 * 2;
                 tile.time1 = 14400 * 2;
                 tile.time2 = 14400 * 2;
@@ -167,7 +167,7 @@ public class InvSlotPanel extends InvSlot implements IChargingSlot {
         double temp_producing = tile.u;
         tile.tier = (int) tile.o;
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null && this.get(i).getItem() instanceof AdditionModule) {
+            if (this.get(i) != null && this.get(i).getItem() instanceof ItemAdditionModule) {
                 int kk = get(i).getItemDamage();
                 if (kk == 1) {
                     tile.tier++;
@@ -229,7 +229,7 @@ public class InvSlotPanel extends InvSlot implements IChargingSlot {
         tile.coef = 0;
         tile.wireless = false;
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null && this.get(i).getItem() instanceof AdditionModule && this.get(i).getItemDamage() == 10) {
+            if (this.get(i) != null && this.get(i).getItem() instanceof ItemAdditionModule && this.get(i).getItemDamage() == 10) {
                 tile.wireless = true;
                 break;
             }
@@ -288,7 +288,7 @@ public class InvSlotPanel extends InvSlot implements IChargingSlot {
     public void wirelessmodule() {
         TileEntitySolarPanel tile = (TileEntitySolarPanel) base;
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null && this.get(i).getItem() instanceof AdditionModule && this.get(i).getItemDamage() == 10) {
+            if (this.get(i) != null && this.get(i).getItem() instanceof ItemAdditionModule && this.get(i).getItemDamage() == 10) {
                 int x;
                 int y;
                 int z;
@@ -303,6 +303,7 @@ public class InvSlotPanel extends InvSlot implements IChargingSlot {
                         && y != 0 && z != 0 && !nbttagcompound.getBoolean("change")) {
                     TileEntityBlock tile1 = (TileEntityBlock) tile.getWorld().getTileEntity(pos);
 
+                    assert tile1 != null;
                     if (tile1.getComponent(Energy.class) != null) {
                         final Energy energy = tile1.getComponent(Energy.class);
                         tile.storage -= energy.addEnergy(tile.storage);

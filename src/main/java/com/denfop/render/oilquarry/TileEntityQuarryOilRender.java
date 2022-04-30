@@ -85,10 +85,12 @@ public class TileEntityQuarryOilRender extends TileEntitySpecialRenderer<TileEnt
                 GL11.glRotatef(rotation, 0F, 1F, 0F);
                 BlockRendererDispatcher ren = Minecraft.getMinecraft().getBlockRendererDispatcher();
                 IBlockState state;
-                if(tile.vein.getType() == Type.VEIN){
-                    state = IUItem.heavyore.getDefaultState().withProperty(BlockHeavyOre.VARIANT,
-                            BlockHeavyOre.Type.getFromID(tile.vein.getMeta()));
-                }else{
+                if (tile.vein.getType() == Type.VEIN) {
+                    state = IUItem.heavyore.getDefaultState().withProperty(
+                            BlockHeavyOre.VARIANT,
+                            BlockHeavyOre.Type.getFromID(tile.vein.getMeta())
+                    );
+                } else {
                     state = IUItem.oilblock.getDefaultState();
                 }
                 final String texture1 = ren

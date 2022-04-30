@@ -1,7 +1,7 @@
 package com.denfop.tiles.base;
 
 import com.denfop.container.ContainerWaterGenerator;
-import com.denfop.gui.GUIWaterGenerator;
+import com.denfop.gui.GuiWaterGenerator;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
@@ -154,7 +154,7 @@ public class TileEntityWaterGenerator extends TileEntityElectricMachine implemen
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUIWaterGenerator(new ContainerWaterGenerator(entityPlayer, this));
+        return new GuiWaterGenerator(new ContainerWaterGenerator(entityPlayer, this));
     }
 
     public void onGuiClosed(EntityPlayer player) {

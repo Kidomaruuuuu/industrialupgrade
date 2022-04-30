@@ -1,6 +1,5 @@
 package com.denfop.api.space.fakebody;
 
-import com.denfop.api.space.Asteroid;
 import com.denfop.api.space.BaseResource;
 import com.denfop.api.space.IBaseResource;
 import com.denfop.api.space.IBody;
@@ -37,16 +36,21 @@ public class FakePlanet implements IFakePlanet {
         this.data = data;
         this.end = false;
     }
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        FakePlanet that = (FakePlanet) o;
-        return Objects.equals(player, that.player) && Objects.equals(planet, that.planet);
-    }
 
     public FakePlanet(FakePlayer player, String name) {
         this.readNBT(player, name);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        FakePlanet that = (FakePlanet) o;
+        return Objects.equals(player, that.player) && Objects.equals(planet, that.planet);
     }
 
     @Override

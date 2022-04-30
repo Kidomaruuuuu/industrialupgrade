@@ -16,11 +16,11 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 @SideOnly(Side.CLIENT)
-public class GUIGenStone extends GuiIC2<ContainerGenStone> {
+public class GuiGenStone extends GuiIC2<ContainerGenStone> {
 
     public final ContainerGenStone container;
 
-    public GUIGenStone(ContainerGenStone container1) {
+    public GuiGenStone(ContainerGenStone container1) {
         super(container1);
         this.container = container1;
     }
@@ -99,7 +99,7 @@ public class GUIGenStone extends GuiIC2<ContainerGenStone> {
     }
 
     public ResourceLocation getTexture() {
-        return new ResourceLocation(Constants.MOD_ID, "textures/gui/GUIGenStone.png");
+        return new ResourceLocation(Constants.MOD_ID, "textures/gui/GuiGenStone.png");
     }
 
 }

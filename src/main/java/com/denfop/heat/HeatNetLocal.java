@@ -1,14 +1,11 @@
 package com.denfop.heat;
 
-import com.denfop.Config;
-import com.denfop.api.cooling.ICoolConductor;
 import com.denfop.api.heat.IHeatAcceptor;
 import com.denfop.api.heat.IHeatConductor;
 import com.denfop.api.heat.IHeatEmitter;
 import com.denfop.api.heat.IHeatSink;
 import com.denfop.api.heat.IHeatSource;
 import com.denfop.api.heat.IHeatTile;
-import com.denfop.api.heat.NodeHeatStats;
 import ic2.core.IC2;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
@@ -154,45 +151,13 @@ public class HeatNetLocal {
         for (Map.Entry<EnergyPath, Double> entry : suppliedEnergyPaths.entrySet()) {
             EnergyPath energyPath3 = entry.getKey();
             double energyInjected2 = entry.getValue();
-            energyPath3.totalEnergyConducted = (long) (energyPath3.totalEnergyConducted + energyInjected2);
-            energyPath3.maxSendedEnergy = (long) Math.max(energyPath3.maxSendedEnergy, energyInjected2);
             for (IHeatConductor energyConductor3 : energyPath3.conductors) {
-                if (energyInjected2 >= energyConductor3.getConductorBreakdownEnergy() && !Config.cableEasyMode) {
+                if (energyInjected2 >= energyConductor3.getConductorBreakdownEnergy()) {
                     energyConductor3.removeConductor();
                 }
             }
         }
         return amount;
-    }
-
-    public double getTotalEnergyEmitted(IHeatTile tileEntity) {
-        double ret = 0.0D;
-        if (tileEntity instanceof IHeatConductor) {
-            for (EnergyPath energyPath : this.energySourceToEnergyPathMap.getPaths((IHeatAcceptor) tileEntity)) {
-                if (energyPath.conductors.contains(tileEntity)) {
-                    ret += energyPath.totalEnergyConducted;
-                }
-            }
-        }
-        if (tileEntity instanceof IHeatSource && this.energySourceToEnergyPathMap.containsKey((IHeatSource) tileEntity)) {
-            for (EnergyPath energyPath2 : this.energySourceToEnergyPathMap.get((IHeatSource) tileEntity)) {
-                ret += energyPath2.totalEnergyConducted;
-            }
-        }
-        return ret;
-    }
-
-    public double getTotalEnergySunken(IHeatTile tileEntity) {
-        double ret = 0.0D;
-        if (tileEntity instanceof IHeatConductor || tileEntity instanceof IHeatSink) {
-            for (EnergyPath energyPath : this.energySourceToEnergyPathMap.getPaths((IHeatAcceptor) tileEntity)) {
-                if ((tileEntity instanceof IHeatSink && energyPath.target == tileEntity) || (tileEntity instanceof IHeatConductor && energyPath.conductors.contains(
-                        tileEntity))) {
-                    ret += energyPath.totalEnergyConducted;
-                }
-            }
-        }
-        return ret;
     }
 
     private List<EnergyPath> discover(IHeatTile emitter, double lossLimit) {
@@ -337,27 +302,23 @@ public class HeatNetLocal {
     }
 
     public void onTickEnd() {
-        if(this.world.provider.getWorldTime() % 20 == 0)
-        if (this.waitingList.hasWork()) {
-            List<IHeatTile> tiles = this.waitingList.getPathTiles();
-            for (IHeatTile tile : tiles) {
-                List<IHeatSource> sources = discoverFirstPathOrSources(tile);
-                if (sources.size() > 0) {
-                    this.energySourceToEnergyPathMap.removeAll(sources);
+        if (this.world.provider.getWorldTime() % 20 == 0) {
+            if (this.waitingList.hasWork()) {
+                List<IHeatTile> tiles = this.waitingList.getPathTiles();
+                for (IHeatTile tile : tiles) {
+                    List<IHeatSource> sources = discoverFirstPathOrSources(tile);
+                    if (sources.size() > 0) {
+                        this.energySourceToEnergyPathMap.removeAll(sources);
+                    }
                 }
+                this.waitingList.clear();
             }
-            this.waitingList.clear();
         }
         for (Map.Entry<BlockPos, IHeatSource> entry : (new HashMap<>(this.sources)).entrySet()) {
             if (entry != null) {
                 IHeatSource source = entry.getValue();
                 if (source != null) {
-                    if (this.energySourceToEnergyPathMap.containsKey(source)) {
-                        for (EnergyPath path : this.energySourceToEnergyPathMap.get(source)) {
-                            path.totalEnergyConducted = 0L;
-                            path.maxSendedEnergy = 0L;
-                        }
-                    }
+
                     double offer = Math.min(source
                             .getOfferedHeat(), 2.147483647E9D);
                     if (offer > 0.0D) {
@@ -386,12 +347,6 @@ public class HeatNetLocal {
             return this.registeredTiles.get(pos);
         }
         return null;
-    }
-
-    public NodeHeatStats getNodeStats(IHeatTile tile) {
-        double emitted = getTotalEnergyEmitted(tile);
-        double received = getTotalEnergySunken(tile);
-        return new NodeHeatStats(received, emitted);
     }
 
 
@@ -424,17 +379,15 @@ public class HeatNetLocal {
         }
 
     }
-    static class EnergyPath {
-        IHeatTile target = null;
 
-        EnumFacing targetDirection;
+    static class EnergyPath {
 
         final Set<IHeatConductor> conductors = new HashSet<>();
+        IHeatTile target = null;
+        EnumFacing targetDirection;
 
-        long totalEnergyConducted = 0L;
-
-        long maxSendedEnergy = 0L;
     }
+
     static class EnergyBlockLink {
 
         final EnumFacing direction;
@@ -449,6 +402,7 @@ public class HeatNetLocal {
     }
 
     static class EnergyPathMap {
+
         final Map<IHeatSource, List<EnergyPath>> senderPath;
 
         EnergyPathMap() {
@@ -480,23 +434,14 @@ public class HeatNetLocal {
             }
         }
 
-        public List<EnergyPath> getPaths(final IHeatAcceptor par1) {
-            final List<EnergyPath> paths = new ArrayList<>();
-            for (final IHeatSource source : this.getSources(par1)) {
-                if (this.containsKey(source)) {
-                    paths.addAll(this.get(source));
-                }
-            }
-            return paths;
-        }
 
         public List<IHeatSource> getSources(final IHeatAcceptor par1) {
             final List<IHeatSource> source = new ArrayList<>();
-            for (final Map.Entry<IHeatSource,List<EnergyPath>> entry : this.senderPath.entrySet()) {
+            for (final Map.Entry<IHeatSource, List<EnergyPath>> entry : this.senderPath.entrySet()) {
                 if (source.contains(entry.getKey())) {
                     continue;
                 }
-                for(EnergyPath path : entry.getValue()) {
+                for (EnergyPath path : entry.getValue()) {
                     if ((!(par1 instanceof IHeatConductor) || !path.conductors.contains(par1)) && (!(par1 instanceof IHeatSink) || path.target != par1)) {
                         continue;
                     }
@@ -509,6 +454,7 @@ public class HeatNetLocal {
         public void clear() {
             this.senderPath.clear();
         }
+
     }
 
     static class PathLogic {

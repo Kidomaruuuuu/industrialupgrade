@@ -14,12 +14,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
-public class GUIGeoGenerator extends GuiIC2<ContainerGeoGenerator> {
+public class GuiGeoGenerator extends GuiIC2<ContainerGeoGenerator> {
 
     public ContainerGeoGenerator container;
     public String name;
 
-    public GUIGeoGenerator(ContainerGeoGenerator container1) {
+    public GuiGeoGenerator(ContainerGeoGenerator container1) {
         super(container1);
         this.container = container1;
         this.name = Localization.translate((container.base).getName());
@@ -64,9 +64,8 @@ public class GUIGeoGenerator extends GuiIC2<ContainerGeoGenerator> {
         x -= this.guiLeft;
         y -= this.guiTop;
         for (final GuiElement<?> guiElement : this.elements) {
-            GuiElement<?> element = guiElement;
-            if (element.isEnabled()) {
-                element.drawBackground(x, y);
+            if (guiElement.isEnabled()) {
+                guiElement.drawBackground(x, y);
             }
         }
 

@@ -44,8 +44,28 @@ public enum EnumMultiMachine {
     TRIPLE_COMB_RRECYCLER("Triple Combined  Recycler", 1, 45, 3, IUItem.machines_base1, 5, 2, 4, EnumTypeMachines.COMBRECYCLER),
     QUAD_COMB_RRECYCLER("Quad Combined  Recycler", 1, 45, 4, null, 0, -1, 5, EnumTypeMachines.COMBRECYCLER),
     COMB_MACERATOR("Combined Macerator", 2, 300, 1, IUItem.machines_base1, 7, 0, 6, EnumTypeMachines.COMBMACERATOR),
-    COMB_DOUBLE_MACERATOR("Combined Macerator Double", 2, 300, 2, IUItem.machines_base1, 8, 1, 7, EnumTypeMachines.COMBMACERATOR),
-    COMB_TRIPLE_MACERATOR("Combined Macerator Triple", 2, 300, 3, IUItem.machines_base1, 9, 2, 8, EnumTypeMachines.COMBMACERATOR),
+    COMB_DOUBLE_MACERATOR(
+            "Combined Macerator Double",
+            2,
+            300,
+            2,
+            IUItem.machines_base1,
+            8,
+            1,
+            7,
+            EnumTypeMachines.COMBMACERATOR
+    ),
+    COMB_TRIPLE_MACERATOR(
+            "Combined Macerator Triple",
+            2,
+            300,
+            3,
+            IUItem.machines_base1,
+            9,
+            2,
+            8,
+            EnumTypeMachines.COMBMACERATOR
+    ),
     COMB_QUAD_MACERATOR("Combined Macerator Quad", 2, 300, 4, null, 0, -1, 9, EnumTypeMachines.COMBMACERATOR),
 
     Rolling("Rolling", 10, 200, 1, IUItem.machines_base2, 1, 0, 0, EnumTypeMachines.ROLLING),
@@ -102,6 +122,7 @@ public enum EnumMultiMachine {
     public final int meta;
     public final EnumTypeMachines type;
     public final String recipe;
+
     EnumMultiMachine(
             String name,
             int usagePerTick,

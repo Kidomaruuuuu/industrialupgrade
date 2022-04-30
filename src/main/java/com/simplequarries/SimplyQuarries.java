@@ -59,7 +59,6 @@ public final class SimplyQuarries {
     public void load(final FMLPreInitializationEvent event) {
 
         MinecraftForge.EVENT_BUS.register(this);
-        SQConfig.loadConfig(event.getSuggestedConfigurationFile(), event.getSide().isClient());
         BlockQuarry.buildDummies();
         quarry = TeBlockRegistry.get(BlockQuarry.IDENTITY).setCreativeTab(IUCore.SSPTab);
     }
@@ -68,11 +67,21 @@ public final class SimplyQuarries {
     @Mod.EventHandler
     public void init(final FMLInitializationEvent event) {
 
-        Recipes.advRecipes.addRecipe(new ItemStack(quarry, 1),
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(quarry, 1),
                 "DED",
                 "ABA",
-                "CCC", 'A', new ItemStack(IUItem.core, 1, 3), 'B', Ic2Items.advminer, 'C', new ItemStack(IUItem.quantumtool), 'D',
-                IUItem.cirsuitQuantum, 'E', new ItemStack(IUItem.sunnarium, 1, 1)
+                "CCC",
+                'A',
+                new ItemStack(IUItem.core, 1, 3),
+                'B',
+                Ic2Items.advminer,
+                'C',
+                new ItemStack(IUItem.quantumtool),
+                'D',
+                IUItem.cirsuitQuantum,
+                'E',
+                new ItemStack(IUItem.sunnarium, 1, 1)
 
         );
 

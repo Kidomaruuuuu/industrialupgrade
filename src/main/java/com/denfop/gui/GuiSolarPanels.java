@@ -2,7 +2,7 @@ package com.denfop.gui;
 
 import com.denfop.container.ContainerSolarPanels;
 import com.denfop.tiles.panels.entity.TileEntitySolarPanel;
-import com.denfop.utils.ListInformation;
+import com.denfop.utils.ListInformationUtils;
 import com.denfop.utils.ModUtils;
 import ic2.core.GuiIC2;
 import ic2.core.IC2;
@@ -281,7 +281,7 @@ public class GuiSolarPanels extends GuiIC2<ContainerSolarPanels> {
         if (mouseX >= 0 && mouseX <= 12 && mouseY >= 0 && mouseY <= 12) {
             List<String> text = new ArrayList<>();
             text.add(Localization.translate("iu.panelinformation"));
-            List<String> compatibleUpgrades = ListInformation.panelinform;
+            List<String> compatibleUpgrades = ListInformationUtils.panelinform;
             Iterator<String> var5 = compatibleUpgrades.iterator();
             String itemstack;
             while (var5.hasNext()) {

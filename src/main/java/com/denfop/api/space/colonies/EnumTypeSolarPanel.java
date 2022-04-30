@@ -1,14 +1,14 @@
 package com.denfop.api.space.colonies;
 
 public enum EnumTypeSolarPanel {
-    LOW(20,0),
-    MEDIUM(40,5),
-    HIGH(60,12);
+    LOW(20, 0),
+    MEDIUM(40, 5),
+    HIGH(60, 12);
 
     private final int generation;
     private final int people;
 
-    EnumTypeSolarPanel(int generation, int people){
+    EnumTypeSolarPanel(int generation, int people) {
         this.generation = generation;
         this.people = people;
     }

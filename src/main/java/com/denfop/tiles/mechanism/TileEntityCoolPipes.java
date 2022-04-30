@@ -47,8 +47,7 @@ import java.util.List;
 
 public class TileEntityCoolPipes extends TileEntityBlock implements ICoolConductor, INetworkTileEntityEventListener {
 
-    public static final float insulationThickness = 0.0625F;
-    public static final IUnlistedProperty<TileEntityCoolPipes.CableRenderState> renderStateProperty = new UnlistedProperty(
+    public static final IUnlistedProperty<TileEntityCoolPipes.CableRenderState> renderStateProperty = new UnlistedProperty<>(
             "renderstate",
             TileEntityCoolPipes.CableRenderState.class
     );
@@ -148,7 +147,7 @@ public class TileEntityCoolPipes extends TileEntityBlock implements ICoolConduct
         } else {
             float th = this.cableType.thickness + (float) (this.insulation * 2) * 0.0625F;
             float sp = (1.0F - th) / 2.0F;
-            List<AxisAlignedBB> ret = new ArrayList(7);
+            List<AxisAlignedBB> ret = new ArrayList<>(7);
             ret.add(new AxisAlignedBB(
                     sp,
                     sp,
@@ -158,7 +157,6 @@ public class TileEntityCoolPipes extends TileEntityBlock implements ICoolConduct
                     sp + th
             ));
             EnumFacing[] var5 = EnumFacing.VALUES;
-            int var6 = var5.length;
 
             for (EnumFacing facing : var5) {
                 boolean hasConnection = (this.connectivity & 1 << facing.ordinal()) != 0;
@@ -266,7 +264,7 @@ public class TileEntityCoolPipes extends TileEntityBlock implements ICoolConduct
             ) || tile instanceof ICoolEmitter && ((ICoolEmitter) tile).emitsCoolTo(
                     this,
                     dir.getOpposite()
-            )) && this.canInteractWith(tile, dir)) {
+            )) && this.canInteractWith()) {
                 newConnectivity = (byte) (newConnectivity | mask);
             }
 
@@ -316,12 +314,8 @@ public class TileEntityCoolPipes extends TileEntityBlock implements ICoolConduct
     }
 
 
-    public boolean tryRemoveInsulation(boolean simulate) {
-        if (this.insulation <= 0) {
-            return false;
-        } else if (simulate) {
-            return true;
-        } else {
+    public void tryRemoveInsulation(boolean simulate) {
+        if (!simulate && this.insulation > 0) {
             if (this.insulation == this.cableType.minColoredInsulation) {
                 CableFoam foam = this.foam;
                 this.foam = CableFoam.None;
@@ -334,7 +328,6 @@ public class TileEntityCoolPipes extends TileEntityBlock implements ICoolConduct
                 IC2.network.get(true).updateTileEntityField(this, "insulation");
             }
 
-            return true;
         }
     }
 
@@ -343,14 +336,14 @@ public class TileEntityCoolPipes extends TileEntityBlock implements ICoolConduct
     }
 
     public boolean acceptsCoolFrom(ICoolEmitter emitter, EnumFacing direction) {
-        return this.canInteractWith(emitter, direction);
+        return this.canInteractWith();
     }
 
     public boolean emitsCoolTo(ICoolAcceptor receiver, EnumFacing direction) {
-        return this.canInteractWith(receiver, direction);
+        return this.canInteractWith();
     }
 
-    public boolean canInteractWith(ICoolTile tile, EnumFacing side) {
+    public boolean canInteractWith() {
 
         return true;
     }
@@ -384,7 +377,7 @@ public class TileEntityCoolPipes extends TileEntityBlock implements ICoolConduct
 
 
     public List<String> getNetworkedFields() {
-        List<String> ret = new ArrayList();
+        List<String> ret = new ArrayList<>();
         ret.add("cableType");
         ret.add("insulation");
         ret.add("foam");

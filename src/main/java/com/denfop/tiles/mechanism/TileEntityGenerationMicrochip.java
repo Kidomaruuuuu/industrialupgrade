@@ -9,14 +9,14 @@ import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.InvSlotRecipes;
+import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.container.ContainerBaseGenerationChipMachine;
-import com.denfop.gui.GUIGenerationMicrochip;
+import com.denfop.gui.GuiGenerationMicrochip;
 import com.denfop.items.resource.ItemIngots;
 import com.denfop.tiles.base.TileEntityBaseGenerationMicrochip;
 import com.denfop.tiles.base.TileEntityElectricMachine;
 import ic2.api.recipe.IRecipeInput;
 import ic2.api.recipe.IRecipeInputFactory;
-import ic2.api.recipe.RecipeOutput;
 import ic2.api.upgrade.UpgradableProperty;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
@@ -79,14 +79,26 @@ public class TileEntityGenerationMicrochip extends TileEntityBaseGenerationMicro
         );
 
 
-        add(new ItemStack(IUItem.iuingot, 1, 2), new ItemStack(IUItem.iuingot, 1, 3), new ItemStack(IUItem.basecircuit, 1, 0),
-                new ItemStack(IUItem.basecircuit, 1, 3), new ItemStack(IUItem.basecircuit, 1, 6),
-                new ItemStack(IUItem.basecircuit, 1, 9), (short) 2000, true
+        add(
+                new ItemStack(IUItem.iuingot, 1, 2),
+                new ItemStack(IUItem.iuingot, 1, 3),
+                new ItemStack(IUItem.basecircuit, 1, 0),
+                new ItemStack(IUItem.basecircuit, 1, 3),
+                new ItemStack(IUItem.basecircuit, 1, 6),
+                new ItemStack(IUItem.basecircuit, 1, 9),
+                (short) 2000,
+                true
         );
 
-        add(new ItemStack(IUItem.iuingot, 1, 8), new ItemStack(IUItem.iuingot, 1, 6), new ItemStack(IUItem.basecircuit, 1, 1),
-                new ItemStack(IUItem.basecircuit, 1, 4), new ItemStack(IUItem.basecircuit, 1, 7),
-                new ItemStack(IUItem.basecircuit, 1, 10), (short) 3000, true
+        add(
+                new ItemStack(IUItem.iuingot, 1, 8),
+                new ItemStack(IUItem.iuingot, 1, 6),
+                new ItemStack(IUItem.basecircuit, 1, 1),
+                new ItemStack(IUItem.basecircuit, 1, 4),
+                new ItemStack(IUItem.basecircuit, 1, 7),
+                new ItemStack(IUItem.basecircuit, 1, 10),
+                (short) 3000,
+                true
         );
         add(
                 new ItemStack(IUItem.iuingot, 1, 2),
@@ -377,7 +389,7 @@ public class TileEntityGenerationMicrochip extends TileEntityBaseGenerationMicro
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUIGenerationMicrochip(new ContainerBaseGenerationChipMachine(entityPlayer, this));
+        return new GuiGenerationMicrochip(new ContainerBaseGenerationChipMachine(entityPlayer, this));
     }
 
     public String getStartSoundFile() {

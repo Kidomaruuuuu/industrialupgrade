@@ -14,11 +14,11 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public class GUIBaseQuarry extends GuiIC2<ContainerBaseQuarry> {
+public class GuiBaseQuarry extends GuiIC2<ContainerBaseQuarry> {
 
     public final ContainerBaseQuarry container;
 
-    public GUIBaseQuarry(ContainerBaseQuarry container1) {
+    public GuiBaseQuarry(ContainerBaseQuarry container1) {
         super(container1);
         this.container = container1;
         this.xSize = 229;
@@ -111,7 +111,7 @@ public class GUIBaseQuarry extends GuiIC2<ContainerBaseQuarry> {
                 / this.container.base.exp_max_storage);
 
         if (exp > 0) {
-            drawTexturedModalRect(h + 173, k + 28 + 48 - chargeLevel, 194,
+            drawTexturedModalRect(h + 172, k + 28 + 48 - chargeLevel, 194,
                     119 + 48 - chargeLevel, 12, chargeLevel
             );
         }

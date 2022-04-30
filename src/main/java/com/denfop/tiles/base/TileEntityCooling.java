@@ -58,8 +58,9 @@ public class TileEntityCooling extends TileEntityElectricMachine implements INet
 
     protected void updateEntityServer() {
         super.updateEntityServer();
-        if(this.world.provider.getWorldTime() % 20 == 0)
+        if (this.world.provider.getWorldTime() % 20 == 0) {
             this.cold.addEnergy(-1);
+        }
         if (this.energy.getEnergy() >= 50 && this.cold.getEnergy() < this.cold.getCapacity()) {
             this.cold.addEnergy(1);
             this.energy.useEnergy(50);
@@ -75,7 +76,7 @@ public class TileEntityCooling extends TileEntityElectricMachine implements INet
     @Override
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(final EntityPlayer entityPlayer, final boolean b) {
-        return new GuiCoolMachine(getGuiContainer(entityPlayer), b);
+        return new GuiCoolMachine(getGuiContainer(entityPlayer));
     }
 
 

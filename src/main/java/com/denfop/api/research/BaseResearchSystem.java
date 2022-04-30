@@ -17,7 +17,6 @@ import net.minecraft.util.EntityDamageSource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
@@ -52,7 +51,6 @@ public class BaseResearchSystem implements IResearchSystem {
         this.list_researcher_parts = new ArrayList<>();
         this.map_level = new HashMap<>();
         this.max = 0;
-        FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);
 
     }

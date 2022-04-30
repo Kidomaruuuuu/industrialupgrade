@@ -10,11 +10,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GUISunnariumPanelMaker extends GuiIC2<ContainerDoubleElectricMachine> {
+public class GuiSunnariumPanelMaker extends GuiIC2<ContainerDoubleElectricMachine> {
 
     public final ContainerDoubleElectricMachine container;
 
-    public GUISunnariumPanelMaker(ContainerDoubleElectricMachine container1) {
+    public GuiSunnariumPanelMaker(ContainerDoubleElectricMachine container1) {
         super(container1);
         this.container = container1;
     }
@@ -65,7 +65,7 @@ public class GUISunnariumPanelMaker extends GuiIC2<ContainerDoubleElectricMachin
     }
 
     public ResourceLocation getTexture() {
-        return new ResourceLocation(Constants.TEXTURES, "textures/gui/GUISunnariumPanelMaker.png");
+        return new ResourceLocation(Constants.TEXTURES, "textures/gui/GuiSunnariumPanelMaker.png");
     }
 
 }

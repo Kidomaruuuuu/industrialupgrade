@@ -84,8 +84,8 @@ public class ModelCoolPipes extends AbstractModel implements ISpecialParticleMod
         return ret;
     }
 
-    private static ResourceLocation getTextureLocation(CoolType type, int insulation, boolean active) {
-        String loc = "blocks/wiring/cool/" + type.getName(insulation);
+    private static ResourceLocation getTextureLocation(CoolType type) {
+        String loc = "blocks/wiring/cool/" + type.getName();
 
 
         return new ResourceLocation(Constants.MOD_ID, loc);
@@ -139,8 +139,7 @@ public class ModelCoolPipes extends AbstractModel implements ISpecialParticleMod
         }
 
         List<BakedQuad> generalQuads = new ArrayList<>();
-        TextureAtlasSprite sprite = this.textures.get(getTextureLocation(prop.type, prop.insulation,
-                prop.active
+        TextureAtlasSprite sprite = this.textures.get(getTextureLocation(prop.type
         ));
         EnumFacing[] var7 = EnumFacing.VALUES;
         int i = var7.length;
@@ -236,7 +235,7 @@ public class ModelCoolPipes extends AbstractModel implements ISpecialParticleMod
         } else {
             CableRenderState prop = state.getValue(TileEntityCoolPipes.renderStateProperty);
 
-            return this.textures.get(getTextureLocation(prop.type, prop.insulation, prop.active));
+            return this.textures.get(getTextureLocation(prop.type));
 
         }
     }

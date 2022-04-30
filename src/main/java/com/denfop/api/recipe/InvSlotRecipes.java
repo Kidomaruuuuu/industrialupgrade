@@ -2,12 +2,10 @@ package com.denfop.api.recipe;
 
 import com.denfop.api.Recipes;
 import com.denfop.tiles.base.TileEntityConverterSolidMatter;
-import ic2.api.recipe.RecipeOutput;
 import ic2.api.upgrade.IUpgradeItem;
 import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.block.invslot.InvSlotOutput;
-import ic2.core.item.upgrade.ItemUpgradeModule;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidTank;
 
@@ -31,6 +29,7 @@ public class InvSlotRecipes extends InvSlot {
         this(base, Recipes.recipes.getRecipe(baseRecipe), tile);
 
     }
+
     public InvSlotRecipes(final TileEntityInventory base, String baseRecipe, IUpdateTick tile, FluidTank tank) {
         this(base, Recipes.recipes.getRecipe(baseRecipe), tile);
         this.tank = tank;
@@ -115,9 +114,16 @@ public class InvSlotRecipes extends InvSlot {
         }
 
     }
-    public boolean continue_proccess(InvSlotOutput slot){
-        return slot.canAdd(tile.getRecipeOutput().output.items) && this.get().getCount() >= tile.getRecipeOutput().input.getInputs().get(0).getInputs().get(0).getCount();
+
+    public boolean continue_proccess(InvSlotOutput slot) {
+        return slot.canAdd(tile.getRecipeOutput().output.items) && this.get().getCount() >= tile.getRecipeOutput().input
+                .getInputs()
+                .get(0)
+                .getInputs()
+                .get(0)
+                .getCount();
     }
+
     private BaseMachineRecipe getOutputFor() {
         List<ItemStack> list = new ArrayList<>();
         this.forEach(list::add);

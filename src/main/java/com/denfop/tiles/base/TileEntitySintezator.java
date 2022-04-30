@@ -5,7 +5,7 @@ import cofh.redstoneflux.api.IEnergyReceiver;
 import com.denfop.Config;
 import com.denfop.IUItem;
 import com.denfop.container.ContainerSinSolarPanel;
-import com.denfop.gui.GUISintezator;
+import com.denfop.gui.GuiSintezator;
 import com.denfop.invslot.InvSlotSintezator;
 import com.denfop.tiles.panels.entity.EnumType;
 import com.denfop.tiles.panels.entity.TileEntitySolarPanel;
@@ -439,7 +439,7 @@ public class TileEntitySintezator extends TileEntityInventory implements IEnergy
     @Override
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(final EntityPlayer entityPlayer, final boolean b) {
-        return new GUISintezator(new ContainerSinSolarPanel(entityPlayer, this));
+        return new GuiSintezator(new ContainerSinSolarPanel(entityPlayer, this));
 
     }
 

@@ -31,6 +31,7 @@ public class TileEntityQuarryVein extends TileEntityElectricMachine implements I
     public int time;
     public int progress;
     public Vein vein;
+
     public TileEntityQuarryVein() {
         super(400, 14, 1);
         this.progress = 0;
@@ -110,13 +111,12 @@ public class TileEntityQuarryVein extends TileEntityElectricMachine implements I
         this.level = nbt.getInteger("level") != 0 ? nbt.getInteger("level") : 1;
         if (getWorld().provider.getDimension() != 0) {
             this.vein = null;
-        }else{
+        } else {
             this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
-           if(this.vein.get())
-               this.progress = 1200;
+            if (this.vein.get()) {
+                this.progress = 1200;
+            }
         }
-
-
 
 
     }
@@ -126,7 +126,7 @@ public class TileEntityQuarryVein extends TileEntityElectricMachine implements I
         super.onLoaded();
         if (getWorld().provider.getDimension() != 0) {
             this.vein = null;
-        }else{
+        } else {
             this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
         }
     }
@@ -138,8 +138,9 @@ public class TileEntityQuarryVein extends TileEntityElectricMachine implements I
 
     public void updateEntityServer() {
         super.updateEntityServer();
-        if(this.vein == null)
+        if (this.vein == null) {
             return;
+        }
         if (getWorld().provider.getWorldTime() % 40 == 0) {
             updateTileEntityField();
         }
@@ -177,8 +178,6 @@ public class TileEntityQuarryVein extends TileEntityElectricMachine implements I
     }
 
 
-
-
     public void readFromNBT(NBTTagCompound nbttagcompound) {
         super.readFromNBT(nbttagcompound);
         this.progress = nbttagcompound.getInteger("progress");
@@ -188,7 +187,7 @@ public class TileEntityQuarryVein extends TileEntityElectricMachine implements I
 
     public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound) {
         super.writeToNBT(nbttagcompound);
-         nbttagcompound.setInteger("progress", this.progress);
+        nbttagcompound.setInteger("progress", this.progress);
         nbttagcompound.setInteger("level", this.level);
         return nbttagcompound;
     }

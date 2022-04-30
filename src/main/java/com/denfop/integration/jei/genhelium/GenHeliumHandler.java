@@ -2,8 +2,6 @@ package com.denfop.integration.jei.genhelium;
 
 
 import com.denfop.api.Recipes;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidStack;
@@ -62,13 +60,6 @@ public class GenHeliumHandler {
         }
     }
 
-    private static ItemStack is(Item item) { // Побочный метод.
-        return new ItemStack(item);
-    }
-
-    private static ItemStack is(Block block) { // Побочный метод.
-        return new ItemStack(block);
-    }
 
     public int getEnergy() { // Получатель входного предмета рецепта.
         return input;

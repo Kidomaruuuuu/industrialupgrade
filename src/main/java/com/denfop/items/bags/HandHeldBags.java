@@ -11,17 +11,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
+
 public class HandHeldBags extends HandHeldInventory {
 
     public final int inventorySize;
     public final ItemStack itemStack1;
-    private final ItemEnergyBags itemEnergyBags;
 
-    public HandHeldBags(EntityPlayer player, ItemStack stack, int inventorySize, ItemEnergyBags itemEnergyBags) {
+    public HandHeldBags(EntityPlayer player, ItemStack stack, int inventorySize) {
         super(player, stack, inventorySize);
         this.inventorySize = inventorySize;
         this.itemStack1 = stack;
-        this.itemEnergyBags = itemEnergyBags;
     }
 
     public ContainerBase<HandHeldBags> getGuiContainer(EntityPlayer player) {
@@ -33,6 +33,7 @@ public class HandHeldBags extends HandHeldInventory {
         return new GuiBags(new ContainerBags(player, this), itemStack1);
     }
 
+    @Nonnull
     public String getName() {
         return "toolbox";
     }

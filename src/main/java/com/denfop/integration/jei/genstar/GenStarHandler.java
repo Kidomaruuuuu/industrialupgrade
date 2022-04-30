@@ -3,8 +3,6 @@ package com.denfop.integration.jei.genstar;
 
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
@@ -79,13 +77,6 @@ public class GenStarHandler {
 
     }
 
-    private static ItemStack is(Item item) { // Побочный метод.
-        return new ItemStack(item);
-    }
-
-    private static ItemStack is(Block block) { // Побочный метод.
-        return new ItemStack(block);
-    }
 
     public ItemStack getInput() { // Получатель входного предмета рецепта.
         return input;

@@ -17,10 +17,10 @@ public class Planet implements IPlanet {
     private final boolean pressure;
     private final int temperature;
     private final EnumType type;
-    List<IBaseResource> baseResourceList;
-    List<ISatellite> satelliteList;
     private final boolean oxygen;
     private final boolean colonies;
+    List<IBaseResource> baseResourceList;
+    List<ISatellite> satelliteList;
 
     public Planet(
             String name, ISystem system, ResourceLocation textureLocation, EnumLevels levels, IStar star, int temperature
@@ -41,13 +41,19 @@ public class Planet implements IPlanet {
         this.colonies = colonies;
         SpaceNet.instance.addPlanet(this);
     }
+
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Planet asteroid = (Planet) o;
         return Objects.equals(name, asteroid.name);
     }
+
     @Override
     public String getName() {
         return this.name;

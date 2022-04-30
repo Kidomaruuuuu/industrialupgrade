@@ -10,7 +10,6 @@ import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.audio.AudioSource;
 import com.denfop.container.ContainerBaseGenerationChipMachine;
 import ic2.api.network.INetworkTileEntityEventListener;
-import ic2.api.recipe.RecipeOutput;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.IUpgradeItem;
 import ic2.core.ContainerBase;
@@ -79,11 +78,6 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
     @Override
     public void setSource(final ITemperature source) {
         this.source = source;
-    }
-
-    @Override
-    public boolean requairedTemperature() {
-        return this.needTemperature;
     }
 
     public void readFromNBT(NBTTagCompound nbttagcompound) {
@@ -216,7 +210,7 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
                 }
             }
             operateOnce(processResult);
-           getOutput();
+            getOutput();
             if (this.output == null) {
                 break;
             }
@@ -230,7 +224,7 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
     }
 
     public BaseMachineRecipe getOutput() {
-       this.output = this.inputSlotA.process();
+        this.output = this.inputSlotA.process();
 
 
         return this.output;

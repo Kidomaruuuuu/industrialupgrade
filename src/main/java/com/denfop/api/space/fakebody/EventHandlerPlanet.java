@@ -6,12 +6,10 @@ import com.denfop.api.space.SpaceNet;
 import com.denfop.api.space.research.IResearchTable;
 import com.denfop.api.space.research.event.ResearchTableLoadEvent;
 import com.denfop.events.WorldSavedDataIU;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 
@@ -19,14 +17,16 @@ public class EventHandlerPlanet {
 
     private boolean load;
 
-    public EventHandlerPlanet(){
+    public EventHandlerPlanet() {
         this.load = false;
     }
+
     @SubscribeEvent
     public void tick(final TickEvent.WorldTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
-            if(event.world.provider.getWorldTime() % 20 == 0)
-            SpaceNet.instance.getFakeSpaceSystem().working();
+            if (event.world.provider.getWorldTime() % 20 == 0) {
+                SpaceNet.instance.getFakeSpaceSystem().working();
+            }
         }
 
 
@@ -76,8 +76,8 @@ public class EventHandlerPlanet {
                             Constants.MOD_ID
                     );
 
-                Objects.requireNonNull(event.getWorld().getMapStorage()).setData(Constants.MOD_ID, data);
-                data.markDirty();
+            Objects.requireNonNull(event.getWorld().getMapStorage()).setData(Constants.MOD_ID, data);
+            data.markDirty();
             this.load = false;
 
         }

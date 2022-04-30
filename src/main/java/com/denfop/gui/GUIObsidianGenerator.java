@@ -11,11 +11,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GUIObsidianGenerator extends GuiIC2<ContainerObsidianGenerator> {
+public class GuiObsidianGenerator extends GuiIC2<ContainerObsidianGenerator> {
 
     public final ContainerObsidianGenerator container;
 
-    public GUIObsidianGenerator(ContainerObsidianGenerator container1) {
+    public GuiObsidianGenerator(ContainerObsidianGenerator container1) {
         super(container1);
         this.container = container1;
     }
@@ -64,7 +64,7 @@ public class GUIObsidianGenerator extends GuiIC2<ContainerObsidianGenerator> {
     }
 
     public ResourceLocation getTexture() {
-        return new ResourceLocation(Constants.TEXTURES, "textures/gui/GUIObsidianGenerator.png");
+        return new ResourceLocation(Constants.TEXTURES, "textures/gui/GuiObsidianGenerator.png");
     }
 
 }

@@ -1,8 +1,8 @@
 package com.denfop.invslot;
 
 import com.denfop.IUItem;
-import com.denfop.items.modules.AdditionModule;
-import com.denfop.items.modules.QuarryModule;
+import com.denfop.items.modules.ItemAdditionModule;
+import com.denfop.items.modules.ItemQuarryModule;
 import com.denfop.tiles.base.TileEntityAnalyzer;
 import com.denfop.tiles.base.TileEntityBaseQuantumQuarry;
 import com.denfop.utils.ModUtils;
@@ -57,7 +57,7 @@ public class InvSlotAnalyzer extends InvSlot {
                 if (!this.get(i).isEmpty()) {
                     if (this.get(i).getItemDamage() == itemStack.getItemDamage() && this
                             .get(i)
-                            .getItem() == itemStack.getItem() && (itemStack.getItem() instanceof QuarryModule)) {
+                            .getItem() == itemStack.getItem() && (itemStack.getItem() instanceof ItemQuarryModule)) {
                         return false;
 
                     }
@@ -66,10 +66,10 @@ public class InvSlotAnalyzer extends InvSlot {
             }
 
 
-            return (itemStack.getItem() instanceof QuarryModule)
+            return (itemStack.getItem() instanceof ItemQuarryModule)
 
                     || itemStack.getItem().equals(IUItem.quarrymodule)
-                    || (itemStack.getItem() instanceof AdditionModule && itemStack.getItemDamage() == 10);
+                    || (itemStack.getItem() instanceof ItemAdditionModule && itemStack.getItemDamage() == 10);
         } else if (this.type == 1) {
             if (OreDictionary.getOreIDs(itemStack).length > 0) {
                 int id = OreDictionary.getOreIDs(itemStack)[0];
@@ -105,7 +105,7 @@ public class InvSlotAnalyzer extends InvSlot {
 
         for (int i = 0; i < this.size(); i++) {
             if (this.get(i) != null) {
-                if (this.get(i).getItem() instanceof QuarryModule && this.get(i).getItemDamage() >= 6 && this
+                if (this.get(i).getItem() instanceof ItemQuarryModule && this.get(i).getItemDamage() >= 6 && this
                         .get(i)
                         .getItemDamage() < 9) {
                     return this.get(i).getItemDamage() - 5;
@@ -117,7 +117,7 @@ public class InvSlotAnalyzer extends InvSlot {
 
     public boolean getFurnaceModule() {
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null && this.get(i).getItem() instanceof QuarryModule && this.get(i).getItemDamage() == 0) {
+            if (this.get(i) != null && this.get(i).getItem() instanceof ItemQuarryModule && this.get(i).getItemDamage() == 0) {
                 return true;
             }
         }
@@ -180,7 +180,9 @@ public class InvSlotAnalyzer extends InvSlot {
     public int getChunksize() {
         int size = 0;
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null && this.get(i).getItem() instanceof QuarryModule && this.get(i).getItemDamage() > 8 && this
+            if (this.get(i) != null && this.get(i).getItem() instanceof ItemQuarryModule && this
+                    .get(i)
+                    .getItemDamage() > 8 && this
                     .get(i)
                     .getItemDamage() <= 11) {
                 size = this.get(i).getItemDamage() - 8;
@@ -193,17 +195,17 @@ public class InvSlotAnalyzer extends InvSlot {
 
     public boolean getwirelessmodule() {
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null && this.get(i).getItem() instanceof AdditionModule && this.get(i).getItemDamage() == 10) {
+            if (this.get(i) != null && this.get(i).getItem() instanceof ItemAdditionModule && this.get(i).getItemDamage() == 10) {
                 return true;
             }
         }
         return false;
     }
 
-    public List wirelessmodule() {
-        List list = new ArrayList();
+    public List<Integer> wirelessmodule() {
+        List<Integer> list = new ArrayList<>();
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null && this.get(i).getItem() instanceof AdditionModule && this.get(i).getItemDamage() == 10) {
+            if (this.get(i) != null && this.get(i).getItem() instanceof ItemAdditionModule && this.get(i).getItemDamage() == 10) {
                 int x;
                 int y;
                 int z;
@@ -229,7 +231,7 @@ public class InvSlotAnalyzer extends InvSlot {
         double proccent;
         for (int i = 0; i < this.size(); i++) {
             if (this.get(i) != null) {
-                if (this.get(i).getItem() instanceof QuarryModule && this.get(i).getItemDamage() > 0 && this
+                if (this.get(i).getItem() instanceof ItemQuarryModule && this.get(i).getItemDamage() > 0 && this
                         .get(i)
                         .getItemDamage() < 6) {
                     proccent = this.get(i).getItemDamage();
@@ -252,7 +254,7 @@ public class InvSlotAnalyzer extends InvSlot {
         double proccent;
         for (int i = 0; i < this.size(); i++) {
             if (this.get(i) != null) {
-                if (this.get(i).getItem() instanceof QuarryModule && this.get(i).getItemDamage() > 0 && this
+                if (this.get(i).getItem() instanceof ItemQuarryModule && this.get(i).getItemDamage() > 0 && this
                         .get(i)
                         .getItemDamage() < 6) {
                     proccent = this.get(i).getItemDamage();

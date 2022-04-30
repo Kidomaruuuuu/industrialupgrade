@@ -2,7 +2,7 @@ package com.denfop.recipes;
 
 import com.denfop.IUItem;
 import com.denfop.Ic2Items;
-import com.denfop.register.RegisterOreDict;
+import com.denfop.register.RegisterOreDictionary;
 import ic2.api.recipe.IRecipeInputFactory;
 import ic2.api.recipe.Recipes;
 import net.minecraft.item.ItemStack;
@@ -15,50 +15,54 @@ public class MetalFormerRecipe {
 
     public static void init() {
         for (int j = 0; j < recipe.length; j++) {
-            for (int i = 0; i < RegisterOreDict.itemNames().size(); i++) {
+            for (int i = 0; i < RegisterOreDictionary.itemNames().size(); i++) {
                 if (j == 0) {
-                    addmolot(recipe[j] + RegisterOreDict.itemNames().get(i), new ItemStack(IUItem.plate, 1, i), 1);
+                    addmolot(recipe[j] + RegisterOreDictionary.itemNames().get(i), new ItemStack(IUItem.plate, 1, i), 1);
                 }
 
                 if (j == 1) {
-                    addmolot(recipe[j] + RegisterOreDict.itemNames().get(i), recipe1[j] + RegisterOreDict.itemNames().get(i), 1);
+                    addmolot(
+                            recipe[j] + RegisterOreDictionary.itemNames().get(i),
+                            recipe1[j] + RegisterOreDictionary.itemNames().get(i),
+                            1
+                    );
                 }
                 if (j == 2) {
                     addExtruding(
-                            recipe[j] + RegisterOreDict.itemNames().get(i),
-                            recipe1[j] + RegisterOreDict.itemNames().get(i),
+                            recipe[j] + RegisterOreDictionary.itemNames().get(i),
+                            recipe1[j] + RegisterOreDictionary.itemNames().get(i),
                             2
                     );
                 }
                 if (j == 3) {
                     addExtruding(
-                            recipe[j] + RegisterOreDict.itemNames().get(i),
-                            recipe1[j] + RegisterOreDict.itemNames().get(i),
+                            recipe[j] + RegisterOreDictionary.itemNames().get(i),
+                            recipe1[j] + RegisterOreDictionary.itemNames().get(i),
                             3
                     );
                 }
                 if (j == 4) {
                     addmolot(
-                            recipe[j] + RegisterOreDict.itemNames().get(i),
-                            recipe1[j] + RegisterOreDict.itemNames().get(i),
+                            recipe[j] + RegisterOreDictionary.itemNames().get(i),
+                            recipe1[j] + RegisterOreDictionary.itemNames().get(i),
                             9
                     );
                 }
             }
         }
         for (int j = 0; j < recipe.length; j++) {
-            for (int i = 0; i < RegisterOreDict.itemNames1().size(); i++) {
+            for (int i = 0; i < RegisterOreDictionary.itemNames1().size(); i++) {
                 if (j != 2 && j != 3 && j != 4) {
                     addmolot(
-                            recipe[j] + RegisterOreDict.itemNames1().get(i),
-                            recipe1[j] + RegisterOreDict.itemNames1().get(i),
+                            recipe[j] + RegisterOreDictionary.itemNames1().get(i),
+                            recipe1[j] + RegisterOreDictionary.itemNames1().get(i),
                             1
                     );
                 }
                 if (j == 4) {
                     addmolot(
-                            recipe[j] + RegisterOreDict.itemNames1().get(i),
-                            recipe1[j] + RegisterOreDict.itemNames1().get(i),
+                            recipe[j] + RegisterOreDictionary.itemNames1().get(i),
+                            recipe1[j] + RegisterOreDictionary.itemNames1().get(i),
                             9
                     );
                 }

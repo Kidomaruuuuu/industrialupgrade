@@ -3,12 +3,10 @@ package com.denfop.tiles.mechanism;
 
 import com.denfop.api.recipe.InvSlotMultiRecipes;
 import com.denfop.container.ContainerMultiMetalFormer;
-import com.denfop.gui.GUIMultiMachine4;
-import com.denfop.invslot.InvSlotProcessableMultiGeneric;
+import com.denfop.gui.GuiMultiMachine4;
 import com.denfop.tiles.base.EnumMultiMachine;
 import com.denfop.tiles.base.TileEntityMultiMachine;
 import ic2.api.network.INetworkClientTileEntityEventListener;
-import ic2.api.recipe.Recipes;
 import ic2.core.ContainerBase;
 import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
@@ -45,7 +43,7 @@ public class TileEntityMetalFormer extends TileEntityMultiMachine
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUIMultiMachine4(new ContainerMultiMetalFormer(entityPlayer, this, sizeWorkingSlot));
+        return new GuiMultiMachine4(new ContainerMultiMetalFormer(entityPlayer, this, sizeWorkingSlot));
     }
 
     public void readFromNBT(NBTTagCompound nbttagcompound) {
@@ -97,8 +95,9 @@ public class TileEntityMetalFormer extends TileEntityMultiMachine
                 throw new RuntimeException("invalid mode: " + mode1);
         }
         this.mode = mode1;
-        for(int i = 0; i < this.sizeWorkingSlot;i++)
-            this.setRecipeOutput(this.inputSlots.fastprocess(i),i);
+        for (int i = 0; i < this.sizeWorkingSlot; i++) {
+            this.setRecipeOutput(this.inputSlots.fastprocess(i), i);
+        }
     }
 
     private void cycleMode() {

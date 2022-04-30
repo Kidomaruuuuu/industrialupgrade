@@ -49,8 +49,7 @@ import java.util.List;
 
 public class TileEntitySCable extends TileEntityBlock implements ISEConductor, INetworkTileEntityEventListener {
 
-    public static final float insulationThickness = 0.0625F;
-    public static final IUnlistedProperty<TileEntitySCable.CableRenderState> renderStateProperty = new UnlistedProperty(
+    public static final IUnlistedProperty<TileEntitySCable.CableRenderState> renderStateProperty = new UnlistedProperty<>(
             "renderstate",
             TileEntitySCable.CableRenderState.class
     );

@@ -9,14 +9,15 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 
-public class GUIStorageExp extends GuiIC2<ContainerStorageExp> {
+public class GuiStorageExp extends GuiIC2<ContainerStorageExp> {
 
     public final ContainerStorageExp container;
 
-    public GUIStorageExp(ContainerStorageExp container1) {
+    public GuiStorageExp(ContainerStorageExp container1) {
         super(container1);
         this.container = container1;
     }
@@ -32,7 +33,7 @@ public class GUIStorageExp extends GuiIC2<ContainerStorageExp> {
 
     }
 
-    protected void actionPerformed(GuiButton guibutton) throws IOException {
+    protected void actionPerformed(@Nonnull GuiButton guibutton) throws IOException {
         super.actionPerformed(guibutton);
         if (guibutton.id == 0) {
             IC2.network.get(false).initiateClientTileEntityEvent(this.container.base, 0);

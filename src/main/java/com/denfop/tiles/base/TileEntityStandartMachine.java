@@ -8,14 +8,12 @@ import ic2.core.audio.PositionSpec;
 import ic2.core.block.TileEntityInventory;
 import ic2.core.block.comp.Energy;
 import ic2.core.block.invslot.InvSlotOutput;
-import ic2.core.init.Localization;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 
 public abstract class TileEntityStandartMachine extends TileEntityInventory implements IHasGui, INetworkTileEntityEventListener {
 
 
-    public final String name;
     public AudioSource audioSource;
 
 
@@ -23,8 +21,7 @@ public abstract class TileEntityStandartMachine extends TileEntityInventory impl
 
     public Energy energy;
 
-    public TileEntityStandartMachine(String name, double MaxEnergy, int tier, int count) {
-        this.name = name;
+    public TileEntityStandartMachine(int count) {
         if (count != 0) {
             this.outputSlot = new InvSlotOutput(this, "output", count);
         }
@@ -124,11 +121,6 @@ public abstract class TileEntityStandartMachine extends TileEntityInventory impl
     public void onGuiClosed(EntityPlayer player) {
     }
 
-
-    public String getInventoryName() {
-
-        return Localization.translate(name);
-    }
 
     public float getChargeLevel() {
         return (float) Math.min(1, this.energy.getEnergy() / this.energy.getCapacity());

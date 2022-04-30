@@ -3,7 +3,7 @@ package com.denfop.tiles.mechanism;
 import com.denfop.IUCore;
 import com.denfop.audio.AudioSource;
 import com.denfop.container.ContainerMagnet;
-import com.denfop.gui.GUIMagnet;
+import com.denfop.gui.GuiMagnet;
 import com.denfop.tiles.base.TileEntityAntiMagnet;
 import com.denfop.tiles.base.TileEntityElectricMachine;
 import ic2.api.network.INetworkTileEntityEventListener;
@@ -103,7 +103,7 @@ public class TileEntityMagnet extends TileEntityElectricMachine
             return;
         }
         boolean ret = false;
-        if(this.world.provider.getWorldTime() % 4 == 0) {
+        if (this.world.provider.getWorldTime() % 4 == 0) {
             int radius = 10;
             AxisAlignedBB axisalignedbb = new AxisAlignedBB(
                     this.pos.getX() - radius,
@@ -114,7 +114,6 @@ public class TileEntityMagnet extends TileEntityElectricMachine
                     this.pos.getZ() + radius
             );
             List<EntityItem> list = this.getWorld().getEntitiesWithinAABB(EntityItem.class, axisalignedbb);
-
 
 
             if (getWorld().provider.getWorldTime() % 10 == 0) {
@@ -158,7 +157,7 @@ public class TileEntityMagnet extends TileEntityElectricMachine
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUIMagnet(new ContainerMagnet(entityPlayer, this));
+        return new GuiMagnet(new ContainerMagnet(entityPlayer, this));
     }
 
     public ContainerBase<? extends TileEntityMagnet> getGuiContainer(EntityPlayer entityPlayer) {

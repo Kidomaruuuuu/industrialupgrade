@@ -84,8 +84,8 @@ public class ModelSCable extends AbstractModel implements ISpecialParticleModel 
         return ret;
     }
 
-    private static ResourceLocation getTextureLocation(SEType type, int insulation) {
-        String loc = "blocks/wiring/scable/" + type.getName(insulation);
+    private static ResourceLocation getTextureLocation(SEType type) {
+        String loc = "blocks/wiring/scable/" + type.getName();
 
 
         return new ResourceLocation(Constants.MOD_ID, loc);
@@ -139,7 +139,7 @@ public class ModelSCable extends AbstractModel implements ISpecialParticleModel 
         }
 
         List<BakedQuad> generalQuads = new ArrayList<>();
-        TextureAtlasSprite sprite = this.textures.get(getTextureLocation(prop.type, prop.insulation
+        TextureAtlasSprite sprite = this.textures.get(getTextureLocation(prop.type
         ));
         EnumFacing[] var7 = EnumFacing.VALUES;
         int i = var7.length;
@@ -235,7 +235,7 @@ public class ModelSCable extends AbstractModel implements ISpecialParticleModel 
         } else {
             CableRenderState prop = state.getValue(TileEntitySCable.renderStateProperty);
 
-            return this.textures.get(getTextureLocation(prop.type, prop.insulation));
+            return this.textures.get(getTextureLocation(prop.type));
 
         }
     }

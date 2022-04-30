@@ -1,11 +1,9 @@
 package com.denfop.gui;
 
 import com.denfop.Constants;
-import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.container.ContainerBaseDoubleMolecular;
 import com.denfop.utils.ModUtils;
-import ic2.api.recipe.RecipeOutput;
 import ic2.core.GuiIC2;
 import ic2.core.IC2;
 import ic2.core.init.Localization;
@@ -48,7 +46,8 @@ public class GuiDoubleMolecularTransformer extends GuiIC2<ContainerBaseDoubleMol
         double chargeLevel = (15.0D * this.container.base.getProgress());
 
         final BaseMachineRecipe output3 = this.container.base.getOutput();
-        if (chargeLevel > 0 && !this.container.base.inputSlot.isEmpty() && output3 != null  && this.container.base.outputSlot.canAdd(output3.getOutput().items) ) {
+        if (chargeLevel > 0 && !this.container.base.inputSlot.isEmpty() && output3 != null && this.container.base.outputSlot.canAdd(
+                output3.getOutput().items)) {
             if (!this.container.base.queue) {
                 this.mc.getTextureManager().bindTexture(getTexture());
                 drawTexturedModalRect(this.guiLeft + 23, this.guiTop + 48, 221, 7, 10, (int) chargeLevel);
@@ -65,7 +64,7 @@ public class GuiDoubleMolecularTransformer extends GuiIC2<ContainerBaseDoubleMol
                         this.guiTop + 47, 4210752
                 );
                 this.fontRenderer.drawString(energyPerOperation + ModUtils.getString(output3.output.metadata.getDouble("energy")) +
-                        " EU",
+                                " EU",
                         this.guiLeft + 60, this.guiTop + 58, 4210752
                 );
                 if (this.container.base.getProgress() * 100 <= 100) {
@@ -90,9 +89,9 @@ public class GuiDoubleMolecularTransformer extends GuiIC2<ContainerBaseDoubleMol
                 int size2;
                 int col;
                 int col1;
-                ItemStack output2 =  this.container.base.output.output.items.get(0);
-                size =  this.container.base.output.input.getInputs().get(0).getInputs().get(0).getCount();
-                size2 =  this.container.base.output.input.getInputs().get(1).getInputs().get(0).getCount();
+                ItemStack output2 = this.container.base.output.output.items.get(0);
+                size = this.container.base.output.input.getInputs().get(0).getInputs().get(0).getCount();
+                size2 = this.container.base.output.input.getInputs().get(1).getInputs().get(0).getCount();
                 col = size;
                 col1 = size2;
                 size = (int) Math.floor((float) this.container.base.inputSlot.get().stackSize / size);
@@ -118,11 +117,14 @@ public class GuiDoubleMolecularTransformer extends GuiIC2<ContainerBaseDoubleMol
                             this.guiLeft + 60, this.guiTop + 36, 4210752
                     );
 
-                    this.fontRenderer.drawString(output + output2.stackSize * size + "x" + output3.output.items.get(0).getDisplayName()
+                    this.fontRenderer.drawString(output + output2.stackSize * size + "x" + output3.output.items
+                                    .get(0)
+                                    .getDisplayName()
                             , this.guiLeft + 60,
                             this.guiTop + 47, 4210752
                     );
-                    this.fontRenderer.drawString(energyPerOperation + ModUtils.getString(output3.output.metadata.getDouble("energy") * size) + " EU",
+                    this.fontRenderer.drawString(energyPerOperation + ModUtils.getString(output3.output.metadata.getDouble(
+                                    "energy") * size) + " EU",
                             this.guiLeft + 60, this.guiTop + 58, 4210752
                     );
                     if (this.container.base.getProgress() * 100 <= 100) {

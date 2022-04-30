@@ -13,7 +13,6 @@ import ic2.api.tile.IEnergyStorage;
 import ic2.api.tile.IWrenchable;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
-import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
@@ -55,6 +54,7 @@ public class TileEntityConverter extends TileEntityInventory implements IHasGui,
     public double differenceenergy1 = 0;
     public int tier;
     public List<EntityPlayer> list = new ArrayList<>();
+
     public TileEntityConverter() {
         this.energy2 = 0.0D;
         this.maxStorage2 = 400000;
@@ -155,19 +155,20 @@ public class TileEntityConverter extends TileEntityInventory implements IHasGui,
             }
 
         }
-        if(!this.list.isEmpty())
-        if (this.rf) {
-            NodeStats stats = EnergyNet.instance.getNodeStats(this.energy.getDelegate());
-            if (stats != null) {
-                this.differenceenergy1 = stats.getEnergyIn();
-            }
-            this.differenceenergy = this.energy2 - this.perenergy;
+        if (!this.list.isEmpty()) {
+            if (this.rf) {
+                NodeStats stats = EnergyNet.instance.getNodeStats(this.energy.getDelegate());
+                if (stats != null) {
+                    this.differenceenergy1 = stats.getEnergyIn();
+                }
+                this.differenceenergy = this.energy2 - this.perenergy;
 
-        } else {
-            this.perenergy1 = this.energy.getEnergy();
-            NodeStats stats = EnergyNet.instance.getNodeStats(this.energy.getDelegate());
-            if (stats != null) {
-                this.differenceenergy = stats.getEnergyOut();
+            } else {
+                this.perenergy1 = this.energy.getEnergy();
+                NodeStats stats = EnergyNet.instance.getNodeStats(this.energy.getDelegate());
+                if (stats != null) {
+                    this.differenceenergy = stats.getEnergyOut();
+                }
             }
         }
 

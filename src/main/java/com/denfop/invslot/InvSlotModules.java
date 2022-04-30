@@ -5,7 +5,7 @@ import com.denfop.items.modules.EnumSpawnerModules;
 import com.denfop.items.modules.EnumSpawnerType;
 import com.denfop.items.modules.ItemEntityModule;
 import com.denfop.tiles.base.TileEntityAutoSpawner;
-import com.denfop.utils.CapturedMob;
+import com.denfop.utils.CapturedMobUtils;
 import ic2.core.block.invslot.InvSlot;
 import net.minecraft.item.ItemStack;
 
@@ -29,7 +29,7 @@ public class InvSlotModules extends InvSlot {
         }
 
 
-        return CapturedMob.containsSoul(itemStack);
+        return CapturedMobUtils.containsSoul(itemStack);
     }
 
     @Override

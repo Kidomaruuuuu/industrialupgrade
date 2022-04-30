@@ -10,11 +10,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GUIMagnet extends GuiIC2<ContainerMagnet> {
+public class GuiMagnet extends GuiIC2<ContainerMagnet> {
 
     public final ContainerMagnet container;
 
-    public GUIMagnet(ContainerMagnet container1) {
+    public GuiMagnet(ContainerMagnet container1) {
         super(container1);
         this.container = container1;
     }
@@ -55,7 +55,7 @@ public class GUIMagnet extends GuiIC2<ContainerMagnet> {
     }
 
     public ResourceLocation getTexture() {
-        return new ResourceLocation(Constants.TEXTURES, "textures/gui/GUIMagnet.png");
+        return new ResourceLocation(Constants.TEXTURES, "textures/gui/GuiMagnet.png");
     }
 
 }

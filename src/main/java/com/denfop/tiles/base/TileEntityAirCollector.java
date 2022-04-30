@@ -15,7 +15,6 @@ import ic2.core.block.invslot.InvSlotUpgrade;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fml.relauncher.Side;
@@ -25,6 +24,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 public class TileEntityAirCollector extends TileEntityElectricMachine implements IUpgradableBlock {
+
     public final FluidTank[] fluidTank;
     public final Fluids fluids;
     public final InvSlotUpgrade upgradeSlot;
@@ -34,8 +34,8 @@ public class TileEntityAirCollector extends TileEntityElectricMachine implements
         super(5000, 14, 3);
         this.fluidTank = new FluidTank[3];
         this.fluids = this.addComponent(new Fluids(this));
-        Fluid[] name1 = new Fluid[]{FluidName.fluidazot.getInstance(),FluidName.fluidoxy.getInstance(),
-                FluidName.fluidco2.getInstance()};;
+        Fluid[] name1 = new Fluid[]{FluidName.fluidazot.getInstance(), FluidName.fluidoxy.getInstance(),
+                FluidName.fluidco2.getInstance()};
         for (int i = 0; i < fluidTank.length; i++) {
 
             this.fluidTank[i] = this.fluids.addTank("fluidTank" + i, 8000, InvSlot.Access.O,
@@ -54,19 +54,22 @@ public class TileEntityAirCollector extends TileEntityElectricMachine implements
         this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
 
     }
+
     public FluidTank getFluidTank(int num) {
         return this.fluidTank[num];
     }
+
     @Override
     public ContainerBase<?> getGuiContainer(final EntityPlayer entityPlayer) {
-        return new ContainerAirCollector(entityPlayer,this);
+        return new ContainerAirCollector(entityPlayer, this);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(final EntityPlayer entityPlayer, final boolean b) {
-        return new GuiAirCollector(new ContainerAirCollector(entityPlayer,this));
+        return new GuiAirCollector(new ContainerAirCollector(entityPlayer, this));
     }
+
     public int gaugeLiquidScaled(int i) {
         return this.getFluidTank(0).getFluidAmount() <= 0 ? 0 :
                 this.getFluidTank(0).getFluidAmount() * i / this.getFluidTank(0).getCapacity();
@@ -77,20 +80,7 @@ public class TileEntityAirCollector extends TileEntityElectricMachine implements
                 this.getFluidTank(0).getFluidAmount() * i / this.getFluidTank(0).getCapacity();
     }
 
-    public double gaugeLiquidScaled1(double i) {
-        return this.getFluidTank(1).getFluidAmount() <= 0 ? 0 :
-                this.getFluidTank(1).getFluidAmount() * i / this.getFluidTank(1).getCapacity();
-    }
 
-    public double gaugeLiquidScaled2(double i) {
-        return this.getFluidTank(2).getFluidAmount() <= 0 ? 0 :
-                this.getFluidTank(2).getFluidAmount() * i / this.getFluidTank(2).getCapacity();
-    }
-
-    public int gaugeLiquidScaled1(int i) {
-        return this.getFluidTank(1).getFluidAmount() <= 0 ? 0 :
-                this.getFluidTank(1).getFluidAmount() * i / this.getFluidTank(1).getCapacity();
-    }
     protected void onLoaded() {
         super.onLoaded();
         if (!this.getWorld().isRemote) {
@@ -98,6 +88,7 @@ public class TileEntityAirCollector extends TileEntityElectricMachine implements
         }
 
     }
+
     public void markDirty() {
         super.markDirty();
         if (IC2.platform.isSimulating()) {
@@ -105,6 +96,7 @@ public class TileEntityAirCollector extends TileEntityElectricMachine implements
         }
 
     }
+
     protected void updateEntityServer() {
         super.updateEntityServer();
         boolean needsInvUpdate;
@@ -112,45 +104,44 @@ public class TileEntityAirCollector extends TileEntityElectricMachine implements
         for (FluidTank tank : fluidTank) {
             if (!tank.equals(fluidTank[0])) {
                 for (InvSlotConsumableLiquidByListRemake slot : this.containerslot) {
-                    if(tank.getFluidAmount() >= 1000 && !slot.isEmpty()) {
+                    if (tank.getFluidAmount() >= 1000 && !slot.isEmpty()) {
                         slot.processFromTank(tank, this.outputSlot);
                         needsInvUpdate = true;
                     }
                 }
             }
         }
-        if(this.energy.getEnergy() > 5)
-        if(this.world.provider.getWorldTime() % 20 == 0){
-            if(fluidTank[0].getFluidAmount() + 1 <= fluidTank[0].getCapacity()){
-                fluidTank[0].fill(new FluidStack(FluidName.fluidazot.getInstance(),1),true);
-                needsInvUpdate = true;
-            }
-            if(this.world.provider.getWorldTime() % 60 == 0){
-                if(fluidTank[1].getFluidAmount() + 1 <= fluidTank[1].getCapacity()){
-                    fluidTank[1].fill(new FluidStack(FluidName.fluidoxy.getInstance(),1),true);
+        if (this.energy.getEnergy() > 5) {
+            if (this.world.provider.getWorldTime() % 20 == 0) {
+                if (fluidTank[0].getFluidAmount() + 1 <= fluidTank[0].getCapacity()) {
+                    fluidTank[0].fill(new FluidStack(FluidName.fluidazot.getInstance(), 1), true);
                     needsInvUpdate = true;
                 }
-            }
-            if(this.world.provider.getWorldTime() % 120 == 0){
-                if(fluidTank[2].getFluidAmount() + 1 <= fluidTank[2].getCapacity()){
-                    fluidTank[2].fill(new FluidStack(FluidName.fluidco2.getInstance(),1),true);
-                    needsInvUpdate = true;
+                if (this.world.provider.getWorldTime() % 60 == 0) {
+                    if (fluidTank[1].getFluidAmount() + 1 <= fluidTank[1].getCapacity()) {
+                        fluidTank[1].fill(new FluidStack(FluidName.fluidoxy.getInstance(), 1), true);
+                        needsInvUpdate = true;
+                    }
                 }
+                if (this.world.provider.getWorldTime() % 120 == 0) {
+                    if (fluidTank[2].getFluidAmount() + 1 <= fluidTank[2].getCapacity()) {
+                        fluidTank[2].fill(new FluidStack(FluidName.fluidco2.getInstance(), 1), true);
+                        needsInvUpdate = true;
+                    }
+                }
+                this.energy.useEnergy(5);
             }
-            this.energy.useEnergy(5);
         }
         if (needsInvUpdate) {
             this.markDirty();
         }
     }
+
     public void setUpgradestat() {
         this.upgradeSlot.onChanged();
         this.energy.setSinkTier(this.tier + this.upgradeSlot.extraTier);
     }
-    public int gaugeLiquidScaled2(int i) {
-        return this.getFluidTank(2).getFluidAmount() <= 0 ? 0 :
-                this.getFluidTank(2).getFluidAmount() * i / this.getFluidTank(2).getCapacity();
-    }
+
 
     @Override
     public double getEnergy() {

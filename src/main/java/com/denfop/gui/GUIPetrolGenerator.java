@@ -14,12 +14,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
-public class GUIPetrolGenerator extends GuiIC2<ContainerPetrolGenerator> {
+public class GuiPetrolGenerator extends GuiIC2<ContainerPetrolGenerator> {
 
     public ContainerPetrolGenerator container;
     public String name;
 
-    public GUIPetrolGenerator(ContainerPetrolGenerator container1) {
+    public GuiPetrolGenerator(ContainerPetrolGenerator container1) {
         super(container1);
         this.container = container1;
         this.name = Localization.translate((container.base).getName());
@@ -64,9 +64,8 @@ public class GUIPetrolGenerator extends GuiIC2<ContainerPetrolGenerator> {
         x -= this.guiLeft;
         y -= this.guiTop;
         for (final GuiElement<?> guiElement : this.elements) {
-            GuiElement<?> element = guiElement;
-            if (element.isEnabled()) {
-                element.drawBackground(x, y);
+            if (guiElement.isEnabled()) {
+                guiElement.drawBackground(x, y);
             }
         }
 

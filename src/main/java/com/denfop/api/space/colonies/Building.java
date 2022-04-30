@@ -2,15 +2,15 @@ package com.denfop.api.space.colonies;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-public abstract class Building implements IColonieBuilding {
+public abstract class Building implements IColonyBuilding {
 
     private final String name;
-    private final IColonie colonie;
+    private final IColony colonie;
 
-    public Building(String name,IColonie colonie) {
+    public Building(String name, IColony colonie) {
         this.name = name;
         this.colonie = colonie;
-        this.getColonie().addBuilding(this);
+        this.getColony().addBuilding(this);
     }
 
     @Override
@@ -25,13 +25,8 @@ public abstract class Building implements IColonieBuilding {
     }
 
     @Override
-    public IColonie getColonie() {
+    public IColony getColony() {
         return this.colonie;
-    }
-
-    @Override
-    public void work() {
-
     }
 
 

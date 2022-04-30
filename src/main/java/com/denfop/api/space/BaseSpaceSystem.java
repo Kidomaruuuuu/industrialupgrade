@@ -1,13 +1,12 @@
 package com.denfop.api.space;
 
-import com.denfop.api.space.colonies.ColonieNet;
-import com.denfop.api.space.colonies.IColonieNet;
+import com.denfop.api.space.colonies.ColonyNet;
+import com.denfop.api.space.colonies.IColonyNet;
 import com.denfop.api.space.fakebody.FakeSpaceSystemBase;
 import com.denfop.api.space.fakebody.IFakeSpaceSystemBase;
 import com.denfop.api.space.research.BaseSpaceResearchSystem;
 import com.denfop.api.space.research.IResearchSystem;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +15,7 @@ import java.util.Map;
 
 public class BaseSpaceSystem implements ISpaceNet {
 
-    public IColonieNet colonienet;
+    public IColonyNet colonienet;
     public IFakeSpaceSystemBase spaceSystemBase;
     public IResearchSystem spaceResearch;
     Map<IBody, ISystem> systemIBodyMap;
@@ -31,6 +30,7 @@ public class BaseSpaceSystem implements ISpaceNet {
     List<ISystem> systemList;
     Map<String, IBody> bodyMap;
     List<IBody> bodies;
+
     public BaseSpaceSystem() {
         this.planetISatelliteMap = new HashMap<>();
         this.systemIBodyMap = new HashMap<>();
@@ -43,12 +43,11 @@ public class BaseSpaceSystem implements ISpaceNet {
         this.starList = new ArrayList<>();
         this.bodyMap = new HashMap<>();
         this.bodies = new ArrayList<>();
-        FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);
         this.spaceSystemBase = new FakeSpaceSystemBase();
         this.spaceResearch = new BaseSpaceResearchSystem();
         this.asteroidList = new ArrayList<>();
-        this.colonienet = new ColonieNet();
+        this.colonienet = new ColonyNet();
 
     }
 
@@ -82,7 +81,7 @@ public class BaseSpaceSystem implements ISpaceNet {
     }
 
     @Override
-    public IColonieNet getColonieNet() {
+    public IColonyNet getColonieNet() {
         return this.colonienet;
     }
 

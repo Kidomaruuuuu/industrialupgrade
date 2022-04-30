@@ -4,10 +4,10 @@ import com.denfop.IUItem;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
+import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.tiles.base.EnumMultiMachine;
 import com.denfop.tiles.base.TileEntityMultiMachine;
 import ic2.api.recipe.IRecipeInputFactory;
-import ic2.api.recipe.RecipeOutput;
 import ic2.core.init.Localization;
 import ic2.core.item.type.CraftingItemType;
 import ic2.core.ref.ItemName;
@@ -21,7 +21,7 @@ public class TileEntityAssamplerScrap extends TileEntityMultiMachine {
                 EnumMultiMachine.AssamplerScrap.lenghtOperation,
                 3
         );
-     }
+    }
 
     public static void init() {
         addrecipe(

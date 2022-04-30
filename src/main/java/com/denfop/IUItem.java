@@ -98,8 +98,6 @@ public class IUItem {
     public static Item ultDDrill;
     public static ItemStack overclockerUpgrade;
     public static ItemStack overclockerUpgrade1;
-    public static ItemStack constructionFoam;
-    public static ItemStack constructionFoamWall;
     public static ItemsAdminPanel blockadmin;
     public static Item module;
     public static Item module5;

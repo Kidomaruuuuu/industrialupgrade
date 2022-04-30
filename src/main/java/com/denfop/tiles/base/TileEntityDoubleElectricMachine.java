@@ -9,7 +9,6 @@ import com.denfop.audio.PositionSpec;
 import com.denfop.container.ContainerDoubleElectricMachine;
 import com.denfop.tiles.mechanism.TileEntityAlloySmelter;
 import ic2.api.network.INetworkTileEntityEventListener;
-import ic2.api.recipe.RecipeOutput;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.IUpgradeItem;
 import ic2.api.upgrade.UpgradableProperty;
@@ -150,9 +149,9 @@ public abstract class TileEntityDoubleElectricMachine extends TileEntityInventor
 
 
         BaseMachineRecipe output = this.output;
-        if (output != null && this.outputSlot.canAdd(output.output.items) &&this.energy.getEnergy() >= this.energyConsume) {
+        if (output != null && this.outputSlot.canAdd(output.output.items) && this.energy.getEnergy() >= this.energyConsume) {
             if (this.type.equals(EnumDoubleElectricMachine.ALLOY_SMELTER)) {
-                if (output.output.metadata.getShort("temperature") == 0 || output.output.metadata.getInteger("temperature")  > ((TileEntityAlloySmelter) this).temperature) {
+                if (output.output.metadata.getShort("temperature") == 0 || output.output.metadata.getInteger("temperature") > ((TileEntityAlloySmelter) this).temperature) {
                     return;
                 }
             }

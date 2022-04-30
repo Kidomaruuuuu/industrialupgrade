@@ -68,15 +68,10 @@ public class ExperienceUtils {
                 ) - 151.5D * (double) level + 2220.0D)));
     }
 
-    public static int getXpToNextLevel(int level) {
-        int levelXP = getLevelForExperience(level);
-        int nextXP = getExperienceForLevel(level + 1);
-        return nextXP - levelXP;
-    }
-
     public static int getLevelForExperience(int experience) {
-        int i;
-        for (i = 0; getExperienceForLevel(i) <= experience; ++i) {
+        int i = 0;
+        while (getExperienceForLevel(i) <= experience) {
+            ++i;
         }
 
         return i - 1;

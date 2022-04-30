@@ -21,6 +21,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 @NotClassic
@@ -55,12 +56,11 @@ public class ItemAdvancedWindRotor extends ItemGradualInt implements IKineticRot
 
     @SideOnly(Side.CLIENT)
     public static ModelResourceLocation getModelLocation(String name) {
-        StringBuilder loc = new StringBuilder();
-        loc.append(Constants.MOD_ID);
-        loc.append(':');
 
-        loc.append("rotor").append("/").append(name);
-        return new ModelResourceLocation(loc.toString(), null);
+        final String loc = Constants.MOD_ID +
+                ':' +
+                "rotor" + "/" + name;
+        return new ModelResourceLocation(loc, null);
     }
 
     @SideOnly(Side.CLIENT)
@@ -79,7 +79,7 @@ public class ItemAdvancedWindRotor extends ItemGradualInt implements IKineticRot
     }
 
     @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, World world, List<String> tooltip, ITooltipFlag advanced) {
+    public void addInformation(@Nonnull ItemStack stack, World world, List<String> tooltip, ITooltipFlag advanced) {
         tooltip.add(Localization.translate("ic2.itemrotor.wind.info", this.minWindStrength, this.maxWindStrength));
         GearboxType type = null;
         if (Minecraft.getMinecraft().currentScreen instanceof GuiWaterKineticGenerator) {

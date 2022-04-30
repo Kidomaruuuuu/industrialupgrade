@@ -57,7 +57,8 @@ public class GuiConverter extends GuiIC2<ContainerConverter> {
     protected void drawForegroundLayer(int par1, int par2) {
         int nmPos = (this.xSize - this.fontRenderer.getStringWidth(Localization.translate(this.container.base.getName()))) / 2;
         this.fontRenderer.drawString(Localization.translate(this.container.base.getName()), nmPos, 6, 7718655);
-        this.fontRenderer.drawString("EU: " + ModUtils.getString(this.tileentity.energy.getEnergy()) + "/" + ModUtils.getString(
+        this.fontRenderer.drawString(
+                "EU: " + ModUtils.getString(this.tileentity.energy.getEnergy()) + "/" + ModUtils.getString(
                         this.tileentity.capacity),
                 9,
                 20,

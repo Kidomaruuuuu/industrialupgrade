@@ -6,7 +6,6 @@ import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.container.ContainerTripleElectricMachine;
 import com.denfop.tiles.mechanism.TileEntityAdvAlloySmelter;
 import ic2.api.network.INetworkTileEntityEventListener;
-import ic2.api.recipe.RecipeOutput;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.IUpgradeItem;
 import ic2.api.upgrade.UpgradableProperty;
@@ -62,7 +61,7 @@ public abstract class TileEntityTripleElectricMachine extends TileEntityStandart
             int energyPerTick, int length, int outputSlots, int aDefaultTier, String name,
             EnumTripleElectricMachine type
     ) {
-        super(name, energyPerTick * length, 1, outputSlots);
+        super(outputSlots);
         this.progress = 0;
         this.defaultEnergyConsume = this.energyConsume = energyPerTick;
         this.defaultOperationLength = this.operationLength = length;
@@ -140,7 +139,7 @@ public abstract class TileEntityTripleElectricMachine extends TileEntityStandart
         boolean needsInvUpdate = false;
 
 
-        if (this.output != null&& this.outputSlot.canAdd(output.output.items) && this.energy.getEnergy() >= this.energyConsume) {
+        if (this.output != null && this.outputSlot.canAdd(output.output.items) && this.energy.getEnergy() >= this.energyConsume) {
             if (this.type.equals(EnumTripleElectricMachine.ADV_ALLOY_SMELTER)) {
                 if (this.output.output.metadata.getShort("temperature") == 0 || output.output.metadata.getInteger("temperature") > ((TileEntityAdvAlloySmelter) this).temperature) {
                     return;

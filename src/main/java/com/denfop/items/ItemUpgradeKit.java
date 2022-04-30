@@ -86,7 +86,11 @@ public class ItemUpgradeKit extends ItemMulti<ItemUpgradeKit.Types> implements I
                 if (enumblock != null && enumblock.kit_meta == meta) {
                     ItemStack stack1;
                     if (TileEntityElectricBlock.getElectricBlock().chargepad) {
-                        stack1 = new ItemStack(IUItem.Chargepadelectricblock, 1, TileEntityElectricBlock.getElectricBlock().meta);
+                        stack1 = new ItemStack(
+                                IUItem.Chargepadelectricblock,
+                                1,
+                                TileEntityElectricBlock.getElectricBlock().meta
+                        );
                     } else {
                         stack1 = new ItemStack(IUItem.electricblock, 1, TileEntityElectricBlock.getElectricBlock().meta);
                     }

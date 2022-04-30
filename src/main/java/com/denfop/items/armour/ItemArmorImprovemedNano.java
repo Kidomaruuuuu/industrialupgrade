@@ -10,7 +10,7 @@ import com.denfop.api.upgrade.EnumUpgrades;
 import com.denfop.api.upgrade.IUpgradeItem;
 import com.denfop.api.upgrade.UpgradeSystem;
 import com.denfop.api.upgrade.event.EventItemLoad;
-import com.denfop.utils.EnumInfoUpgradeModules;
+import com.denfop.items.EnumInfoUpgradeModules;
 import com.denfop.utils.ModUtils;
 import ic2.api.item.ElectricItem;
 import ic2.api.item.IElectricItem;
@@ -37,7 +37,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
@@ -68,18 +67,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("SameReturnValue")
+
 public class ItemArmorImprovemedNano extends ItemArmorElectric
         implements IModelRegister, ISpecialArmor, IUpgradeItem, IElectricItem, IItemHudInfo, IMetalArmor {
 
-    protected static final Map<Potion, Integer> potionRemovalCost = new HashMap<Potion, Integer>();
+    protected static final Map<Potion, Integer> potionRemovalCost = new HashMap<>();
     protected final double maxCharge;
     protected final double transferLimit;
     protected final int tier;
     private final String armorName;
     private final String name;
     private float jumpCharge;
-    private boolean update = false;
 
     public ItemArmorImprovemedNano(
             String name, EntityEquipmentSlot armorType1, double maxCharge1, double transferLimit1,
@@ -124,12 +122,11 @@ public class ItemArmorImprovemedNano extends ItemArmorElectric
 
     @SideOnly(Side.CLIENT)
     public static ModelResourceLocation getModelLocation1(String name, String extraName) {
-        StringBuilder loc = new StringBuilder();
-        loc.append(Constants.MOD_ID);
-        loc.append(':');
-        loc.append("armour").append("/").append(name + extraName);
+        final String loc = Constants.MOD_ID +
+                ':' +
+                "armour" + "/" + name + extraName;
 
-        return new ModelResourceLocation(loc.toString(), null);
+        return new ModelResourceLocation(loc, null);
     }
 
     @SubscribeEvent
@@ -199,7 +196,7 @@ public class ItemArmorImprovemedNano extends ItemArmorElectric
             ElectricItem.manager.charge(stack, 2.147483647E9D, 2147483647, true, false);
             nbt.setInteger("ID_Item", Integer.MAX_VALUE);
             items.add(stack);
-            ItemStack itemstack = new ItemStack(this, 1, getMaxDamage());
+            ItemStack itemstack = new ItemStack(this, 1, 27);
             nbt = ModUtils.nbt(itemstack);
             nbt.setInteger("ID_Item", Integer.MAX_VALUE);
             items.add(itemstack);
@@ -238,10 +235,10 @@ public class ItemArmorImprovemedNano extends ItemArmorElectric
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(
-            final ItemStack stack,
+            @Nonnull final ItemStack stack,
             @Nullable final World worldIn,
-            final List<String> tooltip,
-            final ITooltipFlag flagIn
+            @Nonnull final List<String> tooltip,
+            @Nonnull final ITooltipFlag flagIn
     ) {
         ModUtils.mode(stack, tooltip);
     }
@@ -275,7 +272,7 @@ public class ItemArmorImprovemedNano extends ItemArmorElectric
     }
 
 
-    public boolean hasColor(ItemStack aStack) {
+    public boolean hasColor(@Nonnull ItemStack aStack) {
         return (getColor(aStack) != 10511680);
     }
 
@@ -300,7 +297,7 @@ public class ItemArmorImprovemedNano extends ItemArmorElectric
     }
 
     public ISpecialArmor.ArmorProperties getProperties(
-            EntityLivingBase player, ItemStack armor, DamageSource source,
+            EntityLivingBase player, @Nonnull ItemStack armor, DamageSource source,
             double damage, int slot
     ) {
         if (Config.spectralquantumprotection) {
@@ -351,7 +348,7 @@ public class ItemArmorImprovemedNano extends ItemArmorElectric
         }
     }
 
-    public void damageArmor(EntityLivingBase entity, ItemStack stack, DamageSource source, int damage, int slot) {
+    public void damageArmor(EntityLivingBase entity, @Nonnull ItemStack stack, DamageSource source, int damage, int slot) {
         int protect = (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.PROTECTION, stack) ?
                 UpgradeSystem.system.getModules(EnumInfoUpgradeModules.PROTECTION, stack).number : 0);
 
@@ -406,10 +403,6 @@ public class ItemArmorImprovemedNano extends ItemArmorElectric
         return 4000;
     }
 
-    @SideOnly(Side.CLIENT)
-    public EnumRarity getRarity(@Nonnull ItemStack stack) {
-        return EnumRarity.EPIC;
-    }
 
     public boolean canProvideEnergy(ItemStack itemStack) {
         return true;
@@ -749,7 +742,7 @@ public class ItemArmorImprovemedNano extends ItemArmorElectric
     }
 
 
-    public int getArmorDisplay(EntityPlayer player, ItemStack armor, int slot) {
+    public int getArmorDisplay(EntityPlayer player, @Nonnull ItemStack armor, int slot) {
         if (ElectricItem.manager.getCharge(armor) >= getEnergyPerDamage()) {
             return (int) Math.round(20.0D * getBaseAbsorptionRatio() * getDamageAbsorptionRatio());
         }
@@ -768,12 +761,11 @@ public class ItemArmorImprovemedNano extends ItemArmorElectric
 
     @Override
     public void setUpdate(final boolean update) {
-        this.update = update;
     }
 
 
     @Override
-    public void onUpdate(ItemStack itemStack, World world, Entity entity, int slot, boolean par5) {
+    public void onUpdate(@Nonnull ItemStack itemStack, @Nonnull World world, @Nonnull Entity entity, int slot, boolean par5) {
         NBTTagCompound nbt = ModUtils.nbt(itemStack);
 
         if (!UpgradeSystem.system.hasInMap(itemStack)) {

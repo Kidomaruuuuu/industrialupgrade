@@ -12,7 +12,7 @@ import java.util.WeakHashMap;
 
 public class KeyboardIU implements IKeyboard {
 
-    private final Map<EntityPlayer, Set<KeyboardIU.Key>> playerKeys = new WeakHashMap();
+    private final Map<EntityPlayer, Set<KeyboardIU.Key>> playerKeys = new WeakHashMap<>();
 
     public KeyboardIU() {
     }

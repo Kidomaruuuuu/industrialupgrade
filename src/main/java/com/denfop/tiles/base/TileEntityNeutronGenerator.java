@@ -3,7 +3,7 @@ package com.denfop.tiles.base;
 import com.denfop.Config;
 import com.denfop.blocks.FluidName;
 import com.denfop.container.ContainerNeutronGenerator;
-import com.denfop.gui.GUINeutronGenerator;
+import com.denfop.gui.GuiNeutronGenerator;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
@@ -148,7 +148,7 @@ public class TileEntityNeutronGenerator extends TileEntityElectricMachine implem
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUINeutronGenerator(new ContainerNeutronGenerator(entityPlayer, this));
+        return new GuiNeutronGenerator(new ContainerNeutronGenerator(entityPlayer, this));
     }
 
     public void onGuiClosed(EntityPlayer player) {

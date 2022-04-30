@@ -6,7 +6,6 @@ import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.container.ContainerBaseGenerationChipMachine;
 import com.denfop.utils.ModUtils;
-import ic2.api.recipe.RecipeOutput;
 import ic2.core.GuiIC2;
 import ic2.core.init.Localization;
 import net.minecraft.client.renderer.GlStateManager;
@@ -20,11 +19,11 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 @SideOnly(Side.CLIENT)
-public class GUIGenerationMicrochip extends GuiIC2<ContainerBaseGenerationChipMachine> {
+public class GuiGenerationMicrochip extends GuiIC2<ContainerBaseGenerationChipMachine> {
 
     public final ContainerBaseGenerationChipMachine container;
 
-    public GUIGenerationMicrochip(
+    public GuiGenerationMicrochip(
             ContainerBaseGenerationChipMachine container1
     ) {
         super(container1);
@@ -90,9 +89,7 @@ public class GUIGenerationMicrochip extends GuiIC2<ContainerBaseGenerationChipMa
         if (progress2 > 0) {
             drawTexturedModalRect(xoffset + 88, yoffset + 23, 176, 85, progress2 + 1, 7);
         }
-       /* this.mc.getTextureManager().bindTexture(new ResourceLocation(Constants.MOD_ID, "textures/gui/infobutton.png"));
-        this.drawTexturedRect(162.0D, 3.0D, 10.0D, 10.0D, 0.0D, 0.0D);
-        this.mc.getTextureManager().bindTexture(getTexture());*/
+
 
         if (temperature > 0) {
             drawTexturedModalRect(xoffset + 70, yoffset + 62, 176, 20, temperature + 1, 11);

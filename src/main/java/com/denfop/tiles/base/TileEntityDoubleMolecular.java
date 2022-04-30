@@ -9,15 +9,15 @@ import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.InvSlotRecipes;
+import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.container.ContainerBaseDoubleMolecular;
 import com.denfop.gui.GuiDoubleMolecularTransformer;
-import com.denfop.items.modules.AdditionModule;
+import com.denfop.items.modules.ItemAdditionModule;
 import ic2.api.energy.EnergyNet;
 import ic2.api.energy.tile.IEnergySink;
 import ic2.api.network.INetworkClientTileEntityEventListener;
 import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.recipe.IRecipeInputFactory;
-import ic2.api.recipe.RecipeOutput;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.audio.AudioSource;
@@ -103,7 +103,8 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
         addrecipe(
                 new ItemStack(IUItem.module_schedule, 1),
                 new ItemStack(Items.NETHER_STAR, 1),
-                new ItemStack(IUItem.upgrademodule, 1,
+                new ItemStack(
+                        IUItem.upgrademodule, 1,
                         20
                 ),
                 4000000
@@ -117,12 +118,14 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
         addrecipe(
                 new ItemStack(IUItem.module_schedule, 1),
                 new ItemStack(Items.BLAZE_ROD, 4),
-                new ItemStack(IUItem.upgrademodule, 1,
+                new ItemStack(
+                        IUItem.upgrademodule, 1,
                         25
                 ),
                 4000000
         );
-        addrecipe(new ItemStack(IUItem.module_schedule, 1), new ItemStack(Blocks.WEB, 1), new ItemStack(IUItem.upgrademodule, 1,
+        addrecipe(new ItemStack(IUItem.module_schedule, 1), new ItemStack(Blocks.WEB, 1), new ItemStack(
+                IUItem.upgrademodule, 1,
                 21
         ), 4000000);
 
@@ -438,7 +441,7 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
             final float hitY,
             final float hitZ
     ) {
-        if (player.getHeldItem(hand).getItem() instanceof AdditionModule && player.getHeldItem(hand).getItemDamage() == 4) {
+        if (player.getHeldItem(hand).getItem() instanceof ItemAdditionModule && player.getHeldItem(hand).getItemDamage() == 4) {
             if (!this.rf) {
                 this.rf = true;
                 player.getHeldItem(hand).setCount(player.getHeldItem(hand).getCount() - 1);
@@ -678,7 +681,12 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
                             size = i;
                             size2 = j;
                             getrecipe = true;
-                            output1 = Recipes.recipes.getRecipeOutput("doublemolecular", false, stack, stack1).output.items.get(0);
+                            output1 = Recipes.recipes.getRecipeOutput(
+                                    "doublemolecular",
+                                    false,
+                                    stack,
+                                    stack1
+                            ).output.items.get(0);
                             break;
 
                         }
@@ -727,7 +735,7 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
     public BaseMachineRecipe getOutput() {
 
         this.output = this.inputSlot.process();
-       return this.output;
+        return this.output;
     }
 
     public double getProgress() {

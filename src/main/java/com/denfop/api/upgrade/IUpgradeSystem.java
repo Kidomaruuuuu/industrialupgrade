@@ -1,6 +1,6 @@
 package com.denfop.api.upgrade;
 
-import com.denfop.utils.EnumInfoUpgradeModules;
+import com.denfop.items.EnumInfoUpgradeModules;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;

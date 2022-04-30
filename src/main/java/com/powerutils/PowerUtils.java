@@ -25,6 +25,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings({"ALL", "UnnecessaryFullyQualifiedName"})
 @Mod.EventBusSubscriber
@@ -32,7 +33,7 @@ import java.util.ArrayList;
 public final class PowerUtils {
 
 
-    public static final ArrayList<IModelRender> modelList = new ArrayList();
+    public static final List<IModelRender> modelList = new ArrayList<>();
     public Block itemPowerConverter;
 
     public static <E extends Enum<E> & ITeBlock> void register(Class<E> enumClass, ResourceLocation ref) {
@@ -63,6 +64,7 @@ public final class PowerUtils {
         modelList.add(puItemBase);
     }
 
+
     @Mod.EventHandler
     public void load(final FMLPreInitializationEvent event) {
         PowerItem.init();
@@ -72,6 +74,7 @@ public final class PowerUtils {
             }
         }
         itemPowerConverter = TeBlockRegistry.get(BlockPowerConverter.IDENTITY).setCreativeTab(IUCore.SSPTab);
+
         MinecraftForge.EVENT_BUS.register(this);
         PowerConfig.loadConfig(event.getSuggestedConfigurationFile(), event.getSide().isClient());
         BlockPowerConverter.buildDummies();
@@ -82,7 +85,8 @@ public final class PowerUtils {
     public void init(final FMLInitializationEvent event) {
         Components.register(AdvEnergy.class, "AdvEnergy");
         Components.register(QEComponent.class, "QEComponent");
-        Recipes.advRecipes.addRecipe(new ItemStack(PowerItem.module_ic),
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(PowerItem.module_ic),
                 "ABA",
                 "CDC",
                 "ABA",
@@ -106,7 +110,8 @@ public final class PowerUtils {
                 Character.valueOf('D'),
                 new ItemStack(IUItem.core, 1, 1)
         );
-        Recipes.advRecipes.addRecipe(new ItemStack(PowerItem.module_te),
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(PowerItem.module_te),
                 "ABA",
                 "CDC",
                 "ABA",
@@ -120,7 +125,8 @@ public final class PowerUtils {
                 Character.valueOf('D'),
                 new ItemStack(IUItem.core, 1, 1)
         );
-        Recipes.advRecipes.addRecipe(new ItemStack(itemPowerConverter),
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(itemPowerConverter),
                 "ABA",
                 "CDE",
                 "ABA",
@@ -135,7 +141,8 @@ public final class PowerUtils {
                 Character.valueOf('E'),
                 new ItemStack(PowerItem.module_rf)
         );
-        Recipes.advRecipes.addRecipe(new ItemStack(itemPowerConverter, 1, 1),
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(itemPowerConverter, 1, 1),
                 "ABA",
                 "CDE",
                 "ABA",
@@ -150,7 +157,8 @@ public final class PowerUtils {
                 Character.valueOf('E'),
                 new ItemStack(PowerItem.module_fe)
         );
-        Recipes.advRecipes.addRecipe(new ItemStack(itemPowerConverter, 1, 2),
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(itemPowerConverter, 1, 2),
                 "ABA",
                 "CDE",
                 "ABA",
@@ -166,7 +174,8 @@ public final class PowerUtils {
                 new ItemStack(PowerItem.module_te)
         );
 
-        Recipes.advRecipes.addRecipe(new ItemStack(itemPowerConverter, 1, 3),
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(itemPowerConverter, 1, 3),
                 "ABA",
                 "CDE",
                 "ABA",
@@ -181,7 +190,8 @@ public final class PowerUtils {
                 Character.valueOf('E'),
                 new ItemStack(PowerItem.module_qe)
         );
-        Recipes.advRecipes.addRecipe(new ItemStack(PowerItem.module_qe),
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(PowerItem.module_qe),
                 "ABA",
                 "CDC",
                 "ABA",

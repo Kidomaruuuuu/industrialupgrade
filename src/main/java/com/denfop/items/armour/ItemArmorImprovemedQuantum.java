@@ -9,12 +9,11 @@ import com.denfop.IUItem;
 import com.denfop.api.IModelRegister;
 import com.denfop.api.upgrade.EnumUpgrades;
 import com.denfop.api.upgrade.IUpgradeItem;
-import com.denfop.api.upgrade.UpgradeItemInform;
 import com.denfop.api.upgrade.UpgradeSystem;
 import com.denfop.api.upgrade.event.EventItemLoad;
+import com.denfop.items.EnumInfoUpgradeModules;
 import com.denfop.items.energy.ItemBattery;
 import com.denfop.items.energy.ItemMagnet;
-import com.denfop.utils.EnumInfoUpgradeModules;
 import com.denfop.utils.KeyboardClient;
 import com.denfop.utils.ModUtils;
 import ic2.api.item.ElectricItem;
@@ -84,16 +83,13 @@ import java.util.Map;
 public class ItemArmorImprovemedQuantum extends ItemArmorElectric
         implements IModelRegister, IUpgradeItem, ISpecialArmor, IElectricItem, IItemHudInfo, IMetalArmor, IHazmatLike {
 
-    protected static final Map<Potion, Integer> potionRemovalCost = new HashMap<Potion, Integer>();
+    protected static final Map<Potion, Integer> potionRemovalCost = new HashMap<>();
     protected final double maxCharge;
     protected final double transferLimit;
     protected final int tier;
     private final String armorName;
     private final String name;
-    private final List<EnumInfoUpgradeModules> lst = new ArrayList<>();
-    private final List<UpgradeItemInform> lst1 = new ArrayList<>();
     private float jumpCharge;
-    private boolean update = false;
 
     public ItemArmorImprovemedQuantum(
             String name, EntityEquipmentSlot armorType1, double maxCharge1, double transferLimit1,
@@ -218,10 +214,10 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(
-            final ItemStack itemStack,
+            @Nonnull final ItemStack itemStack,
             @Nullable final World worldIn,
-            final List<String> info,
-            final ITooltipFlag flagIn
+            @Nonnull final List<String> info,
+            @Nonnull final ITooltipFlag flagIn
     ) {
         NBTTagCompound nbtData = ModUtils.nbt(itemStack);
 
@@ -254,7 +250,7 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
             ElectricItem.manager.charge(stack, 2.147483647E9D, 2147483647, true, false);
             nbt.setInteger("ID_Item", Integer.MAX_VALUE);
             items.add(stack);
-            ItemStack itemstack = new ItemStack(this, 1, getMaxDamage());
+            ItemStack itemstack = new ItemStack(this, 1, 27);
             nbt = ModUtils.nbt(itemstack);
             nbt.setInteger("ID_Item", Integer.MAX_VALUE);
             items.add(itemstack);
@@ -320,7 +316,7 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
     }
 
 
-    public boolean hasColor(ItemStack aStack) {
+    public boolean hasColor(@Nonnull ItemStack aStack) {
         return (getColor(aStack) != 10511680);
     }
 
@@ -345,7 +341,7 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
     }
 
     public ArmorProperties getProperties(
-            EntityLivingBase player, ItemStack armor, DamageSource source,
+            EntityLivingBase player, @Nonnull ItemStack armor, DamageSource source,
             double damage, int slot
     ) {
         if (Config.spectralquantumprotection) {
@@ -396,7 +392,7 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
         }
     }
 
-    public void damageArmor(EntityLivingBase entity, ItemStack stack, DamageSource source, int damage, int slot) {
+    public void damageArmor(EntityLivingBase entity, @Nonnull ItemStack stack, DamageSource source, int damage, int slot) {
         int protect = (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.PROTECTION, stack) ?
                 UpgradeSystem.system.getModules(EnumInfoUpgradeModules.PROTECTION, stack).number : 0);
 
@@ -456,8 +452,9 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
         }
     }
 
+    @Nonnull
     @Override
-    public ActionResult onItemRightClick(
+    public ActionResult<ItemStack> onItemRightClick(
             @Nonnull final World p_77659_1_,
             @Nonnull final EntityPlayer p_77659_2_,
             @Nonnull final EnumHand p_77659_3_
@@ -476,10 +473,10 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
                         TextFormatting.GREEN + Localization.translate("message.text.mode") + ": "
                                 + Localization.translate("message.magnet.mode." + mode)
                 );
-                return new ActionResult(EnumActionResult.SUCCESS, p_77659_2_.getHeldItem(p_77659_3_));
+                return new ActionResult<>(EnumActionResult.SUCCESS, p_77659_2_.getHeldItem(p_77659_3_));
             }
         }
-        return new ActionResult(EnumActionResult.PASS, p_77659_2_.getHeldItem(p_77659_3_));
+        return new ActionResult<>(EnumActionResult.PASS, p_77659_2_.getHeldItem(p_77659_3_));
 
     }
 
@@ -880,7 +877,7 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
                             .get(j)
                             .getItem() instanceof ItemBattery && ((ItemBattery) player.inventory.mainInventory
                             .get(j)
-                            .getItem()).wirellescharge)) {
+                            .getItem()).wirelessCharge)) {
                         if (ElectricItem.manager.getCharge(itemStack) > 0) {
                             double sentPacket = ElectricItem.manager.charge(
                                     player.inventory.mainInventory.get(j),
@@ -1040,7 +1037,7 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
     }
 
 
-    public int getArmorDisplay(EntityPlayer player, ItemStack armor, int slot) {
+    public int getArmorDisplay(EntityPlayer player, @Nonnull ItemStack armor, int slot) {
         return ElectricItem.manager.getCharge(armor) >= (double) this.getEnergyPerDamage()
                 ? (int) Math.round(20.0D * this.getBaseAbsorptionRatio() * this.getDamageAbsorptionRatio())
                 : 0;
@@ -1057,12 +1054,11 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
 
     @Override
     public void setUpdate(final boolean update) {
-        this.update = update;
     }
 
 
     @Override
-    public void onUpdate(ItemStack itemStack, World world, Entity entity, int slot, boolean par5) {
+    public void onUpdate(@Nonnull ItemStack itemStack, @Nonnull World world, @Nonnull Entity entity, int slot, boolean par5) {
         NBTTagCompound nbt = ModUtils.nbt(itemStack);
 
         if (!UpgradeSystem.system.hasInMap(itemStack)) {

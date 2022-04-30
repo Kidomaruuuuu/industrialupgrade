@@ -2,17 +2,15 @@ package com.denfop.gui;
 
 import com.denfop.Constants;
 import com.denfop.container.ContainerCombinerSE;
-import com.denfop.container.ContainerCombinerSolidMatter;
 import ic2.core.GuiIC2;
-import ic2.core.init.Localization;
 import net.minecraft.util.ResourceLocation;
 
 
-public class GUICombinerSE extends GuiIC2<ContainerCombinerSE> {
+public class GuiCombinerSE extends GuiIC2<ContainerCombinerSE> {
 
     public final ContainerCombinerSE container;
 
-    public GUICombinerSE(ContainerCombinerSE container1) {
+    public GuiCombinerSE(ContainerCombinerSE container1) {
         super(container1);
         this.container = container1;
     }

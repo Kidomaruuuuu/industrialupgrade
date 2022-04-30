@@ -10,9 +10,8 @@ import com.denfop.gui.GuiAutoSpawner;
 import com.denfop.invslot.InvSlotBook;
 import com.denfop.invslot.InvSlotModules;
 import com.denfop.invslot.InvSlotUpgradeModule;
-import com.denfop.utils.CapturedMob;
-import com.denfop.utils.Enchant;
-import com.denfop.utils.FakePlayerSpawner;
+import com.denfop.utils.CapturedMobUtils;
+import com.denfop.utils.EnchantUtils;
 import ic2.api.energy.EnergyNet;
 import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.upgrade.IUpgradableBlock;
@@ -170,9 +169,9 @@ public class TileEntityAutoSpawner extends TileEntityElectricMachine
                         return;
                     }
 
-                    CapturedMob capturedMob = CapturedMob.create(this.module_slot.get(i));
-                    assert capturedMob != null;
-                    Entity entity = capturedMob.getEntity(this.world, true);
+                    CapturedMobUtils capturedMobUtils = CapturedMobUtils.create(this.module_slot.get(i));
+                    assert capturedMobUtils != null;
+                    Entity entity = capturedMobUtils.getEntity(this.world, true);
 
                     if (this.module_slot.get(i).serializeNBT().getInteger("type") != 0) {
                         if (entity instanceof EntitySheep) {
@@ -201,7 +200,7 @@ public class TileEntityAutoSpawner extends TileEntityElectricMachine
                         int reaper = getEnchant(11);
                         ItemStack stack = new ItemStack(Items.ENCHANTED_BOOK);
                         if (Config.DraconicLoaded) {
-                            Enchant.addEnchant(stack, reaper);
+                            EnchantUtils.addEnchant(stack, reaper);
                         }
                         this.player.fireAspect = fireAspect;
                         this.player.loot = loot;
@@ -280,7 +279,7 @@ public class TileEntityAutoSpawner extends TileEntityElectricMachine
             }
             ItemStack stack = this.book_slot.get(i);
             if (stack.getItem() instanceof ItemEnchantedBook) {
-                NBTTagList bookNBT = ((ItemEnchantedBook) this.book_slot.get(i).getItem()).getEnchantments(this.book_slot.get(i));
+                NBTTagList bookNBT = ItemEnchantedBook.getEnchantments(this.book_slot.get(i));
                 if (bookNBT.tagCount() == 1) {
                     short id = bookNBT.getCompoundTagAt(0).getShort("id");
                     if (id == enchantID) {

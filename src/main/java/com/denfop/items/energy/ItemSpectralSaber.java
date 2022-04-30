@@ -5,10 +5,9 @@ import com.denfop.IUCore;
 import com.denfop.api.IModelRegister;
 import com.denfop.api.upgrade.EnumUpgrades;
 import com.denfop.api.upgrade.IUpgradeItem;
-import com.denfop.api.upgrade.UpgradeItemInform;
 import com.denfop.api.upgrade.UpgradeSystem;
 import com.denfop.api.upgrade.event.EventItemLoad;
-import com.denfop.utils.EnumInfoUpgradeModules;
+import com.denfop.items.EnumInfoUpgradeModules;
 import com.denfop.utils.ModUtils;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -58,7 +57,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -68,13 +66,13 @@ import java.util.List;
 public class ItemSpectralSaber extends ItemTool implements IElectricItem, IUpgradeItem, IBoxable, IItemHudInfo, IModelRegister {
 
     public static int ticker = 0;
-    public int activedamage;
-    private final int damage1;
     public final int maxCharge;
     public final int transferLimit;
     public final int tier;
+    private final int damage1;
     private final EnumSet<ToolClass> toolClasses;
     private final String name;
+    public int activedamage;
     protected AudioSource audioSource;
     private int soundTicker;
     private boolean wasEquipped;
@@ -139,19 +137,19 @@ public class ItemSpectralSaber extends ItemTool implements IElectricItem, IUpgra
     }
 
     @Override
-    public void getSubItems(final CreativeTabs subs, final NonNullList<ItemStack> items) {
+    public void getSubItems(@Nonnull final CreativeTabs subs, @Nonnull final NonNullList<ItemStack> items) {
         if (this.isInCreativeTab(subs)) {
             ItemStack stack = new ItemStack(this, 1);
 
 
             ElectricItem.manager.charge(stack, 2.147483647E9D, 2147483647, true, false);
             items.add(stack);
-            ItemStack itemstack = new ItemStack(this, 1, getMaxDamage());
+            ItemStack itemstack = new ItemStack(this, 1, 27);
             items.add(itemstack);
         }
     }
 
-    public boolean canHarvestBlock(IBlockState state, ItemStack itemStack) {
+    public boolean canHarvestBlock(IBlockState state, @Nonnull ItemStack itemStack) {
         Material material = state.getMaterial();
         Iterator var4 = this.toolClasses.iterator();
 
@@ -197,7 +195,7 @@ public class ItemSpectralSaber extends ItemTool implements IElectricItem, IUpgra
         return this.maxCharge;
     }
 
-    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
+    public boolean isBookEnchantable(@Nonnull ItemStack stack, @Nonnull ItemStack book) {
         return true;
     }
 
@@ -206,12 +204,12 @@ public class ItemSpectralSaber extends ItemTool implements IElectricItem, IUpgra
         return true;
     }
 
-    public boolean onDroppedByPlayer(ItemStack item, EntityPlayer player) {
+    public boolean onDroppedByPlayer(@Nonnull ItemStack item, @Nonnull EntityPlayer player) {
         this.removeAudioSource();
         return true;
     }
 
-    public float getDestroySpeed(ItemStack itemStack, IBlockState state) {
+    public float getDestroySpeed(@Nonnull ItemStack itemStack, @Nonnull IBlockState state) {
 
         NBTTagCompound nbtData = StackUtil.getOrCreateNbtData(itemStack);
         if (nbtData.getBoolean("active")) {
@@ -224,10 +222,11 @@ public class ItemSpectralSaber extends ItemTool implements IElectricItem, IUpgra
         return 1.0F;
     }
 
+    @Nonnull
     @Override
     public Multimap<String, AttributeModifier> getAttributeModifiers(
-            final EntityEquipmentSlot p_getAttributeModifiers_1_,
-            final ItemStack stack
+            @Nonnull final EntityEquipmentSlot p_getAttributeModifiers_1_,
+            @Nonnull final ItemStack stack
     ) {
         if (p_getAttributeModifiers_1_ != EntityEquipmentSlot.MAINHAND) {
             return super.getAttributeModifiers(p_getAttributeModifiers_1_, stack);
@@ -257,7 +256,7 @@ public class ItemSpectralSaber extends ItemTool implements IElectricItem, IUpgra
     }
 
     @Override
-    public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase source) {
+    public boolean hitEntity(@Nonnull ItemStack stack, @Nonnull EntityLivingBase target, @Nonnull EntityLivingBase source) {
         NBTTagCompound nbtData = StackUtil.getOrCreateNbtData(stack);
         if (!nbtData.getBoolean("active")) {
             return true;
@@ -333,7 +332,7 @@ public class ItemSpectralSaber extends ItemTool implements IElectricItem, IUpgra
     }
 
     @Override
-    public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, EntityPlayer player) {
+    public boolean onBlockStartBreak(@Nonnull ItemStack stack, @Nonnull BlockPos pos, @Nonnull EntityPlayer player) {
         if (isActive(stack)) {
             drainSaber(stack, 80.0D, player);
         }
@@ -348,18 +347,18 @@ public class ItemSpectralSaber extends ItemTool implements IElectricItem, IUpgra
 
     @Nonnull
     @Override
-    public ActionResult onItemRightClick(World world, @Nonnull EntityPlayer player, @Nonnull EnumHand hand) {
+    public ActionResult<ItemStack> onItemRightClick(World world, @Nonnull EntityPlayer player, @Nonnull EnumHand hand) {
         ItemStack stack = StackUtil.get(player, hand);
         if (world.isRemote) {
-            return new ActionResult(EnumActionResult.PASS, stack);
+            return new ActionResult<>(EnumActionResult.PASS, stack);
         } else {
             NBTTagCompound nbt = StackUtil.getOrCreateNbtData(stack);
             if (isActive(nbt)) {
                 setActive(nbt, false);
-                return new ActionResult(EnumActionResult.SUCCESS, stack);
+                return new ActionResult<>(EnumActionResult.SUCCESS, stack);
             } else if (ElectricItem.manager.canUse(stack, 16.0D)) {
                 setActive(nbt, true);
-                return new ActionResult(EnumActionResult.SUCCESS, stack);
+                return new ActionResult<>(EnumActionResult.SUCCESS, stack);
             } else {
                 return super.onItemRightClick(world, player, hand);
             }
@@ -448,7 +447,7 @@ public class ItemSpectralSaber extends ItemTool implements IElectricItem, IUpgra
     }
 
     @Override
-    public void onUpdate(ItemStack itemStack, World world, Entity entity, int slot, boolean par5) {
+    public void onUpdate(@Nonnull ItemStack itemStack, @Nonnull World world, @Nonnull Entity entity, int slot, boolean par5) {
         NBTTagCompound nbt = ModUtils.nbt(itemStack);
 
         if (!UpgradeSystem.system.hasInMap(itemStack)) {
@@ -472,18 +471,21 @@ public class ItemSpectralSaber extends ItemTool implements IElectricItem, IUpgra
         }
     }
 
+    @Nonnull
     @Override
     public String getUnlocalizedName() {
         return "iu" + super.getUnlocalizedName().substring(4);
     }
 
+    @Nonnull
     @Override
-    public String getUnlocalizedName(ItemStack itemStack) {
+    public String getUnlocalizedName(@Nonnull ItemStack itemStack) {
         return getUnlocalizedName();
     }
 
+    @Nonnull
     @Override
-    public String getItemStackDisplayName(ItemStack itemStack) {
+    public String getItemStackDisplayName(@Nonnull ItemStack itemStack) {
         return Localization.translate(getUnlocalizedName(itemStack));
     }
 

@@ -1,7 +1,7 @@
 package com.denfop.api;
 
+import com.denfop.api.recipe.RecipeOutput;
 import ic2.api.recipe.IRecipeInput;
-import ic2.api.recipe.RecipeOutput;
 import net.minecraft.item.ItemStack;
 
 import java.util.Map;

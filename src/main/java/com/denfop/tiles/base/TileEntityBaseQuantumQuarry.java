@@ -15,7 +15,6 @@ import com.denfop.gui.GUIQuantumQuarry;
 import com.denfop.invslot.InvSlotQuantumQuarry;
 import com.denfop.items.modules.EnumQuarryModules;
 import com.denfop.items.modules.EnumQuarryType;
-import com.denfop.utils.ModUtils;
 import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.IUpgradeItem;
@@ -33,7 +32,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
@@ -55,6 +53,8 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
     public final InvSlotQuantumQuarry inputslotA;
     private final String name;
     public double consume;
+    public boolean mac_enabled = false;
+    public boolean comb_mac_enabled = false;
     public boolean furnace;
     public int chance;
     public int col;
@@ -66,6 +66,7 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
     public int progress;
     public EnumQuarryModules list_modules;
     public Vein vein;
+
     public TileEntityBaseQuantumQuarry(String name, int coef) {
 
         this.progress = 0;
@@ -97,37 +98,13 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
     public void readFromNBT(NBTTagCompound nbttagcompound) {
         super.readFromNBT(nbttagcompound);
         this.progress = nbttagcompound.getInteger("progress");
-        this.col = nbttagcompound.getInteger("col");
-        this.chance = nbttagcompound.getInteger("chance");
         this.getblock = nbttagcompound.getDouble("getblock");
-        this.furnace = nbttagcompound.getBoolean("furnace");
-        int type = nbttagcompound.getInteger("list_modules");
-        if (type != -1) {
-            this.list_modules = EnumQuarryModules.getFromID(type);
-        }
-        if (!this.inputslotA.isEmpty()) {
-            if (this.list.isEmpty()) {
-                this.list = ModUtils.getListFromModule(this.inputslotA.get());
-            }
-        }
-
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound) {
         super.writeToNBT(nbttagcompound);
-        nbttagcompound.setBoolean("furnace", this.furnace);
         nbttagcompound.setDouble("getblock", this.getblock);
         nbttagcompound.setInteger("progress", this.progress);
-        nbttagcompound.setInteger("chance", this.chance);
-        nbttagcompound.setInteger("col", this.col);
-
-        if (this.list_modules != null) {
-            nbttagcompound.setInteger("list_modules", this.list_modules.ordinal());
-        } else {
-            nbttagcompound.setInteger("list_modules", -1);
-
-        }
-
         return nbttagcompound;
     }
 
@@ -163,16 +140,17 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
         super.updateEntityServer();
         double proccent = this.consume;
 
-
-        if (this.analyzer && this.vein.get()) {
-            if (this.vein.getType() == Type.VEIN && this.vein.getCol() > 0) {
-                final ItemStack stack = new ItemStack(IUItem.heavyore, 1, vein.getMeta());
-                if (!list(this.list_modules, stack)) {
-                    this.setActive(true);
-                    this.energy.useEnergy(proccent);
-                    this.getblock++;
-                    this.outputSlot.add(stack);
-                    this.vein.removeCol(1);
+        if (this.vein != null) {
+            if (this.analyzer && this.vein.get()) {
+                if (this.vein.getType() == Type.VEIN && this.vein.getCol() > 0) {
+                    final ItemStack stack = new ItemStack(IUItem.heavyore, 1, vein.getMeta());
+                    if (!list(this.list_modules, stack)) {
+                        this.setActive(true);
+                        this.energy.useEnergy(proccent);
+                        this.getblock++;
+                        this.outputSlot.add(stack);
+                        this.vein.removeCol(1);
+                    }
                 }
             }
         }
@@ -187,7 +165,7 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
             col -= coble;
             for (double i = 0; i < col; i++) {
                 if (this.energy.getEnergy() >= proccent) {
-                    if(!this.getActive()) {
+                    if (!this.getActive()) {
                         this.setActive(true);
                         initiate(0);
                     }
@@ -199,6 +177,24 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
                         List<ItemStack> list = IUCore.get_ingot;
                         int num = list.size();
                         int chance1 = rand.nextInt(num);
+                        if (!list(list_check, list.get(chance1))) {
+                            if (this.outputSlot.canAdd(list.get(chance1))) {
+                                this.outputSlot.add(list.get(chance1));
+                            }
+                        }
+                    } else if (this.comb_mac_enabled) {
+                        List<ItemStack> list = IUCore.get_comb_crushed;
+                        int num = list.size();
+                        int chance1 = this.rand.nextInt(num);
+                        if (!list(list_check, list.get(chance1))) {
+                            if (this.outputSlot.canAdd(list.get(chance1))) {
+                                this.outputSlot.add(list.get(chance1));
+                            }
+                        }
+                    } else if (this.mac_enabled) {
+                        List<ItemStack> list = IUCore.get_crushed;
+                        int num = list.size();
+                        int chance1 = this.rand.nextInt(num);
                         if (!list(list_check, list.get(chance1))) {
                             if (this.outputSlot.canAdd(list.get(chance1))) {
                                 this.outputSlot.add(list.get(chance1));

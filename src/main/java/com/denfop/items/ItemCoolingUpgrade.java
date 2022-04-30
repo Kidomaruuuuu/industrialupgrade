@@ -25,6 +25,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import java.util.Locale;
 
 public class ItemCoolingUpgrade extends ItemMulti<ItemCoolingUpgrade.Types> implements IModelRegister, ICoolItem {
@@ -56,16 +57,17 @@ public class ItemCoolingUpgrade extends ItemMulti<ItemCoolingUpgrade.Types> impl
         );
     }
 
+    @Nonnull
     @Override
     public EnumActionResult onItemUseFirst(
-            final EntityPlayer player,
+            @Nonnull final EntityPlayer player,
             final World world,
-            final BlockPos pos,
-            final EnumFacing side,
+            @Nonnull final BlockPos pos,
+            @Nonnull final EnumFacing side,
             final float hitX,
             final float hitY,
             final float hitZ,
-            final EnumHand hand
+            @Nonnull final EnumHand hand
     ) {
         if (world.getTileEntity(pos) instanceof TileEntityBlock) {
             TileEntityBlock block = (TileEntityBlock) world.getTileEntity(pos);

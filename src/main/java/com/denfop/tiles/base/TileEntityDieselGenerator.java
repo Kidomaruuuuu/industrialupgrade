@@ -4,7 +4,7 @@ import com.denfop.IUCore;
 import com.denfop.audio.AudioSource;
 import com.denfop.blocks.FluidName;
 import com.denfop.container.ContainerDieselGenerator;
-import com.denfop.gui.GUIDieselGenerator;
+import com.denfop.gui.GuiDieselGenerator;
 import ic2.api.energy.EnergyNet;
 import ic2.api.item.ElectricItem;
 import ic2.api.network.INetworkTileEntityEventListener;
@@ -16,7 +16,6 @@ import ic2.core.block.invslot.InvSlotCharge;
 import ic2.core.block.invslot.InvSlotConsumableLiquid;
 import ic2.core.block.invslot.InvSlotConsumableLiquidByList;
 import ic2.core.block.invslot.InvSlotOutput;
-import ic2.core.init.Localization;
 import ic2.core.init.MainConfig;
 import ic2.core.util.ConfigUtil;
 import net.minecraft.client.gui.GuiScreen;
@@ -56,10 +55,6 @@ public class TileEntityDieselGenerator extends TileEntityLiquidTankInventory imp
 
     }
 
-
-    public String getInventoryName() {
-        return Localization.translate(name);
-    }
 
     public void readFromNBT(NBTTagCompound nbttagcompound) {
         super.readFromNBT(nbttagcompound);
@@ -194,10 +189,6 @@ public class TileEntityDieselGenerator extends TileEntityLiquidTankInventory imp
         return this.getTankAmount() > 0 && this.energy.getEnergy() + (double) this.production <= this.energy.getCapacity();
     }
 
-    public int gaugeStorageScaled(int i) {
-        return (int) (this.energy.getEnergy() * (double) i / this.energy.getCapacity());
-    }
-
 
     public ContainerBase<TileEntityDieselGenerator> getGuiContainer(EntityPlayer entityPlayer) {
         return new ContainerDieselGenerator(entityPlayer, this);
@@ -205,7 +196,7 @@ public class TileEntityDieselGenerator extends TileEntityLiquidTankInventory imp
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUIDieselGenerator(new ContainerDieselGenerator(entityPlayer, this));
+        return new GuiDieselGenerator(new ContainerDieselGenerator(entityPlayer, this));
     }
 
 

@@ -87,12 +87,15 @@ public class Asteroid implements IAsteroid {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Asteroid asteroid = (Asteroid) o;
         return Objects.equals(name, asteroid.name);
     }
-
 
 
 }

@@ -4,13 +4,13 @@ import com.denfop.IUItem;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
+import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.api.upgrade.event.EventItemBlackListLoad;
 import com.denfop.api.upgrade.event.EventItemLoad;
-import com.denfop.items.modules.UpgradeModule;
-import com.denfop.utils.EnumInfoUpgradeModules;
+import com.denfop.items.EnumInfoUpgradeModules;
+import com.denfop.items.modules.ItemUpgradeModule;
 import com.denfop.utils.ModUtils;
 import ic2.api.recipe.IRecipeInputFactory;
-import ic2.api.recipe.RecipeOutput;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.init.Enchantments;
@@ -20,7 +20,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -51,7 +50,6 @@ public class BaseUpgradeSystem implements IUpgradeSystem {
         this.map_modification = new HashMap<>();
 
         MinecraftForge.EVENT_BUS.register(this);
-        FMLCommonHandler.instance().bus().register(this);
 
     }
 
@@ -59,7 +57,7 @@ public class BaseUpgradeSystem implements IUpgradeSystem {
         NBTTagCompound nbt = ModUtils.nbt();
         nbt.setString(
                 "mode_module",
-                fill.getItem() instanceof UpgradeModule ? UpgradeModule.getType(fill.getItemDamage()).name : "blacklist"
+                fill.getItem() instanceof ItemUpgradeModule ? ItemUpgradeModule.getType(fill.getItemDamage()).name : "blacklist"
         );
         final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
         Recipes.recipes.addRecipe(
@@ -306,7 +304,7 @@ public class BaseUpgradeSystem implements IUpgradeSystem {
     @Override
     public void updateBlackListFromNBT(final IUpgradeWithBlackList item, final ItemStack stack, NBTTagCompound nbt) {
         this.updateListFromNBT(item, stack);
-        List<String> lst = new ArrayList();
+        List<String> lst = new ArrayList<>();
         for (int j = 0; j < 18; j++) {
             String l = "number_" + j;
             if (!nbt.getString(l).isEmpty()) {

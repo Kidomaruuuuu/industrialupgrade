@@ -1,9 +1,9 @@
 package com.denfop.api.space.colonies;
 
 public enum EnumHouses {
-    LOW(20, 10, EnumHousesLevel.LOW,10),
-    MEDIUM(35, 18, EnumHousesLevel.MEDIUM,15),
-    HIGH(45, 25, EnumHousesLevel.HIGH,20),
+    LOW(20, 10, EnumHousesLevel.LOW, 10),
+    MEDIUM(35, 18, EnumHousesLevel.MEDIUM, 15),
+    HIGH(45, 25, EnumHousesLevel.HIGH, 20),
     ;
     private final int max;
     private final int energy;

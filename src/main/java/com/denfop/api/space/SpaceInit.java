@@ -92,7 +92,8 @@ public class SpaceInit {
                 true,
                 false
         );
-        moon = new Satellite("moon",
+        moon = new Satellite(
+                "moon",
                 solarSystem,
                 getTexture("moon"),
                 EnumLevels.FIRST,
@@ -102,7 +103,8 @@ public class SpaceInit {
                 1,
                 EnumType.NEUTRAL,
                 false,
-                true);
+                true
+        );
 
         mars = new Planet(
                 "mars",
@@ -117,7 +119,8 @@ public class SpaceInit {
                 false,
                 true
         );
-        deimos = new Satellite("deimos",
+        deimos = new Satellite(
+                "deimos",
                 solarSystem,
                 getTexture("deimos"),
                 EnumLevels.FIRST,
@@ -127,8 +130,10 @@ public class SpaceInit {
                 1.5,
                 EnumType.NEUTRAL,
                 false,
-                true);
-        phobos = new Satellite("phobos",
+                true
+        );
+        phobos = new Satellite(
+                "phobos",
                 solarSystem,
                 getTexture("phobos"),
                 EnumLevels.FIRST,
@@ -138,7 +143,8 @@ public class SpaceInit {
                 1.5,
                 EnumType.NEUTRAL,
                 false,
-                true);
+                true
+        );
         ceres = new Planet(
                 "ceres",
                 solarSystem,
@@ -165,7 +171,8 @@ public class SpaceInit {
                 false,
                 false
         );
-        europe = new Satellite("europe",
+        europe = new Satellite(
+                "europe",
                 solarSystem,
                 getTexture("europe"),
                 EnumLevels.SECOND,
@@ -175,8 +182,10 @@ public class SpaceInit {
                 2.5,
                 EnumType.NEUTRAL,
                 false,
-                true);
-        ganymede = new Satellite("ganymede",
+                true
+        );
+        ganymede = new Satellite(
+                "ganymede",
                 solarSystem,
                 getTexture("ganymede"),
                 EnumLevels.SECOND,
@@ -186,8 +195,10 @@ public class SpaceInit {
                 2.5,
                 EnumType.NEUTRAL,
                 false,
-                true);
-        io = new Satellite("io",
+                true
+        );
+        io = new Satellite(
+                "io",
                 solarSystem,
                 getTexture("io"),
                 EnumLevels.SECOND,
@@ -197,8 +208,10 @@ public class SpaceInit {
                 2.5,
                 EnumType.NEUTRAL,
                 false,
-                true);
-        callisto = new Satellite("callisto",
+                true
+        );
+        callisto = new Satellite(
+                "callisto",
                 solarSystem,
                 getTexture("callisto"),
                 EnumLevels.SECOND,
@@ -208,7 +221,8 @@ public class SpaceInit {
                 2.5,
                 EnumType.NEUTRAL,
                 false,
-                true);
+                true
+        );
         saturn = new Planet(
                 "saturn",
                 solarSystem,
@@ -222,7 +236,8 @@ public class SpaceInit {
                 false,
                 false
         );
-        enceladus = new Satellite("enceladus",
+        enceladus = new Satellite(
+                "enceladus",
                 solarSystem,
                 getTexture("enceladus"),
                 EnumLevels.THIRD,
@@ -232,8 +247,10 @@ public class SpaceInit {
                 3.5,
                 EnumType.NEUTRAL,
                 false,
-                true);
-        titan = new Satellite("titan",
+                true
+        );
+        titan = new Satellite(
+                "titan",
                 solarSystem,
                 getTexture("titan"),
                 EnumLevels.THIRD,
@@ -243,8 +260,10 @@ public class SpaceInit {
                 3.5,
                 EnumType.NEUTRAL,
                 false,
-                true);
-        dione = new Satellite("dione",
+                true
+        );
+        dione = new Satellite(
+                "dione",
                 solarSystem,
                 getTexture("dione"),
                 EnumLevels.THIRD,
@@ -254,8 +273,10 @@ public class SpaceInit {
                 3.5,
                 EnumType.NEUTRAL,
                 false,
-                true);
-        mimas = new Satellite("mimas",
+                true
+        );
+        mimas = new Satellite(
+                "mimas",
                 solarSystem,
                 getTexture("mimas"),
                 EnumLevels.THIRD,
@@ -265,8 +286,10 @@ public class SpaceInit {
                 3.5,
                 EnumType.NEUTRAL,
                 false,
-                true);
-        rhea = new Satellite("rhea",
+                true
+        );
+        rhea = new Satellite(
+                "rhea",
                 solarSystem,
                 getTexture("rhea"),
                 EnumLevels.THIRD,
@@ -276,7 +299,8 @@ public class SpaceInit {
                 3.5,
                 EnumType.NEUTRAL,
                 false,
-                true);
+                true
+        );
         uranus = new Planet(
                 "uranus",
                 solarSystem,
@@ -290,7 +314,8 @@ public class SpaceInit {
                 false,
                 false
         );
-        titania = new Satellite("titania",
+        titania = new Satellite(
+                "titania",
                 solarSystem,
                 getTexture("titania"),
                 EnumLevels.FOURTH,
@@ -300,8 +325,10 @@ public class SpaceInit {
                 4.25,
                 EnumType.NEUTRAL,
                 false,
-                true);
-        umbriel = new Satellite("umbriel",
+                true
+        );
+        umbriel = new Satellite(
+                "umbriel",
                 solarSystem,
                 getTexture("umbriel"),
                 EnumLevels.FOURTH,
@@ -311,8 +338,10 @@ public class SpaceInit {
                 4.25,
                 EnumType.NEUTRAL,
                 false,
-                true);
-        oberon = new Satellite("oberon",
+                true
+        );
+        oberon = new Satellite(
+                "oberon",
                 solarSystem,
                 getTexture("oberon"),
                 EnumLevels.FOURTH,
@@ -322,8 +351,10 @@ public class SpaceInit {
                 4.25,
                 EnumType.NEUTRAL,
                 false,
-                true);
-        ariel = new Satellite("ariel",
+                true
+        );
+        ariel = new Satellite(
+                "ariel",
                 solarSystem,
                 getTexture("ariel"),
                 EnumLevels.FOURTH,
@@ -333,8 +364,10 @@ public class SpaceInit {
                 4.25,
                 EnumType.NEUTRAL,
                 false,
-                true);
-        miranda = new Satellite("miranda",
+                true
+        );
+        miranda = new Satellite(
+                "miranda",
                 solarSystem,
                 getTexture("miranda"),
                 EnumLevels.FOURTH,
@@ -344,7 +377,8 @@ public class SpaceInit {
                 4.25,
                 EnumType.NEUTRAL,
                 false,
-                true);
+                true
+        );
         neptune = new Planet(
                 "neptune",
                 solarSystem,
@@ -358,7 +392,8 @@ public class SpaceInit {
                 false,
                 false
         );
-        triton = new Satellite("triton",
+        triton = new Satellite(
+                "triton",
                 solarSystem,
                 getTexture("triton"),
                 EnumLevels.FIVE,
@@ -368,8 +403,10 @@ public class SpaceInit {
                 4.75,
                 EnumType.NEUTRAL,
                 false,
-                true);
-        proteus = new Satellite("proteus",
+                true
+        );
+        proteus = new Satellite(
+                "proteus",
                 solarSystem,
                 getTexture("proteus"),
                 EnumLevels.FIVE,
@@ -379,8 +416,10 @@ public class SpaceInit {
                 4.75,
                 EnumType.NEUTRAL,
                 false,
-                true);
-        proteus = new Satellite("proteus",
+                true
+        );
+        proteus = new Satellite(
+                "proteus",
                 solarSystem,
                 getTexture("proteus"),
                 EnumLevels.FIVE,
@@ -390,7 +429,8 @@ public class SpaceInit {
                 4.75,
                 EnumType.NEUTRAL,
                 false,
-                true);
+                true
+        );
         pluto = new Planet(
                 "pluto",
                 solarSystem,
@@ -404,7 +444,8 @@ public class SpaceInit {
                 false,
                 false
         );
-        charon = new Satellite("charon",
+        charon = new Satellite(
+                "charon",
                 solarSystem,
                 getTexture("charon"),
                 EnumLevels.SIX,
@@ -414,7 +455,8 @@ public class SpaceInit {
                 5.25,
                 EnumType.NEUTRAL,
                 false,
-                true);
+                true
+        );
 
     }
 

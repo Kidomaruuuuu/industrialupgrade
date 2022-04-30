@@ -1,7 +1,6 @@
 package com.denfop.events;
 
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -10,7 +9,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class TickHandler {
 
     public TickHandler() {
-        FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);
     }
 

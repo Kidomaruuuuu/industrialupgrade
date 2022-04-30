@@ -7,8 +7,6 @@ public interface ITemperatureMechanism {
 
     boolean process(ITemperature tile);
 
-    short transfer(ITemperature receiver, ITemperature extract);
-
     void work(ITemperature tile);
 
     boolean hasHeaters(ITemperature tile);

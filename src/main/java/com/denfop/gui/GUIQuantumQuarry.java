@@ -2,7 +2,7 @@ package com.denfop.gui;
 
 import com.denfop.Constants;
 import com.denfop.container.ContainerQuantumQuarry;
-import com.denfop.utils.ListInformation;
+import com.denfop.utils.ListInformationUtils;
 import com.denfop.utils.ModUtils;
 import ic2.core.GuiIC2;
 import ic2.core.IC2;
@@ -28,7 +28,7 @@ public class GUIQuantumQuarry extends GuiIC2<ContainerQuantumQuarry> {
         if (mouseX >= 3 && mouseX <= 15 && mouseY >= 3 && mouseY <= 15) {
             List<String> text = new ArrayList<>();
             text.add(Localization.translate("iu.quarryinformation"));
-            List<String> compatibleUpgrades = ListInformation.quarryinform;
+            List<String> compatibleUpgrades = ListInformationUtils.quarryinform;
             Iterator<String> var5 = compatibleUpgrades.iterator();
             String itemstack;
             while (var5.hasNext()) {

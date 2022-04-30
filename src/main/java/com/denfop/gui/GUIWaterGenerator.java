@@ -11,13 +11,13 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GUIWaterGenerator extends GuiIC2<ContainerWaterGenerator> {
+public class GuiWaterGenerator extends GuiIC2<ContainerWaterGenerator> {
 
     public final ContainerWaterGenerator container;
     public final String progressLabel;
     public final String amplifierLabel;
 
-    public GUIWaterGenerator(ContainerWaterGenerator container1) {
+    public GuiWaterGenerator(ContainerWaterGenerator container1) {
         super(container1);
         this.container = container1;
         this.progressLabel = Localization.translate("ic2.Matter.gui.info.progress");

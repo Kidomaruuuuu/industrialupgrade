@@ -10,12 +10,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GUILeadBox extends GuiIC2<ContainerLeadBox> {
+public class GuiLeadBox extends GuiIC2<ContainerLeadBox> {
 
     private static final ResourceLocation background = new ResourceLocation(Constants.TEXTURES, "textures/gui/GUIBags.png");
     private final String name;
 
-    public GUILeadBox(ContainerLeadBox container, final ItemStack itemStack1) {
+    public GuiLeadBox(ContainerLeadBox container, final ItemStack itemStack1) {
         super(container);
 
         this.name = Localization.translate(itemStack1.getUnlocalizedName() + ".name");

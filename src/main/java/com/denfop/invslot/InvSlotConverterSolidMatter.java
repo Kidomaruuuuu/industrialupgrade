@@ -66,20 +66,19 @@ public class InvSlotConverterSolidMatter extends InvSlot {
                 isStackEqualStrict(stack, ret)) && (stack.getCount() == 1 || consumeContainers ||
                 !stack.getItem().hasContainerItem(stack))) {
             int currentAmount = Math.min(amount, stack.getCount());
-            amount -= currentAmount;
             if (!simulate) {
                 if (stack.getCount() == currentAmount) {
                     if (!consumeContainers && stack.getItem().hasContainerItem(stack)) {
                         put(content, stack.getItem().getContainerItem(stack));
                     } else {
-                        put(content, null);
+                        put(content, ItemStack.EMPTY);
                     }
                 } else {
                     stack.setCount(stack.getCount() - currentAmount);
                 }
             }
             if (ret.isEmpty()) {
-                ret = StackUtil.copyWithSize(stack, currentAmount);
+                StackUtil.copyWithSize(stack, currentAmount);
             } else {
                 ret.setCount(ret.getCount() + currentAmount);
             }

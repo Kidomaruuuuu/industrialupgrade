@@ -15,6 +15,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import java.util.Locale;
 
 public class ItemCrushed extends ItemMulti<ItemCrushed.Types> implements IModelRegister {
@@ -37,7 +38,7 @@ public class ItemCrushed extends ItemMulti<ItemCrushed.Types> implements IModelR
         return "iu." + super.getUnlocalizedName().substring(4);
     }
 
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems) {
+    public void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> subItems) {
         if (this.isInCreativeTab(tab)) {
 
             for (final Types type : this.typeProperty.getShownValues()) {

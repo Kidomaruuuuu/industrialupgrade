@@ -16,7 +16,7 @@ public class GuiCoolMachine extends GuiIC2<ContainerCoolMachine> {
     public ContainerCoolMachine container;
     public String name;
 
-    public GuiCoolMachine(ContainerCoolMachine guiContainer, boolean b) {
+    public GuiCoolMachine(ContainerCoolMachine guiContainer) {
         super(guiContainer);
         this.container = guiContainer;
         this.name = Localization.translate(guiContainer.base.getName());

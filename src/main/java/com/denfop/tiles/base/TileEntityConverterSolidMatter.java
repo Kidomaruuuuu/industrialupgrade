@@ -6,13 +6,13 @@ import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.InvSlotRecipes;
+import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.container.ContainerConverterSolidMatter;
-import com.denfop.gui.GUIConverterSolidMatter;
+import com.denfop.gui.GuiConverterSolidMatter;
 import com.denfop.invslot.InvSlotConverterSolidMatter;
 import com.denfop.utils.ModUtils;
 import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.recipe.IRecipeInputFactory;
-import ic2.api.recipe.RecipeOutput;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
@@ -32,6 +32,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
 
+import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -155,7 +156,7 @@ public class TileEntityConverterSolidMatter extends TileEntityElectricMachine
 
         BaseMachineRecipe output = this.output;
         boolean needsInvUpdate = false;
-        if (output != null) {
+        if (output != null && this.outputSlot.canAdd(this.output.output.items) && !this.inputSlot.isEmpty()) {
             setActive(true);
 
             if (this.energy.getEnergy() == 0) {
@@ -249,20 +250,16 @@ public class TileEntityConverterSolidMatter extends TileEntityElectricMachine
     protected void onLoaded() {
         super.onLoaded();
         this.getOutput();
-        this.getrequiredmatter(this.output.getOutput());
+        if (this.output != null) {
+            this.getrequiredmatter(this.output.getOutput());
+        }
         this.MatterSlot.getmatter();
     }
 
     public BaseMachineRecipe getOutput() {
         this.output = this.inputSlot.process();
-        if (this.output == null) {
-            return null;
-        }
-        if (this.outputSlot.canAdd(this.output.output.items)) {
-            return this.output;
-        }
-        this.output = null;
-        return null;
+
+        return this.output;
     }
 
 
@@ -341,13 +338,13 @@ public class TileEntityConverterSolidMatter extends TileEntityElectricMachine
         return false;
     }
 
-    public boolean isItemValidForSlot(final int i, final ItemStack itemstack) {
+    public boolean isItemValidForSlot(final int i, @Nonnull final ItemStack itemstack) {
         return true;
     }
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUIConverterSolidMatter(new ContainerConverterSolidMatter(entityPlayer, this));
+        return new GuiConverterSolidMatter(new ContainerConverterSolidMatter(entityPlayer, this));
     }
 
     public ContainerBase<? extends TileEntityConverterSolidMatter> getGuiContainer(EntityPlayer entityPlayer) {

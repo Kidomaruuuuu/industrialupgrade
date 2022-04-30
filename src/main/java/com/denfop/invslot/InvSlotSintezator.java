@@ -2,11 +2,11 @@ package com.denfop.invslot;
 
 import com.denfop.Config;
 import com.denfop.IUItem;
-import com.denfop.items.modules.AdditionModule;
 import com.denfop.items.modules.EnumBaseType;
 import com.denfop.items.modules.EnumModule;
+import com.denfop.items.modules.ItemAdditionModule;
 import com.denfop.items.modules.ItemBaseModules;
-import com.denfop.items.modules.ModuleType;
+import com.denfop.items.modules.ItemModuleType;
 import com.denfop.tiles.base.TileEntitySintezator;
 import com.denfop.tiles.panels.entity.EnumSolarPanels;
 import com.denfop.tiles.panels.entity.EnumType;
@@ -104,7 +104,7 @@ public class InvSlotSintezator extends InvSlot {
         TileEntitySintezator tile = (TileEntitySintezator) base;
 
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null && this.get(i).getItem() instanceof AdditionModule && this.get(i).getItemDamage() == 10) {
+            if (this.get(i) != null && this.get(i).getItem() instanceof ItemAdditionModule && this.get(i).getItemDamage() == 10) {
 
 
                 int x;
@@ -121,6 +121,7 @@ public class InvSlotSintezator extends InvSlot {
                         && y != 0 && z != 0 && !nbttagcompound.getBoolean("change")) {
                     TileEntityBlock tile1 = (TileEntityBlock) tile.getWorld().getTileEntity(pos);
 
+                    assert tile1 != null;
                     if (tile1.getComponent(Energy.class) != null) {
                         final Energy energy = tile1.getComponent(Energy.class);
                         tile.storage -= energy.addEnergy(tile.storage);
@@ -139,9 +140,9 @@ public class InvSlotSintezator extends InvSlot {
             return IUItem.map3.containsKey(itemStack.getUnlocalizedName()) || IUItem.panel_list.containsKey(itemStack.getUnlocalizedName());
         } else {
             return itemStack.getItem() instanceof ItemBaseModules
-                    || (itemStack.getItem() instanceof AdditionModule && itemStack.getItemDamage() == 4)
-                    || (itemStack.getItem() instanceof AdditionModule && itemStack.getItemDamage() == 10)
-                    || (itemStack.getItem() instanceof ModuleType)
+                    || (itemStack.getItem() instanceof ItemAdditionModule && itemStack.getItemDamage() == 4)
+                    || (itemStack.getItem() instanceof ItemAdditionModule && itemStack.getItemDamage() == 10)
+                    || (itemStack.getItem() instanceof ItemModuleType)
                     ;
         }
     }
@@ -149,7 +150,7 @@ public class InvSlotSintezator extends InvSlot {
     public void getrfmodule() {
         TileEntitySintezator tile = (TileEntitySintezator) base;
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null && this.get(i).getItemDamage() == 4 && this.get(i).getItem() instanceof AdditionModule) {
+            if (this.get(i) != null && this.get(i).getItemDamage() == 4 && this.get(i).getItem() instanceof ItemAdditionModule) {
                 tile.getmodulerf = true;
                 return;
             }
@@ -162,7 +163,7 @@ public class InvSlotSintezator extends InvSlot {
 
         List<Integer> list1 = new ArrayList<>();
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null && this.get(i).getItem() instanceof ModuleType) {
+            if (this.get(i) != null && this.get(i).getItem() instanceof ItemModuleType) {
                 list1.add(get(i).getItemDamage() + 1);
             } else {
                 list1.add(0);

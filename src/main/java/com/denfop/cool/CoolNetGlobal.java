@@ -3,7 +3,6 @@ package com.denfop.cool;
 
 import com.denfop.api.cooling.ICoolNet;
 import com.denfop.api.cooling.ICoolTile;
-import com.denfop.api.cooling.NodeCoolStats;
 import com.denfop.componets.CoolComponent;
 import ic2.core.block.TileEntityBlock;
 import net.minecraft.tileentity.TileEntity;
@@ -64,6 +63,7 @@ public class CoolNetGlobal implements ICoolNet {
         }
         if (var1.getTileEntity(var2) instanceof TileEntityBlock) {
             TileEntityBlock tile = (TileEntityBlock) var1.getTileEntity(var2);
+            assert tile != null;
             if (tile.hasComponent(CoolComponent.class)) {
                 return tile.getComponent(CoolComponent.class).getDelegate();
             }
@@ -87,8 +87,6 @@ public class CoolNetGlobal implements ICoolNet {
         final CoolNetLocal local = getForWorld(((TileEntity) var1).getWorld());
         local.removeTile(var1);
     }
-
-
 
 
 }

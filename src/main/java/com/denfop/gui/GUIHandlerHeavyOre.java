@@ -3,10 +3,8 @@ package com.denfop.gui;
 import com.denfop.Constants;
 import com.denfop.IUItem;
 import com.denfop.api.Recipes;
-import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.container.ContainerHandlerHeavyOre;
 import com.denfop.utils.ModUtils;
-import ic2.api.recipe.RecipeOutput;
 import ic2.core.GuiIC2;
 import ic2.core.init.Localization;
 import net.minecraft.client.renderer.GlStateManager;
@@ -20,11 +18,11 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 @SideOnly(Side.CLIENT)
-public class GUIHandlerHeavyOre extends GuiIC2<ContainerHandlerHeavyOre> {
+public class GuiHandlerHeavyOre extends GuiIC2<ContainerHandlerHeavyOre> {
 
     public final ContainerHandlerHeavyOre container;
 
-    public GUIHandlerHeavyOre(ContainerHandlerHeavyOre container1) {
+    public GuiHandlerHeavyOre(ContainerHandlerHeavyOre container1) {
         super(container1);
         this.container = container1;
     }

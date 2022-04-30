@@ -2,7 +2,7 @@ package com.denfop.tiles.base;
 
 
 import com.denfop.container.ContainerCombinerMatter;
-import com.denfop.gui.GUICombinerMatter;
+import com.denfop.gui.GuiCombinerMatter;
 import com.denfop.invslot.InvSlotMatter;
 import ic2.api.recipe.IRecipeInput;
 import ic2.api.recipe.MachineRecipeResult;
@@ -56,7 +56,7 @@ public class TileEntityCombinerMatter extends TileEntityElectricLiquidTankInvent
     private double lastEnergy;
 
     public TileEntityCombinerMatter() {
-        super("", 0, 14, 12);
+        super(0, 14, 12);
         this.energycost = 0;
         this.amplifierSlot = new InvSlotProcessable<IRecipeInput, Integer, ItemStack>(this, "scrap", 1, Recipes.matterAmplifier) {
             protected ItemStack getInput(ItemStack stack) {
@@ -200,7 +200,7 @@ public class TileEntityCombinerMatter extends TileEntityElectricLiquidTankInvent
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUICombinerMatter(new ContainerCombinerMatter(entityPlayer, this));
+        return new GuiCombinerMatter(new ContainerCombinerMatter(entityPlayer, this));
     }
 
     @Override

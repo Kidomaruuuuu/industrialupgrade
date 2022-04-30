@@ -4,7 +4,6 @@ import com.denfop.Constants;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.container.ContainerDoubleElectricMachine;
 import com.denfop.utils.ModUtils;
-import ic2.api.recipe.RecipeOutput;
 import ic2.core.GuiIC2;
 import ic2.core.init.Localization;
 import net.minecraft.util.ResourceLocation;
@@ -13,11 +12,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GUISynthesis extends GuiIC2<ContainerDoubleElectricMachine> {
+public class GuiSynthesis extends GuiIC2<ContainerDoubleElectricMachine> {
 
     public final ContainerDoubleElectricMachine container;
 
-    public GUISynthesis(ContainerDoubleElectricMachine container1) {
+    public GuiSynthesis(ContainerDoubleElectricMachine container1) {
         super(container1);
         this.container = container1;
     }
@@ -72,7 +71,7 @@ public class GUISynthesis extends GuiIC2<ContainerDoubleElectricMachine> {
     }
 
     public ResourceLocation getTexture() {
-        return new ResourceLocation(Constants.MOD_ID, "textures/gui/GUISynthesis.png");
+        return new ResourceLocation(Constants.MOD_ID, "textures/gui/GuiSynthesis.png");
     }
 
 }

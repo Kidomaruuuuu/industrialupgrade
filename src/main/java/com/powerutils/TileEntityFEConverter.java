@@ -8,24 +8,19 @@ import ic2.api.energy.EnergyNet;
 import ic2.api.energy.NodeStats;
 import ic2.api.network.INetworkClientTileEntityEventListener;
 import ic2.api.tile.IEnergyStorage;
-import ic2.api.tile.IWrenchable;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
-import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlotUpgrade;
 import ic2.core.util.Util;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fml.relauncher.Side;
@@ -38,7 +33,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-public class TileEntityFEConverter extends TileEntityInventory implements IHasGui, IWrenchable,
+public class TileEntityFEConverter extends TileEntityInventory implements IHasGui,
         INetworkClientTileEntityEventListener,
         IEnergyStorage, net.minecraftforge.energy.IEnergyStorage, IUpgradableBlock {
 
@@ -57,6 +52,7 @@ public class TileEntityFEConverter extends TileEntityInventory implements IHasGu
     public double differenceenergy1 = 0;
     public int tier = 5;
     public List<EntityPlayer> list = new ArrayList<>();
+
     public TileEntityFEConverter() {
         this.energy2 = 0.0D;
         this.maxStorage2 = 400000;
@@ -157,19 +153,20 @@ public class TileEntityFEConverter extends TileEntityInventory implements IHasGu
             }
 
         }
-        if(!this.list.isEmpty())
-        if (this.rf) {
-            NodeStats stats = EnergyNet.instance.getNodeStats(this.energy.getDelegate());
-            if (stats != null) {
-                this.differenceenergy1 = stats.getEnergyIn();
-            }
-            this.differenceenergy = this.energy2 - this.perenergy;
+        if (!this.list.isEmpty()) {
+            if (this.rf) {
+                NodeStats stats = EnergyNet.instance.getNodeStats(this.energy.getDelegate());
+                if (stats != null) {
+                    this.differenceenergy1 = stats.getEnergyIn();
+                }
+                this.differenceenergy = this.energy2 - this.perenergy;
 
-        } else {
-            this.perenergy1 = this.energy.getEnergy();
-            NodeStats stats = EnergyNet.instance.getNodeStats(this.energy.getDelegate());
-            if (stats != null) {
-                this.differenceenergy = stats.getEnergyOut();
+            } else {
+                this.perenergy1 = this.energy.getEnergy();
+                NodeStats stats = EnergyNet.instance.getNodeStats(this.energy.getDelegate());
+                if (stats != null) {
+                    this.differenceenergy = stats.getEnergyOut();
+                }
             }
         }
 
@@ -281,50 +278,6 @@ public class TileEntityFEConverter extends TileEntityInventory implements IHasGu
         return false;
     }
 
-    public boolean canConnectEnergy(EnumFacing arg0) {
-        return true;
-    }
-
-    public int getEnergyStored(EnumFacing from) {
-        return (int) this.energy2;
-    }
-
-    public int getMaxEnergyStored(EnumFacing from) {
-        return (int) this.maxStorage2;
-    }
-
-    @Override
-    public EnumFacing getFacing(World world, BlockPos blockPos) {
-        return this.getFacing();
-    }
-
-    @Override
-    public boolean setFacing(World world, BlockPos blockPos, EnumFacing enumFacing, EntityPlayer entityPlayer) {
-        if (!this.canSetFacingWrench(enumFacing, entityPlayer)) {
-            return false;
-        } else {
-            this.setFacing(enumFacing);
-            return true;
-        }
-    }
-
-    @Override
-    public boolean wrenchCanRemove(World world, BlockPos blockPos, EntityPlayer entityPlayer) {
-        return true;
-    }
-
-    @Override
-    public List<ItemStack> getWrenchDrops(
-            final World world,
-            final BlockPos blockPos,
-            final IBlockState iBlockState,
-            final TileEntity tileEntity,
-            final EntityPlayer entityPlayer,
-            final int i
-    ) {
-        List<ItemStack> list = new ArrayList<>();
-        return list;
-    }
 
     public void readFromNBT(NBTTagCompound nbttagcompound) {
         super.readFromNBT(nbttagcompound);

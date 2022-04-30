@@ -8,16 +8,16 @@ import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.InvSlotRecipes;
+import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.container.ContainerBaseMolecular;
 import com.denfop.gui.GuiMolecularTransformer;
-import com.denfop.items.modules.AdditionModule;
+import com.denfop.items.modules.ItemAdditionModule;
 import com.denfop.utils.ModUtils;
 import ic2.api.energy.EnergyNet;
 import ic2.api.energy.tile.IEnergySink;
 import ic2.api.network.INetworkClientTileEntityEventListener;
 import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.recipe.IRecipeInputFactory;
-import ic2.api.recipe.RecipeOutput;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.audio.AudioSource;
@@ -54,9 +54,10 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
     public BaseMachineRecipe output;
     public double perenergy;
     public double differenceenergy;
+    public double size;
     protected double progress;
     protected double guiProgress;
-    public double size;
+
     public TileEntityMolecularTransformer() {
         super(0, 14, 1);
         this.progress = 0;
@@ -249,7 +250,7 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
             final float hitY,
             final float hitZ
     ) {
-        if (player.getHeldItem(hand).getItem() instanceof AdditionModule && player.getHeldItem(hand).getItemDamage() == 4) {
+        if (player.getHeldItem(hand).getItem() instanceof ItemAdditionModule && player.getHeldItem(hand).getItemDamage() == 4) {
             if (!this.rf) {
                 this.rf = true;
                 player.getHeldItem(hand).setCount(player.getHeldItem(hand).getCount() - 1);
@@ -353,7 +354,7 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
             this.outputSlot.add(processResult);
 
         }
-       this.getOutput();
+        this.getOutput();
     }
 
     protected void onLoaded() {
@@ -367,7 +368,7 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
     public void setOverclockRates() {
         BaseMachineRecipe output = getOutput();
         if (!this.queue) {
-            if (inputSlot.isEmpty() ||  !this.inputSlot.continue_proccess(this.outputSlot)) {
+            if (inputSlot.isEmpty() || !this.inputSlot.continue_proccess(this.outputSlot)) {
                 this.energy.setCapacity(0);
             } else if (output != null) {
                 this.energy.setCapacity(output.output.metadata.getDouble("energy"));
@@ -376,7 +377,7 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
             }
         } else {
 
-            if (inputSlot.isEmpty()  ||  !this.inputSlot.continue_proccess(this.outputSlot)) {
+            if (inputSlot.isEmpty() || !this.inputSlot.continue_proccess(this.outputSlot)) {
                 this.energy.setCapacity(0);
             } else if (output != null) {
                 int size;
@@ -403,7 +404,7 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
 
         BaseMachineRecipe output = this.output;
         if (!queue) {
-            if (output != null && this.outputSlot.canAdd(output.output.items) ) {
+            if (output != null && this.outputSlot.canAdd(output.output.items)) {
                 this.differenceenergy = this.energy.getEnergy() - this.perenergy;
                 this.perenergy = this.energy.getEnergy();
                 setActive(true);
@@ -441,9 +442,9 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
                 this.perenergy = this.energy.getEnergy();
                 setActive(true);
                 markDirty();
-                    if (energy.getEnergy() > 0) {
-                        IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
-                    }
+                if (energy.getEnergy() > 0) {
+                    IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
+                }
 
 
                 int size;

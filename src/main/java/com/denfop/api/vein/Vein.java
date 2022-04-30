@@ -3,18 +3,16 @@ package com.denfop.api.vein;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;
 
-import java.util.Objects;
+public class Vein implements IVein {
 
-public class Vein implements IVein{
-
+    private final ChunkPos chunk;
+    boolean find;
     private Type type;
     private int meta;
-    private final ChunkPos chunk;
     private int col;
     private int maxcol;
-    boolean find;
 
-    public Vein(Type type, int meta, ChunkPos chunk){
+    public Vein(Type type, int meta, ChunkPos chunk) {
         this.type = type;
         this.meta = meta;
         this.chunk = chunk;
@@ -22,10 +20,11 @@ public class Vein implements IVein{
         this.maxcol = 0;
 
     }
-    public Vein(NBTTagCompound tagCompound){
+
+    public Vein(NBTTagCompound tagCompound) {
         this.meta = tagCompound.getInteger("meta");
         this.type = Type.getID(tagCompound.getInteger("id"));
-        this.chunk = new ChunkPos(tagCompound.getInteger("x"),tagCompound.getInteger("z"));
+        this.chunk = new ChunkPos(tagCompound.getInteger("x"), tagCompound.getInteger("z"));
         this.col = tagCompound.getInteger("col");
         this.maxcol = tagCompound.getInteger("maxcol");
         this.find = tagCompound.getBoolean("find");
@@ -37,8 +36,18 @@ public class Vein implements IVein{
     }
 
     @Override
+    public void setMeta(final int meta) {
+        this.meta = meta;
+    }
+
+    @Override
     public Type getType() {
         return this.type;
+    }
+
+    @Override
+    public void setType(final Type type) {
+        this.type = type;
     }
 
     @Override
@@ -62,15 +71,15 @@ public class Vein implements IVein{
     }
 
     @Override
-    public void removeCol(int col) {
-       assert  this.col - col >= 0;
-       this.col-=col;
-
+    public void setMaxCol(int maxcol) {
+        this.maxcol = maxcol;
     }
 
     @Override
-    public void setMaxCol(int maxcol) {
-      this.maxcol = maxcol;
+    public void removeCol(int col) {
+        assert this.col - col >= 0;
+        this.col -= col;
+
     }
 
     @Override
@@ -81,32 +90,26 @@ public class Vein implements IVein{
     @Override
     public NBTTagCompound writeTag() {
         NBTTagCompound tagCompound = new NBTTagCompound();
-        tagCompound.setInteger("meta",this.meta);
+        tagCompound.setInteger("meta", this.meta);
         tagCompound.setInteger("id", this.type.ordinal());
-        tagCompound.setInteger("x",chunk.x);
-        tagCompound.setInteger("z",chunk.z);
-        tagCompound.setInteger("col",this.col);
-        tagCompound.setInteger("maxcol",this.maxcol);
-        tagCompound.setBoolean("find",this.find);
+        tagCompound.setInteger("x", chunk.x);
+        tagCompound.setInteger("z", chunk.z);
+        tagCompound.setInteger("col", this.col);
+        tagCompound.setInteger("maxcol", this.maxcol);
+        tagCompound.setBoolean("find", this.find);
         return tagCompound;
     }
 
     @Override
-    public void setType(final Type type) {
-        this.type = type;
-    }
-
-    @Override
-    public void setMeta(final int meta) {
-        this.meta = meta;
-    }
-
-    @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Vein vein = (Vein) o;
-        return   vein.chunk.equals(this.chunk);
+        return vein.chunk.equals(this.chunk);
 
     }
 
@@ -119,7 +122,6 @@ public class Vein implements IVein{
     public void setFind(final boolean find) {
         this.find = find;
     }
-
 
 
 }

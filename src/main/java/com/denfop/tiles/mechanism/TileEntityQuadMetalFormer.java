@@ -3,12 +3,10 @@ package com.denfop.tiles.mechanism;
 
 import com.denfop.api.recipe.InvSlotMultiRecipes;
 import com.denfop.container.ContainerMultiMetalFormer;
-import com.denfop.gui.GUIMultiMetalFormer;
-import com.denfop.invslot.InvSlotProcessableMultiGeneric;
+import com.denfop.gui.GuiMultiMetalFormer;
 import com.denfop.tiles.base.EnumMultiMachine;
 import com.denfop.tiles.base.TileEntityMultiMachine;
 import ic2.api.network.INetworkClientTileEntityEventListener;
-import ic2.api.recipe.Recipes;
 import ic2.core.ContainerBase;
 import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
@@ -44,7 +42,7 @@ public class TileEntityQuadMetalFormer extends TileEntityMultiMachine
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUIMultiMetalFormer(new ContainerMultiMetalFormer(entityPlayer, this, sizeWorkingSlot));
+        return new GuiMultiMetalFormer(new ContainerMultiMetalFormer(entityPlayer, this, sizeWorkingSlot));
     }
 
     public void readFromNBT(NBTTagCompound nbttagcompound) {

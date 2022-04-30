@@ -1,7 +1,7 @@
 package com.denfop.tiles.base;
 
 import com.denfop.container.ContainerMultiMatter;
-import com.denfop.gui.GUIMultiMatter;
+import com.denfop.gui.GuiMultiMatter;
 import ic2.api.energy.tile.IExplosionPowerOverride;
 import ic2.api.recipe.IRecipeInput;
 import ic2.api.recipe.MachineRecipeResult;
@@ -38,7 +38,6 @@ import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -104,11 +103,6 @@ public abstract class TileEntityMultiMatter extends TileEntityElectricMachine im
     }
 
 
-
-    public String getInventoryName(){
-        return "";
-    };
-
     public void readFromNBT(NBTTagCompound nbt) {
         super.readFromNBT(nbt);
         this.scrap = nbt.getInteger("scrap");
@@ -171,8 +165,9 @@ public abstract class TileEntityMultiMatter extends TileEntityElectricMachine im
                 needsInvUpdate = this.attemptGeneration();
             }
 
-            if(!needsInvUpdate)
-            needsInvUpdate = this.containerslot.processFromTank(this.fluidTank, this.outputSlot);
+            if (!needsInvUpdate) {
+                needsInvUpdate = this.containerslot.processFromTank(this.fluidTank, this.outputSlot);
+            }
             this.lastEnergy = this.energy.getEnergy();
             if (needsInvUpdate) {
                 this.markDirty();
@@ -208,7 +203,7 @@ public abstract class TileEntityMultiMatter extends TileEntityElectricMachine im
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUIMultiMatter(new ContainerMultiMatter(entityPlayer, this));
+        return new GuiMultiMatter(new ContainerMultiMatter(entityPlayer, this));
     }
 
     public void onGuiClosed(EntityPlayer player) {

@@ -6,7 +6,6 @@ import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.audio.AudioSource;
 import com.denfop.blocks.FluidName;
 import ic2.api.network.INetworkTileEntityEventListener;
-import ic2.api.recipe.RecipeOutput;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.IUpgradeItem;
 import ic2.api.upgrade.UpgradableProperty;
@@ -51,12 +50,8 @@ public class TileEntityBasePlasticPlateCreator extends TileEntityElectricLiquidT
     protected short progress;
     protected double guiProgress;
 
-    public TileEntityBasePlasticPlateCreator(int energyPerTick, int length) {
-        this(energyPerTick, length, 1);
-    }
-
     public TileEntityBasePlasticPlateCreator(int energyPerTick, int length, int aDefaultTier) {
-        super("", energyPerTick * length, 1, 12, Fluids.fluidPredicate(FluidName.fluidoxy.getInstance()));
+        super(energyPerTick * length, 1, 12, Fluids.fluidPredicate(FluidName.fluidoxy.getInstance()));
         this.progress = 0;
         this.defaultEnergyConsume = this.energyConsume = energyPerTick;
         this.defaultOperationLength = this.operationLength = length;
@@ -174,7 +169,7 @@ public class TileEntityBasePlasticPlateCreator extends TileEntityElectricLiquidT
 
         }
         BaseMachineRecipe output = getOutput();
-        if (output != null&& this.outputSlot.canAdd(output.output.items) && this.energy.canUseEnergy(energyConsume)) {
+        if (output != null && this.outputSlot.canAdd(output.output.items) && this.energy.canUseEnergy(energyConsume)) {
             setActive(true);
             if (this.progress == 0) {
                 IC2.network.get(true).initiateTileEntityEvent(this, 0, true);

@@ -4,19 +4,18 @@ import com.denfop.IUItem;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
+import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.api.space.rovers.EnumTypeUpgrade;
 import com.denfop.api.space.rovers.IRovers;
 import com.denfop.api.space.upgrades.event.EventItemLoad;
 import com.denfop.utils.ModUtils;
 import ic2.api.recipe.IRecipeInputFactory;
-import ic2.api.recipe.RecipeOutput;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -43,7 +42,6 @@ public class BaseSpaceUpgradeSystem implements ISpaceUpgradeSystem {
         this.map_modification = new HashMap<>();
 
         MinecraftForge.EVENT_BUS.register(this);
-        FMLCommonHandler.instance().bus().register(this);
 
     }
 

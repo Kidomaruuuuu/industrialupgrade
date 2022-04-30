@@ -4,7 +4,7 @@ import com.denfop.Config;
 import com.denfop.api.reactors.IAdvReactor;
 import com.denfop.container.ContainerBaseNuclearReactor;
 import com.denfop.damagesource.IUDamageSource;
-import com.denfop.gui.GUINuclearReactor;
+import com.denfop.gui.GuiNuclearReactor;
 import com.denfop.invslot.InvSlotReactor;
 import com.denfop.items.armour.ItemArmorAdvHazmat;
 import com.denfop.tiles.base.TileEntityRadiationPurifier;
@@ -30,7 +30,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -69,7 +68,6 @@ public abstract class TileEntityBaseNuclearReactorElectric extends TileEntityInv
     public AudioSource audioSourceGeiger;
     public boolean addedToEnergyNet = false;
     public List<ReactorsItem> reactorsItemList = new ArrayList<>();
-    protected List<Boolean> redstonelist = new ArrayList<>();
     protected float lastOutput = 0.0F;
     protected List<IEnergyTile> subTiles = new ArrayList<>();
 
@@ -167,10 +165,6 @@ public abstract class TileEntityBaseNuclearReactorElectric extends TileEntityInv
         return "Nuclear Reactor";
     }
 
-    public int gaugeHeatScaled(int i) {
-        return i * this.heat / (this.maxHeat / 100 * 85);
-    }
-
     public void readFromNBT(NBTTagCompound nbttagcompound) {
         super.readFromNBT(nbttagcompound);
         this.heat = nbttagcompound.getInteger("heat");
@@ -241,6 +235,7 @@ public abstract class TileEntityBaseNuclearReactorElectric extends TileEntityInv
                                         y,
                                         z
                                 ));
+                                assert tile != null;
                                 if (tile.getActive()) {
                                     getblock = true;
                                     return;
@@ -430,7 +425,7 @@ public abstract class TileEntityBaseNuclearReactorElectric extends TileEntityInv
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUINuclearReactor(new ContainerBaseNuclearReactor(entityPlayer, this));
+        return new GuiNuclearReactor(new ContainerBaseNuclearReactor(entityPlayer, this));
     }
 
     public void onGuiClosed(EntityPlayer entityPlayer) {

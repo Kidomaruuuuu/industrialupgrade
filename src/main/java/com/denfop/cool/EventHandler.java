@@ -5,7 +5,6 @@ import com.denfop.api.cooling.event.CoolTileLoadEvent;
 import com.denfop.api.cooling.event.CoolTileUnloadEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -14,7 +13,6 @@ public class EventHandler {
 
     public EventHandler() {
         MinecraftForge.EVENT_BUS.register(this);
-        FMLCommonHandler.instance().bus().register(this);
     }
 
 

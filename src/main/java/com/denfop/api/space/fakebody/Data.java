@@ -35,12 +35,15 @@ public class Data implements IData {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Data data = (Data) o;
         return Objects.equals(player, data.player) && Objects.equals(body, data.body);
     }
-
 
 
     @Override

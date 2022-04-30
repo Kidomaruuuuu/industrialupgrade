@@ -9,7 +9,7 @@ public enum SEType implements IIdProvider {
     scable(0, 0, 0.25F, 0.02D, Integer.MAX_VALUE);
 
     public static final SEType[] values = values();
-    private static final Map<String, SEType> nameMap = new HashMap();
+    private static final Map<String, SEType> nameMap = new HashMap<>();
 
     static {
 
@@ -37,13 +37,10 @@ public enum SEType implements IIdProvider {
         return nameMap.get(name);
     }
 
-    public String getName(int insulation) {
-        return this.getName() + "_scable";
+    public String getName() {
+        return this.name() + "_scable";
     }
 
-    public String getName() {
-        return this.name();
-    }
 
     public int getId() {
         return this.ordinal();

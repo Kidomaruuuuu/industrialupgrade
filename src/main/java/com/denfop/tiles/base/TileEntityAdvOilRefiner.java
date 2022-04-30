@@ -97,15 +97,6 @@ public class TileEntityAdvOilRefiner extends TileEntityBaseLiquedMachine {
                 this.getFluidTank(2).getFluidAmount() * i / this.getFluidTank(2).getCapacity();
     }
 
-    public int gaugeLiquidScaled1(int i) {
-        return this.getFluidTank(1).getFluidAmount() <= 0 ? 0 :
-                this.getFluidTank(1).getFluidAmount() * i / this.getFluidTank(1).getCapacity();
-    }
-
-    public int gaugeLiquidScaled2(int i) {
-        return this.getFluidTank(2).getFluidAmount() <= 0 ? 0 :
-                this.getFluidTank(2).getFluidAmount() * i / this.getFluidTank(2).getCapacity();
-    }
 
     public void updateEntityServer() {
         super.updateEntityServer();

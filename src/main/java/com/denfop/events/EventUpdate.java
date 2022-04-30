@@ -8,7 +8,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.StringUtils;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -40,7 +39,7 @@ public class EventUpdate {
         }
         if (!this.playerNotified && this.thread.isComplete()) {
             this.playerNotified = true;
-            FMLCommonHandler.instance().bus().unregister(this);
+            MinecraftForge.EVENT_BUS.unregister(this);
             if (this.thread.getVersion().equals(Constants.MOD_VERSION) || Constants.MOD_VERSION.contains("build")) {
 
                 return;

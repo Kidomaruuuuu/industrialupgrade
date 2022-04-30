@@ -4,12 +4,12 @@ import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.InvSlotRecipes;
+import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.container.ContainerGenStone;
-import com.denfop.gui.GUIGenStone;
+import com.denfop.gui.GuiGenStone;
 import com.denfop.utils.ModUtils;
 import ic2.api.recipe.IRecipeInput;
 import ic2.api.recipe.IRecipeInputFactory;
-import ic2.api.recipe.RecipeOutput;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.init.Localization;
 import ic2.core.item.type.CellType;
@@ -65,7 +65,7 @@ public class TileEntityGenerationStone extends TileEntityBaseGenStone {
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUIGenStone(new ContainerGenStone(entityPlayer, this));
+        return new GuiGenStone(new ContainerGenStone(entityPlayer, this));
     }
 
     public String getStartSoundFile() {

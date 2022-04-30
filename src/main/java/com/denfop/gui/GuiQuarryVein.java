@@ -5,9 +5,6 @@ import com.denfop.IUItem;
 import com.denfop.api.vein.Type;
 import com.denfop.api.vein.Vein;
 import com.denfop.container.ContainerQuarryVein;
-import com.denfop.tiles.base.TileEntityQuarryVein;
-import com.denfop.tiles.base.TileEntityVein;
-import com.denfop.tiles.base.TileOilBlock;
 import com.denfop.utils.ModUtils;
 import ic2.core.GuiIC2;
 import ic2.core.init.Localization;
@@ -16,7 +13,6 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.biome.Biome;
 import org.lwjgl.opengl.GL11;
@@ -172,36 +168,38 @@ public class GuiQuarryVein extends GuiIC2<ContainerQuarryVein> {
 
         }
         handleUpgradeTooltip(par1, par2);
-        if (this.container.base.vein != null)
-        if (this.container.base.vein.get()) {
-            if (this.container.base.vein.getType() == Type.EMPTY) {
-                this.fontRenderer.drawString(
-                        Localization.translate("iu.empty"),
-                        29,
-                        32,
-                        ModUtils.convertRGBcolorToInt(13, 229, 34)
-                );
-            } else {
-                this.fontRenderer.drawString(
-                        Localization.translate("iu.find"),
-                        26,
-                        32,
-                        ModUtils.convertRGBcolorToInt(13, 229, 34)
-                );
-                Vein vein = this.container.base.vein;
-                int col = vein.getCol();
-                int colmax = vein.getMaxCol();
-                boolean isOil = vein.getType() == Type.OIL;
-                String name_vein;
-                if (!isOil) {
-                    name_vein = new ItemStack(IUItem.heavyore, 1, vein.getMeta()).getDisplayName();
+        if (this.container.base.vein != null) {
+            if (this.container.base.vein.get()) {
+                if (this.container.base.vein.getType() == Type.EMPTY) {
+                    this.fontRenderer.drawString(
+                            Localization.translate("iu.empty"),
+                            29,
+                            32,
+                            ModUtils.convertRGBcolorToInt(13, 229, 34)
+                    );
                 } else {
-                    name_vein = Localization.translate("iu.fluidneft");
+                    this.fontRenderer.drawString(
+                            Localization.translate("iu.find"),
+                            26,
+                            32,
+                            ModUtils.convertRGBcolorToInt(13, 229, 34)
+                    );
+                    Vein vein = this.container.base.vein;
+                    int col = vein.getCol();
+                    int colmax = vein.getMaxCol();
+                    boolean isOil = vein.getType() == Type.OIL;
+                    String name_vein;
+                    if (!isOil) {
+                        name_vein = new ItemStack(IUItem.heavyore, 1, vein.getMeta()).getDisplayName();
+                    } else {
+                        name_vein = Localization.translate("iu.fluidneft");
+                    }
+                    new AdvArea(this, 20, 54, 68, 72).withTooltip(name_vein + " " + col + (isOil ? "mb" : "") + "/" + colmax + (
+                            isOil
+                                    ?
+                                    "mb"
+                                    : "")).drawForeground(par1, par2);
                 }
-                new AdvArea(this, 20, 54, 68, 72).withTooltip(name_vein + " " + col + (isOil ? "mb" : "") + "/" + colmax + (isOil
-                        ?
-                        "mb"
-                        : "")).drawForeground(par1, par2);
             }
         }
         String tooltip2 =
@@ -243,36 +241,37 @@ public class GuiQuarryVein extends GuiIC2<ContainerQuarryVein> {
                     85 - chargeLevel, 48, chargeLevel
             );
         }
-        if (this.container.base.vein != null)
-        if (this.container.base.vein.get()) {
-            if (this.container.base.vein.getType() != Type.EMPTY) {
-                RenderHelper.enableGUIStandardItemLighting();
-                GL11.glPushMatrix();
-                GL11.glColor4f(0.1F, 1, 0.1F, 1);
-                GL11.glDisable(GL11.GL_LIGHTING);
-                GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-                GlStateManager.disableLighting();
-                GlStateManager.enableDepth();
-                this.zLevel = 100.0F;
-                mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-                ItemStack stack;
-                if (this.container.base.vein.getType() == Type.VEIN) {
-                    stack = new ItemStack(IUItem.heavyore, 1, this.container.base.vein.getMeta());
+        if (this.container.base.vein != null) {
+            if (this.container.base.vein.get()) {
+                if (this.container.base.vein.getType() != Type.EMPTY) {
+                    RenderHelper.enableGUIStandardItemLighting();
+                    GL11.glPushMatrix();
+                    GL11.glColor4f(0.1F, 1, 0.1F, 1);
+                    GL11.glDisable(GL11.GL_LIGHTING);
+                    GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+                    GlStateManager.disableLighting();
+                    GlStateManager.enableDepth();
+                    this.zLevel = 100.0F;
+                    mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+                    ItemStack stack;
+                    if (this.container.base.vein.getType() == Type.VEIN) {
+                        stack = new ItemStack(IUItem.heavyore, 1, this.container.base.vein.getMeta());
 
-                } else {
-                    stack = new ItemStack(IUItem.oilblock);
+                    } else {
+                        stack = new ItemStack(IUItem.oilblock);
+                    }
+                    itemRender.renderItemAndEffectIntoGUI(
+                            stack,
+                            h + 32,
+                            k + 54
+                    );
+                    GL11.glEnable(GL11.GL_LIGHTING);
+                    GlStateManager.enableLighting();
+
+                    RenderHelper.enableStandardItemLighting();
+                    GL11.glColor4f(0.1F, 1, 0.1F, 1);
+                    GL11.glPopMatrix();
                 }
-                itemRender.renderItemAndEffectIntoGUI(
-                        stack,
-                        h + 32,
-                        k + 54
-                );
-                GL11.glEnable(GL11.GL_LIGHTING);
-                GlStateManager.enableLighting();
-
-                RenderHelper.enableStandardItemLighting();
-                GL11.glColor4f(0.1F, 1, 0.1F, 1);
-                GL11.glPopMatrix();
             }
         }
     }

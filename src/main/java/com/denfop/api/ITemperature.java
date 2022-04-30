@@ -20,8 +20,6 @@ public interface ITemperature {
 
     boolean receiver();
 
-    boolean requairedTemperature();
-
     ITemperature getSource();
 
     void setSource(ITemperature source);

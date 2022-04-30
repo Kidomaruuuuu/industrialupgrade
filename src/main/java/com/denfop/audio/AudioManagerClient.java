@@ -95,7 +95,7 @@ public final class AudioManagerClient extends AudioManager {
 
     }
 
-    private static RayTraceResult getMovingObjectPositionFromPlayer(World worldIn, EntityPlayer playerIn, boolean useLiquids) {
+    private static RayTraceResult getMovingObjectPositionFromPlayer(World worldIn, EntityPlayer playerIn) {
         float f = playerIn.rotationPitch;
         float f1 = playerIn.rotationYaw;
         double d0 = playerIn.posX;
@@ -110,7 +110,7 @@ public final class AudioManagerClient extends AudioManager {
         float f7 = f2 * f4;
         double d3 = 5.0D;
         Vec3d vec31 = vec3.addVector((double) f6 * d3, (double) f5 * d3, (double) f7 * d3);
-        return worldIn.rayTraceBlocks(vec3, vec31, useLiquids, !useLiquids, false);
+        return worldIn.rayTraceBlocks(vec3, vec31, false, true, false);
     }
 
     private static String getSourceName(int id) {
@@ -163,7 +163,7 @@ public final class AudioManagerClient extends AudioManager {
 
                 try {
                     thread.join();
-                } catch (InterruptedException var6) {
+                } catch (InterruptedException ignored) {
                 }
             }
 
@@ -336,7 +336,6 @@ public final class AudioManagerClient extends AudioManager {
                     this.soundSystem,
                     sourceName,
                     obj,
-                    positionSpec,
                     initialSoundFile,
                     loop,
                     priorized,
@@ -381,7 +380,7 @@ public final class AudioManagerClient extends AudioManager {
         } else {
             assert IC2.platform.isRendering();
 
-            AudioPosition position = AudioPosition.getFrom(obj, positionSpec);
+            AudioPosition position = AudioPosition.getFrom(obj);
             if (position == null) {
                 return null;
             } else {
@@ -410,10 +409,6 @@ public final class AudioManagerClient extends AudioManager {
                 }
             }
         }
-    }
-
-    public void chainSource(String source, FutureSound onFinish) {
-        this.singleSoundQueue.put(source, onFinish);
     }
 
     public void removeSource(String source) {
@@ -450,7 +445,7 @@ public final class AudioManagerClient extends AudioManager {
             ItemStack stack = player.inventory.getCurrentItem();
             if (!stack.isEmpty() && stack.getItem() instanceof IHitSoundOverride) {
                 World world = player.getEntityWorld();
-                RayTraceResult mop = getMovingObjectPositionFromPlayer(world, player, false);
+                RayTraceResult mop = getMovingObjectPositionFromPlayer(world, player);
                 BlockPos pos = new BlockPos(
                         event.getSound().getXPosF(),
                         event.getSound().getYPosF(),

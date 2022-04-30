@@ -2,7 +2,7 @@ package com.denfop.tiles.base;
 
 import com.denfop.IUItem;
 import com.denfop.container.ContainerCombinerSolidMatter;
-import com.denfop.gui.GUICombinerSolidMatter;
+import com.denfop.gui.GuiCombinerSolidMatter;
 import com.denfop.invslot.InvSlotSolidMatter;
 import com.denfop.tiles.solidmatter.EnumSolidMatter;
 import ic2.api.network.INetworkTileEntityEventListener;
@@ -169,7 +169,7 @@ public class TileEntityCombinerSolidMatter extends TileEntityInventory implement
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUICombinerSolidMatter(new ContainerCombinerSolidMatter(entityPlayer, this));
+        return new GuiCombinerSolidMatter(new ContainerCombinerSolidMatter(entityPlayer, this));
     }
 
     public ContainerBase<? extends TileEntityCombinerSolidMatter> getGuiContainer(EntityPlayer entityPlayer) {

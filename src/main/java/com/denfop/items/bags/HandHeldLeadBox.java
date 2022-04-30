@@ -1,7 +1,7 @@
 package com.denfop.items.bags;
 
 import com.denfop.container.ContainerLeadBox;
-import com.denfop.gui.GUILeadBox;
+import com.denfop.gui.GuiLeadBox;
 import ic2.core.ContainerBase;
 import ic2.core.item.tool.HandHeldInventory;
 import ic2.core.util.StackUtil;
@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -37,7 +38,7 @@ public class HandHeldLeadBox extends HandHeldInventory {
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer player, boolean isAdmin) {
-        return new GUILeadBox(new ContainerLeadBox(player, this), itemStack1);
+        return new GuiLeadBox(new ContainerLeadBox(player, this), itemStack1);
     }
 
     public ItemStack get(int index) {
@@ -53,6 +54,7 @@ public class HandHeldLeadBox extends HandHeldInventory {
         }
     }
 
+    @Nonnull
     public String getName() {
         return "toolbox";
     }

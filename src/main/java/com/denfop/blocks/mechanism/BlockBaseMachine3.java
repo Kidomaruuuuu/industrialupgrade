@@ -42,8 +42,8 @@ public enum BlockBaseMachine3 implements ITeBlock, ITeBlockSpecialItem {
     antiupgradeblock(TileEntityAntiUpgradeBlock.class, 8),
     watergenerator(TileEntityWaterGenerator.class, 9),
     cooling(TileEntityCooling.class, 10),
-    aircollector(TileEntityAirCollector.class,11),
-    combiner_se_generators(TileEntityCombinerSEGenerators.class,12),
+    aircollector(TileEntityAirCollector.class, 11),
+    combiner_se_generators(TileEntityCombinerSEGenerators.class, 12),
     ;
 
 

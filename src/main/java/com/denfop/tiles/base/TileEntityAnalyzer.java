@@ -30,8 +30,6 @@ public class TileEntityAnalyzer extends TileEntityElectricMachine implements INe
 
     public final InvSlotAnalyzer inputslot;
     public final InvSlotAnalyzer inputslotA;
-    private int chunkx;
-    private int chunkz;
     public boolean furnace;
     public int lucky;
     public int size;
@@ -63,6 +61,8 @@ public class TileEntityAnalyzer extends TileEntityElectricMachine implements INe
     public List<String> blacklist;
     public List<String> whitelist;
     List<Integer> y1;
+    private int chunkx;
+    private int chunkz;
     private int y;
 
     public TileEntityAnalyzer() {
@@ -90,7 +90,8 @@ public class TileEntityAnalyzer extends TileEntityElectricMachine implements INe
         this.chunkx = 0;
         this.chunkz = 0;
     }
-    public void update_chunk(){
+
+    public void update_chunk() {
         this.chunkx = this.getWorld().getChunkFromBlockCoords(this.pos).x * 16;
         this.chunkz = this.getWorld().getChunkFromBlockCoords(this.pos).z * 16;
         int size = this.size;
@@ -99,6 +100,7 @@ public class TileEntityAnalyzer extends TileEntityElectricMachine implements INe
         this.xendChunk = chunkx + 16 + 16 * size;
         this.zendChunk = chunkz + 16 + 16 * size;
     }
+
     public double getProgress() {
 
         double temp = xChunk - xendChunk;
@@ -229,7 +231,7 @@ public class TileEntityAnalyzer extends TileEntityElectricMachine implements INe
             this.numberores = 0;
             this.sum = 0;
             this.sum1 = 0;
-            if(!this.getActive()) {
+            if (!this.getActive()) {
                 initiate(0);
                 setActive(true);
             }
@@ -258,8 +260,6 @@ public class TileEntityAnalyzer extends TileEntityElectricMachine implements INe
                     if (j < size) {
                         m2 = -1;
                     }
-                    m1 = i == size1 ? 0 : m1;
-                    m2 = j == size1 ? 0 : m2;
                     this.chunksx[i][j] = chunkx + 16 * i * m1;
                     this.chunksz[i][j] = chunkz + 16 * j * m2;
                 }
@@ -428,7 +428,7 @@ public class TileEntityAnalyzer extends TileEntityElectricMachine implements INe
             this.numberores = 0;
             this.sum = 0;
             this.sum1 = 0;
-            if(!this.getActive()) {
+            if (!this.getActive()) {
                 initiate(0);
                 setActive(true);
             }

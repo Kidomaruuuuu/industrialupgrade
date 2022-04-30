@@ -6,12 +6,12 @@ import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.InvSlotRecipes;
+import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.blocks.FluidName;
 import com.denfop.container.ContainerPlasticPlateCreator;
-import com.denfop.gui.GUIPlasticPlateCreator;
+import com.denfop.gui.GuiPlasticPlateCreator;
 import com.denfop.tiles.base.TileEntityBasePlasticPlateCreator;
 import ic2.api.recipe.IRecipeInputFactory;
-import ic2.api.recipe.RecipeOutput;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
 import ic2.core.init.Localization;
@@ -54,7 +54,7 @@ public class TileEntityPlasticPlateCreator extends TileEntityBasePlasticPlateCre
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUIPlasticPlateCreator(new ContainerPlasticPlateCreator(entityPlayer, this));
+        return new GuiPlasticPlateCreator(new ContainerPlasticPlateCreator(entityPlayer, this));
 
     }
 

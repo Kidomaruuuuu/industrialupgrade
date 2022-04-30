@@ -3,8 +3,6 @@ package com.denfop.integration.jei.molecular;
 
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
@@ -12,7 +10,7 @@ import java.util.List;
 
 public class MolecularTransformerHandler {
 
-    private static final List<MolecularTransformerHandler> recipes = new ArrayList<MolecularTransformerHandler>();
+    private static final List<MolecularTransformerHandler> recipes = new ArrayList<>();
     private final double energy;
     private final ItemStack input, output;
 
@@ -60,13 +58,6 @@ public class MolecularTransformerHandler {
         }
     }
 
-    private static ItemStack is(Item item) { // Побочный метод.
-        return new ItemStack(item);
-    }
-
-    private static ItemStack is(Block block) { // Побочный метод.
-        return new ItemStack(block);
-    }
 
     public ItemStack getInput() { // Получатель входного предмета рецепта.
         return input;

@@ -9,11 +9,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GUIEnriched extends GuiIC2<ContainerDoubleElectricMachine> {
+public class GuiEnriched extends GuiIC2<ContainerDoubleElectricMachine> {
 
     public final ContainerDoubleElectricMachine container;
 
-    public GUIEnriched(ContainerDoubleElectricMachine container1) {
+    public GuiEnriched(ContainerDoubleElectricMachine container1) {
         super(container1);
         this.container = container1;
     }

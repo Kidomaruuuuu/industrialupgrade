@@ -9,7 +9,7 @@ import com.denfop.api.IStorage;
 import com.denfop.container.ContainerElectricBlock;
 import com.denfop.gui.GuiElectricBlock;
 import com.denfop.invslot.InvSlotElectricBlock;
-import com.denfop.items.modules.AdditionModule;
+import com.denfop.items.modules.ItemAdditionModule;
 import com.denfop.proxy.CommonProxy;
 import com.denfop.tiles.panels.entity.TileEntitySolarPanel;
 import com.denfop.tiles.wiring.EnumElectricBlock;
@@ -159,7 +159,7 @@ public class TileEntityElectricBlock extends TileEntityInventory implements IHas
         List<String> list = new ArrayList<>();
         list.add(UUID);
         for (int h = 0; h < 2; h++) {
-            if (inputslotC.get(h) != null && inputslotC.get(h).getItem() instanceof AdditionModule
+            if (inputslotC.get(h) != null && inputslotC.get(h).getItem() instanceof ItemAdditionModule
                     && inputslotC.get(h).getItemDamage() == 0) {
                 for (int m = 0; m < 9; m++) {
                     NBTTagCompound nbt = ModUtils.nbt(inputslotC.get(h));
@@ -187,7 +187,7 @@ public class TileEntityElectricBlock extends TileEntityInventory implements IHas
         List<String> list = new ArrayList<>();
         list.add(UUID);
         for (int h = 0; h < 2; h++) {
-            if (inputslotC.get(h) != null && inputslotC.get(h).getItem() instanceof AdditionModule
+            if (inputslotC.get(h) != null && inputslotC.get(h).getItem() instanceof ItemAdditionModule
                     && inputslotC.get(h).getItemDamage() == 0) {
                 for (int m = 0; m < 9; m++) {
                     NBTTagCompound nbt = ModUtils.nbt(inputslotC.get(h));
@@ -798,7 +798,6 @@ public class TileEntityElectricBlock extends TileEntityInventory implements IHas
     public String getInventoryName() {
         return Localization.translate(this.name);
     }
-
 
 
 }

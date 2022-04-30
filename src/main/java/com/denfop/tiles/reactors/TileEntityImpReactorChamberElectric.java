@@ -23,6 +23,9 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
+import java.util.Objects;
+
 public class TileEntityImpReactorChamberElectric extends TileEntityBlock implements IInventory, IReactorChamber, IEnergyEmitter {
 
     public final Redstone redstone = this.addComponent(new Redstone(this));
@@ -43,7 +46,7 @@ public class TileEntityImpReactorChamberElectric extends TileEntityBlock impleme
     protected void onLoaded() {
         super.onLoaded();
         this.updateRedstoneLink();
-        this.onNeighborChange(this.getBlockType().getBlockState().getBlock(),this.getPos());
+        this.onNeighborChange(this.getBlockType().getBlockState().getBlock(), this.getPos());
 
     }
 
@@ -111,6 +114,7 @@ public class TileEntityImpReactorChamberElectric extends TileEntityBlock impleme
 
     }
 
+    @Nonnull
     public String getName() {
         TileEntityImpNuclearReactor reactor = this.getReactor();
         return reactor != null ? reactor.getName() : "<null>";
@@ -121,9 +125,10 @@ public class TileEntityImpReactorChamberElectric extends TileEntityBlock impleme
         return reactor != null && reactor.hasCustomName();
     }
 
+    @Nonnull
     public ITextComponent getDisplayName() {
         TileEntityImpNuclearReactor reactor = this.getReactor();
-        return reactor != null ? reactor.getDisplayName() : new TextComponentString("<null>");
+        return reactor != null ? Objects.requireNonNull(reactor.getDisplayName()) : new TextComponentString("<null>");
     }
 
     public int getSizeInventory() {
@@ -136,22 +141,25 @@ public class TileEntityImpReactorChamberElectric extends TileEntityBlock impleme
         return reactor == null || reactor.isEmpty();
     }
 
+    @Nonnull
     public ItemStack getStackInSlot(int index) {
         TileEntityImpNuclearReactor reactor = this.getReactor();
-        return reactor != null ? reactor.getStackInSlot(index) : null;
+        return reactor != null ? reactor.getStackInSlot(index) : ItemStack.EMPTY;
     }
 
+    @Nonnull
     public ItemStack decrStackSize(int index, int count) {
         TileEntityImpNuclearReactor reactor = this.getReactor();
-        return reactor != null ? reactor.decrStackSize(index, count) : null;
+        return reactor != null ? reactor.decrStackSize(index, count) : ItemStack.EMPTY;
     }
 
+    @Nonnull
     public ItemStack removeStackFromSlot(int index) {
         TileEntityImpNuclearReactor reactor = this.getReactor();
-        return reactor != null ? reactor.removeStackFromSlot(index) : null;
+        return reactor != null ? reactor.removeStackFromSlot(index) : ItemStack.EMPTY;
     }
 
-    public void setInventorySlotContents(int index, ItemStack stack) {
+    public void setInventorySlotContents(int index, @Nonnull ItemStack stack) {
         TileEntityImpNuclearReactor reactor = this.getReactor();
         if (reactor != null) {
             reactor.setInventorySlotContents(index, stack);
@@ -164,12 +172,12 @@ public class TileEntityImpReactorChamberElectric extends TileEntityBlock impleme
         return reactor != null ? reactor.getInventoryStackLimit() : 0;
     }
 
-    public boolean isUsableByPlayer(EntityPlayer player) {
+    public boolean isUsableByPlayer(@Nonnull EntityPlayer player) {
         TileEntityImpNuclearReactor reactor = this.getReactor();
         return reactor != null && reactor.isUsableByPlayer(player);
     }
 
-    public void openInventory(EntityPlayer player) {
+    public void openInventory(@Nonnull EntityPlayer player) {
         TileEntityImpNuclearReactor reactor = this.getReactor();
         if (reactor != null) {
             reactor.openInventory(player);
@@ -177,7 +185,7 @@ public class TileEntityImpReactorChamberElectric extends TileEntityBlock impleme
 
     }
 
-    public void closeInventory(EntityPlayer player) {
+    public void closeInventory(@Nonnull EntityPlayer player) {
         TileEntityImpNuclearReactor reactor = this.getReactor();
         if (reactor != null) {
             reactor.closeInventory(player);
@@ -185,7 +193,7 @@ public class TileEntityImpReactorChamberElectric extends TileEntityBlock impleme
 
     }
 
-    public boolean isItemValidForSlot(int index, ItemStack stack) {
+    public boolean isItemValidForSlot(int index, @Nonnull ItemStack stack) {
         TileEntityImpNuclearReactor reactor = this.getReactor();
         return reactor != null && reactor.isItemValidForSlot(index, stack);
     }

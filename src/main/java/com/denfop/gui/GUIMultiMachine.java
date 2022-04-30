@@ -2,7 +2,6 @@ package com.denfop.gui;
 
 import com.denfop.Config;
 import com.denfop.Constants;
-import com.denfop.api.inv.IInvSlotProcessableMulti;
 import com.denfop.api.recipe.InvSlotMultiRecipes;
 import com.denfop.container.ContainerMultiMachine;
 import com.denfop.container.ContainerMultiMetalFormer;
@@ -19,13 +18,11 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-import java.util.Iterator;
-
-public class GUIMultiMachine extends GuiIC2<ContainerMultiMachine> {
+public class GuiMultiMachine extends GuiIC2<ContainerMultiMachine> {
 
     private final ContainerMultiMachine container;
 
-    public GUIMultiMachine(ContainerMultiMachine container1) {
+    public GuiMultiMachine(ContainerMultiMachine container1) {
         super(container1);
         this.container = container1;
         if (container1 instanceof ContainerMultiMetalFormer) {
@@ -89,19 +86,15 @@ public class GUIMultiMachine extends GuiIC2<ContainerMultiMachine> {
                 drawTexturedModalRect(xX - 1, yY - 1, 238, 0, 18, 18);
             }
         }
-        if(Config.coolingsystem)
-        if (heat >= 0) {
-            drawTexturedModalRect(
-                    xoffset + 27, yoffset + 47 + 14 - heat, 216, 14 - heat, 4,
-                    heat
-            );
+        if (Config.coolingsystem) {
+            if (heat >= 0) {
+                drawTexturedModalRect(
+                        xoffset + 27, yoffset + 47 + 14 - heat, 216, 14 - heat, 4,
+                        heat
+                );
+            }
         }
-       /* int exp = (int) (24.0F * tile.expstorage / 5000);
-        if (exp > 0) {
 
-            drawTexturedModalRect(xoffset + 9, yoffset + 26, 176, 134, exp + 1, 16);
-
-        }*/
 
         if (chargeLevel >= 0) {
             drawTexturedModalRect(
@@ -118,16 +111,15 @@ public class GUIMultiMachine extends GuiIC2<ContainerMultiMachine> {
         this.drawXCenteredString(this.xSize / 2, 6, Localization.translate(this.container.base.getName()), 4210752, false);
         String tooltip1 = ModUtils.getString(this.container.base.energy2) + "/" + ModUtils.getString(this.container.base.maxEnergy2) + " RF";
         String tooltip2 =
-                ModUtils.getString(Math.min(
-                        this.container.base.energy.getEnergy(),
-                        this.container.base.energy.getEnergy()
-                )) + "/" + ModUtils.getString(this.container.base.energy.getCapacity()) + " " +
+                ModUtils.getString(this.container.base.energy.getEnergy()) + "/" + ModUtils.getString(this.container.base.energy.getCapacity()) + " " +
                         "EU";
 
         GuiTooltipHelper.drawAreaTooltip(this, x - this.guiLeft, y - this.guiTop, tooltip2, 5, 47, 19, 61);
         GuiTooltipHelper.drawAreaTooltip(this, x - this.guiLeft, y - this.guiTop, tooltip1, 14, 47, 26, 61);
         String tooltip =
-                ModUtils.getString(this.container.base.getComponent().getEnergy())+ "°C" + "/" +  ModUtils.getString(this.container.base.getComponent().getCapacity())+ "°C";
+                ModUtils.getString(this.container.base
+                        .getComponent()
+                        .getEnergy()) + "°C" + "/" + ModUtils.getString(this.container.base.getComponent().getCapacity()) + "°C";
 
         GuiTooltipHelper.drawAreaTooltip(this, x - this.guiLeft, y - this.guiTop, tooltip, 27, 47, 30, 61);
         i = 0;
@@ -152,9 +144,8 @@ public class GUIMultiMachine extends GuiIC2<ContainerMultiMachine> {
         }
 
         for (final GuiElement<?> guiElement : this.elements) {
-            GuiElement<?> element = guiElement;
-            if (element.isEnabled()) {
-                element.drawBackground(x - this.guiLeft, y - this.guiTop);
+            if (guiElement.isEnabled()) {
+                guiElement.drawBackground(x - this.guiLeft, y - this.guiTop);
             }
         }
 

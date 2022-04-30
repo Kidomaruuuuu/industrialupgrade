@@ -7,7 +7,6 @@ import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.audio.AudioSource;
 import com.denfop.container.ContainerBaseWitherMaker;
 import ic2.api.network.INetworkTileEntityEventListener;
-import ic2.api.recipe.RecipeOutput;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.IUpgradeItem;
 import ic2.core.ContainerBase;
@@ -141,7 +140,7 @@ public abstract class TileEntityBaseWitherMaker extends TileEntityElectricMachin
                 }
             }
         }
-        if (output != null && this.outputSlot.canAdd(output.output.items) &&this.energy.canUseEnergy(energyConsume)) {
+        if (output != null && this.outputSlot.canAdd(output.output.items) && this.energy.canUseEnergy(energyConsume)) {
             setActive(true);
             if (this.progress == 0) {
                 IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
@@ -231,8 +230,7 @@ public abstract class TileEntityBaseWitherMaker extends TileEntityElectricMachin
 
     public BaseMachineRecipe getOutput() {
 
-       this.output = this.inputSlotA.process();
-
+        this.output = this.inputSlotA.process();
 
 
         return this.output;

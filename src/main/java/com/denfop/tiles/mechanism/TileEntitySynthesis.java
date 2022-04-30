@@ -5,13 +5,13 @@ import com.denfop.Ic2Items;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
+import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.container.ContainerDoubleElectricMachine;
-import com.denfop.gui.GUISynthesis;
+import com.denfop.gui.GuiSynthesis;
 import com.denfop.tiles.base.EnumDoubleElectricMachine;
 import com.denfop.tiles.base.TileEntityDoubleElectricMachine;
 import com.denfop.utils.ModUtils;
 import ic2.api.recipe.IRecipeInputFactory;
-import ic2.api.recipe.RecipeOutput;
 import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
@@ -87,7 +87,7 @@ public class TileEntitySynthesis extends TileEntityDoubleElectricMachine {
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUISynthesis(new ContainerDoubleElectricMachine(entityPlayer, this, type));
+        return new GuiSynthesis(new ContainerDoubleElectricMachine(entityPlayer, this, type));
     }
 
     public String getStartSoundFile() {

@@ -95,8 +95,7 @@ public class ItemCoolPipes extends ItemIC2 implements IMultiItem<CoolType>, IBox
 
     private static String getName(ItemStack stack) {
         CoolType type = getCableType(stack);
-        int insulation = getInsulation(stack);
-        return type.getName(insulation);
+        return type.getName();
     }
 
     @SideOnly(Side.CLIENT)

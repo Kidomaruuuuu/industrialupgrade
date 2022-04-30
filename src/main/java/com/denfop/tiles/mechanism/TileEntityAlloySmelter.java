@@ -10,6 +10,7 @@ import com.denfop.api.heat.event.HeatTileLoadEvent;
 import com.denfop.api.heat.event.HeatTileUnloadEvent;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
+import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.container.ContainerDoubleElectricMachine;
 import com.denfop.gui.GuiAlloySmelter;
 import com.denfop.tiles.base.EnumDoubleElectricMachine;
@@ -18,7 +19,6 @@ import com.denfop.tiles.base.TileEntityElectricMachine;
 import com.denfop.utils.ModUtils;
 import ic2.api.recipe.IRecipeInput;
 import ic2.api.recipe.IRecipeInputFactory;
-import ic2.api.recipe.RecipeOutput;
 import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
@@ -226,11 +226,6 @@ public class TileEntityAlloySmelter extends TileEntityDoubleElectricMachine impl
 
     public ITemperature getITemperature() {
         return this;
-    }
-
-    @Override
-    public boolean requairedTemperature() {
-        return true;
     }
 
     @Override

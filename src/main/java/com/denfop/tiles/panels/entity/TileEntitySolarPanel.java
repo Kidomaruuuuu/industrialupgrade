@@ -373,7 +373,7 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IEnergy
             }
         }
 
-        if(this.active == GenerationState.NONE) {
+        if (this.active == GenerationState.NONE) {
             this.generating = 0;
             return;
         }
@@ -384,8 +384,6 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IEnergy
             this.inputslot.wirelessmodule();
         }
         gainFuel();
-
-
 
 
         if (this.storage2 >= this.maxStorage2) {

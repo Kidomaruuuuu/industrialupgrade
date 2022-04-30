@@ -3,7 +3,7 @@ package com.denfop.tiles.base;
 import com.denfop.IUCore;
 import com.denfop.blocks.FluidName;
 import com.denfop.container.ContainerElectrolyzer;
-import com.denfop.gui.GUIElectrolyzer;
+import com.denfop.gui.GuiElectrolyzer;
 import com.denfop.invslot.InvSlotElectrolyzer;
 import ic2.core.ContainerBase;
 import net.minecraft.client.gui.GuiScreen;
@@ -75,7 +75,7 @@ public class TileEntityElectrolyzer extends TileEntityBaseLiquedMachine {
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
-        return new GUIElectrolyzer(new ContainerElectrolyzer(entityPlayer, this));
+        return new GuiElectrolyzer(new ContainerElectrolyzer(entityPlayer, this));
 
     }
 
@@ -88,7 +88,6 @@ public class TileEntityElectrolyzer extends TileEntityBaseLiquedMachine {
             return;
         }
 
-        boolean drain = false;
         if (getWorld().provider.getWorldTime() % 200 == 0) {
             initiate(2);
         }

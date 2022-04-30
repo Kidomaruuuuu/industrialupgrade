@@ -1,6 +1,5 @@
 package com.powerutils;
 
-import com.denfop.Config;
 import com.denfop.api.qe.NodeQEStats;
 import com.denfop.api.qe.QENet;
 import com.denfop.componets.AdvEnergy;
@@ -9,24 +8,17 @@ import ic2.api.energy.EnergyNet;
 import ic2.api.energy.NodeStats;
 import ic2.api.network.INetworkClientTileEntityEventListener;
 import ic2.api.tile.IEnergyStorage;
-import ic2.api.tile.IWrenchable;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
-import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlotUpgrade;
 import ic2.core.util.Util;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -35,7 +27,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-public class TileEntityQEConverter extends TileEntityInventory implements IHasGui, IWrenchable,
+public class TileEntityQEConverter extends TileEntityInventory implements IHasGui,
         INetworkClientTileEntityEventListener,
         IEnergyStorage, IUpgradableBlock {
 
@@ -50,11 +42,11 @@ public class TileEntityQEConverter extends TileEntityInventory implements IHasGu
     public QEComponent energy2;
     public boolean rf;
     public double differenceenergy = 0;
-    public double perenergy = 0;
     public double perenergy1 = 0;
     public double differenceenergy1 = 0;
     public int tier = 5;
     public List<EntityPlayer> list = new ArrayList<>();
+
     public TileEntityQEConverter() {
 
         this.rf = true;
@@ -136,28 +128,29 @@ public class TileEntityQEConverter extends TileEntityInventory implements IHasGu
             }
 
         }
-        if(!this.list.isEmpty())
-        if (this.rf) {
-            NodeStats stats = EnergyNet.instance.getNodeStats(this.energy.getDelegate());
-            NodeQEStats stats1 = QENet.instance.getNodeStats(this.energy2.getDelegate(), this.world);
+        if (!this.list.isEmpty()) {
+            if (this.rf) {
+                NodeStats stats = EnergyNet.instance.getNodeStats(this.energy.getDelegate());
+                NodeQEStats stats1 = QENet.instance.getNodeStats(this.energy2.getDelegate(), this.world);
 
-            if (stats != null) {
-                this.differenceenergy1 = stats.getEnergyIn();
-            }
-            if (stats1 != null) {
-                this.differenceenergy = stats1.getQE();
-            }
+                if (stats != null) {
+                    this.differenceenergy1 = stats.getEnergyIn();
+                }
+                if (stats1 != null) {
+                    this.differenceenergy = stats1.getQE();
+                }
 
-        } else {
-            this.perenergy1 = this.energy.getEnergy();
-            NodeStats stats = EnergyNet.instance.getNodeStats(this.energy.getDelegate());
-            NodeQEStats stats1 = QENet.instance.getNodeStats(this.energy2.getDelegate(), this.world);
+            } else {
+                this.perenergy1 = this.energy.getEnergy();
+                NodeStats stats = EnergyNet.instance.getNodeStats(this.energy.getDelegate());
+                NodeQEStats stats1 = QENet.instance.getNodeStats(this.energy2.getDelegate(), this.world);
 
-            if (stats != null) {
-                this.differenceenergy = stats.getEnergyOut();
-            }
-            if (stats1 != null) {
-                this.differenceenergy = stats1.getQEIn();
+                if (stats != null) {
+                    this.differenceenergy = stats.getEnergyOut();
+                }
+                if (stats1 != null) {
+                    this.differenceenergy = stats1.getQEIn();
+                }
             }
         }
 
@@ -175,39 +168,6 @@ public class TileEntityQEConverter extends TileEntityInventory implements IHasGu
 
     }
 
-
-    @Override
-    public EnumFacing getFacing(World world, BlockPos blockPos) {
-        return this.getFacing();
-    }
-
-    @Override
-    public boolean setFacing(World world, BlockPos blockPos, EnumFacing enumFacing, EntityPlayer entityPlayer) {
-        if (!this.canSetFacingWrench(enumFacing, entityPlayer)) {
-            return false;
-        } else {
-            this.setFacing(enumFacing);
-            return true;
-        }
-    }
-
-    @Override
-    public boolean wrenchCanRemove(World world, BlockPos blockPos, EntityPlayer entityPlayer) {
-        return true;
-    }
-
-    @Override
-    public List<ItemStack> getWrenchDrops(
-            final World world,
-            final BlockPos blockPos,
-            final IBlockState iBlockState,
-            final TileEntity tileEntity,
-            final EntityPlayer entityPlayer,
-            final int i
-    ) {
-        List<ItemStack> list = new ArrayList<>();
-        return list;
-    }
 
     public void readFromNBT(NBTTagCompound nbttagcompound) {
         super.readFromNBT(nbttagcompound);

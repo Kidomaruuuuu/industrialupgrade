@@ -1,7 +1,5 @@
 package com.denfop.utils;
 
-import com.brandon3055.brandonscore.utils.ItemNBTHelper;
-import com.denfop.Constants;
 import com.denfop.IUCore;
 import com.denfop.Ic2Items;
 import ic2.core.init.Localization;
@@ -10,16 +8,16 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.relauncher.FMLRelaunchLog;
 import net.minecraftforge.oredict.OreDictionary;
-import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ModUtils {
+
+    public static Logger log;
 
     public static List<ItemStack> blacklist_block() {
         List<ItemStack> list = new ArrayList<>();
@@ -37,6 +35,10 @@ public class ModUtils {
         list.add(new ItemStack(Blocks.DIRT, 1, 2));
         list.add(new ItemStack(Blocks.DIRT, 1, 3));
         return list;
+    }
+
+    public static void info(String message) {
+        log.info(message);
     }
 
     public static ItemStack getCellFromFluid(String name) {
@@ -169,27 +171,12 @@ public class ModUtils {
         return false;
     }
 
-    public static void info(String message) {
-        FMLRelaunchLog.log(Constants.MOD_NAME, Level.INFO, message);
-    }
 
     public static void SetDoubleWithoutItem(NBTTagCompound NBTTagCompound, String name, double amount) {
         if (NBTTagCompound == null) {
             NBTTagCompound = new NBTTagCompound();
         }
         NBTTagCompound.setDouble(name, amount);
-
-    }
-
-    public static double NBTGetDouble(ItemStack stack, String name) {
-        if (name == null) {
-            return 0;
-        }
-        NBTTagCompound NBTTagCompound = stack.getTagCompound();
-        if (NBTTagCompound == null) {
-            return 0;
-        }
-        return NBTTagCompound.getDouble(name);
 
     }
 
@@ -243,6 +230,38 @@ public class ModUtils {
                 list.add(Localization.translate("Snowskin"));
                 break;
         }
+    }
+
+    public static String mode(NBTTagCompound nbt) {
+        String mode = nbt.getString("mode");
+        if (mode.isEmpty()) {
+            return Localization.translate("defaultskin");
+        }
+        switch (mode) {
+            case "Zelen":
+                return Localization.translate("camouflageskin");
+            case "Demon":
+                return Localization.translate("demonskin");
+            case "Dark":
+                return Localization.translate("Darkskin");
+            case "Cold":
+                return Localization.translate("Coldskin");
+            case "Ender":
+                return Localization.translate("Enderskin");
+            case "Ukraine":
+                return Localization.translate("Ukraineskin");
+            case "Fire":
+                return Localization.translate("Fireskin");
+            case "Emerald":
+                return Localization.translate("Emeraldskin");
+            case "Taiga":
+                return Localization.translate("Taigaskin");
+            case "Desert":
+                return Localization.translate("Desertskin");
+            case "Snow":
+                return Localization.translate("Snowskin");
+        }
+        return Localization.translate("defaultskin");
     }
 
     public static String getString(float number) {
@@ -331,8 +350,8 @@ public class ModUtils {
     }
 
     public static NBTTagCompound nbt(ItemStack stack) {
-        if (stack == null) {
-            return null;
+        if (stack.isEmpty()) {
+            return new NBTTagCompound();
         }
         NBTTagCompound NBTTagCompound = stack.getTagCompound();
         if (NBTTagCompound == null) {
@@ -395,16 +414,6 @@ public class ModUtils {
         float divColor = 255.0F;
         Color tmpColor = new Color(r / divColor, g / divColor, b / divColor);
         return tmpColor.getRGB();
-    }
-
-    public String getEntityString(ItemStack stack) {
-        return ItemNBTHelper.getString(stack, "EntityName", "Pig");
-    }
-
-    @Nullable
-    public NBTTagCompound getEntityData(ItemStack stack) {
-        NBTTagCompound compound = ItemNBTHelper.getCompound(stack);
-        return compound.hasKey("EntityData") ? compound.getCompoundTag("EntityData") : null;
     }
 
 }

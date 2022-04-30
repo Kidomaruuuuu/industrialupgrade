@@ -56,7 +56,8 @@ public class GuiQEConverter extends GuiIC2<ContainerQEConverter> {
     protected void drawForegroundLayer(int par1, int par2) {
         int nmPos = (this.xSize - this.fontRenderer.getStringWidth(Localization.translate(this.container.base.getName()))) / 2;
         this.fontRenderer.drawString(Localization.translate(this.container.base.getName()), nmPos, 6, 7718655);
-        this.fontRenderer.drawString("EU: " + ModUtils.getString(this.tileentity.energy.getEnergy()) + "/" + ModUtils.getString(
+        this.fontRenderer.drawString(
+                "EU: " + ModUtils.getString(this.tileentity.energy.getEnergy()) + "/" + ModUtils.getString(
                         this.tileentity.capacity),
                 9,
                 20,
@@ -76,8 +77,10 @@ public class GuiQEConverter extends GuiIC2<ContainerQEConverter> {
             this.fontRenderer.drawString("IN: " + ModUtils.getString(this.tileentity.differenceenergy1) + " EU/t", 9, 50,
                     13487565
             );
-            this.fontRenderer.drawString("OUT: " + ModUtils.getString(Math.min( this.tileentity.differenceenergy,
-                            this.tileentity.energy2.getCapacity())) + " " +
+            this.fontRenderer.drawString("OUT: " + ModUtils.getString(Math.min(
+                            this.tileentity.differenceenergy,
+                            this.tileentity.energy2.getCapacity()
+                    )) + " " +
                             "QE/t", 9,
                     60,
                     13487565
@@ -89,7 +92,7 @@ public class GuiQEConverter extends GuiIC2<ContainerQEConverter> {
                     40,
                     13487565
             );
-            this.fontRenderer.drawString("IN: " + ModUtils.getString( this.tileentity.differenceenergy1) + " QE/t", 9, 50,
+            this.fontRenderer.drawString("IN: " + ModUtils.getString(this.tileentity.differenceenergy1) + " QE/t", 9, 50,
                     13487565
             );
             this.fontRenderer.drawString("OUT: " + ModUtils.getString(this.tileentity.differenceenergy) + " EU/t", 9, 60,

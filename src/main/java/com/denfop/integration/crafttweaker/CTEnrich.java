@@ -4,12 +4,12 @@ import com.blamejared.mtlib.utils.BaseAction;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
+import com.denfop.api.recipe.RecipeOutput;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.item.IItemStack;
-import ic2.api.recipe.RecipeOutput;
 import net.minecraft.item.ItemStack;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
@@ -51,7 +51,7 @@ public class CTEnrich {
                 if (!(internal instanceof ItemStack)) {
                     CraftTweakerAPI.logError("Not a valid item stack: " + item);
                 }
-
+                assert internal instanceof ItemStack;
                 return new ItemStack(((ItemStack) internal).getItem(), item.getAmount(), item.getDamage());
             }
         }
@@ -111,7 +111,7 @@ public class CTEnrich {
                 if (!(internal instanceof ItemStack)) {
                     CraftTweakerAPI.logError("Not a valid item stack: " + item);
                 }
-
+                assert internal instanceof ItemStack;
                 return new ItemStack(((ItemStack) internal).getItem(), item.getAmount(), item.getDamage());
             }
         }
