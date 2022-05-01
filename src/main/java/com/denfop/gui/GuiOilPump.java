@@ -27,7 +27,7 @@ public class GuiOilPump extends GuiIC2<ContainerOilPump> {
         TankGauge.createNormal(this, 96, 22, container.base.fluidTank).drawForeground(par1, par2);
 
         String tooltip;
-        if (!this.container.base.getVein().get()) {
+        if (this.container.base.getVein().get()) {
 
 
             tooltip =

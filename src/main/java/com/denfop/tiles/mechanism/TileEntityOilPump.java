@@ -117,7 +117,7 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
 
     public void updateEntityServer() {
         super.updateEntityServer();
-        if (this.vein.getType() == Type.EMPTY) {
+        if (this.vein == null || this.vein.getType() == Type.EMPTY) {
             return;
         }
         boolean needsInvUpdate = false;
