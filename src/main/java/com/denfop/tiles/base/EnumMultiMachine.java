@@ -102,13 +102,13 @@ public enum EnumMultiMachine {
             100,
             1,
             IUItem.machines_base,
-            7,
-            1,
+            6,
+            0,
             2,
             EnumTypeMachines.ELECTRICFURNACE
     ),
 
-    METAL_FORMER("Metal Former", 10, 200, 1, IUItem.machines_base, 12, 3, 4, EnumTypeMachines.METALFOMER),
+    METAL_FORMER("Metal Former", 10, 200, 1, IUItem.machines_base, 12, 0, 4, EnumTypeMachines.METALFOMER),
 
     RECYCLER("Recycler", 1, 45, 1, IUItem.machines_base1, 0, 0, 5, EnumTypeMachines.RECYCLER),
     ;

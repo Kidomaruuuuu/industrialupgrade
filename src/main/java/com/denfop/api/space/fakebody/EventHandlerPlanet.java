@@ -45,7 +45,7 @@ public class EventHandlerPlanet {
 
     @SubscribeEvent
     public void loadWorld(final WorldEvent.Load event) {
-        if (event.getWorld().provider.getDimension() == 0 && !event.getWorld().isRemote && !this.load) {
+        if (event.getWorld().provider.getDimension() == 0 && !event.getWorld().isRemote) {
 
             WorldSavedDataIU data = (WorldSavedDataIU) Objects.requireNonNull(event.getWorld().getMapStorage())
                     .getOrLoadData(
@@ -56,30 +56,10 @@ public class EventHandlerPlanet {
                 data = new WorldSavedDataIU();
                 data.setWorld(event.getWorld());
                 event.getWorld().getMapStorage().setData(Constants.MOD_ID, data);
-                data.markDirty();
             } else {
                 data.setWorld(event.getWorld());
-                data.markDirty();
             }
-            this.load = true;
-        }
-    }
-
-    @SubscribeEvent
-    public void loadWorld(final WorldEvent.Unload event) {
-
-        if (event.getWorld().provider.getDimension() == 0 && !event.getWorld().isRemote && this.load) {
-
-            WorldSavedDataIU data = (WorldSavedDataIU) Objects.requireNonNull(event.getWorld().getMapStorage())
-                    .getOrLoadData(
-                            WorldSavedDataIU.class,
-                            Constants.MOD_ID
-                    );
-
-            Objects.requireNonNull(event.getWorld().getMapStorage()).setData(Constants.MOD_ID, data);
             data.markDirty();
-            this.load = false;
-
         }
     }
 

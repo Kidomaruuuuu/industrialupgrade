@@ -45,14 +45,16 @@ public class BaseUpgradeSystem implements IUpgradeSystem {
         this.map_col = new HashMap<>();
         this.map_stack = new HashMap<>();
         this.list_modificators = new ArrayList<>();
-        this.list_modificators.add(new UpgradeModificator(new ItemStack(IUItem.core, 1, 7)));
-        this.list_modificators.add(new UpgradeModificator(new ItemStack(IUItem.neutroniumingot, 1)));
         this.map_modification = new HashMap<>();
 
         MinecraftForge.EVENT_BUS.register(this);
 
     }
-
+    public void addModification(){
+        this.list_modificators.clear();
+        this.list_modificators.add(new UpgradeModificator(new ItemStack(IUItem.core, 1, 7),"0"));
+        this.list_modificators.add(new UpgradeModificator(new ItemStack(IUItem.neutroniumingot, 1),"1"));
+    }
     public static void addupgrade(Item container, ItemStack fill) {
         NBTTagCompound nbt = ModUtils.nbt();
         nbt.setString(
@@ -71,7 +73,37 @@ public class BaseUpgradeSystem implements IUpgradeSystem {
                 )
         );
     }
+    public void addModificate(ItemStack container,String  name){
+        NBTTagCompound nbt = ModUtils.nbt(container);
+        nbt.setString("modification_module"+name,name);
+    }
+    public boolean needModificate(ItemStack container, ItemStack fill){
+        final List<UpgradeModificator> list = this.getListModifications(container);
+        for(UpgradeModificator modificator : list){
+            if(modificator.matches(fill))
+                return false;
+        }
+        return true;
+    }
 
+    public static void addupgrade(Item container, ItemStack fill,String type) {
+        NBTTagCompound nbt = ModUtils.nbt();
+        nbt.setString(
+                "type",
+                type
+        );
+        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
+        Recipes.recipes.addRecipe(
+                "upgradeblock",
+                new BaseMachineRecipe(
+                        new Input(
+                                input.forStack(new ItemStack(container, 1, OreDictionary.WILDCARD_VALUE)),
+                                input.forStack(fill)
+                        ),
+                        new RecipeOutput(nbt, new ItemStack(container, 1, OreDictionary.WILDCARD_VALUE))
+                )
+        );
+    }
     @SubscribeEvent
     public void loadItem(EventItemLoad event) {
         this.updateListFromNBT(event.item, event.stack);
@@ -98,7 +130,8 @@ public class BaseUpgradeSystem implements IUpgradeSystem {
     public int getRemaining(final ItemStack item) {
         final NBTTagCompound nbt = ModUtils.nbt(item);
         final int id = nbt.getInteger("ID_Item");
-        return this.map_col.getOrDefault(id, 4);
+        int k = this.getListModifications(item).size();
+        return this.map_col.getOrDefault(id, 4+k);
     }
 
     @Override
@@ -171,10 +204,14 @@ public class BaseUpgradeSystem implements IUpgradeSystem {
         }
         List<EnumInfoUpgradeModules> lst = new ArrayList<>();
         List<UpgradeModificator> list = new ArrayList<>();
+        this.addModification();
         for (int i = 0; i < 2; i++) {
             String name = nbt.getString("modification_module" + i);
-            if (getModification(name) != null) {
-                list.add(getModification(name));
+            if(name.isEmpty())
+                continue;
+
+            if (getModification(i) != null) {
+                list.add(getModification(i));
             }
         }
         if (this.map_modification.containsKey(id)) {
@@ -185,7 +222,7 @@ public class BaseUpgradeSystem implements IUpgradeSystem {
         int ost;
         int empty = 0;
         boolean canupgrade = false;
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4 + list.size(); i++) {
             String name = nbt.getString("mode_module" + i);
             if (name.equals("")) {
                 empty++;
@@ -209,11 +246,11 @@ public class BaseUpgradeSystem implements IUpgradeSystem {
 
     }
 
-    private UpgradeModificator getModification(String name) {
-        if (name.equals("0")) {
+    private UpgradeModificator getModification(int i) {
+        if ( i == 0) {
             return this.list_modificators.get(0);
         }
-        if (name.equals("1")) {
+        if (i == 1) {
             return this.list_modificators.get(1);
         }
         return null;
@@ -334,7 +371,8 @@ public class BaseUpgradeSystem implements IUpgradeSystem {
     public List<ItemStack> getListStack(final ItemStack stack) {
         List<ItemStack> list = new ArrayList<>();
         final NBTTagCompound nbt = ModUtils.nbt(stack);
-        for (int i = 0; i < 4; i++) {
+        int size = this.getListModifications(stack).size();
+        for (int i = 0; i < 4 +size; i++) {
             String name = nbt.getString("mode_module" + i);
             if (!name.equals("")) {
                 int index = IUItem.list.indexOf(name);
@@ -355,6 +393,20 @@ public class BaseUpgradeSystem implements IUpgradeSystem {
             addupgrade(stack, new ItemStack(IUItem.module9, 1, 12));
 
         }
+        for(UpgradeModificator modificator : this.list_modificators)
+            addupgrade(stack,modificator.itemstack,modificator.type);
+    }
+
+    @Override
+    public boolean shouldUpdate(final EnumInfoUpgradeModules type, final ItemStack stack1) {
+        List<UpgradeItemInform> list = getInformation(stack1);
+        for(UpgradeItemInform inform : list){
+            if (inform.upgrade == type) {
+                if(inform.number >= type.max)
+                    return false;
+            }
+        }
+        return true;
     }
 
 }

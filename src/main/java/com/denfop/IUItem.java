@@ -369,6 +369,7 @@ public class IUItem {
     public static IUItemBase autoheater;
     public static ItemCoreWind corewind;
     public static Block simplemachine;
+    public static IUItemBase upgrade_speed_creation;
 
     public static void register_mineral() {
         name_mineral = new ArrayList<>();

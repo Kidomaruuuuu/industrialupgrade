@@ -1,5 +1,6 @@
 package com.denfop.tiles.base;
 
+import com.denfop.IUItem;
 import com.denfop.blocks.FluidName;
 import com.denfop.invslot.InvSlotConsumableLiquidByListRemake;
 import ic2.api.upgrade.IUpgradableBlock;
@@ -10,6 +11,11 @@ import ic2.core.block.invslot.InvSlot;
 import ic2.core.block.invslot.InvSlotConsumableLiquid;
 import ic2.core.block.invslot.InvSlotConsumableLiquidByTank;
 import ic2.core.block.invslot.InvSlotUpgrade;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -33,6 +39,7 @@ public abstract class TileEntityBaseLiquedMachine extends TileEntityElectricMach
     public final InvSlotConsumableLiquidByListRemake[] containerslot;
     public final InvSlotConsumableLiquidByTank[] fluidSlot;
     public final Fluid[] fluid;
+    public int level;
 
     public TileEntityBaseLiquedMachine(
             final double MaxEnergy, final int tier, final int count,
@@ -45,6 +52,7 @@ public abstract class TileEntityBaseLiquedMachine extends TileEntityElectricMach
         this.fluids = this.addComponent(new Fluids(this));
         this.fluid = name1;
         this.tier = tier;
+        this.level = 0;
         for (int i = 0; i < fluidTank.length; i++) {
 
             this.fluidTank[i] = this.fluids.addTank("fluidTank" + i, 8000, i == 0 ? InvSlot.Access.I : InvSlot.Access.O,
@@ -81,6 +89,18 @@ public abstract class TileEntityBaseLiquedMachine extends TileEntityElectricMach
 
     }
 
+    @Override
+    public NBTTagCompound writeToNBT(final NBTTagCompound nbttagcompound) {
+        super.writeToNBT(nbttagcompound);
+        nbttagcompound.setInteger("level",this.level);
+        return nbttagcompound;
+    }
+
+    @Override
+    public void readFromNBT(final NBTTagCompound nbttagcompound) {
+        super.readFromNBT(nbttagcompound);
+        this.level = nbttagcompound.getInteger("level");
+    }
 
     public FluidTank getFluidTank(int num) {
         return this.fluidTank[num];
@@ -180,6 +200,28 @@ public abstract class TileEntityBaseLiquedMachine extends TileEntityElectricMach
             }
         }
         return 0;
+    }
+
+    @Override
+    protected boolean onActivated(
+            final EntityPlayer player,
+            final EnumHand hand,
+            final EnumFacing side,
+            final float hitX,
+            final float hitY,
+            final float hitZ
+    ) {
+        if(level < 10) {
+            ItemStack stack = player.getHeldItem(hand);
+            if(!stack.getItem().equals(IUItem.upgrade_speed_creation))
+            return super.onActivated(player, hand, side, hitX, hitY, hitZ);
+            else{
+                stack.shrink(1);
+                this.level++;
+                return false;
+            }
+        }else
+        return super.onActivated(player, hand, side, hitX, hitY, hitZ);
     }
 
     @Nullable

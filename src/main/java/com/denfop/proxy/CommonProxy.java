@@ -334,6 +334,18 @@ public class CommonProxy implements IGuiHandler {
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.advancedCircuit));
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.advancedCircuit));
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.metalformer));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.macerator));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.extractor));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.electroFurnace));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.recycler));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.massFabricator));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.compressor));
+
+
+
+
+
+
         if (Components.getId(AdvEnergy.class) == null) {
             Components.register(AdvEnergy.class, "AdvEnergy");
         }

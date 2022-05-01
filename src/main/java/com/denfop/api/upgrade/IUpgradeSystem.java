@@ -10,6 +10,12 @@ import java.util.List;
 
 public interface IUpgradeSystem {
 
+    void addModification();
+
+    void addModificate(ItemStack container, String name);
+
+    boolean needModificate(ItemStack container, ItemStack fill);
+
     boolean getModifications(ItemStack item);
 
     List<UpgradeModificator> getListModifications(ItemStack item);
@@ -41,5 +47,7 @@ public interface IUpgradeSystem {
     List<ItemStack> getListStack(ItemStack stack);
 
     void addRecipe(Item stack, List<EnumInfoUpgradeModules> lst);
+
+    boolean shouldUpdate(EnumInfoUpgradeModules type, ItemStack stack1);
 
 }

@@ -133,7 +133,6 @@ public class TileEntityQuarryVein extends TileEntityElectricMachine implements I
 
     private void updateTileEntityField() {
         IC2.network.get(true).updateTileEntityField(this, "level");
-        IC2.network.get(true).updateTileEntityField(this, "progress");
     }
 
     public void updateEntityServer() {

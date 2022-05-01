@@ -91,12 +91,30 @@ public class TileEntityElectrolyzer extends TileEntityBaseLiquedMachine {
         if (getWorld().provider.getWorldTime() % 200 == 0) {
             initiate(2);
         }
-        if (this.getFluidTank(0).getFluidAmount() >= 4 && this.energy.getEnergy() >= 25) {
+        boolean drain = false;
+        boolean drain1 = false;
+        if (this.getFluidTank(0).getFluidAmount() >= 3 && this.energy.getEnergy() >= 25) {
+            int size =this.getFluidTank(0).getFluidAmount() / 3;
+            size = Math.min(this.level+1,size);
+            int cap =  this.fluidTank[1].getCapacity() - this.fluidTank[1].getFluidAmount();
+            cap /= 2;
+            cap = Math.min(cap,size);
+            int cap1 =  this.fluidTank[2].getCapacity() - this.fluidTank[2].getFluidAmount();
+            cap1 = Math.min(cap1,size);
+            if (  this.fluidTank[1].getCapacity() - this.fluidTank[1].getFluidAmount() >= 3) {
+                fill(new FluidStack(FluidName.fluidhyd.getInstance(), cap *2), true);
+                drain = true;
 
-            if (this.fluidTank[1].getFluidAmount() + 2 <= this.fluidTank[1].getCapacity() && this.fluidTank[2].getFluidAmount() + 1 <= this.fluidTank[2].getCapacity()) {
-                fill(new FluidStack(FluidName.fluidhyd.getInstance(), 2), true);
-                fill(new FluidStack(FluidName.fluidoxy.getInstance(), 1), true);
-                this.getFluidTank(0).drain(4, true);
+            }
+            if ( this.fluidTank[2].getCapacity() - this.fluidTank[2].getFluidAmount() >= 2) {
+                fill(new FluidStack(FluidName.fluidoxy.getInstance(), cap1), true);
+                drain1 = true;
+            }
+            if (drain || drain1) {
+                int drains = 0;
+                drains = drain ? drains + 2* cap  : drains;
+                drains = drain1 ? drains + cap1 : drains;
+                this.getFluidTank(0).drain(drains, true);
                 initiate(0);
                 this.useEnergy(25);
 

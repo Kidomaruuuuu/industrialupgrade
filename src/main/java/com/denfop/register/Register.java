@@ -4,6 +4,7 @@ import com.denfop.Config;
 import com.denfop.Constants;
 import com.denfop.IUCore;
 import com.denfop.IUItem;
+import com.denfop.api.upgrade.UpgradeSystem;
 import com.denfop.blocks.BlockHeavyOre;
 import com.denfop.blocks.BlockIngots1;
 import com.denfop.blocks.BlockOil;
@@ -171,6 +172,10 @@ public class Register {
         if (Config.experiment) {
             IUItem.templates = new ItemsTemplates();
         }
+        IUItem.neutroniumingot = new IUItemBase("neutroniumingot");
+        IUItem.upgrade_speed_creation = (IUItemBase) new IUItemBase("upgrade_speed_creation").setCreativeTab(IUCore.tabssp1);
+        IUItem.core = new ItemCore();
+        UpgradeSystem.system.addModification();
         IUItem.corewind = new ItemCoreWind();
         IUItem.autoheater = new IUItemBase("autoheater");
         IUItem.coolupgrade = new ItemCoolingUpgrade();
@@ -578,7 +583,7 @@ public class Register {
         IUItem.module_quickly = new IUItemBase("module_quickly").setCreativeTab(IUCore.tabssp1);
         IUItem.module_storage = new IUItemBase("module_storage").setCreativeTab(IUCore.tabssp1);
         IUItem.plastic_plate = new IUItemBase("plastic_plate");
-        IUItem.neutroniumingot = new IUItemBase("neutroniumingot");
+
         IUItem.doublescrapBox = new IUItemBase("doublescrapbox");
         IUItem.quarrymodule = new IUItemBase("quarrymodule").setCreativeTab(IUCore.tabssp1);
         IUItem.analyzermodule = new IUItemBase("analyzermodule").setCreativeTab(IUCore.tabssp1);
@@ -591,7 +596,7 @@ public class Register {
 
         IUItem.sunnarium = new itemSunnarium();
         IUItem.sunnariumpanel = new ItemSunnariumPanel();
-        IUItem.core = new ItemCore();
+
         IUItem.anode = new ItemChemistry("anode");
         IUItem.cathode = new ItemChemistry("cathode");
         IUItem.alloyscasing = new ItemAlloysCasing();

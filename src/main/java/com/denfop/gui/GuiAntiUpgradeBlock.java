@@ -1,6 +1,7 @@
 package com.denfop.gui;
 
 import com.denfop.Constants;
+import com.denfop.api.upgrade.UpgradeModificator;
 import com.denfop.api.upgrade.UpgradeSystem;
 import com.denfop.container.ContainerAntiUpgrade;
 import com.denfop.utils.ModUtils;
@@ -38,6 +39,13 @@ public class GuiAntiUpgradeBlock extends GuiIC2<ContainerAntiUpgrade> {
             if (x >= 70 && x <= 87 && y >= 10 + 18 * m && y < 27 + 18 * m) {
                 IC2.network.get(false).initiateClientTileEntityEvent(this.container.base, m + 1);
             }
+        }
+        final List<UpgradeModificator> list1 = UpgradeSystem.system.getListModifications(this.container.base.input.get());
+        if (x >= 149 && x <= 167 && y >= 10 && y < 27 && list1.size() >= 1) {
+            IC2.network.get(false).initiateClientTileEntityEvent(this.container.base, 5);
+        }
+        if (x >= 149 && x <= 167 && y >= 28 && y < 45 && list1.size() > 1) {
+            IC2.network.get(false).initiateClientTileEntityEvent(this.container.base, 6);
         }
     }
 
@@ -112,12 +120,23 @@ public class GuiAntiUpgradeBlock extends GuiIC2<ContainerAntiUpgrade> {
         }
         if (!this.container.base.input.isEmpty()) {
             final List<ItemStack> list = UpgradeSystem.system.getListStack(this.container.base.input.get());
+            final List<UpgradeModificator> list1 = UpgradeSystem.system.getListModifications(this.container.base.input.get());
+            for(int i =0; i < list1.size();i++){
+                drawTexturedModalRect(xoffset + 149, yoffset + 10 + 18 * i, 200,
+                        88, 18, 18
+                );
+            }
             int i = 0;
             GL11.glColor4f(1F, 1, 1F, 1);
+            if( this.container.base.index <= 3)
             drawTexturedModalRect(xoffset + 70, yoffset + 10 + 18 * this.container.base.index, 200,
                     10 + 18 * this.container.base.index, 18, 18
             );
-
+            else{
+                drawTexturedModalRect(xoffset + 149, yoffset + 10 + 18 * (this.container.base.index-4), 200,
+                        10 + 18, 18, 18
+                );
+            }
             for (ItemStack stack : list) {
 
                 if (stack.isEmpty()) {
@@ -133,18 +152,28 @@ public class GuiAntiUpgradeBlock extends GuiIC2<ContainerAntiUpgrade> {
                 GlStateManager.enableDepth();
                 this.zLevel = 100.0F;
                 mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-                itemRender.renderItemAndEffectIntoGUI(
-                        stack,
-                        xoffset + 71,
-                        yoffset + 11 + i * 18
-                );
+                if(i < 4) {
+                    itemRender.renderItemAndEffectIntoGUI(
+                            stack,
+                            xoffset + 71,
+                            yoffset + 11 + i * 18
+                    );
+
+                }else{
+                    itemRender.renderItemAndEffectIntoGUI(
+                            stack,
+                            xoffset + 150,
+                            yoffset + 11 + (i-4) * 18
+                    );
+
+                }
                 GL11.glEnable(GL11.GL_LIGHTING);
                 GlStateManager.enableLighting();
-
                 RenderHelper.enableStandardItemLighting();
                 GL11.glColor4f(1F, 1, 1F, 1);
                 GL11.glPopMatrix();
                 i++;
+
             }
             RenderHelper.disableStandardItemLighting();
             RenderHelper.enableGUIStandardItemLighting();

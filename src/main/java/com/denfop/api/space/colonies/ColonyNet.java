@@ -96,6 +96,8 @@ public class ColonyNet implements IColonyNet {
         List<IColony> list;
         final NBTTagCompound tagplayer = nbt.getCompoundTag("player");
         FakePlayer player = new FakePlayer(tagplayer.getString("name"), tagplayer.getCompoundTag("tag"));
+        if(this.fakePlayerList.contains(player))
+            return;
         for (IBody body : SpaceNet.instance.getBodyList()) {
             if (nbt.hasKey(body.getName())) {
                 NBTTagCompound nbt1 = nbt.getCompoundTag(body.getName());

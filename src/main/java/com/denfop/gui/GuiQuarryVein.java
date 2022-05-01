@@ -36,21 +36,21 @@ public class GuiQuarryVein extends GuiIC2<ContainerQuarryVein> {
 
     int getChance(Biome biome) {
         if (Biome.getIdForBiome(biome) == 2) {
-            return 60;
+            return 70;
         } else if (Biome.getIdForBiome(biome) == 0) {
-            return 35;
+            return 45;
         } else if (Biome.getIdForBiome(biome) == 24) {
-            return 60;
+            return 70;
         } else if (Biome.getIdForBiome(biome) == 10) {
-            return 35;
+            return 45;
         } else if (Biome.getIdForBiome(biome) == 17) {
-            return 60;
+            return 70;
         } else if (Biome.getIdForBiome(biome) == 7) {
-            return 45;
+            return 55;
         } else if (Biome.getIdForBiome(biome) == 35) {
-            return 45;
+            return 55;
         } else {
-            return 25;
+            return 35;
         }
     }
 

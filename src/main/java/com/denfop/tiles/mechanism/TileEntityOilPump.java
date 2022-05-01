@@ -22,7 +22,9 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -46,7 +48,7 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
     public final InvSlotUpgrade upgradeSlot;
     public final InvSlotConsumableLiquid containerslot;
     private Vein vein;
-
+    public int level;
     public TileEntityOilPump() {
         super(50000, 14, 20, Fluids.fluidPredicate(FluidName.fluidneft.getInstance()));
         this.containerslot = new InvSlotConsumableLiquidByList(this,
@@ -55,6 +57,19 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
         );
         this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
         this.defaultTier = 14;
+        this.level = 0;
+    }
+    @Override
+    public NBTTagCompound writeToNBT(final NBTTagCompound nbttagcompound) {
+        super.writeToNBT(nbttagcompound);
+        nbttagcompound.setInteger("level",this.level);
+        return nbttagcompound;
+    }
+
+    @Override
+    public void readFromNBT(final NBTTagCompound nbttagcompound) {
+        super.readFromNBT(nbttagcompound);
+        this.level = nbttagcompound.getInteger("level");
     }
 
     private static int applyModifier(int extra) {
@@ -65,7 +80,27 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
     public Vein getVein() {
         return vein;
     }
-
+    @Override
+    protected boolean onActivated(
+            final EntityPlayer player,
+            final EnumHand hand,
+            final EnumFacing side,
+            final float hitX,
+            final float hitY,
+            final float hitZ
+    ) {
+        if(level < 10) {
+            ItemStack stack = player.getHeldItem(hand);
+            if(!stack.getItem().equals(IUItem.upgrade_speed_creation))
+                return super.onActivated(player, hand, side, hitX, hitY, hitZ);
+            else{
+                stack.shrink(1);
+                this.level++;
+                return false;
+            }
+        }else
+            return super.onActivated(player, hand, side, hitX, hitY, hitZ);
+    }
 
     @Override
     public void onPlaced(final ItemStack stack, final EntityLivingBase placer, final EnumFacing facing) {
@@ -155,9 +190,11 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
 
     private void get_oil() {
         if (vein.getCol() >= 1) {
-            if (this.fluidTank.getFluidAmount() + 1 <= this.fluidTank.getCapacity()) {
-                fill(new FluidStack(FluidName.fluidneft.getInstance(), 1), true);
-                vein.removeCol(1);
+            int size = Math.min(this.level+1,vein.getCol());
+            size = Math.min(size,this.fluidTank.getCapacity()-this.fluidTank.getFluidAmount());
+            if (this.fluidTank.getFluidAmount() + size <= this.fluidTank.getCapacity()) {
+                fill(new FluidStack(FluidName.fluidneft.getInstance(), size), true);
+                vein.removeCol(size);
                 this.energy.useEnergy(10);
             }
         }

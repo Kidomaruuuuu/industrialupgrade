@@ -4,6 +4,7 @@ package com.denfop.integration.jei.upgradeblock;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,11 +13,18 @@ public class UpgradeBlockHandler {
 
     private static final List<UpgradeBlockHandler> recipes = new ArrayList<>();
     private final ItemStack input, input1, output;
+    public final NBTTagCompound metadata;
 
-    public UpgradeBlockHandler(ItemStack input, ItemStack input1, ItemStack output) {
+    public UpgradeBlockHandler(
+            ItemStack input,
+            ItemStack input1,
+            ItemStack output,
+            final NBTTagCompound metadata
+    ) {
         this.input = input;
         this.input1 = input1;
         this.output = output;
+        this.metadata=metadata;
     }
 
     public static List<UpgradeBlockHandler> getRecipes() { // Получатель всех рецептов.
@@ -26,8 +34,13 @@ public class UpgradeBlockHandler {
         return recipes;
     }
 
-    public static UpgradeBlockHandler addRecipe(ItemStack input, ItemStack input1, ItemStack output) {
-        UpgradeBlockHandler recipe = new UpgradeBlockHandler(input, input1, output);
+    public static UpgradeBlockHandler addRecipe(
+            ItemStack input,
+            ItemStack input1,
+            ItemStack output,
+            final NBTTagCompound metadata
+    ) {
+        UpgradeBlockHandler recipe = new UpgradeBlockHandler(input, input1, output,metadata);
         if (recipes.contains(recipe)) {
             return null;
         }
@@ -52,7 +65,7 @@ public class UpgradeBlockHandler {
             addRecipe(
                     container.input.getInputs().get(0).getInputs().get(0),
                     container.input.getInputs().get(1).getInputs().get(0),
-                    container.getOutput().items.get(0)
+                    container.getOutput().items.get(0),container.output.metadata
             );
 
 

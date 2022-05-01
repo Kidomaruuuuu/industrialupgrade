@@ -107,7 +107,6 @@ public class WorldSavedDataIU extends WorldSavedData {
             i++;
         }
         compound.setInteger("col", i);
-        SpaceNet.instance.getFakeSpaceSystem().unload();
         final List<Vein> list1 = VeinSystem.system.getVeinsList();
         NBTTagCompound tag = new NBTTagCompound();
         for (int i1 = 0; i1 < list1.size(); i1++) {
@@ -115,7 +114,6 @@ public class WorldSavedDataIU extends WorldSavedData {
         }
         tag.setInteger("max", list1.size());
         compound.setTag("vein", tag);
-        VeinSystem.system.unload();
         NBTTagCompound tag1 = new NBTTagCompound();
         tag1.setInteger("col", SpaceNet.instance.getColonieNet().getList().size());
         List<FakePlayer> list2 = SpaceNet.instance.getColonieNet().getList();
@@ -126,7 +124,6 @@ public class WorldSavedDataIU extends WorldSavedData {
         }
 
         compound.setTag("colonies", tag1);
-        SpaceNet.instance.getColonieNet().unload();
         this.tagCompound = compound;
         return compound;
     }

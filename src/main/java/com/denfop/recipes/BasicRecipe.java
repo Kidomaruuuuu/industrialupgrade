@@ -4825,6 +4825,7 @@ public class BasicRecipe {
                 'C',
                 OreDictionary.getOres("doubleplateMuntsa")
         );
+
         Recipes.advRecipes.addRecipe(
                 new ItemStack(IUItem.module9, 1, 15),
                 " D ",
@@ -4838,6 +4839,17 @@ public class BasicRecipe {
                 new ItemStack(IUItem.machines_base1, 1, 9),
                 'C',
                 OreDictionary.getOres("doubleplateVanadoalumite")
+        );
+        Recipes.advRecipes.addRecipe(
+                new ItemStack( IUItem.upgrade_speed_creation),
+                "   ",
+                "ABA",
+                "   ",
+                'A',
+                IUItem.overclockerUpgrade,
+                'B',
+                new ItemStack(IUItem.module_schedule)
+
         );
     }
 
