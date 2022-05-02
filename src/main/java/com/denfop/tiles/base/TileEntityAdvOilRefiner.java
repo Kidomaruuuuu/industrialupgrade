@@ -108,21 +108,21 @@ public class TileEntityAdvOilRefiner extends TileEntityBaseLiquedMachine {
             initiate(2);
         }
 
-        if ( this.getFluidTank(0).getFluidAmount() >= 10 && this.energy.getEnergy() >= 25) {
-            int size =this.getFluidTank(0).getFluidAmount() / 10;
-            size = Math.min(this.level+1,size);
-            int cap =  this.fluidTank[1].getCapacity() - this.fluidTank[1].getFluidAmount();
+        if (this.getFluidTank(0).getFluidAmount() >= 10 && this.energy.getEnergy() >= 25) {
+            int size = this.getFluidTank(0).getFluidAmount() / 10;
+            size = Math.min(this.level + 1, size);
+            int cap = this.fluidTank[1].getCapacity() - this.fluidTank[1].getFluidAmount();
             cap /= 5;
-            cap = Math.min(cap,size);
-            int cap1 =  this.fluidTank[2].getCapacity() - this.fluidTank[2].getFluidAmount();
+            cap = Math.min(cap, size);
+            int cap1 = this.fluidTank[2].getCapacity() - this.fluidTank[2].getFluidAmount();
             cap1 /= 5;
-            cap1 = Math.min(cap1,size);
-            if (  this.fluidTank[1].getCapacity() - this.fluidTank[1].getFluidAmount() >= 5) {
+            cap1 = Math.min(cap1, size);
+            if (this.fluidTank[1].getCapacity() - this.fluidTank[1].getFluidAmount() >= 5) {
                 fill(new FluidStack(FluidName.fluidpolyeth.getInstance(), cap * 5), true);
                 drain = true;
 
             }
-            if ( this.fluidTank[2].getCapacity() - this.fluidTank[2].getFluidAmount() >= 5) {
+            if (this.fluidTank[2].getCapacity() - this.fluidTank[2].getFluidAmount() >= 5) {
                 fill(new FluidStack(FluidName.fluidpolyprop.getInstance(), cap1 * 5), true);
                 drain1 = true;
             }

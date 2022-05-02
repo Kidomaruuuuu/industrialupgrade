@@ -273,6 +273,8 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
         if (IC2.platform.isSimulating()) {
             this.setOverclockRates();
         }
+        inputSlotA.load();
+        this.getOutput();
 
     }
 

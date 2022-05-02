@@ -88,6 +88,9 @@ public class TileEntityBasePlasticPlateCreator extends TileEntityElectricLiquidT
         if (IC2.platform.isSimulating()) {
             setOverclockRates();
         }
+        inputSlotA.load();
+        this.getOutput();
+
     }
 
     public void onUnloaded() {
@@ -168,8 +171,9 @@ public class TileEntityBasePlasticPlateCreator extends TileEntityElectricLiquidT
             }
 
         }
-        BaseMachineRecipe output = getOutput();
-        if (output != null && this.outputSlot.canAdd(output.output.items) && this.energy.canUseEnergy(energyConsume)) {
+        BaseMachineRecipe output = this.output;
+        if (output != null && !this.inputSlotA.isEmpty() && this.outputSlot.canAdd(output.output.items) && this.energy.canUseEnergy(
+                energyConsume)) {
             setActive(true);
             if (this.progress == 0) {
                 IC2.network.get(true).initiateTileEntityEvent(this, 0, true);

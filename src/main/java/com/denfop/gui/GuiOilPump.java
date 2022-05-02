@@ -27,7 +27,7 @@ public class GuiOilPump extends GuiIC2<ContainerOilPump> {
         TankGauge.createNormal(this, 96, 22, container.base.fluidTank).drawForeground(par1, par2);
 
         String tooltip;
-        if (this.container.base.getVein().get()) {
+        if (this.container.base.find) {
 
 
             tooltip =
@@ -49,8 +49,10 @@ public class GuiOilPump extends GuiIC2<ContainerOilPump> {
         TankGauge.createNormal(this, 96, 22, container.base.fluidTank).drawBackground(xOffset, yOffset);
 
         int temp = 0;
-        if (this.container.base.getVein().getMaxCol() > 0) {
-            temp = 14 * this.container.base.getVein().getCol() / this.container.base.getVein().getMaxCol();
+        if (this.container.base.find) {
+            if (this.container.base.getVein().getMaxCol() > 0) {
+                temp = 14 * this.container.base.count / this.container.base.getVein().getMaxCol();
+            }
         }
         temp = Math.min(14, temp);
         this.mc.getTextureManager().bindTexture(getTexture());

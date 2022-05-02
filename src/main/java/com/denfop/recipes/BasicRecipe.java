@@ -4841,7 +4841,7 @@ public class BasicRecipe {
                 OreDictionary.getOres("doubleplateVanadoalumite")
         );
         Recipes.advRecipes.addRecipe(
-                new ItemStack( IUItem.upgrade_speed_creation),
+                new ItemStack(IUItem.upgrade_speed_creation),
                 "   ",
                 "ABA",
                 "   ",

@@ -21,6 +21,7 @@ public class ContainerQuarryVein extends ContainerFullInv<TileEntityQuarryVein> 
         List<String> ret = super.getNetworkedFields();
         ret.add("progress");
         ret.add("level");
+        ret.add("find");
         return ret;
     }
 

@@ -32,7 +32,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
 
-import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -129,13 +128,7 @@ public class TileEntityConverterSolidMatter extends TileEntityElectricMachine
         this.upgradeSlot.onChanged();
         this.operationsPerTick = this.upgradeSlot.getOperationsPerTick(this.defaultOperationLength);
         this.operationLength = this.upgradeSlot.getOperationLength(this.defaultOperationLength);
-        this.energyConsume = this.upgradeSlot.getEnergyDemand(this.defaultEnergyConsume);
 
-        this.energy.setCapacity(this.upgradeSlot.getEnergyStorage(
-                (int) this.defaultEnergyStorage,
-                this.defaultOperationLength,
-                this.defaultEnergyConsume
-        ));
 
     }
 
@@ -156,12 +149,10 @@ public class TileEntityConverterSolidMatter extends TileEntityElectricMachine
 
         BaseMachineRecipe output = this.output;
         boolean needsInvUpdate = false;
-        if (output != null && this.outputSlot.canAdd(this.output.output.items) && !this.inputSlot.isEmpty()) {
+        if (output != null && this.outputSlot.canAdd(this.output.output.items) && !this.inputSlot.isEmpty() && this.required) {
             setActive(true);
 
-            if (this.energy.getEnergy() == 0) {
-                IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
-            }
+
             if (this.useEnergy(this.energyConsume, false) && this.required) {
                 this.progress++;
                 this.useEnergy(this.energyConsume, true);
@@ -183,12 +174,9 @@ public class TileEntityConverterSolidMatter extends TileEntityElectricMachine
                 this.progress = 0;
 
 
-                IC2.network.get(true).initiateTileEntityEvent(this, 2, true);
             }
         } else {
-            if (getActive()) {
-                IC2.network.get(true).initiateTileEntityEvent(this, 1, true);
-            }
+
 
             setActive(false);
         }
@@ -214,13 +202,13 @@ public class TileEntityConverterSolidMatter extends TileEntityElectricMachine
             return;
         }
 
+
         NBTTagCompound nbt = output.metadata;
         double[] outputmatter = new double[9];
 
         for (int i = 0; i < this.quantitysolid.length; i++) {
             outputmatter[i] = nbt.getDouble(("quantitysolid_" + i));
         }
-
         for (int i = 0; i < this.quantitysolid.length; i++) {
             if (!(this.quantitysolid[i] >= outputmatter[i])) {
                 this.required = false;
@@ -233,27 +221,27 @@ public class TileEntityConverterSolidMatter extends TileEntityElectricMachine
 
 
     public void operate(BaseMachineRecipe output) {
-
         List<ItemStack> processResult = output.output.items;
-
         operateOnce(processResult, output);
-
-
     }
 
     public void operateOnce(List<ItemStack> processResult, BaseMachineRecipe output) {
         useMatter(output.getOutput());
         this.outputSlot.add(processResult);
+        this.getrequiredmatter(this.output.getOutput());
+        this.MatterSlot.getmatter();
     }
 
     @Override
     protected void onLoaded() {
         super.onLoaded();
+        inputSlot.load();
         this.getOutput();
         if (this.output != null) {
             this.getrequiredmatter(this.output.getOutput());
         }
         this.MatterSlot.getmatter();
+
     }
 
     public BaseMachineRecipe getOutput() {
@@ -338,9 +326,6 @@ public class TileEntityConverterSolidMatter extends TileEntityElectricMachine
         return false;
     }
 
-    public boolean isItemValidForSlot(final int i, @Nonnull final ItemStack itemstack) {
-        return true;
-    }
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {

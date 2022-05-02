@@ -110,7 +110,6 @@ public class HeatNetLocal {
         for (i = activeEnergyPaths.size() - amount; i > 0.0D; i--) {
             activeEnergyPaths.remove(activeEnergyPaths.size() - 1);
         }
-        Map<EnergyPath, Double> suppliedEnergyPaths = new HashMap<>();
         while (!activeEnergyPaths.isEmpty() && amount > 0.0D) {
             double energyConsumed = 0.0D;
             List<EnergyPath> currentActiveEnergyPaths = activeEnergyPaths;
@@ -132,13 +131,11 @@ public class HeatNetLocal {
                         energyReturned = energyProvided - energyLoss;
                     }
                     energyConsumed += adding - energyReturned + energyLoss;
-                    double energyInjected = adding - energyReturned;
-                    if (!suppliedEnergyPaths.containsKey(energyPath2)) {
-                        suppliedEnergyPaths.put(energyPath2, energyInjected);
-                        continue;
+                    for (IHeatConductor energyConductor3 : energyPath2.conductors) {
+                        if (energySource.getOfferedHeat() >= energyConductor3.getConductorBreakdownEnergy()) {
+                            energyConductor3.removeConductor();
+                        }
                     }
-                    suppliedEnergyPaths.put(energyPath2, energyInjected + suppliedEnergyPaths.get(
-                            energyPath2));
                     continue;
                 }
                 activeEnergyPaths.add(energyPath2);
@@ -147,15 +144,6 @@ public class HeatNetLocal {
                 activeEnergyPaths.remove(activeEnergyPaths.size() - 1);
             }
             amount -= energyConsumed;
-        }
-        for (Map.Entry<EnergyPath, Double> entry : suppliedEnergyPaths.entrySet()) {
-            EnergyPath energyPath3 = entry.getKey();
-            double energyInjected2 = entry.getValue();
-            for (IHeatConductor energyConductor3 : energyPath3.conductors) {
-                if (energyInjected2 >= energyConductor3.getConductorBreakdownEnergy()) {
-                    energyConductor3.removeConductor();
-                }
-            }
         }
         return amount;
     }

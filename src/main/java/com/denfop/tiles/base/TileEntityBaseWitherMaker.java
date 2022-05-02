@@ -79,10 +79,12 @@ public abstract class TileEntityBaseWitherMaker extends TileEntityElectricMachin
 
     public void onLoaded() {
         super.onLoaded();
+        inputSlotA.load();
         if (IC2.platform.isSimulating()) {
             setOverclockRates();
             this.output = this.getOutput();
         }
+
     }
 
     public void onUnloaded() {

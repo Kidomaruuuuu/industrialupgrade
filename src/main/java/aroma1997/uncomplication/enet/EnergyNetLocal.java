@@ -598,10 +598,10 @@ public class EnergyNetLocal {
         if (sink instanceof IMetaDelegate) {
             IMetaDelegate meta = (IMetaDelegate) sink;
             for (IEnergyTile tile : meta.getSubTiles()) {
-                explodeMachineAt(getTileFromMap(tile).getPos());
+                explodeMachineAt(getTileFromIEnergy(tile).getPos());
             }
         } else {
-            explodeMachineAt(getTileFromMap(sink).getPos());
+            explodeMachineAt(getTileFromIEnergy(sink).getPos());
         }
     }
 

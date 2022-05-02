@@ -15,7 +15,7 @@ import java.util.Objects;
 
 public class EventHandlerPlanet {
 
-    private boolean load;
+    private final boolean load;
 
     public EventHandlerPlanet() {
         this.load = false;

@@ -77,16 +77,6 @@ public class TileEntityGenerationStone extends TileEntityBaseGenStone {
     }
 
 
-    @Override
-    public double getEnergy() {
-        return 0;
-    }
-
-    @Override
-    public boolean useEnergy(final double v) {
-        return false;
-    }
-
     public Set<UpgradableProperty> getUpgradableProperties() {
         return EnumSet.of(
                 UpgradableProperty.Processing,

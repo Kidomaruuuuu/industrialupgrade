@@ -17,12 +17,14 @@ import java.util.List;
 public class InvSlotMultiRecipes extends InvSlot {
 
     private final IMultiUpdateTick tile;
+    private List<BaseMachineRecipe> recipe_list;
     private IBaseRecipe recipe;
     private FluidTank tank;
 
     public InvSlotMultiRecipes(final TileEntityInventory base, IBaseRecipe baseRecipe, IMultiUpdateTick tile, int size) {
         super(base, "input", Access.I, size);
         this.recipe = baseRecipe;
+        this.recipe_list = Recipes.recipes.getRecipeList(this.recipe.getName());
         this.tile = tile;
         this.tank = null;
     }
@@ -41,6 +43,10 @@ public class InvSlotMultiRecipes extends InvSlot {
     ) {
         this(base, Recipes.recipes.getRecipe(baseRecipe), tile, size);
         this.tank = tank;
+    }
+
+    public void load() {
+        this.recipe_list = Recipes.recipes.getRecipeList(this.recipe.getName());
     }
 
     @Override
@@ -131,7 +137,7 @@ public class InvSlotMultiRecipes extends InvSlot {
             List<ItemStack> list = new ArrayList<>();
             list.add(this.get(slotid));
             if (this.tank == null) {
-                return Recipes.recipes.getRecipeOutput(this.recipe.getName(), this.recipe.consume(), list);
+                return Recipes.recipes.getRecipeOutput(this.recipe, this.recipe_list, this.recipe.consume(), list);
             } else {
                 return Recipes.recipes.getRecipeOutputFluid(this.recipe.getName(), this.recipe.consume(), list, this.tank);
             }
@@ -146,7 +152,7 @@ public class InvSlotMultiRecipes extends InvSlot {
         List<ItemStack> list = new ArrayList<>();
         list.add(this.get(slotid));
         if (this.tank == null) {
-            return Recipes.recipes.getRecipeMultiOutput(this.recipe.getName(), false, list);
+            return Recipes.recipes.getRecipeMultiOutput(this.recipe, this.recipe_list, false, list);
         } else {
             return Recipes.recipes.getRecipeOutputFluid(this.recipe.getName(), false, list, this.tank);
         }

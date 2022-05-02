@@ -121,19 +121,19 @@ public class GuiAntiUpgradeBlock extends GuiIC2<ContainerAntiUpgrade> {
         if (!this.container.base.input.isEmpty()) {
             final List<ItemStack> list = UpgradeSystem.system.getListStack(this.container.base.input.get());
             final List<UpgradeModificator> list1 = UpgradeSystem.system.getListModifications(this.container.base.input.get());
-            for(int i =0; i < list1.size();i++){
+            for (int i = 0; i < list1.size(); i++) {
                 drawTexturedModalRect(xoffset + 149, yoffset + 10 + 18 * i, 200,
                         88, 18, 18
                 );
             }
             int i = 0;
             GL11.glColor4f(1F, 1, 1F, 1);
-            if( this.container.base.index <= 3)
-            drawTexturedModalRect(xoffset + 70, yoffset + 10 + 18 * this.container.base.index, 200,
-                    10 + 18 * this.container.base.index, 18, 18
-            );
-            else{
-                drawTexturedModalRect(xoffset + 149, yoffset + 10 + 18 * (this.container.base.index-4), 200,
+            if (this.container.base.index <= 3) {
+                drawTexturedModalRect(xoffset + 70, yoffset + 10 + 18 * this.container.base.index, 200,
+                        10 + 18 * this.container.base.index, 18, 18
+                );
+            } else {
+                drawTexturedModalRect(xoffset + 149, yoffset + 10 + 18 * (this.container.base.index - 4), 200,
                         10 + 18, 18, 18
                 );
             }
@@ -152,18 +152,18 @@ public class GuiAntiUpgradeBlock extends GuiIC2<ContainerAntiUpgrade> {
                 GlStateManager.enableDepth();
                 this.zLevel = 100.0F;
                 mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-                if(i < 4) {
+                if (i < 4) {
                     itemRender.renderItemAndEffectIntoGUI(
                             stack,
                             xoffset + 71,
                             yoffset + 11 + i * 18
                     );
 
-                }else{
+                } else {
                     itemRender.renderItemAndEffectIntoGUI(
                             stack,
                             xoffset + 150,
-                            yoffset + 11 + (i-4) * 18
+                            yoffset + 11 + (i - 4) * 18
                     );
 
                 }

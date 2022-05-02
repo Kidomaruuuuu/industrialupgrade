@@ -178,7 +178,8 @@ public class IUEventHandler {
             event.getToolTip().add(((IItemSoon) item).getDescription());
         }
 
-        if (item.equals(IUItem.upgrade_speed_creation) ||  item.equals(IUItem.autoheater) || item.equals(IUItem.coolupgrade) || item.equals(IUItem.module_quickly) || item.equals(
+        if (item.equals(IUItem.upgrade_speed_creation) || item.equals(IUItem.autoheater) || item.equals(IUItem.coolupgrade) || item.equals(
+                IUItem.module_quickly) || item.equals(
                 IUItem.module_stack) || item.equals(IUItem.module_storage) || (item.equals(
                 IUItem.module7) && (stack.getItemDamage() == 4 || stack.getItemDamage() == 10))) {
             event.getToolTip().add(Localization.translate("module.wireless"));
@@ -273,7 +274,9 @@ public class IUEventHandler {
             return;
         }
         ItemStack stack = event.getItemStack();
-        final BaseMachineRecipe output = Recipes.recipes.getRecipeOutput("converter", false, stack);
+        final BaseMachineRecipe output = Recipes.recipes.getRecipeOutput(Recipes.recipes.getRecipe("converter"),
+                Recipes.recipes.getRecipeList("converter"), false, stack
+        );
 
 
         if (output != null) {

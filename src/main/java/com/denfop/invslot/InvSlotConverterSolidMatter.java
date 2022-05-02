@@ -35,11 +35,10 @@ public class InvSlotConverterSolidMatter extends InvSlot {
             if (!get(i).isEmpty()) {
                 TileEntityConverterSolidMatter tile = (TileEntityConverterSolidMatter) base;
                 int meta = get(i).getItemDamage();
-                while (!this.get(i).isEmpty() && tile.quantitysolid[meta] <= 4800) {
-                    if (tile.quantitysolid[meta] <= 4800) {
-                        tile.quantitysolid[meta] += 200;
-                        this.consume(i, 1);
-                    }
+                while (!this.get(i).isEmpty() && tile.quantitysolid[meta % tile.quantitysolid.length] <= 4800) {
+                    tile.quantitysolid[meta % tile.quantitysolid.length] += 200;
+                    this.consume(i, 1);
+
                 }
 
             }

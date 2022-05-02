@@ -92,7 +92,7 @@ public abstract class TileEntityBaseLiquedMachine extends TileEntityElectricMach
     @Override
     public NBTTagCompound writeToNBT(final NBTTagCompound nbttagcompound) {
         super.writeToNBT(nbttagcompound);
-        nbttagcompound.setInteger("level",this.level);
+        nbttagcompound.setInteger("level", this.level);
         return nbttagcompound;
     }
 
@@ -211,17 +211,18 @@ public abstract class TileEntityBaseLiquedMachine extends TileEntityElectricMach
             final float hitY,
             final float hitZ
     ) {
-        if(level < 10) {
+        if (level < 10) {
             ItemStack stack = player.getHeldItem(hand);
-            if(!stack.getItem().equals(IUItem.upgrade_speed_creation))
-            return super.onActivated(player, hand, side, hitX, hitY, hitZ);
-            else{
+            if (!stack.getItem().equals(IUItem.upgrade_speed_creation)) {
+                return super.onActivated(player, hand, side, hitX, hitY, hitZ);
+            } else {
                 stack.shrink(1);
                 this.level++;
                 return false;
             }
-        }else
-        return super.onActivated(player, hand, side, hitX, hitY, hitZ);
+        } else {
+            return super.onActivated(player, hand, side, hitX, hitY, hitZ);
+        }
     }
 
     @Nullable

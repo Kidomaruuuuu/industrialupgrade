@@ -360,7 +360,9 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
     protected void onLoaded() {
         super.onLoaded();
         if (IC2.platform.isSimulating()) {
+            inputSlot.load();
             this.setOverclockRates();
+
         }
 
     }

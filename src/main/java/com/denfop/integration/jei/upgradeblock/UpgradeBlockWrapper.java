@@ -1,6 +1,5 @@
 package com.denfop.integration.jei.upgradeblock;
 
-import com.denfop.utils.ModUtils;
 import ic2.core.init.Localization;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
@@ -75,9 +74,13 @@ public class UpgradeBlockWrapper implements IRecipeWrapper {
     }
 
     public void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
-        minecraft.fontRenderer.drawString(this.nbt.getString("type").isEmpty() ?
-                Localization.translate("upgradeblock_upgrade") : Localization.translate("upgradeblock_modification"), 64, 52,
-                4210752);
+        minecraft.fontRenderer.drawString(
+                this.nbt.getString("type").isEmpty() ?
+                        Localization.translate("upgradeblock_upgrade") : Localization.translate("upgradeblock_modification"),
+                64,
+                52,
+                4210752
+        );
 
     }
 

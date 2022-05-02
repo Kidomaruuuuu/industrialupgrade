@@ -47,8 +47,11 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
     public final int defaultTier;
     public final InvSlotUpgrade upgradeSlot;
     public final InvSlotConsumableLiquid containerslot;
-    private Vein vein;
     public int level;
+    public boolean find;
+    public int count;
+    private Vein vein;
+
     public TileEntityOilPump() {
         super(50000, 14, 20, Fluids.fluidPredicate(FluidName.fluidneft.getInstance()));
         this.containerslot = new InvSlotConsumableLiquidByList(this,
@@ -59,10 +62,16 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
         this.defaultTier = 14;
         this.level = 0;
     }
+
+    private static int applyModifier(int extra) {
+        double ret = (double) Math.round(((double) 14 + (double) extra));
+        return ret > 2.147483647E9D ? 2147483647 : (int) ret;
+    }
+
     @Override
     public NBTTagCompound writeToNBT(final NBTTagCompound nbttagcompound) {
         super.writeToNBT(nbttagcompound);
-        nbttagcompound.setInteger("level",this.level);
+        nbttagcompound.setInteger("level", this.level);
         return nbttagcompound;
     }
 
@@ -72,14 +81,10 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
         this.level = nbttagcompound.getInteger("level");
     }
 
-    private static int applyModifier(int extra) {
-        double ret = (double) Math.round(((double) 14 + (double) extra));
-        return ret > 2.147483647E9D ? 2147483647 : (int) ret;
-    }
-
     public Vein getVein() {
         return vein;
     }
+
     @Override
     protected boolean onActivated(
             final EntityPlayer player,
@@ -89,29 +94,39 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
             final float hitY,
             final float hitZ
     ) {
-        if(level < 10) {
+        if (level < 10) {
             ItemStack stack = player.getHeldItem(hand);
-            if(!stack.getItem().equals(IUItem.upgrade_speed_creation))
+            if (!stack.getItem().equals(IUItem.upgrade_speed_creation)) {
                 return super.onActivated(player, hand, side, hitX, hitY, hitZ);
-            else{
+            } else {
                 stack.shrink(1);
                 this.level++;
                 return false;
             }
-        }else
+        } else {
             return super.onActivated(player, hand, side, hitX, hitY, hitZ);
+        }
+    }
+
+    private void updateTileEntityField() {
+        IC2.network.get(true).updateTileEntityField(this, "level");
+        IC2.network.get(true).updateTileEntityField(this, "count");
     }
 
     @Override
     public void onPlaced(final ItemStack stack, final EntityLivingBase placer, final EnumFacing facing) {
         super.onPlaced(stack, placer, facing);
         this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
+        this.find = this.vein.get();
+        this.count = this.vein.getCol();
     }
 
     @Override
     protected void onLoaded() {
         super.onLoaded();
         this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
+        this.find = this.vein.get();
+        this.count = this.vein.getCol();
     }
 
     @Override
@@ -155,6 +170,7 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
         if (this.vein == null || this.vein.getType() == Type.EMPTY) {
             return;
         }
+        updateTileEntityField();
         boolean needsInvUpdate = false;
         for (int i = 0; i < this.upgradeSlot.size(); i++) {
             ItemStack stack = this.upgradeSlot.get(i);
@@ -190,11 +206,12 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
 
     private void get_oil() {
         if (vein.getCol() >= 1) {
-            int size = Math.min(this.level+1,vein.getCol());
-            size = Math.min(size,this.fluidTank.getCapacity()-this.fluidTank.getFluidAmount());
+            int size = Math.min(this.level + 1, vein.getCol());
+            size = Math.min(size, this.fluidTank.getCapacity() - this.fluidTank.getFluidAmount());
             if (this.fluidTank.getFluidAmount() + size <= this.fluidTank.getCapacity()) {
                 fill(new FluidStack(FluidName.fluidneft.getInstance(), size), true);
                 vein.removeCol(size);
+                this.count = vein.getCol();
                 this.energy.useEnergy(10);
             }
         }

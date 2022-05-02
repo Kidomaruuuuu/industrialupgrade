@@ -500,6 +500,7 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
     protected void onLoaded() {
         super.onLoaded();
         if (IC2.platform.isSimulating()) {
+            inputSlot.load();
             this.setOverclockRates();
             this.onUpdate();
         }
@@ -667,32 +668,24 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
                 int size = 0;
                 int size2 = 0;
                 boolean getrecipe = false;
-                ItemStack output1 = null;
-                for (int i = 0; !getrecipe; i++) {
-                    for (int j = 0; j < 64; j++) {
-                        ItemStack stack = new ItemStack(this.inputSlot.get(0).getItem(), i, this.inputSlot.get().getItemDamage());
-                        ItemStack stack1 = new ItemStack(
-                                this.inputSlot.get(1).getItem(),
-                                j,
-                                this.inputSlot.get(1).getItemDamage()
-                        );
+                ItemStack output1;
+                output1 = this.output.getOutput().items.get(0);
 
-                        if (Recipes.recipes.getRecipeOutput("doublemolecular", false, stack, stack1) != null) {
-                            size = i;
-                            size2 = j;
-                            getrecipe = true;
-                            output1 = Recipes.recipes.getRecipeOutput(
-                                    "doublemolecular",
-                                    false,
-                                    stack,
-                                    stack1
-                            ).output.items.get(0);
-                            break;
-
-                        }
+                final List<ItemStack> list = this.output.input.getInputs().get(0).getInputs();
+                boolean is = false;
+                for (ItemStack stack : list) {
+                    if (stack.isItemEqual(this.inputSlot.get(0))) {
+                        is = true;
+                        size = stack.getCount();
+                        size2 = this.output.input.getInputs().get(1).getInputs().get(0).getCount();
+                        break;
                     }
                 }
+                if (!is) {
+                    size = this.output.input.getInputs().get(1).getInputs().get(0).getCount();
+                    size2 = this.output.input.getInputs().get(0).getInputs().get(0).getCount();
 
+                }
                 size = (int) Math.floor((float) this.inputSlot.get(0).stackSize / size);
                 size2 = (int) Math.floor((float) this.inputSlot.get(1).stackSize / size2);
                 size = Math.min(size, size2);

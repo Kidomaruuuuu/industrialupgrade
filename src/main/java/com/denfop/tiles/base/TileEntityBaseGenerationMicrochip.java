@@ -104,7 +104,9 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
         if (IC2.platform.isSimulating()) {
             setOverclockRates();
         }
+        inputSlotA.load();
         this.getOutput();
+
     }
 
     public void onUnloaded() {
@@ -210,7 +212,12 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
                 }
             }
             operateOnce(processResult);
-            getOutput();
+            for (int k = 0; k < this.inputSlotA.size(); k++) {
+                if (this.inputSlotA.get(k).isEmpty()) {
+                    output = getOutput();
+                    break;
+                }
+            }
             if (this.output == null) {
                 break;
             }

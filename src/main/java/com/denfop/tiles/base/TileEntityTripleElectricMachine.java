@@ -112,6 +112,7 @@ public abstract class TileEntityTripleElectricMachine extends TileEntityStandart
         super.onLoaded();
         if (IC2.platform.isSimulating()) {
             this.setOverclockRates();
+            inputSlotA.load();
             this.getOutput();
         }
 
@@ -215,8 +216,13 @@ public abstract class TileEntityTripleElectricMachine extends TileEntityStandart
                 }
             }
             operateOnce(output, processResult);
+            for (int k = 0; k < this.inputSlotA.size(); k++) {
+                if (this.inputSlotA.get(k).isEmpty()) {
+                    output = getOutput();
+                    break;
+                }
+            }
 
-            output = getOutput();
             if (output == null) {
                 break;
             }

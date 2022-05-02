@@ -120,6 +120,7 @@ public abstract class TileEntityDoubleElectricMachine extends TileEntityInventor
         super.onLoaded();
         if (IC2.platform.isSimulating()) {
             this.setOverclockRates();
+            inputSlotA.load();
             this.getOutput();
         }
 
@@ -213,14 +214,13 @@ public abstract class TileEntityDoubleElectricMachine extends TileEntityInventor
     public void operate(BaseMachineRecipe output) {
         for (int i = 0; i < this.operationsPerTick; i++) {
             List<ItemStack> processResult = output.output.items;
-            for (int j = 0; j < this.upgradeSlot.size(); j++) {
-                ItemStack stack = this.upgradeSlot.get(j);
-                if (stack != null && stack.getItem() instanceof IUpgradeItem) {
-                    ((IUpgradeItem) stack.getItem()).onProcessEnd(stack, this, processResult);
+            operateOnce(output, processResult);
+            for (int k = 0; k < this.inputSlotA.size(); k++) {
+                if (this.inputSlotA.get(k).isEmpty()) {
+                    getOutput();
+                    break;
                 }
             }
-            operateOnce(output, processResult);
-
             this.output = getOutput();
             if (this.output == null) {
                 break;

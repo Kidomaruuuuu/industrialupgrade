@@ -424,6 +424,7 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
         super.onLoaded();
         if (IC2.platform.isSimulating()) {
             this.setOverclockRates();
+            inputSlots.load();
             this.getsOutputs();
         }
 
@@ -555,7 +556,7 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
                 quickly = 100;
             }
             int size = 1;
-            if (this.output[i] != null) {
+            if (this.output[i] != null && !this.inputSlots.get(i).isEmpty()) {
                 if (this.modulesize) {
                     size = this.output[i].input.getInputs().get(0).getInputs().get(0).getCount();
                     size = (int) Math.floor((float) this.inputSlots.get(i).getCount() / size);
@@ -686,6 +687,14 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
         for (int i = 0; i < this.operationsPerTick; i++) {
 
             operateOnce(slotId, output.output.items, size);
+            if (this.inputSlots.get(slotId).isEmpty() || this.inputSlots.get(slotId).getCount() < this.output[slotId].input
+                    .getInputs()
+                    .get(0)
+                    .getInputs()
+                    .get(0)
+                    .getCount()) {
+                this.getOutput(slotId);
+            }
             output = this.output[slotId];
             if (output == null) {
                 break;
@@ -707,7 +716,7 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
                     this.outputSlot.add(processResult);
                 }
             }
-            this.getOutput(slotId);
+
         }
 
     }

@@ -22,6 +22,8 @@ public class ContainerOilPump extends ContainerFullInv<TileEntityOilPump> {
         List<String> ret = super.getNetworkedFields();
         ret.add("energy");
         ret.add("fluidTank");
+        ret.add("count");
+        ret.add("find");
         return ret;
     }
 

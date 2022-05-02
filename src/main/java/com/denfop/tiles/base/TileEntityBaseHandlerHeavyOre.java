@@ -130,8 +130,14 @@ public abstract class TileEntityBaseHandlerHeavyOre extends TileEntityElectricMa
                 }
             }
             operateOnce(processResult, output);
-
-            getOutput();
+            if (this.inputSlotA.get().isEmpty() || this.inputSlotA.get().getCount() < this.output.input
+                    .getInputs()
+                    .get(0)
+                    .getInputs()
+                    .get(0)
+                    .getCount()) {
+                getOutput();
+            }
             if (this.output == null) {
                 break;
             }

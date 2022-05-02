@@ -12,8 +12,8 @@ import java.util.List;
 public class UpgradeBlockHandler {
 
     private static final List<UpgradeBlockHandler> recipes = new ArrayList<>();
-    private final ItemStack input, input1, output;
     public final NBTTagCompound metadata;
+    private final ItemStack input, input1, output;
 
     public UpgradeBlockHandler(
             ItemStack input,
@@ -24,7 +24,7 @@ public class UpgradeBlockHandler {
         this.input = input;
         this.input1 = input1;
         this.output = output;
-        this.metadata=metadata;
+        this.metadata = metadata;
     }
 
     public static List<UpgradeBlockHandler> getRecipes() { // Получатель всех рецептов.
@@ -40,7 +40,7 @@ public class UpgradeBlockHandler {
             ItemStack output,
             final NBTTagCompound metadata
     ) {
-        UpgradeBlockHandler recipe = new UpgradeBlockHandler(input, input1, output,metadata);
+        UpgradeBlockHandler recipe = new UpgradeBlockHandler(input, input1, output, metadata);
         if (recipes.contains(recipe)) {
             return null;
         }
@@ -65,7 +65,7 @@ public class UpgradeBlockHandler {
             addRecipe(
                     container.input.getInputs().get(0).getInputs().get(0),
                     container.input.getInputs().get(1).getInputs().get(0),
-                    container.getOutput().items.get(0),container.output.metadata
+                    container.getOutput().items.get(0), container.output.metadata
             );
 
 

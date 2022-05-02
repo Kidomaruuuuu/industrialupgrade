@@ -16,14 +16,32 @@ public interface IRecipes {
 
     void addRecipeManager(String name, int size, boolean consume);
 
+    BaseMachineRecipe getRecipeOutput(
+            final IBaseRecipe recipe,
+            List<BaseMachineRecipe> recipes,
+            boolean adjustInput,
+            ItemStack... stacks
+    );
+
     BaseMachineRecipe getRecipeOutput(String name, boolean adjustInput, ItemStack... stacks);
+
 
     BaseMachineRecipe getRecipeOutputFromInstruments(String name, boolean adjustInput, ItemStack... stacks);
 
 
-    BaseMachineRecipe getRecipeOutput(String name, boolean adjustInput, List<ItemStack> stacks);
+    BaseMachineRecipe getRecipeOutput(
+            final IBaseRecipe recipe,
+            List<BaseMachineRecipe> recipes,
+            boolean adjustInput,
+            List<ItemStack> stacks
+    );
 
-    BaseMachineRecipe getRecipeMultiOutput(String name, boolean adjustInput, List<ItemStack> stacks);
+    BaseMachineRecipe getRecipeMultiOutput(
+            final IBaseRecipe recipe,
+            List<BaseMachineRecipe> recipes,
+            boolean adjustInput,
+            List<ItemStack> stacks
+    );
 
 
     IBaseRecipe getRecipe(String name);

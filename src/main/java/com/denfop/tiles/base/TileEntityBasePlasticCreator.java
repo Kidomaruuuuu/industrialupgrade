@@ -92,6 +92,9 @@ public class TileEntityBasePlasticCreator extends TileEntityElectricLiquidTankIn
         if (IC2.platform.isSimulating()) {
             setOverclockRates();
         }
+
+        inputSlotA.load();
+        this.getOutput();
     }
 
     public void onUnloaded() {
@@ -143,8 +146,13 @@ public class TileEntityBasePlasticCreator extends TileEntityElectricLiquidTankIn
                 }
             }
             operateOnce(processResult);
+            for (int k = 0; k < this.inputSlotA.size(); k++) {
+                if (this.inputSlotA.get(k).isEmpty()) {
+                    this.output = getOutput();
+                    break;
+                }
+            }
 
-            this.output = getOutput();
             if (this.output == null) {
                 break;
             }
@@ -173,7 +181,8 @@ public class TileEntityBasePlasticCreator extends TileEntityElectricLiquidTankIn
             }
 
         }
-        if (this.output != null && this.energy.canUseEnergy(energyConsume)) {
+        if (this.output != null && this.energy.canUseEnergy(energyConsume) && !this.inputSlotA.isEmpty() && this.outputSlot.canAdd(
+                this.output.getOutput().items)) {
             setActive(true);
             if (this.progress == 0) {
                 IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
@@ -227,14 +236,8 @@ public class TileEntityBasePlasticCreator extends TileEntityElectricLiquidTankIn
     public BaseMachineRecipe getOutput() {
         this.output = this.inputSlotA.process();
 
-        if (this.output == null) {
-            return null;
-        }
-        if (this.outputSlot.canAdd(output.output.items)) {
-            return output;
-        }
 
-        return null;
+        return this.output;
     }
 
     @Override

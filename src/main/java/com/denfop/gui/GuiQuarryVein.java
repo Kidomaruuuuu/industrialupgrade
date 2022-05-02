@@ -169,7 +169,7 @@ public class GuiQuarryVein extends GuiIC2<ContainerQuarryVein> {
         }
         handleUpgradeTooltip(par1, par2);
         if (this.container.base.vein != null) {
-            if (this.container.base.vein.get()) {
+            if (this.container.base.find) {
                 if (this.container.base.vein.getType() == Type.EMPTY) {
                     this.fontRenderer.drawString(
                             Localization.translate("iu.empty"),
@@ -242,7 +242,7 @@ public class GuiQuarryVein extends GuiIC2<ContainerQuarryVein> {
             );
         }
         if (this.container.base.vein != null) {
-            if (this.container.base.vein.get()) {
+            if (this.container.base.find) {
                 if (this.container.base.vein.getType() != Type.EMPTY) {
                     RenderHelper.enableGUIStandardItemLighting();
                     GL11.glPushMatrix();

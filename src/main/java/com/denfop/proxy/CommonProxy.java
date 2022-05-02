@@ -342,10 +342,6 @@ public class CommonProxy implements IGuiHandler {
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.compressor));
 
 
-
-
-
-
         if (Components.getId(AdvEnergy.class) == null) {
             Components.register(AdvEnergy.class, "AdvEnergy");
         }

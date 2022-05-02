@@ -31,12 +31,14 @@ public class TileEntityQuarryVein extends TileEntityElectricMachine implements I
     public int time;
     public int progress;
     public Vein vein;
+    public boolean find;
 
     public TileEntityQuarryVein() {
         super(400, 14, 1);
         this.progress = 0;
         this.time = 0;
         this.level = 1;
+
     }
 
     @Override
@@ -113,6 +115,7 @@ public class TileEntityQuarryVein extends TileEntityElectricMachine implements I
             this.vein = null;
         } else {
             this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
+            this.find = this.vein.get();
             if (this.vein.get()) {
                 this.progress = 1200;
             }
@@ -128,11 +131,13 @@ public class TileEntityQuarryVein extends TileEntityElectricMachine implements I
             this.vein = null;
         } else {
             this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
+            this.find = this.vein.get();
         }
     }
 
     private void updateTileEntityField() {
         IC2.network.get(true).updateTileEntityField(this, "level");
+        IC2.network.get(true).updateTileEntityField(this, "find");
     }
 
     public void updateEntityServer() {
@@ -165,6 +170,7 @@ public class TileEntityQuarryVein extends TileEntityElectricMachine implements I
                 initiate(2);
                 this.progress = 1200;
                 this.vein.setFind(true);
+                this.find = this.vein.get();
             }
 
 

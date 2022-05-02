@@ -272,9 +272,11 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
 
                                             if (this.mac_enabled) {
                                                 ItemStack stack4;
-                                                BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput("macerator",
+                                                BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
+                                                        "macerator",
                                                         false,
-                                                        item.getItem());
+                                                        item.getItem()
+                                                );
                                                 if (recipe != null) {
                                                     stack4 = recipe.getOutput().items.get(0);
                                                 } else {
@@ -289,7 +291,8 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
                                                 }
                                             } else if (this.comb_mac_enabled) {
                                                 ItemStack stack4;
-                                                BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput("comb_macerator",
+                                                BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
+                                                        "comb_macerator",
                                                         false,
                                                         item.getItem()
                                                 );
@@ -318,16 +321,19 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
                                             ItemStack stack4 = item.getItem();
                                             ItemStack stack5 = ItemStack.EMPTY;
                                             if (this.mac_enabled) {
-                                                BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput("macerator",
+                                                BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
+                                                        "macerator",
                                                         false,
-                                                        item.getItem());
+                                                        item.getItem()
+                                                );
                                                 if (recipe != null) {
                                                     stack5 = recipe.getOutput().items.get(0);
                                                 }
 
 
                                             } else if (this.comb_mac_enabled) {
-                                                BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput("comb_macerator",
+                                                BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
+                                                        "comb_macerator",
                                                         false,
                                                         item.getItem()
                                                 );

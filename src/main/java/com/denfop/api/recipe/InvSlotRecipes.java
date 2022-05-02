@@ -16,11 +16,13 @@ public class InvSlotRecipes extends InvSlot {
 
     private final IBaseRecipe recipe;
     private final IUpdateTick tile;
+    private List<BaseMachineRecipe> recipe_list;
     private FluidTank tank;
 
     public InvSlotRecipes(final TileEntityInventory base, IBaseRecipe baseRecipe, IUpdateTick tile) {
         super(base, "input", Access.I, baseRecipe.getSize());
         this.recipe = baseRecipe;
+        this.recipe_list = Recipes.recipes.getRecipeList(this.recipe.getName());
         this.tile = tile;
         this.tank = null;
     }
@@ -33,6 +35,10 @@ public class InvSlotRecipes extends InvSlot {
     public InvSlotRecipes(final TileEntityInventory base, String baseRecipe, IUpdateTick tile, FluidTank tank) {
         this(base, Recipes.recipes.getRecipe(baseRecipe), tile);
         this.tank = tank;
+    }
+
+    public void load() {
+        this.recipe_list = Recipes.recipes.getRecipeList(this.recipe.getName());
     }
 
     @Override
@@ -108,7 +114,7 @@ public class InvSlotRecipes extends InvSlot {
         List<ItemStack> list = new ArrayList<>();
         this.forEach(list::add);
         if (this.tank == null) {
-            return Recipes.recipes.getRecipeOutput(this.recipe.getName(), this.recipe.consume(), list);
+            return Recipes.recipes.getRecipeOutput(this.recipe, this.recipe_list, this.recipe.consume(), list);
         } else {
             return Recipes.recipes.getRecipeOutputFluid(this.recipe.getName(), this.recipe.consume(), list, this.tank);
         }
@@ -128,7 +134,7 @@ public class InvSlotRecipes extends InvSlot {
         List<ItemStack> list = new ArrayList<>();
         this.forEach(list::add);
         if (this.tank == null) {
-            return Recipes.recipes.getRecipeOutput(this.recipe.getName(), false, list);
+            return Recipes.recipes.getRecipeOutput(this.recipe, this.recipe_list, false, list);
         } else {
             return Recipes.recipes.getRecipeOutputFluid(this.recipe.getName(), false, list, this.tank);
         }

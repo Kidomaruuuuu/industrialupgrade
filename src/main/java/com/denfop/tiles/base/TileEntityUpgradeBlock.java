@@ -7,7 +7,6 @@ import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.api.upgrade.IUpgradeItem;
 import com.denfop.api.upgrade.IUpgradeWithBlackList;
-import com.denfop.api.upgrade.UpgradeItemInform;
 import com.denfop.api.upgrade.UpgradeModificator;
 import com.denfop.api.upgrade.UpgradeSystem;
 import com.denfop.api.upgrade.event.EventItemBlackListLoad;
@@ -117,34 +116,35 @@ public class TileEntityUpgradeBlock extends TileEntityDoubleElectricMachine {
 
     @Override
     public BaseMachineRecipe getOutput() {
-        this.output =  this.inputSlotA.process();
-        if(this.output == null)
+        this.output = this.inputSlotA.process();
+        if (this.output == null) {
             return null;
+        }
 
-        if(this.output.output.metadata.getString("type").isEmpty()) {
+        if (this.output.output.metadata.getString("type").isEmpty()) {
             ItemStack stack1 = getUpgradeItem(this.inputSlotA.get(0)) ? this.inputSlotA.get(0) : this.inputSlotA.get(1);
             ItemStack module = getUpgradeItem(this.inputSlotA.get(0)) ? this.inputSlotA.get(1) : this.inputSlotA.get(0);
             if (module.getItem() instanceof ItemUpgradeModule) {
-                if(UpgradeSystem.system.getRemaining(stack1) == 0) {
+                if (UpgradeSystem.system.getRemaining(stack1) == 0) {
                     this.output = null;
                     this.energy.addEnergy(energyConsume * operationLength);
                     return null;
                 }
                 EnumInfoUpgradeModules type = ItemUpgradeModule.getType(module.getItemDamage());
-                boolean should = UpgradeSystem.system.shouldUpdate(type,stack1);
-                if(!should) {
+                boolean should = UpgradeSystem.system.shouldUpdate(type, stack1);
+                if (!should) {
                     this.energy.addEnergy(energyConsume * operationLength);
                     this.output = null;
                     return null;
                 }
             }
-        }else{
+        } else {
             ItemStack stack1 = getUpgradeItem(this.inputSlotA.get(0)) ? this.inputSlotA.get(0) : this.inputSlotA.get(1);
             ItemStack module = getUpgradeItem(this.inputSlotA.get(0)) ? this.inputSlotA.get(1) : this.inputSlotA.get(0);
-            boolean need =  UpgradeSystem.system.needModificate(stack1,module);
-            if(need){
+            boolean need = UpgradeSystem.system.needModificate(stack1, module);
+            if (need) {
                 return output;
-            }else {
+            } else {
                 this.output = null;
                 return null;
             }
@@ -154,7 +154,7 @@ public class TileEntityUpgradeBlock extends TileEntityDoubleElectricMachine {
     }
 
     public void operateOnce(BaseMachineRecipe output, List<ItemStack> processResult) {
-        if(this.output.output.metadata.getString("type").isEmpty()) {
+        if (this.output.output.metadata.getString("type").isEmpty()) {
 
             ItemStack stack1 = getUpgradeItem(this.inputSlotA.get(0)) ? this.inputSlotA.get(0) : this.inputSlotA.get(1);
             ItemStack module = getUpgradeItem(this.inputSlotA.get(0)) ? this.inputSlotA.get(1) : this.inputSlotA.get(0);
@@ -162,13 +162,13 @@ public class TileEntityUpgradeBlock extends TileEntityDoubleElectricMachine {
 
             NBTTagCompound nbt1 = ModUtils.nbt(stack1);
             if (module.getItem() instanceof ItemUpgradeModule) {
-                if(UpgradeSystem.system.getRemaining(stack1) == 0) {
+                if (UpgradeSystem.system.getRemaining(stack1) == 0) {
                     this.output = null;
                     return;
                 }
                 EnumInfoUpgradeModules type = ItemUpgradeModule.getType(module.getItemDamage());
-                boolean should =   UpgradeSystem.system.shouldUpdate(type,stack1);
-                if(!should) {
+                boolean should = UpgradeSystem.system.shouldUpdate(type, stack1);
+                if (!should) {
                     this.output = null;
                     return;
                 }
@@ -224,11 +224,13 @@ public class TileEntityUpgradeBlock extends TileEntityDoubleElectricMachine {
                 ));
 
             }
-        }else{
+        } else {
             ItemStack stack1 = getUpgradeItem(this.inputSlotA.get(0)) ? this.inputSlotA.get(0) : this.inputSlotA.get(1);
-            ItemStack module = getUpgradeItem(this.inputSlotA.get(0)) ? this.inputSlotA.get(1).copy() : this.inputSlotA.get(0).copy();
-            boolean need =  UpgradeSystem.system.needModificate(stack1,module);
-            if(need) {
+            ItemStack module = getUpgradeItem(this.inputSlotA.get(0))
+                    ? this.inputSlotA.get(1).copy()
+                    : this.inputSlotA.get(0).copy();
+            boolean need = UpgradeSystem.system.needModificate(stack1, module);
+            if (need) {
                 NBTTagCompound nbt1 = ModUtils.nbt(stack1);
                 int Damage = stack1.getItemDamage();
                 double newCharge = ElectricItem.manager.getCharge(stack1);
@@ -238,7 +240,7 @@ public class TileEntityUpgradeBlock extends TileEntityDoubleElectricMachine {
                 this.outputSlot.add(processResult);
                 ItemStack stack = this.outputSlot.get();
                 stack.setTagCompound(nbt1);
-                UpgradeSystem.system.addModificate(stack,this.output.output.metadata.getString("type"));
+                UpgradeSystem.system.addModificate(stack, this.output.output.metadata.getString("type"));
                 ElectricItem.manager.charge(stack, newCharge, Integer.MAX_VALUE, true, false);
                 EnchantmentHelper.setEnchantments(enchantmentMap, stack);
                 stack.setItemDamage(Damage);

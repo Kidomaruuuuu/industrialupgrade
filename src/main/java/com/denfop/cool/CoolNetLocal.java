@@ -1,6 +1,5 @@
 package com.denfop.cool;
 
-import com.denfop.Config;
 import com.denfop.api.cooling.ICoolAcceptor;
 import com.denfop.api.cooling.ICoolConductor;
 import com.denfop.api.cooling.ICoolEmitter;
@@ -121,7 +120,6 @@ public class CoolNetLocal {
 
             activeEnergyPaths.add(energyPath);
         }
-        Map<EnergyPath, Double> suppliedEnergyPaths = new HashMap<>();
         while (!activeEnergyPaths.isEmpty() && amount > 0) {
             double energyConsumed = 0;
 
@@ -145,31 +143,18 @@ public class CoolNetLocal {
                     energyReturned = amount;
                 }
                 energyConsumed += (adding - energyReturned);
-                if (!suppliedEnergyPaths.containsKey(energyPath2)) {
-                    suppliedEnergyPaths.put(energyPath2, energyConsumed);
-                    continue;
+                for (ICoolConductor energyConductor3 : energyPath2.conductors) {
+                    if (energySource.getOfferedCool() >= energyConductor3.getConductorBreakdownEnergy()) {
+                        energyConductor3.removeConductor();
+                    }
                 }
-                suppliedEnergyPaths.put(
-                        energyPath2,
-                        energyConsumed + suppliedEnergyPaths.get(energyPath2)
-                );
             }
             if (energyConsumed == 0 && !activeEnergyPaths.isEmpty()) {
                 activeEnergyPaths.remove(activeEnergyPaths.size() - 1);
             }
 
             amount -= energyConsumed;
-        }
-        for (Map.Entry<EnergyPath, Double> entry : suppliedEnergyPaths.entrySet()) {
-            EnergyPath energyPath3 = entry.getKey();
-            double energyInjected2 = entry.getValue();
-            energyPath3.totalEnergyConducted = (long) (energyPath3.totalEnergyConducted + energyInjected2);
 
-            for (ICoolConductor energyConductor3 : energyPath3.conductors) {
-                if (energyInjected2 >= energyConductor3.getConductorBreakdownEnergy() && !Config.cableEasyMode) {
-                    energyConductor3.removeConductor();
-                }
-            }
         }
         return amount;
     }

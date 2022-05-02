@@ -60,7 +60,6 @@ public class ItemUpgradeModule extends ItemMulti<ItemUpgradeModule.Types> implem
     }
 
 
-
     @Override
     public List<String> getHudInfo(final ItemStack itemStack, final boolean b) {
         List<String> info = new LinkedList<>();

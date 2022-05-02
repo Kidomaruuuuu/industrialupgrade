@@ -101,27 +101,27 @@ public class TileEntityOilRefiner extends TileEntityBaseLiquedMachine {
         boolean drain1 = false;
 
         if (this.getFluidTank(0).getFluidAmount() >= 5 && this.energy.getEnergy() >= 25) {
-            int size =this.getFluidTank(0).getFluidAmount() / 5;
-            size = Math.min(this.level+1,size);
-            int cap =  this.fluidTank[1].getCapacity() - this.fluidTank[1].getFluidAmount();
+            int size = this.getFluidTank(0).getFluidAmount() / 5;
+            size = Math.min(this.level + 1, size);
+            int cap = this.fluidTank[1].getCapacity() - this.fluidTank[1].getFluidAmount();
             cap /= 3;
-            cap = Math.min(cap,size);
-            int cap1 =  this.fluidTank[2].getCapacity() - this.fluidTank[2].getFluidAmount();
+            cap = Math.min(cap, size);
+            int cap1 = this.fluidTank[2].getCapacity() - this.fluidTank[2].getFluidAmount();
             cap1 /= 2;
-            cap1 = Math.min(cap1,size);
-            if (  this.fluidTank[1].getCapacity() - this.fluidTank[1].getFluidAmount() >= 3) {
-                fill(new FluidStack(FluidName.fluidbenz.getInstance(), cap *3), true);
+            cap1 = Math.min(cap1, size);
+            if (this.fluidTank[1].getCapacity() - this.fluidTank[1].getFluidAmount() >= 3) {
+                fill(new FluidStack(FluidName.fluidbenz.getInstance(), cap * 3), true);
                 drain = true;
 
             }
-            if ( this.fluidTank[2].getCapacity() - this.fluidTank[2].getFluidAmount() >= 2) {
-                fill(new FluidStack(FluidName.fluiddizel.getInstance(), cap1 *2), true);
+            if (this.fluidTank[2].getCapacity() - this.fluidTank[2].getFluidAmount() >= 2) {
+                fill(new FluidStack(FluidName.fluiddizel.getInstance(), cap1 * 2), true);
                 drain1 = true;
             }
             if (drain || drain1) {
                 int drains = 0;
-                drains = drain ? drains + 3* cap  : drains;
-                drains = drain1 ? drains + 2* cap1  : drains;
+                drains = drain ? drains + 3 * cap : drains;
+                drains = drain1 ? drains + 2 * cap1 : drains;
 
                 this.getFluidTank(0).drain(drains, true);
                 initiate(0);

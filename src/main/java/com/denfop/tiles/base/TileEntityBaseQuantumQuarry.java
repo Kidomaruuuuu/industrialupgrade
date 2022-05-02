@@ -146,7 +146,7 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
                     final ItemStack stack = new ItemStack(IUItem.heavyore, 1, vein.getMeta());
                     if (!list(this.list_modules, stack)) {
                         this.setActive(true);
-                        if(this.outputSlot.canAdd(stack)) {
+                        if (this.outputSlot.canAdd(stack)) {
                             this.energy.useEnergy(proccent);
                             this.getblock++;
                             this.outputSlot.add(stack);

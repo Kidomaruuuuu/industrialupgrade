@@ -85,8 +85,10 @@ public abstract class TileEntityBaseSunnariumMaker extends TileEntityElectricMac
         super.onLoaded();
         if (IC2.platform.isSimulating()) {
             setOverclockRates();
+            inputSlotA.load();
             this.getOutput();
         }
+
     }
 
     public void onUnloaded() {
