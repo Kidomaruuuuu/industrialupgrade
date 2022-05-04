@@ -76,8 +76,7 @@ public class TileEntityImpNuclearReactor extends TileEntityBaseNuclearReactorEle
             Direction[] var2 = Direction.directions;
 
 
-            for (Direction direction : var2) {
-                TileEntity target = direction.applyToTileEntity(this);
+            for (TileEntity target : this.getSubTiles()) {
                 if (target instanceof TileEntityImpReactorChamberElectric) {
                     cols++;
                 }
