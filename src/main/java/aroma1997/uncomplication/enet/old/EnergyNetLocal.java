@@ -1,6 +1,7 @@
 package aroma1997.uncomplication.enet.old;
 
 import com.denfop.Config;
+import com.denfop.api.cooling.ICoolConductor;
 import ic2.api.energy.EnergyNet;
 import ic2.api.energy.NodeStats;
 import ic2.api.energy.tile.IEnergyAcceptor;
@@ -215,22 +216,11 @@ public class EnergyNetLocal {
                 energyConsumed -= energyReturned;
 
                 double energyInjected = adding - energyReturned;
-                if (!suppliedEnergyPaths.containsKey(energyPath2)) {
-                    suppliedEnergyPaths.put(energyPath2, energyInjected);
-                    continue;
-                }
-                suppliedEnergyPaths.replace(
-                        energyPath2,
-                        energyInjected + suppliedEnergyPaths.get(energyPath2)
-                );
+                energyPath2.totalEnergyConducted +=energyInjected;
+
             }
             if (energyConsumed == 0 && !activeEnergyPaths.isEmpty()) {
                 activeEnergyPaths.remove(activeEnergyPaths.size() - 1);
-            }
-            for (Map.Entry<EnergyPath, Double> entry : suppliedEnergyPaths.entrySet()) {
-                EnergyPath energyPath3 = entry.getKey();
-                double energyInjected2 = entry.getValue();
-                energyPath3.totalEnergyConducted = (long) (energyPath3.totalEnergyConducted + energyInjected2);
             }
             amount -= energyConsumed;
             amount = Math.max(0, amount);
@@ -292,7 +282,9 @@ public class EnergyNetLocal {
             final IEnergyTile currentTileEntity = tileEntitiesToCheck.remove();
 
             TileEntity tile = this.energyTileTileEntityMap.get(currentTileEntity);
-
+            if(tile == null){
+                tile = this.getTileFromIEnergy(currentTileEntity);
+            }
             if (!tile.isInvalid()) {
                 final List<EnergyTarget> validReceivers = this.getValidReceivers(currentTileEntity, false);
                 for (final EnergyTarget validReceiver : validReceivers) {

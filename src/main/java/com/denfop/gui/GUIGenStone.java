@@ -4,6 +4,7 @@ import com.denfop.Constants;
 import com.denfop.container.ContainerGenStone;
 import com.denfop.utils.ModUtils;
 import ic2.core.GuiIC2;
+import ic2.core.init.Localization;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -38,7 +39,10 @@ public class GuiGenStone extends GuiIC2<ContainerGenStone> {
                 .withTooltip(tooltip2)
                 .drawForeground(mouseX, mouseY);
     }
-
+    protected void drawBackgroundAndTitle(float partialTicks, int mouseX, int mouseY) {
+        this.bindTexture();
+        this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
+       }
     protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
         super.drawGuiContainerBackgroundLayer(f, x, y);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

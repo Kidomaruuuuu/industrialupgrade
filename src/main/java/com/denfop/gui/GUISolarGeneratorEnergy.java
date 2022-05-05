@@ -27,7 +27,7 @@ public class GuiSolarGeneratorEnergy extends GuiIC2<ContainerSolarGeneratorEnerg
         super(container1);
         this.ySize = 196;
         this.container = container1;
-        this.name = container1.base.getName();
+        this.name =Localization.translate( container1.base.getName());
 
 
     }

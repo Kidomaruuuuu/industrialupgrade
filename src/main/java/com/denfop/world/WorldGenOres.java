@@ -25,6 +25,7 @@ public class WorldGenOres implements IWorldGenerator {
 
     public static void init() {
         GameRegistry.registerWorldGenerator(new WorldGenOres(), 0);
+
     }
 
     @Override
@@ -47,7 +48,7 @@ public class WorldGenOres implements IWorldGenerator {
             )) == Biome.getBiome(2)) {
                 for (var2 = 0; var2 < 1; ++var2) {
                     var3 = chunkX * 16 + random.nextInt(16) + 8;
-                    var4 = random.nextInt(random.nextInt(random.nextInt(112) + 8) + 8) + 60;
+                    var4 = random.nextInt(random.nextInt(random.nextInt(112) + 8) + 8)+ 60;
                     var5 = chunkZ * 16 + random.nextInt(16) + 8;
                     if (block != null) {
                         new WorldGenOil(block, block)
@@ -55,6 +56,16 @@ public class WorldGenOres implements IWorldGenerator {
                     }
 
                 }
+            }
+            if (world.provider.getDimension() == 0 && random.nextInt(1000) + 1 > 900) {
+
+                    var3 = chunkX * 16 + random.nextInt(16) + 8;
+                    var4 = random.nextInt(random.nextInt(random.nextInt(112) + 8) + 8);
+                    var5 = chunkZ * 16 + random.nextInt(16) + 8;
+                    new WorldGenMinerals().generate(world, random, new BlockPos(var3, var4, var5));
+
+
+
             }
         }
         if (Config.DimensionList.contains(world.provider.getDimension())) {
@@ -67,92 +78,92 @@ public class WorldGenOres implements IWorldGenerator {
 
         if (Config.EnableToriyOre) {
             this.addOreSpawn(
-                    IUItem.toriyore.getStateMeta(0), world, random, x, y, 16, 16, 3 + random.nextInt(2), 11, 10,
+                    IUItem.toriyore.getStateFromMeta(0), world, random, x, y, 16, 16, 3 + random.nextInt(2), 11, 10,
                     70
             );
         }
 
         if (Config.MikhailOre) {
-            this.addOreSpawn(IUItem.ore.getStateMeta(0), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
+            this.addOreSpawn(IUItem.ore.getStateFromMeta(0), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
         }
         if (Config.AluminiumOre) {
-            this.addOreSpawn(IUItem.ore.getStateMeta(1), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
+            this.addOreSpawn(IUItem.ore.getStateFromMeta(1), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
         }
         if (Config.VanadyOre) {
-            this.addOreSpawn(IUItem.ore.getStateMeta(2), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
+            this.addOreSpawn(IUItem.ore.getStateFromMeta(2), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
         }
         if (Config.TungstenOre) {
-            this.addOreSpawn(IUItem.ore.getStateMeta(3), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
+            this.addOreSpawn(IUItem.ore.getStateFromMeta(3), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
         }
         if (Config.CobaltOre) {
-            this.addOreSpawn(IUItem.ore.getStateMeta(4), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
+            this.addOreSpawn(IUItem.ore.getStateFromMeta(4), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
         }
         if (Config.MagnesiumOre) {
-            this.addOreSpawn(IUItem.ore.getStateMeta(5), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
+            this.addOreSpawn(IUItem.ore.getStateFromMeta(5), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
         }
         if (Config.NickelOre) {
-            this.addOreSpawn(IUItem.ore.getStateMeta(6), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
+            this.addOreSpawn(IUItem.ore.getStateFromMeta(6), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
         }
         if (Config.PlatiumOre) {
-            this.addOreSpawn(IUItem.ore.getStateMeta(7), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
+            this.addOreSpawn(IUItem.ore.getStateFromMeta(7), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
         }
         if (Config.TitaniumOre) {
-            this.addOreSpawn(IUItem.ore.getStateMeta(8), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
+            this.addOreSpawn(IUItem.ore.getStateFromMeta(8), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
         }
         if (Config.ChromiumOre) {
-            this.addOreSpawn(IUItem.ore.getStateMeta(9), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
+            this.addOreSpawn(IUItem.ore.getStateFromMeta(9), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
         }
         if (Config.SpinelOre) {
-            this.addOreSpawn(IUItem.ore.getStateMeta(10), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
+            this.addOreSpawn(IUItem.ore.getStateFromMeta(10), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
         }
         if (Config.SilverOre) {
-            this.addOreSpawn(IUItem.ore.getStateMeta(11), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
+            this.addOreSpawn(IUItem.ore.getStateFromMeta(11), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
         }
         if (Config.ZincOre) {
-            this.addOreSpawn(IUItem.ore.getStateMeta(12), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
+            this.addOreSpawn(IUItem.ore.getStateFromMeta(12), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
         }
         if (Config.ManganeseOre) {
-            this.addOreSpawn(IUItem.ore.getStateMeta(13), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
+            this.addOreSpawn(IUItem.ore.getStateFromMeta(13), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
         }
         if (Config.IridiumOre) {
-            this.addOreSpawn(IUItem.ore.getStateMeta(14), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
+            this.addOreSpawn(IUItem.ore.getStateFromMeta(14), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
         }
         if (Config.GermaniumOre) {
-            this.addOreSpawn(IUItem.ore.getStateMeta(15), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
+            this.addOreSpawn(IUItem.ore.getStateFromMeta(15), world, random, x, y, 16, 16, 3 + random.nextInt(3), 13, 0, 70);
         }
         if (Config.MagnetiteOre) {
-            this.addOreSpawn(IUItem.heavyore.getStateMeta(0), world, random, x, y, 16, 16, 3 + random.nextInt(2), 9, 10, 70);
+            this.addOreSpawn(IUItem.heavyore.getStateFromMeta(0), world, random, x, y, 16, 16, 3 + random.nextInt(2), 4, 10, 70);
         }
         if (Config.CalaveriteOre) {
-            this.addOreSpawn(IUItem.heavyore.getStateMeta(1), world, random, x, y, 16, 16, 3 + random.nextInt(2), 9, 10, 70);
+            this.addOreSpawn(IUItem.heavyore.getStateFromMeta(1), world, random, x, y, 16, 16, 3 + random.nextInt(2), 4, 10, 70);
         }
         if (Config.GalenaOre) {
-            this.addOreSpawn(IUItem.heavyore.getStateMeta(2), world, random, x, y, 16, 16, 3 + random.nextInt(2), 9, 10, 70);
+            this.addOreSpawn(IUItem.heavyore.getStateFromMeta(2), world, random, x, y, 16, 16, 3 + random.nextInt(2), 4, 10, 70);
         }
         if (Config.NickeliteOre) {
-            this.addOreSpawn(IUItem.heavyore.getStateMeta(3), world, random, x, y, 16, 16, 3 + random.nextInt(2), 9, 10, 70);
+            this.addOreSpawn(IUItem.heavyore.getStateFromMeta(3), world, random, x, y, 16, 16, 3 + random.nextInt(2), 4, 10, 70);
         }
         if (Config.PyriteOre) {
-            this.addOreSpawn(IUItem.heavyore.getStateMeta(4), world, random, x, y, 16, 16, 3 + random.nextInt(2), 9, 10, 70);
+            this.addOreSpawn(IUItem.heavyore.getStateFromMeta(4), world, random, x, y, 16, 16, 3 + random.nextInt(2), 4, 10, 70);
         }
         if (Config.QuartziteOre) {
-            this.addOreSpawn(IUItem.heavyore.getStateMeta(5), world, random, x, y, 16, 16, 3 + random.nextInt(2), 9, 10, 70);
+            this.addOreSpawn(IUItem.heavyore.getStateFromMeta(5), world, random, x, y, 16, 16, 3 + random.nextInt(2), 4, 10, 70);
         }
         if (Config.UraniteOre) {
-            this.addOreSpawn(IUItem.heavyore.getStateMeta(6), world, random, x, y, 16, 16, 3 + random.nextInt(2), 9, 10, 70);
+            this.addOreSpawn(IUItem.heavyore.getStateFromMeta(6), world, random, x, y, 16, 16, 3 + random.nextInt(2), 4, 10, 70);
         }
         if (Config.AzuriteOre) {
-            this.addOreSpawn(IUItem.heavyore.getStateMeta(7), world, random, x, y, 16, 16, 3 + random.nextInt(2), 9, 10, 70);
+            this.addOreSpawn(IUItem.heavyore.getStateFromMeta(7), world, random, x, y, 16, 16, 3 + random.nextInt(2), 4, 10, 70);
         }
         if (Config.RhodoniteOre) {
-            this.addOreSpawn(IUItem.heavyore.getStateMeta(8), world, random, x, y, 16, 16, 3 + random.nextInt(2), 9, 10, 70);
+            this.addOreSpawn(IUItem.heavyore.getStateFromMeta(8), world, random, x, y, 16, 16, 3 + random.nextInt(2), 4, 10, 70);
         }
         if (Config.AlfilditOre) {
-            this.addOreSpawn(IUItem.heavyore.getStateMeta(9), world, random, x, y, 16, 16, 3 + random.nextInt(2), 9, 10, 70);
+            this.addOreSpawn(IUItem.heavyore.getStateFromMeta(9), world, random, x, y, 16, 16, 3 + random.nextInt(2), 4, 10, 70);
         }
         if (Config.EuxeniteOre) {
             this.addOreSpawn(
-                    IUItem.heavyore.getStateMeta(10),
+                    IUItem.heavyore.getStateFromMeta(10),
                     world,
                     random,
                     x,
@@ -160,14 +171,14 @@ public class WorldGenOres implements IWorldGenerator {
                     16,
                     16,
                     3 + random.nextInt(2),
-                    9,
+                    4,
                     10,
                     70
             );
         }
         if (Config.SmithsoniteOre) {
             this.addOreSpawn(
-                    IUItem.heavyore.getStateMeta(11),
+                    IUItem.heavyore.getStateFromMeta(11),
                     world,
                     random,
                     x,
@@ -175,14 +186,14 @@ public class WorldGenOres implements IWorldGenerator {
                     16,
                     16,
                     3 + random.nextInt(2),
-                    9,
+                    4,
                     10,
                     70
             );
         }
         if (Config.IlmeniteOre) {
             this.addOreSpawn(
-                    IUItem.heavyore.getStateMeta(12),
+                    IUItem.heavyore.getStateFromMeta(12),
                     world,
                     random,
                     x,
@@ -190,14 +201,14 @@ public class WorldGenOres implements IWorldGenerator {
                     16,
                     16,
                     3 + random.nextInt(2),
-                    9,
+                    4,
                     10,
                     70
             );
         }
         if (Config.TodorokiteOre) {
             this.addOreSpawn(
-                    IUItem.heavyore.getStateMeta(13),
+                    IUItem.heavyore.getStateFromMeta(13),
                     world,
                     random,
                     x,
@@ -205,14 +216,14 @@ public class WorldGenOres implements IWorldGenerator {
                     16,
                     16,
                     3 + random.nextInt(2),
-                    9,
+                    4,
                     10,
                     70
             );
         }
         if (Config.FerroaugiteOre) {
             this.addOreSpawn(
-                    IUItem.heavyore.getStateMeta(14),
+                    IUItem.heavyore.getStateFromMeta(14),
                     world,
                     random,
                     x,
@@ -220,39 +231,39 @@ public class WorldGenOres implements IWorldGenerator {
                     16,
                     16,
                     3 + random.nextInt(2),
-                    9,
+                    4,
                     10,
                     70
             );
         }
         if (Config.SheeliteeOre) {
             this.addOreSpawn(
-                    IUItem.heavyore.getStateMeta(15), world, random, x, y, 16, 16, 3 + random.nextInt(2), 9, 10,
+                    IUItem.heavyore.getStateFromMeta(15), world, random, x, y, 16, 16, 3 + random.nextInt(2), 4, 10,
                     70
             );
         }
         if (Config.AmericiumOre) {
             this.addOreSpawn(
-                    IUItem.radiationore.getStateMeta(0), world, random, x, y, 16, 16, 2 + random.nextInt(2), 14, 10,
+                    IUItem.radiationore.getStateFromMeta(0), world, random, x, y, 16, 16, 2 + random.nextInt(2), 14, 10,
                     70
             );
         }
         if (Config.NeptuniumOre) {
             this.addOreSpawn(
-                    IUItem.radiationore.getStateMeta(1), world, random, x, y, 16, 16, 2 + random.nextInt(2), 16, 10,
+                    IUItem.radiationore.getStateFromMeta(1), world, random, x, y, 16, 16, 2 + random.nextInt(2), 16, 10,
                     70
             );
         }
         if (Config.CuriumOre) {
             this.addOreSpawn(
-                    IUItem.radiationore.getStateMeta(2), world, random, x, y, 16, 16, 2 + random.nextInt(2), 10, 10,
+                    IUItem.radiationore.getStateFromMeta(2), world, random, x, y, 16, 16, 2 + random.nextInt(2), 10, 10,
                     70
             );
         }
 
         if (Config.RubyOre) {
             this.addOreSpawn(
-                    IUItem.preciousore.getStateMeta(0),
+                    IUItem.preciousore.getStateFromMeta(0),
                     world,
                     random,
                     x,
@@ -267,7 +278,7 @@ public class WorldGenOres implements IWorldGenerator {
         }
         if (Config.SapphireOre) {
             this.addOreSpawn(
-                    IUItem.preciousore.getStateMeta(1),
+                    IUItem.preciousore.getStateFromMeta(1),
                     world,
                     random,
                     x,
@@ -282,7 +293,7 @@ public class WorldGenOres implements IWorldGenerator {
         }
         if (Config.TopazOre) {
             this.addOreSpawn(
-                    IUItem.preciousore.getStateMeta(2),
+                    IUItem.preciousore.getStateFromMeta(2),
                     world,
                     random,
                     x,

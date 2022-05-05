@@ -62,7 +62,8 @@ public abstract class TileEntityBaseLiquedMachine extends TileEntityElectricMach
                             FluidRegistry.getFluid("oil_heavy"), FluidRegistry.getFluid("oil_heavy_heat_1"),
                             FluidRegistry.getFluid("oil_heavy_heat_2"), FluidRegistry.getFluid("oil_heat_2"),
                             FluidRegistry.getFluid("oil_heat_1"), FluidRegistry.getFluid("oil"),
-                            FluidRegistry.getFluid("fluid_cride_oil"), FluidRegistry.getFluid("refined_oil")
+                            FluidRegistry.getFluid("fluid_cride_oil"), FluidRegistry.getFluid("refined_oil"),
+                            FluidRegistry.getFluid("crude_oil")
                     )
                             :
                                     Fluids.fluidPredicate(name1[i])

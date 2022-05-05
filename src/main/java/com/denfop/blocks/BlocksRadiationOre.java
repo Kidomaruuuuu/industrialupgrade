@@ -43,9 +43,8 @@ public class BlocksRadiationOre extends BlockCore implements IModelRegister {
         setDefaultState(this.blockState.getBaseState().withProperty(VARIANT, Type.americium_ore));
         setHarvestLevel("pickaxe", 2);
     }
-
-    @Nonnull
-    public IBlockState getStateMeta(int meta) {
+    @Override
+    public IBlockState getStateFromMeta(final int meta) {
         return getDefaultState().withProperty(VARIANT, Type.values()[meta]);
     }
 

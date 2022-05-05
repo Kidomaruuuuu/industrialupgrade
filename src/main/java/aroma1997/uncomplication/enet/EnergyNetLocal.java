@@ -194,7 +194,6 @@ public class EnergyNetLocal {
             EnergyPath removedEnergyPath = activeEnergyPaths.remove(activeEnergyPaths.size() - 1);
             totalInvLoss -= 1.0D / removedEnergyPath.loss;
         }
-        Map<EnergyPath, Double> suppliedEnergyPaths = new HashMap<>();
         while (!activeEnergyPaths.isEmpty() && amount > 0.0D) {
             double energyConsumed = 0.0D;
             double newTotalInvLoss = 0.0D;
@@ -226,14 +225,27 @@ public class EnergyNetLocal {
                     energyConsumed += adding;
                     energyConsumed -= energyReturned;
                     double energyInjected = adding - energyReturned;
-                    if (!suppliedEnergyPaths.containsKey(energyPath2)) {
-                        suppliedEnergyPaths.put(energyPath2, energyInjected);
-                        continue;
+                    energyPath2.totalEnergyConducted +=energyInjected;
+
+                    energyPath2.maxSendedEnergy = (long) Math.max(energyPath2.maxSendedEnergy, energyInjected);
+                    for (IEnergyConductor energyConductor3 : energyPath2.conductors) {
+                        if (energyInjected > energyPath2.minInsulationEnergyAbsorption &&
+                                energyInjected >= energyPath2.minInsulationBreakdownEnergy){
+                            if (energyInjected >= energyConductor3.getInsulationBreakdownEnergy()) {
+                                energyConductor3.removeInsulation();
+                                if (energyConductor3.getInsulationEnergyAbsorption() >= energyPath2.minInsulationEnergyAbsorption) {
+                                    continue;
+                                }
+                                energyPath2.minInsulationEnergyAbsorption =
+                                        (int) energyConductor3.getInsulationEnergyAbsorption();
+                            }
+                        }
+
+                        if (energySource.getOfferedEnergy() >= energyConductor3.getConductorBreakdownEnergy()) {
+                            energyConductor3.removeConductor();
+                        }
+
                     }
-                    suppliedEnergyPaths.put(
-                            energyPath2,
-                            energyInjected + suppliedEnergyPaths.get(energyPath2)
-                    );
                     continue;
                 }
                 activeEnergyPaths.add(energyPath2);
@@ -247,36 +259,12 @@ public class EnergyNetLocal {
             amount -= energyConsumed;
             amount = Math.max(0, amount);
         }
-        boolean ret = false;
-        for (Map.Entry<EnergyPath, Double> entry : suppliedEnergyPaths.entrySet()) {
-            EnergyPath energyPath3 = entry.getKey();
-            double energyInjected2 = entry.getValue();
-            energyPath3.totalEnergyConducted = (long) (energyPath3.totalEnergyConducted + energyInjected2);
-            energyPath3.maxSendedEnergy = (long) Math.max(energyPath3.maxSendedEnergy, energyInjected2);
-            if (energyInjected2 > energyPath3.minInsulationEnergyAbsorption &&
-                    energyInjected2 >= energyPath3.minInsulationBreakdownEnergy) {
-                for (IEnergyConductor energyConductor2 : energyPath3.conductors) {
-                    if (energyInjected2 >= energyConductor2.getInsulationBreakdownEnergy()) {
-                        energyConductor2.removeInsulation();
-                        if (energyConductor2.getInsulationEnergyAbsorption() >= energyPath3.minInsulationEnergyAbsorption) {
-                            continue;
-                        }
-                        energyPath3.minInsulationEnergyAbsorption = (int) energyConductor2.getInsulationEnergyAbsorption();
-                    }
-                }
-            }
-            if (energyInjected2 >= energyPath3.minConductorBreakdownEnergy) {
-                for (IEnergyConductor energyConductor3 : energyPath3.conductors) {
-                    if (energyInjected2 >= energyConductor3.getConductorBreakdownEnergy() && !Config.cableEasyMode) {
-                        energyConductor3.removeConductor();
-                        ret = true;
-                    }
-                }
-            }
-        }
 
 
-        return !ret ? amount : 0.0D;
+
+
+
+        return amount;
     }
 
     public double getTotalEnergyEmitted(IEnergyTile tileEntity) {
@@ -330,6 +318,9 @@ public class EnergyNetLocal {
         while (!tileEntitiesToCheck.isEmpty()) {
             IEnergyTile currentTileEntity = tileEntitiesToCheck.remove();
             TileEntity tile = getTileFromMap(emitter);
+            if(tile == null){
+                tile = this.getTileFromIEnergy(currentTileEntity);
+            }
             if (!tile.isInvalid()) {
                 double currentLoss = 0.0D;
                 List<EnergyTarget> validReceivers = getValidReceivers(currentTileEntity, false);

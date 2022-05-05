@@ -46,10 +46,6 @@ public class BlockThoriumOre extends BlockCore implements IModelRegister {
         setHarvestLevel("pickaxe", 2);
     }
 
-    @Nonnull
-    public IBlockState getStateMeta(int meta) {
-        return getDefaultState().withProperty(VARIANT, Type.values()[meta]);
-    }
 
     @Nonnull
     protected BlockStateContainer createBlockState() {

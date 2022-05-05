@@ -96,7 +96,7 @@ public class VeinSystem implements IVeinSystem {
         int number;
         if (Biome.getIdForBiome(biome) == 2) {
             int random = rand.nextInt(100);
-            if (random > 50) {
+            if (random > 45) {
                 number = rand.nextInt(50000) + 20000;
                 vein.setCol(number);
                 vein.setMaxCol(number);
@@ -109,7 +109,7 @@ public class VeinSystem implements IVeinSystem {
         } else if (Biome.getIdForBiome(biome) == 0) {
             int random;
             random = rand.nextInt(100);
-            if (random > 75) {
+            if (random > 70) {
                 number = rand.nextInt(50000) + 20000;
                 vein.setCol(number);
                 vein.setMaxCol(number);
@@ -122,7 +122,7 @@ public class VeinSystem implements IVeinSystem {
         } else if (Biome.getIdForBiome(biome) == 24) {
             int random;
             random = rand.nextInt(100);
-            if (random > 50) {
+            if (random > 45) {
                 number = rand.nextInt(80000);
                 vein.setCol(number);
                 vein.setMaxCol(number);
@@ -135,7 +135,7 @@ public class VeinSystem implements IVeinSystem {
         } else if (Biome.getIdForBiome(biome) == 10) {
             int random;
             random = rand.nextInt(100);
-            if (random > 75) {
+            if (random > 70) {
                 number = rand.nextInt(80000);
                 vein.setCol(number);
                 vein.setMaxCol(number);
@@ -148,7 +148,7 @@ public class VeinSystem implements IVeinSystem {
         } else if (Biome.getIdForBiome(biome) == 17) {
             int random;
             random = rand.nextInt(100);
-            if (random > 50) {
+            if (random > 45) {
                 number = rand.nextInt(60000) + 20000;
                 vein.setCol(number);
                 vein.setMaxCol(number);
@@ -161,7 +161,7 @@ public class VeinSystem implements IVeinSystem {
         } else if (Biome.getIdForBiome(biome) == 7) {
             int random;
             random = rand.nextInt(100);
-            if (random > 65) {
+            if (random > 60) {
                 number = rand.nextInt(20000);
                 vein.setCol(number);
                 vein.setMaxCol(number);
@@ -174,7 +174,7 @@ public class VeinSystem implements IVeinSystem {
         } else if (Biome.getIdForBiome(biome) == 35) {
             int random;
             random = rand.nextInt(100);
-            if (random > 65) {
+            if (random > 60) {
                 number = rand.nextInt(40000);
                 vein.setCol(number);
                 vein.setMaxCol(number);
@@ -187,7 +187,7 @@ public class VeinSystem implements IVeinSystem {
         } else {
             int random;
             random = rand.nextInt(100);
-            if (random > 35) {
+            if (random > 30) {
                 number = rand.nextInt(20000);
                 vein.setCol(number);
                 vein.setMaxCol(number);

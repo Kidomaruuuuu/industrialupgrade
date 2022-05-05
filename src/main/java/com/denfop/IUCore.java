@@ -404,11 +404,11 @@ public final class IUCore {
         addInList1(new ItemStack(Items.GLOWSTONE_DUST));
 
 
-        for (int i = 0; i < list.size(); i++) {
+        for (int i = 0; i < list.size();i++)
             if (list.get(i).isItemEqual(Ic2Items.iridiumOre)) {
                 list.remove(i);
             }
-        }
+
         list.add(new ItemStack(IUItem.ore, 1, 14));
 
 
@@ -434,7 +434,10 @@ public final class IUCore {
         removeOre("oreNetherEmerald");
         removeOre("oreNetherDiamond");
         removeOre("oreEndCoal");
-
+        removeOre("gemFluix");
+        removeOre("oreKasai");
+        removeOre("oreDimensionalShard");
+        removeOre("gemFluix");
         removeOre("oreCrystalAir");
         removeOre("oreCrystalEarth");
         removeOre("oreCrystalFire");
