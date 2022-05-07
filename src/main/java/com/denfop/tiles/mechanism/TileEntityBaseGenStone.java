@@ -51,6 +51,7 @@ public abstract class TileEntityBaseGenStone extends TileEntityElectricMachine i
         this.defaultTier = aDefaultTier;
         this.defaultEnergyStorage = energyPerTick * length;
         this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
+        this.upgradeSlot.setStackSizeLimit(1);
         this.output = null;
     }
 

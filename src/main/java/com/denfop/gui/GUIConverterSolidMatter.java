@@ -107,7 +107,7 @@ public class GuiConverterSolidMatter extends GuiIC2<ContainerConverterSolidMatte
     }
 
     private String getName() {
-        return Localization.translate("blockConverterSolidMatter.name");
+        return Localization.translate(this.container.base.getName());
     }
 
     protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {

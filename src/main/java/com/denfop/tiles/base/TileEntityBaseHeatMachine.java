@@ -1,7 +1,6 @@
 package com.denfop.tiles.base;
 
 import com.denfop.api.ITemperature;
-import com.denfop.api.ITemperatureSourse;
 import com.denfop.api.Recipes;
 import com.denfop.api.heat.IHeatAcceptor;
 import com.denfop.api.heat.IHeatSource;
@@ -34,7 +33,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 
 public class TileEntityBaseHeatMachine extends TileEntityElectricMachine implements INetworkClientTileEntityEventListener,
-        IFluidHandler, ITemperatureSourse, IHeatSource {
+        IFluidHandler, ITemperature, IHeatSource {
 
 
     public final boolean hasFluid;

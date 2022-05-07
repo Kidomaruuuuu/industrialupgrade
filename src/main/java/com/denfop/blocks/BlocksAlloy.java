@@ -42,10 +42,12 @@ public class BlocksAlloy extends BlockCore implements IModelRegister {
         setDefaultState(this.blockState.getBaseState().withProperty(VARIANT, Type.muntsa));
         setHarvestLevel("pickaxe", 1);
     }
+
     @Override
     public IBlockState getStateFromMeta(final int meta) {
-        return getDefaultState().withProperty(VARIANT,Type.values()[meta]);
+        return getDefaultState().withProperty(VARIANT, Type.values()[meta]);
     }
+
     @Nonnull
     public IBlockState getStateMeta(int meta) {
         return getDefaultState().withProperty(VARIANT, Type.values()[meta]);

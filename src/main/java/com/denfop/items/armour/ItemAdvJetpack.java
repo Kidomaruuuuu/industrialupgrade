@@ -5,6 +5,7 @@ import com.denfop.IUCore;
 import com.denfop.IUItem;
 import com.denfop.Ic2Items;
 import com.denfop.api.IModelRegister;
+import com.denfop.utils.KeyboardClient;
 import com.denfop.utils.ModUtils;
 import ic2.api.item.ElectricItem;
 import ic2.api.item.IElectricItem;
@@ -21,6 +22,7 @@ import ic2.core.util.LogCategory;
 import ic2.core.util.StackUtil;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -36,6 +38,8 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.ISpecialArmor;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.Nullable;
+import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -50,6 +54,28 @@ public class ItemAdvJetpack extends ItemArmorElectric implements IElectricItem, 
     private final int maxStorage;
     private final int TransferLimit;
     private final int tier;
+
+    @Override
+    public void addInformation(
+            @Nonnull final ItemStack stack,
+            @Nullable final World p_77624_2_,
+            @Nonnull final List<String> tooltip,
+            @Nonnull final ITooltipFlag p_77624_4_
+    ) {
+        super.addInformation(stack, p_77624_2_, tooltip, p_77624_4_);
+        NBTTagCompound nbtData = ModUtils.nbt(stack);
+        if (stack.getItem() == IUItem.perjetpack) {
+            tooltip.add(Localization.translate("iu.fly") + " " + ModUtils.Boolean(nbtData.getBoolean("jetpack")));
+            if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                tooltip.add(Localization.translate("press.lshift"));
+            }
+
+
+            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                tooltip.add(Localization.translate("iu.changemode_fly") + Keyboard.getKeyName(KeyboardClient.flymode.getKeyCode()));
+            }
+        }
+    }
 
     public ItemAdvJetpack(String name, int maxStorage, int TransferLimit, int tier) {
         super(null, "", EntityEquipmentSlot.CHEST, maxStorage, TransferLimit, tier);

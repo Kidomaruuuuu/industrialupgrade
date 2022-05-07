@@ -117,7 +117,7 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
     public void onPlaced(final ItemStack stack, final EntityLivingBase placer, final EnumFacing facing) {
         super.onPlaced(stack, placer, facing);
         this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
-        if(this.vein != null) {
+        if (this.vein != null) {
             this.find = this.vein.get();
             this.count = this.vein.getCol();
         }
@@ -127,7 +127,7 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
     protected void onLoaded() {
         super.onLoaded();
         this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
-        if(this.vein != null) {
+        if (this.vein != null) {
             this.find = this.vein.get();
             this.count = this.vein.getCol();
         }

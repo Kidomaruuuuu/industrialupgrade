@@ -78,7 +78,7 @@ public class GuiAdvAlloySmelter extends GuiIC2<ContainerTripleElectricMachine> {
         if (temperature > 0) {
             drawTexturedModalRect(this.guiLeft + 105, this.guiTop + 59, 176, 34, temperature + 1, 11);
         }
-        final BaseMachineRecipe output = this.container.base.inputSlotA.process();
+        final BaseMachineRecipe output = this.container.base.output;
 
         if (output != null) {
             if (!Recipes.mechanism.hasHeaters(

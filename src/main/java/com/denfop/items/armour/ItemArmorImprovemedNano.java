@@ -11,6 +11,7 @@ import com.denfop.api.upgrade.IUpgradeItem;
 import com.denfop.api.upgrade.UpgradeSystem;
 import com.denfop.api.upgrade.event.EventItemLoad;
 import com.denfop.items.EnumInfoUpgradeModules;
+import com.denfop.utils.KeyboardClient;
 import com.denfop.utils.ModUtils;
 import ic2.api.item.ElectricItem;
 import ic2.api.item.IElectricItem;
@@ -59,6 +60,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -240,6 +242,18 @@ public class ItemArmorImprovemedNano extends ItemArmorElectric
             @Nonnull final List<String> tooltip,
             @Nonnull final ITooltipFlag flagIn
     ) {
+        NBTTagCompound nbtData = ModUtils.nbt(stack);
+        if (stack.getItem() == IUItem.NanoBodyarmor) {
+            tooltip.add(Localization.translate("iu.fly") + " " + ModUtils.Boolean(nbtData.getBoolean("jetpack")));
+            if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                tooltip.add(Localization.translate("press.lshift"));
+            }
+
+
+            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                tooltip.add(Localization.translate("iu.changemode_fly") + Keyboard.getKeyName(KeyboardClient.flymode.getKeyCode()));
+            }
+        }
         ModUtils.mode(stack, tooltip);
     }
 

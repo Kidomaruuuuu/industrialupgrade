@@ -42,6 +42,7 @@ public class BlockOre extends BlockCore implements IModelRegister {
         setDefaultState(this.blockState.getBaseState().withProperty(VARIANT, Type.titanium));
         setHarvestLevel("pickaxe", 2);
     }
+
     @Override
     public IBlockState getStateFromMeta(final int meta) {
         return getDefaultState().withProperty(VARIANT, Type.values()[meta]);

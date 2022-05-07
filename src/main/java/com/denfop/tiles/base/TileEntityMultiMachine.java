@@ -5,9 +5,7 @@ import cofh.redstoneflux.api.IEnergyReceiver;
 import com.denfop.Config;
 import com.denfop.IUCore;
 import com.denfop.IUItem;
-import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
-import com.denfop.api.recipe.IBaseRecipe;
 import com.denfop.api.recipe.IMultiUpdateTick;
 import com.denfop.api.recipe.InvSlotMultiRecipes;
 import com.denfop.audio.AudioSource;
@@ -77,7 +75,6 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
     public EnumSolarPanels solartype;
     public boolean rf;
     public int expstorage;
-    public IBaseRecipe recipe;
     public int module;
     public boolean quickly;
     public int[] col = new int[4];
@@ -134,7 +131,6 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
         this.rf = false;
         this.quickly = false;
         this.module = 0;
-        this.recipe = Recipes.recipes.getRecipe(this.getMachine().type.recipe);
         this.min = min;
         this.max = max;
         this.random = random;
@@ -563,7 +559,7 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
                     int size1 = 0;
 
                     for (int ii = 0; ii < sizeWorkingSlot; ii++) {
-                        if (this.outputSlot.get(ii) != null) {
+                        if (!this.outputSlot.get(ii).isEmpty()) {
                             size1 += (64 - this.outputSlot.get(ii).getCount());
                         } else {
                             size1 += 64;
@@ -648,6 +644,7 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
                 this.operationLength = this.defaultOperationLength;
             }
         }
+
         needsInvUpdate |= this.upgradeSlot.tickNoMark();
         if (needsInvUpdate) {
             super.markDirty();

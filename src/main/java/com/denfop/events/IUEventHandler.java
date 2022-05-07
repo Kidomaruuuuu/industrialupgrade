@@ -191,17 +191,6 @@ public class IUEventHandler {
                 event.getToolTip().add(Objects.requireNonNull(entity).getName());
             }
         }
-        if (stack.getItem().equals(IUItem.plast)) {
-            if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-                event.getToolTip().add(Localization.translate("press.lshift"));
-            }
-
-
-            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-
-                event.getToolTip().add(Localization.translate("iu.create_plastic"));
-            }
-        }
         if (stack.getItem().equals(IUItem.analyzermodule)) {
             event.getToolTip().add(Localization.translate("iu.analyzermodule"));
         }
@@ -230,22 +219,6 @@ public class IUEventHandler {
 
             }
 
-        }
-        if (stack.getItem().equals(IUItem.plastic_plate)) {
-            if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-                event.getToolTip().add(Localization.translate("press.lshift"));
-            }
-            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-                event.getToolTip().add(Localization.translate("iu.create_plastic_plate"));
-            }
-        }
-        if (stack.isItemEqual(new ItemStack(IUItem.sunnarium, 1, 4))) {
-            if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-                event.getToolTip().add(Localization.translate("press.lshift"));
-            }
-            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-                event.getToolTip().add(Localization.translate("iu.create_sunnarium"));
-            }
         }
         if (getUpgradeItem(stack) && UpgradeSystem.system.hasInMap(stack)) {
             final List<UpgradeItemInform> lst = UpgradeSystem.system.getInformation(stack);

@@ -11,21 +11,25 @@ import net.minecraft.world.gen.feature.WorldGenerator;
 import javax.annotation.Nonnull;
 import java.util.Random;
 
-public class WorldGenMinerals  extends WorldGenerator {
+public class WorldGenMinerals extends WorldGenerator {
+
     private final BlockHeavyOre block;
 
     public WorldGenMinerals() {
         this.block = IUItem.heavyore;
     }
+
     @Override
     public boolean generate(@Nonnull final World world, @Nonnull final Random rand, @Nonnull final BlockPos pos) {
         int x = pos.getX() - 8;
         int z = pos.getZ() - 8;
         int y = pos.getY();
-        if(rand.nextInt(500)<= 450)
+        if (rand.nextInt(500) <= 450) {
             return false;
-        if (y > 25)
+        }
+        if (y > 25) {
             return false;
+        }
 
         if (y <= 4) {
             return false;

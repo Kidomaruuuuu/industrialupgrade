@@ -1,14 +1,12 @@
 package com.denfop.integration.jei.advrefiner;
 
 
-import com.denfop.api.IFluidRecipeManager;
-import com.denfop.api.Recipes;
+import com.denfop.blocks.FluidName;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class AdvRefinerHandler {
 
@@ -52,14 +50,15 @@ public class AdvRefinerHandler {
     }
 
     public static void initRecipes() {
-        for (Map.Entry<IFluidRecipeManager.Input, FluidStack[]> container :
-                Recipes.oiladvrefiner.getRecipes().entrySet()) {
-            addRecipe(container.getKey().fluidStack, container.getValue()[0],
 
-                    container.getValue()[1]
-            );
+        addRecipe(new FluidStack(FluidName.fluidneft.getInstance(), 1000),
+                new FluidStack(
+                        FluidName.fluidpolyeth.getInstance(),
+                        500
+                ), new FluidStack(FluidName.fluidpolyprop.getInstance(), 500)
+        );
 
-        }
+
     }
 
 

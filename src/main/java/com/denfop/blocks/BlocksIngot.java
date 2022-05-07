@@ -43,10 +43,11 @@ public class BlocksIngot extends BlockCore implements IModelRegister {
         setHarvestLevel("pickaxe", 1);
     }
 
-     @Override
+    @Override
     public IBlockState getStateFromMeta(final int meta) {
         return getDefaultState().withProperty(VARIANT, Type.values()[meta]);
     }
+
     @Nonnull
     protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, VARIANT);

@@ -11,6 +11,7 @@ import com.denfop.tiles.base.TileEntityDoubleMolecular;
 import com.denfop.tiles.base.TileEntityMolecularTransformer;
 import com.denfop.tiles.base.TileEntityMultiMachine;
 import com.denfop.tiles.panels.entity.TileEntitySolarPanel;
+import com.denfop.utils.KeyboardClient;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import ic2.api.item.ElectricItem;
@@ -35,6 +36,7 @@ import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -67,9 +69,12 @@ import net.minecraftforge.event.entity.player.UseHoeEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.Nullable;
+import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegister {
@@ -89,13 +94,7 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
         this.name = name;
     }
 
-    public static boolean hasToolMode(ItemStack stack) {
-        if (!stack.hasTagCompound()) {
-            return false;
-        }
-        assert stack.getTagCompound() != null;
-        return stack.getTagCompound().hasKey("toolMode", 4);
-    }
+
 
     public static GraviToolMode readToolMode(ItemStack stack) {
         return GraviToolMode.getFromID(StackUtil.getOrCreateNbtData(stack).getInteger("toolMode"));
@@ -153,13 +152,6 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
         }
 
     }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public boolean isFull3D() {
-        return true;
-    }
-
     @Nonnull
     @Override
     public String getItemStackDisplayName(@Nonnull ItemStack stack) {
@@ -169,11 +161,47 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
                 Localization.translate(readToolMode(stack).translationName)
         ) : Localization.translate(this.getUnlocalizedName(stack));
     }
+    public static boolean hasToolMode(ItemStack stack) {
+        if (!stack.hasTagCompound()) {
+            return false;
+        }
+        assert stack.getTagCompound() != null;
+        return stack.getTagCompound().hasKey("toolMode", 4);
+    }
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean isFull3D() {
+        return true;
+    }
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void addInformation(
+            @Nonnull final ItemStack par1ItemStack,
+            @Nullable final World worldIn,
+            @Nonnull final List<String> par3List,
+            @Nonnull final ITooltipFlag flagIn
+    ) {
+        ItemGraviTool.GraviToolMode mode = readToolMode(par1ItemStack);
+        par3List.add(Localization.translate("message.text.mode")+": "+ mode.colour + Localization.translate(mode.translationName));
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            par3List.add(Localization.translate("press.lshift"));
+        }
+
+
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            par3List.add(Localization.translate("iu.changemode_key") + Keyboard.getKeyName(KeyboardClient.changemode.getKeyCode()) + Localization.translate(
+                    "iu.changemode_rcm"));
+
+        }
+
+        super.addInformation(par1ItemStack, worldIn, par3List, flagIn);
+    }
+
 
     @Nonnull
     @Override
     public ActionResult<ItemStack> onItemRightClick(@Nonnull World world, @Nonnull EntityPlayer player, @Nonnull EnumHand hand) {
-        if (IC2.keyboard.isModeSwitchKeyDown(player)) {
+        if (IUCore.keyboard.isChangeKeyDown(player)) {
             ItemStack stack = StackUtil.get(player, hand);
             if (world.isRemote) {
                 IUCore.audioManager.playOnce(

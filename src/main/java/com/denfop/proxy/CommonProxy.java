@@ -15,7 +15,6 @@ import com.denfop.api.space.BaseSpaceSystem;
 import com.denfop.api.space.SpaceInit;
 import com.denfop.api.space.SpaceNet;
 import com.denfop.blocks.BlocksItems;
-import com.denfop.blocks.FluidName;
 import com.denfop.blocks.mechanism.BlockAdminPanel;
 import com.denfop.blocks.mechanism.BlockAdvChamber;
 import com.denfop.blocks.mechanism.BlockAdvRefiner;
@@ -76,9 +75,6 @@ import com.denfop.integration.thaumcraft.ThaumcraftIntegration;
 import com.denfop.items.CellType;
 import com.denfop.items.ItemUpgradePanelKit;
 import com.denfop.items.book.core.CoreBook;
-import com.denfop.recipemanager.FluidRecipeManager;
-import com.denfop.recipemanager.GeneratorRecipeManager;
-import com.denfop.recipemanager.GeneratorSunnariumRecipeManager;
 import com.denfop.recipemanager.ObsidianRecipeManager;
 import com.denfop.recipes.BasicRecipe;
 import com.denfop.recipes.CannerRecipe;
@@ -115,7 +111,6 @@ import com.denfop.tiles.mechanism.TileEntityWitherMaker;
 import com.denfop.tiles.panels.entity.EnumSolarPanels;
 import com.denfop.utils.CraftManagerUtils;
 import com.denfop.utils.ListInformationUtils;
-import com.denfop.utils.ModUtils;
 import com.denfop.utils.TemperatureMechanismUtils;
 import com.denfop.world.WorldGenOres;
 import ic2.api.recipe.IBasicMachineRecipeManager;
@@ -131,8 +126,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -238,44 +231,6 @@ public class CommonProxy implements IGuiHandler {
         EnumSolarPanels.registerTile();
         ItemUpgradePanelKit.EnumSolarPanelsKit.registerkit();
         IUItem.register_mineral();
-        Recipes.electrolyzer = new FluidRecipeManager();
-        Recipes.oilrefiner = new FluidRecipeManager();
-        Recipes.oiladvrefiner = new FluidRecipeManager();
-        Recipes.heliumgenerator = new GeneratorRecipeManager();
-
-        Recipes.lavagenrator = new GeneratorRecipeManager();
-        Recipes.sunnarium = new GeneratorSunnariumRecipeManager();
-        Recipes.sunnarium.addRecipe(null, new ItemStack(IUItem.sunnarium, 1, 4));
-        Recipes.electrolyzer.addRecipe(new FluidStack(FluidRegistry.WATER, 1000), new FluidStack[]{new FluidStack(
-                FluidName.fluidhyd.getInstance(),
-                500
-        ),
-                new FluidStack(FluidName.fluidoxy.getInstance(), 250)});
-        Recipes.oilrefiner.addRecipe(
-                new FluidStack(FluidName.fluidneft.getInstance(), 1000),
-                new FluidStack[]{new FluidStack(
-                        FluidName.fluidbenz.getInstance(),
-                        600
-                ), new FluidStack(FluidName.fluiddizel.getInstance(), 400)}
-        );
-        Recipes.oiladvrefiner.addRecipe(
-                new FluidStack(FluidName.fluidneft.getInstance(), 1000),
-                new FluidStack[]{new FluidStack(
-                        FluidName.fluidpolyeth.getInstance(),
-                        500
-                ), new FluidStack(FluidName.fluidpolyprop.getInstance(), 500)}
-        );
-
-        NBTTagCompound nbt = ModUtils.nbt();
-        nbt.setInteger("amount", 20000);
-        NBTTagCompound nbt1 = ModUtils.nbt();
-        nbt1.setInteger("amount", 1000000);
-        Recipes.lavagenrator.addRecipe(nbt, new FluidStack(FluidRegistry.LAVA, 1000));
-        Recipes.heliumgenerator.addRecipe(nbt1, new FluidStack(FluidName.fluidHelium.getInstance(), 1000));
-        Recipes.neutroniumgenrator = new GeneratorRecipeManager();
-        NBTTagCompound nbt2 = ModUtils.nbt();
-        nbt2.setDouble("amount", Config.energy * 1000);
-        Recipes.neutroniumgenrator.addRecipe(nbt2, new FluidStack(FluidName.fluidNeutron.getInstance(), 1000));
         Recipes.mechanism = new TemperatureMechanismUtils();
         TileEntityAssamplerScrap.init();
         TileEntityHandlerHeavyOre.init();

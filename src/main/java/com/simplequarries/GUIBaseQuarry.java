@@ -111,8 +111,8 @@ public class GuiBaseQuarry extends GuiIC2<ContainerBaseQuarry> {
                 / this.container.base.exp_max_storage);
 
         if (exp > 0) {
-            drawTexturedModalRect(h + 172, k + 28 + 48 - chargeLevel, 194,
-                    119 + 48 - chargeLevel, 12, chargeLevel
+            drawTexturedModalRect(h + 172, k + 28 + 48 - exp, 194,
+                    119 + 48 - exp, 12, exp
             );
         }
         if (chargeLevel > 0) {

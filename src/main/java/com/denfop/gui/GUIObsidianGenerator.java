@@ -36,10 +36,12 @@ public class GuiObsidianGenerator extends GuiIC2<ContainerObsidianGenerator> {
                 .drawForeground(par1, par2);
 
     }
+
     protected void drawBackgroundAndTitle(float partialTicks, int mouseX, int mouseY) {
         this.bindTexture();
         this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
-     }
+    }
+
     protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
         super.drawGuiContainerBackgroundLayer(f, x, y);
         this.mc.getTextureManager().bindTexture(getTexture());

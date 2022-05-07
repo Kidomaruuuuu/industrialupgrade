@@ -12,7 +12,6 @@ iu.itemiucrafring.itemirradiantglasspane=Випромінювальна скля
 
 # Хаотичні сховища енергії
 iu.ChaosEnergyCore.name=§7Хаотичне енергоядро
-item.supersolarpanel:ChaosFluxCapacitor0.name=§7Хаотичний флаксовий конденсатор
 
 # Нафтопереробний завод
 industrialupgrade.refiner.refiner=Нафтопереробний завод
@@ -20,7 +19,7 @@ iu.refiner_item.refiner_item=Нафтопереробний завод
 industrialupgrade.adv_refiner.adv_refiner=Покращений нафтопереробний завод
 iu.adv_refiner_item.adv_refiner_item=Покращений нафтопереробний завод
 
-Молекулярні перетворювачі та комплектуючі
+# Молекулярні перетворювачі та комплектуючі
 iu.itemiucrafring.itemmtcore=Ядро молекулярного перетворювача
 industrialupgrade.molecular.molecular=Молекулярний перетворювач
 iu.molecular_item.molecular_item=Молекулярний перетворювач
@@ -151,7 +150,7 @@ iu.infinitycore.name=§fЯдро нескінченності
 # Збуджені ядра
 iu.excitednucleus.advcore=Збуджене покращене ядро
 iu.excitednucleus.hybcore=Збуджене гібридне ядро
-iu.excitednucleus.ultcore=Збуджене досконале ядро
+iu.excitednucleus.ultcore=Збуджене довершене ядро
 iu.excitednucleus.quacore=Збуджене квантове ядро
 iu.excitednucleus.specore=Збуджене спектральне ядро
 iu.excitednucleus.procore=Збуджене протонне ядро
@@ -170,10 +169,10 @@ iu.neutroniumingot.name=§9Нейтронний зливок
 industrialupgrade.basemachine.neutron_generator=§9Генератор нейтронних частинок
 iu.Matter.gui.name=§bГенератор нейтронних частинок
 
-item.lead_box.name=Свинцева скринька
+item.lead_box.name=Свинцевий ящик
 
 # Ящики
-iu.nanobox.name=§8Нано-скринька
+iu.nanobox.name=§8Нано-ящик
 iu.quantumitems7.name=§eПокращена нано-ящик
 iu.quantumitems6.name=§bКвантовий ящик
 iu.quantumitems3.name=Покращений квантовий ящик
@@ -201,7 +200,7 @@ iu.compresscarbonultra.name=Стислий композит
 
 iu.photoniumglass.photoniyglass1=§8Покращене скло
 iu.photoniumglass.photoniyglass2=§3Гібридне скло
-iu.photoniumglass.photoniyglass3=§9Ідеальне скло
+iu.photoniumglass.photoniyglass3=§9Довершене скло
 iu.photoniumglass.photoniyglass4=§2Квантове скло
 iu.photoniumglass.photoniyglass5=§eСпектральне скло
 iu.photoniumglass.photoniyglass6=§5Протонне скло
@@ -232,8 +231,8 @@ item.quantumdrill.name=Квантовий бур
 item.GraviTool=Граві-тул
 item.purifier.name=Очищувач
 
-iu.upgrades.overclockerupgrade1=Покращення "Покращений прискорювач"
-iu.upgrades.overclockerupgrade2=Покращення "Просунутий прискорювач"
+iu.upgrades.overclockerupgrade1=Покращення "Покращене прискорення"
+iu.upgrades.overclockerupgrade2=Покращення "Просунуте прискорення"
 
 iu.module_schedule.name=Шаблон модуля
 
@@ -286,6 +285,8 @@ iu.quarrymodules.kar2=Модуль: Область 5х5
 iu.quarrymodules.kar3=Модуль: Область 7х7
 iu.quarrymodules.blackmodule=Модуль: Чорний список
 iu.quarrymodules.whitemodule=Модуль: Білий список
+iu.quarrymodules.macerator=Модуль: Дробарка
+iu.quarrymodules.comb_macerator=Модуль: Дробарка руд
 
 iu.expmodule.name=Модуль: Сховище досвіду
 iu.module_stack.name=Модуль: Стопка
@@ -351,7 +352,7 @@ iu.upgrademodules.upgrademodule31=Модифікаційний модуль: Б�
 iu.upgrademodules.upgrademodule32=Модифікаційний модуль: Сліпота
 iu.upgrademodules.upgrademodule33=Модифікаційний модуль: Захист від стріл
 iu.upgrademodules.upgrademodule34=Модифікаційний модуль: Ефективне падіння
-iu.upgrademodules.upgrademodule35=Модифікаційний модуль: Дробник
+iu.upgrademodules.upgrademodule35=Модифікаційний модуль: Дробарка
 iu.upgrademodules.upgrademodule36=Модифікаційний модуль: Дроблювач руд
 iu.upgrademodules.upgrademodule37=Модифікаційний модуль: Скарби
 iu.upgrademodules.upgrademodule38=Модифікаційний модуль: Голод
@@ -425,7 +426,7 @@ message.text.mode=Режим інструменту
 message.ultDDrill.mode.normal=Нормальний
 message.ultDDrill.mode.lowPower=Легкий режим
 message.ultDDrill.mode.bigHoles=Великий режим
-message.ultDDrill.mode.bigHoles1=Просунений великий режим
+message.ultDDrill.mode.bigHoles1=Просунутий великий режим
 message.ultDDrill.mode.bigHoles2=Зроблений великий режим
 message.ultDDrill.mode.treemode=Дерево
 message.ultDDrill.mode.pickaxe=Руди
@@ -548,7 +549,6 @@ iu.modulewirelles2=§bБездротовий зв'язок: §cне працює
 iu.fly=§3Увімкнено політ:
 iu.fly1=Натисніть Mode Switch Key + Boost Key, щоб увімкнути політ
 iu.vertical=Натисніть Mode Switch Key + Side Key, щоб увімкнути вертикальний режим
-iu.streak=Натисніть Hub Expand Key, щоб змінити колір смуги за гравцем
 iu.effect=Включена вогнестійкість:
 storagemodul=Працює лише у сховищах енергії
 storagemodul1=По сховищу натиснути SHIFT + ПКМ
@@ -562,15 +562,15 @@ industrialupgrade.tank_iu.tank_iu=Рідинний бак
 iu.fluid_tank_item.fluid_tank_normal=Рідинний бак
 industrialupgrade.tank_iu.adv_tank=Покращений рідинний бак
 iu.fluid_tank_item.fluid_tank_normal_adv=Покращений рідинний бак
-industrialupgrade.tank_iu.imp_tank=Просунений рідинний бак
-iu.fluid_tank_item.fluid_tank_normal_imp=Просунений рідинний бак
-industrialupgrade.tank_iu.per_tank=Досконалий рідинний бак
-iu.fluid_tank_item.fluid_tank_normal_per=Досконалий рідинний бак
+industrialupgrade.tank_iu.imp_tank=Просунутий рідинний бак
+iu.fluid_tank_item.fluid_tank_normal_imp=Просунутий рідинний бак
+industrialupgrade.tank_iu.per_tank=Довершений рідинний бак
+iu.fluid_tank_item.fluid_tank_normal_per=Довершений рідинний бак
 
 iu.itempipes=Теплова труба
 iu.itempipes1=Покращена теплова труба
 iu.itempipes2=Просунута теплова труба
-iu.itempipes3=Досконала теплова труба
+iu.itempipes3=Довергена теплова труба
 iu.itempipes4=Квантова теплова труба
 
 iu.cold.itempipes=Охолоджувальна труба
@@ -579,17 +579,6 @@ iu.cold.itempipes2=Просунута охолодна труба
 iu.cold.itempipes3=Довершена охолодна труба
 iu.cold.itempipes4=Квантова охолоджувальна труба
 
-iu.blockBatBox.name=Енергосховище
-iu.blockCESU.name=МЕСН
-iu.blockMFE1.name=МФЕ
-iu.blockMFSU1.name=МФСУ
-iu.blockMFE.name=§eПокращене МФСУ
-iu.blockMFSU.name=§bПросунуте МФСУ
-iu.blockPerMFSU.name=Здійснене МФСУ
-iu.blockBarMFSU.name=Баріонне МФСУ
-iu.blockAdrMFSU.name=Адронне МФСУ
-iu.blockGraMFSU.name=Гравітонне МФСУ
-iu.blockKvrMFSU.name=Кваркове МФСУ
 industrialupgrade.wiring_storage.batbox_iu=Енергосховище
 industrialupgrade.wiring_storage.cesu_iu=МЕСН
 industrialupgrade.wiring_storage.mfe_iu=МФЕ
@@ -606,24 +595,13 @@ iu.quarry=Вставити в квантовий кар'єр
 iu.quarry1=Переплавляє руди
 iu.quarry2=Зменшує витрати енергії
 
-iu.blockChargepadBatBox.name=Зарядна плита (Енергосховище)
-iu.blockChargepadCESU.name=Зарядна плита (МЕСН)
-iu.blockChargepadMFE1.name=Зарядна плита (МФЕ)
-iu.blockChargepadMFSU.name=Зарядна плита (МФСУ)
-iu.blockChargepadMFE.name=Зарядна плита (Покращене МФСУ)
-iu.blockChargepadMFES.name=Зарядна плита (Просунуте МФСУ)
-iu.blockChargepadPerMFSU.name=Зарядна плита (досконале МФСУ)
-iu.blockChargepadBarMFSU.name=Зарядна плита (Баріонне МФСУ)
-iu.blockChargepadAdrMFSU.name=Зарядна плита (Адронне МФСУ)
-iu.blockChargepadGraMFSU.name=Зарядна плита (Гравітонне МФСУ)
-iu.blockChargepadKvrMFSU.name=Зарядна плита (Кваркове МФСУ)
 industrialupgrade.wiring_chargepad.batbox_iu_chargepad=Зарядна плита (Енергосховище)
 industrialupgrade.wiring_chargepad.cesu_iu_chargepad=Зарядна плита (МЕСН)
 industrialupgrade.wiring_chargepad.mfe_iu_chargepad=Зарядна плита (МФЕ)
 industrialupgrade.wiring_chargepad.mfsu_iu_chargepad=Зарядна плита (МФСУ)
 industrialupgrade.wiring_chargepad.adv_mfsu_chargepad=Зарядна плита (Покращене МФСУ)
 industrialupgrade.wiring_chargepad.ult_mfsu_chargepad=Зарядна плита (Просунуте МФСУ)
-industrialupgrade.wiring_chargepad.per_mfsu_chargepad=Зарядна плита (досконале МФСУ)
+industrialupgrade.wiring_chargepad.per_mfsu_chargepad=Зарядна плита (Довершене МФСУ)
 industrialupgrade.wiring_chargepad.bar_mfsu_chargepad=Зарядна плита (Баріонне МФСУ)
 industrialupgrade.wiring_chargepad.had_mfsu_chargepad=Зарядна плита (Адронне МФСУ)
 industrialupgrade.wiring_chargepad.gra_mfsu_chargepad=Зарядна плита (Гравітонне МФСУ)
@@ -1318,12 +1296,12 @@ silver_dustore.name=Срібна пилова руда
 zinc_dustore.name=Цинкова пилова руда
 manganese_dustore.name=Марганцева пилова руда
 
-industrialupgrade.transformer_iu.umv=Трансформатор ПН
-industrialupgrade.transformer_iu.uhv=Трансформатор НКВН
+industrialupgrade.transformer_iu.umv=Трансформатор ГН
+industrialupgrade.transformer_iu.uhv=Трансформатор НкВН
 industrialupgrade.transformer_iu.uev=Трансформатор СкВН
 industrialupgrade.transformer_iu.umhv=Трансформатор ВкВН
-industrialupgrade.transformer_iu.umev=Трансформатор СВкВК
-industrialupgrade.transformer_iu.uhev=Трансформатор ПВКН
+industrialupgrade.transformer_iu.umev=Трансформатор НВкВК
+industrialupgrade.transformer_iu.uhev=Трансформатор ГВкН
 industrialupgrade.transformer_iu.heev=Трансформатор МВН
 
 iu.lens.aerlinse=Повітряна лінза
@@ -1352,15 +1330,15 @@ info.nanobow.sniper=Снайперська стрілянина
 info.nanobow.flame=Гаряча стріла
 
 item.adv_lappack.name=Покращений енергетичний ранець
-item.imp_lappack.name=Просунений енергетичний ранець
+item.imp_lappack.name=Просунутий енергетичний ранець
 item.per_lappack.name=Довершений енергетичний ранець
 
 advjetpack.name=Покращений електричний реактивний ранець
-impjetpack.name=Просунений електричний реактивний ранець
+impjetpack.name=Просунутий електричний реактивний ранець
 perjetpack.name=Довершений електричний реактивний ранець
 
 item.itemadvbatchargecrystal.name=Заряджаючий покращений енергетичний кристал
-item.itembatchargecrystal.name=Зарядний досконалий енергетичний кристал
+item.itembatchargecrystal.name=Зарядний довершений енергетичний кристал
 
 #Набори покращень для енергосховищ
 iu.upgradekitstorage.upgradekit=Набір покращень з МЕСН до МФЕ
@@ -1375,82 +1353,79 @@ iu.upgradekitstorage.upgradekit8=Набір покращень з гравіто
 
 #Набори покращень панелей
 iu.upgradekitpanel.upgradepanelkit=Набір покращень панелі зі звичайної до покращеної
-iu.upgradekitpanel.upgradepanelkit1=Набір покращень панелі з покращеної в гібридну
-iu.upgradekitpanel.upgradepanelkit2=Набір покращень панелі з гібридної до досконалої гібридної
-iu.upgradekitpanel.upgradepanelkit3=Набір покращень панелі з досконалої гібридної до квантової
-iu.upgradekitpanel.upgradepanelkit4=Набір покращень панелі з квантової в спектральну
-iu.upgradekitpanel.upgradepanelkit5=Набір покращень панелі із спектральної в протонну
+iu.upgradekitpanel.upgradepanelkit1=Набір покращень панелі з покращеної до гібридної
+iu.upgradekitpanel.upgradepanelkit2=Набір покращень панелі з гібридної в довершеної гібридної
+iu.upgradekitpanel.upgradepanelkit3=Набір покращень панелі з довершеної гібридної до квантової
+iu.upgradekitpanel.upgradepanelkit4=Набір покращень панелі з квантової до спектральної
+iu.upgradekitpanel.upgradepanelkit5=Набір покращень панелі із спектральної до протонної
 iu.upgradekitpanel.upgradepanelkit6=Набір покращень панелі з протонної до сингулярної
 iu.upgradekitpanel.upgradepanelkit7=Набір покращень панелі із сингулярної до дифракційної
-iu.upgradekitpanel.upgradepanelkit8=Набір покращень панелі з дифракційної у фотонну
-iu.upgradekitpanel.upgradepanelkit9=Набір покращень панелі з фотонної в нейтронну
+iu.upgradekitpanel.upgradepanelkit8=Набір покращень панелі з дифракційної до фотонної
+iu.upgradekitpanel.upgradepanelkit9=Набір покращень панелі з фотонної до нейтронної
 iu.upgradekitpanel.upgradepanelkit10=Набір покращень панелі з нейтронної до баріонної
-iu.upgradekitpanel.upgradepanelkit11=Набір покращень панелі з баріонної в адронну
-iu.upgradekitpanel.upgradepanelkit12=Набір покращень панелі з адронної в гравітонну
-iu.upgradekitpanel.upgradepanelkit13=Набір покращень панелі з гравітонної в кваркову
+iu.upgradekitpanel.upgradepanelkit11=Набір покращень панелі з баріонної до адронної
+iu.upgradekitpanel.upgradepanelkit12=Набір покращень панелі з адронної до гравітонної
+iu.upgradekitpanel.upgradepanelkit13=Набір покращень панелі з гравітонної до кваркової
 
 ##Draconic Evolution
 iu.upgradekitpanel.upgradepanelkit14=Набір покращень панелі з гібридної до драконієвої
-iu.upgradekitpanel.upgradepanelkit15=Набір покращень панелі з драконієвої в пробуджену
-iu.upgradekitpanel.upgradepanelkit16=Набір покращень панелі з пробудженої в хаотичну
+iu.upgradekitpanel.upgradepanelkit15=Набір покращень панелі з драконієвої до пробудженої
+iu.upgradekitpanel.upgradepanelkit16=Набір покращень панелі з пробудженої до хаотичної
 
 ##Botania
-iu.upgradekitpanel.upgradepanelkit17=Набір покращень панелі з покращеної в монастальну
-iu.upgradekitpanel.upgradepanelkit18=Набір покращень панелі з манастальної в елементієву
-iu.upgradekitpanel.upgradepanelkit19=Набір покращень панелі з елементної в терастальну
+iu.upgradekitpanel.upgradepanelkit17=Набір покращень панелі з покращеної до манастальної
+iu.upgradekitpanel.upgradepanelkit18=Набір покращень панелі з манастальної до елементієвої
+iu.upgradekitpanel.upgradepanelkit19=Набір покращень панелі з елементної до терастальної
 
 ##Avaritia
 iu.upgradekitpanel.upgradepanelkit20=Набір покращень панелі з фотонної до нейтронієвої
-iu.upgradekitpanel.upgradepanelkit21=Набір покращень панелі з нейтронієвої в панель нескінченності
+iu.upgradekitpanel.upgradepanelkit21=Набір покращень панелі з нейтронієвої до панелі нескінченності
 
 ##Thaumcraft
-iu.upgradekitpanel.upgradepanelkit22=Набір покращень панелі з гібридної в таум-панель
-iu.upgradekitpanel.upgradepanelkit23=Набір покращень панелі з таум-панелі в порожню
-
-##Thaumic Tinkerer
-iu.upgradekitpanel.upgradepanelkit24=Набір покращень панелі з пустотної в ихорію
+iu.upgradekitpanel.upgradepanelkit22=Набір покращень панелі з гібридної до таумієвої
+iu.upgradekitpanel.upgradepanelkit23=Набір покращень панелі з таумієвої до панелі порожнечі
 
 #Набори покращень машин
-iu.upgradekitmachine.upgradepanelkitmachine=Набір покращень машини зі звичайної в покращену
-iu.upgradekitmachine.upgradepanelkitmachine1=Набір покращень машини з покращеної в просунуту
-iu.upgradekitmachine.upgradepanelkitmachine2=Набір покращень машини з просунутої в досконалу
-iu.upgradekitmachine.upgradepanelkitmachine3=Набір покращень машини в максимальну
+iu.upgradekitmachine.upgradepanelkitmachine=Набір покращень машини зі звичайної до покращеної
+iu.upgradekitmachine.upgradepanelkitmachine1=Набір покращень машини з покращеної до просунутої
+iu.upgradekitmachine.upgradepanelkitmachine2=Набір покращень машини з просунутої до довершеної
+iu.upgradekitmachine.upgradepanelkitmachine3=Набір покращень машини до максимальної
 
 industrialupgrade.simplemachine.recycler_iu=Утилізатор
 industrialupgrade.moremachine1.double_recycler=Покращений утилізатор
 industrialupgrade.moremachine1.triple_recycler=Просунутий утилізатор
 industrialupgrade.moremachine1.quad_recycler=Довершений утилізатор
 
-industrialupgrade.simplemachine.compressor_iu=Стискатель
-industrialupgrade.moremachine.double_commpressor=Покращений стискувач
-industrialupgrade.moremachine.triple_commpressor=Просунений стискувач
-industrialupgrade.moremachine.quad_commpressor=Довершений стискувач
+industrialupgrade.simplemachine.compressor_iu=Компресор
+industrialupgrade.moremachine.double_commpressor=Покращений компресор
+industrialupgrade.moremachine.triple_commpressor=Просунутий компресор
+industrialupgrade.moremachine.quad_commpressor=Довершений компресор
 
 industrialupgrade.simplemachine.furnace_iu=Електрична піч
 industrialupgrade.moremachine.double_furnace=Покращена електрична піч
 industrialupgrade.moremachine.triple_furnace=Просунута електрична піч
-industrialupgrade.moremachine.quad_furnace=Досконала електрична піч
+industrialupgrade.moremachine.quad_furnace=Довершена електрична піч
 
 industrialupgrade.simplemachine.extractor_iu=Екстрактор
 industrialupgrade.moremachine.double_extractor=Покращений екстрактор
 industrialupgrade.moremachine.triple_extractor=Просунутий екстрактор
 industrialupgrade.moremachine.quad_extractor=Довершений екстрактор
 
-industrialupgrade.simplemachine.macerator_iu=Дробитель
-industrialupgrade.moremachine.double_macerator=Покращений подрібнювач
-industrialupgrade.moremachine.triple_macerator=Просунутий подрібнювач
-industrialupgrade.moremachine.quad_macerator=Зроблений дробник
+industrialupgrade.simplemachine.macerator_iu=Дробарка
+industrialupgrade.moremachine.double_macerator=Покращена дробарка
+industrialupgrade.moremachine.triple_macerator=Просунута дробарка
+industrialupgrade.moremachine.quad_macerator=Довершена дробарка
 
 industrialupgrade.simplemachine.generator_matter=Генератор рідкої матерії
 industrialupgrade.basemachine.adv_matter=Покращений генератор рідкої матерії
-industrialupgrade.basemachine.imp_matter=Просунений генератор рідкої матерії
+industrialupgrade.basemachine.imp_matter=Просунутий генератор рідкої матерії
 industrialupgrade.basemachine.per_matter=Довершений генератор рідкої матерії
 industrialupgrade.basemachine2.combiner_matter=§9Комбінований генератор рідкої матерії
 
-industrialupgrade.simplemachine.metalformer_iu=Металоформувальна машина
-industrialupgrade.moremachine.double_metalformer=Покращена металоформувальна машина
-industrialupgrade.moremachine.triple_metalformer=Просунута металоформувальна машина
-industrialupgrade.moremachine.quad_metalformer=Довершена металоформувальна машина
+industrialupgrade.simplemachine.metalformer_iu=Формувальник металу
+industrialupgrade.moremachine.double_metalformer=Покращений формувальник металу
+industrialupgrade.moremachine.triple_metalformer=Просунутий формувальник металу
+industrialupgrade.moremachine.quad_metalformer=Довершений формувальник металу
 
 industrialupgrade.basemachine.quantum_quarry=Квантовий кар'єр
 industrialupgrade.basemachine.adv_quantum_quarry=Покращений квантовий кар'єр
@@ -1464,24 +1439,24 @@ industrialupgrade.moremachine2.quad_extruder=Довершений екструд
 
 industrialupgrade.moremachine2.rolling=Прокатний верстат
 industrialupgrade.moremachine2.double_rolling=Покращений прокатний верстат
-industrialupgrade.moremachine2.triple_rolling=Просунений прокатний верстат
+industrialupgrade.moremachine2.triple_rolling=Просунутий прокатний верстат
 industrialupgrade.moremachine2.quad_rolling=Довершений прокатний верстат
 
 industrialupgrade.moremachine2.cutting=Ріжучий автомат
 industrialupgrade.moremachine2.double_cutting=Покращений ріжучий автомат
-industrialupgrade.moremachine2.triple_cutting=Просунений ріжучий автомат
+industrialupgrade.moremachine2.triple_cutting=Просунутий ріжучий автомат
 industrialupgrade.moremachine2.quad_cutting=Довершений ріжучий автомат
 
 industrialupgrade.moremachine1.double_comb_recycler=Покращений комбінований утилізатор
 industrialupgrade.moremachine1.triple_comb_recycler=Просунутий комбінований утилізатор
 industrialupgrade.moremachine1.quad_comb_recycler=Довершений комбінований утилізатор
 
-industrialupgrade.moremachine1.comb_macerator=Комбінований дробник
-industrialupgrade.moremachine1.double_comb_macerator=Покращений комбінований дробник
-industrialupgrade.moremachine1.triple_comb_macerator=Просунений комбінований дробник
-industrialupgrade.moremachine1.quad_comb_macerator=Довершений комбінований дробник
+industrialupgrade.moremachine1.comb_macerator=Комбінована дробарка
+industrialupgrade.moremachine1.double_comb_macerator=Покращена комбінована дробарка
+industrialupgrade.moremachine1.triple_comb_macerator=Просунута комбінована дробарка
+industrialupgrade.moremachine1.quad_comb_macerator=Довершена комбінована дробарка
 
-industrialupgrade.moremachine3.assamplerscrap=Складальник утильсировини
+industrialupgrade.moremachine3.assamplerscrap=Збирач утильсировини
 industrialupgrade.moremachine3.double_assamplerscrap=Покращений збирач утільсировини
 industrialupgrade.moremachine3.triple_assamplerscrap=Просунутий збирач утільсировини
 industrialupgrade.moremachine3.quad_assamplerscrap=Довершений збирач утільсировини
@@ -1491,11 +1466,8 @@ industrialupgrade.moremachine3.double_farmer=Покращена автономн
 industrialupgrade.moremachine3.triple_farmer=Просунута автономна ферма
 industrialupgrade.moremachine3.quad_farmer=Довершена автономна ферма
 
-iu.blockAdvgenerator.name=Покращений генератор
-iu.blockImpgenerator.name=Продвинутий генератор
-iu.blockPergenerator.name=Довершений генератор
 industrialupgrade.basemachine.adv_gen=Покращений генератор
-industrialupgrade.basemachine.imp_gen=Просунений генератор
+industrialupgrade.basemachine.imp_gen=Просунутий генератор
 industrialupgrade.basemachine.per_gen=Довершений генератор
 
 industrialupgrade.basemachine1.adv_reactor=Покращений ядерний реактор
@@ -1505,16 +1477,11 @@ industrialupgrade.imp_chamber.imp_chamber=Просунута реакторна 
 industrialupgrade.basemachine1.per_reactor=Довершений ядерний реактор
 industrialupgrade.per_chamber.per_chamber=Довершена реакторна камера
 
-iu.blockAdvKG.name=Покращений кінетичний генератор
-iu.blockImpKG.name=Просунутий кінетичний генератор
-iu.blockPerKG.name=Довершений кінетичний генератор
-
-industrialupgrade.basemachine.alloy_smelter=Виробник сплавів
-industrialupgrade.basemachine1.adv_alloy_smelter=Покращений виробник сплавів
-iu.AdvAlloymachine.name=Покращений виробник сплавів
+industrialupgrade.basemachine.alloy_smelter=Завод сплавів
+industrialupgrade.basemachine1.adv_alloy_smelter=Покращений завод сплавів
 
 industrialupgrade.basemachine1.adv_geo=Покращений геотермальний генератор
-industrialupgrade.basemachine1.imp_geo=Просунений геотермальний генератор
+industrialupgrade.basemachine1.imp_geo=Просунутий геотермальний генератор
 industrialupgrade.basemachine1.per_geo=Довершений геотермальний генератор
 
 industrialupgrade.basemachine2.adv_pump=Покращена помпа
@@ -1525,14 +1492,13 @@ industrialupgrade.basemachine2.gen_disel=Дизельний генератор
 industrialupgrade.basemachine2.gen_pet=Бензиновий генератор
 industrialupgrade.basemachine2.gen_hyd=Водневий генератор
 
-Генератори речовин і більше на енергії.
+# Генератори речовин і більше на енергії.
 industrialupgrade.basemachine.gen_stone=Генератор кругляка
 industrialupgrade.basemachine2.gen_obsidian=Генератор обсидіану
 industrialupgrade.basemachine2.lava_gen=Генератор лави
 industrialupgrade.basemachine2.helium_generator=Генератор гелію
 
 industrialupgrade.basemachine.generator_microchip=Виробник електросхем
-blockConverterSolidMatter.name=Перетворювач твердої матерії
 industrialupgrade.converter_matter.converter_matter=Перетворювач твердої матерії
 industrialupgrade.basemachine.modulator=Модульний обробник
 industrialupgrade.basemachine1.enrichment=Збагачувач
@@ -1541,16 +1507,12 @@ industrialupgrade.basemachine1.handler_ho=Мінеральний сепарат�
 industrialupgrade.basemachine1.gen_wither=Виробник висушувачів
 industrialupgrade.basemachine1.magnet=Магнітний уловлювач
 industrialupgrade.basemachine1.magnet_generator=Магнітний генератор
-iu.blockFisher.name=Рибальська машина
 industrialupgrade.basemachine2.fisher=Рибальська машина
 industrialupgrade.basemachine2.painter=Красильна машина
 industrialupgrade.upgrade_block.upgrade_block=Модифікаційна станція
-iu.upgrade_block_item.upgrade_block=Модифікаційна станція
 iu.quarry_vein_item.quarry_vein_item=Бурова установка для пошуку жил
-industrialupgrade.petrol_quarry.petrol_quarry=Верстат-гойдалка
-iu.petrol_quarry_item.petrol_quarry_item=Верстат-гойдалка
+industrialupgrade.petrol_quarry.petrol_quarry=Верстат-качалка
 industrialupgrade.combiner_solid_matter.combiner_solid_matter=Об'єднувач генераторів твердої матерії
-iu.combiner_solidmatter.combiner_solidmatter=Об'єднувач генераторів твердої матерії
 industrialupgrade.basemachine2.expierence_block=Сховище досвіду
 industrialupgrade.basemachine2.plastic_creator=Хімічний завод
 industrialupgrade.basemachine2.plastic_plate_creator=Пластавтомат
@@ -1565,7 +1527,7 @@ industrialupgrade.basemachine3.antimagnet=Протимагнітна машин�
 industrialupgrade.basemachine3.antiupgradeblock=Станція зняття модулів
 industrialupgrade.basemachine3.watergenerator=Генератор води
 industrialupgrade.basemachine3.cooling=Холодильник
-industrialupgrade.basemachine3.aircollector=Повітряна установка
+industrialupgrade.basemachine3.aircollector=Повітророзподільна установка
 
 # Генератори твердої матерії
 industrialupgrade.solid.aer_solidmatter=Генератор повітряної твердої матерії
@@ -1579,13 +1541,11 @@ industrialupgrade.solid.sun_solidmatter=Генератор сонячної тв
 
 industrialupgrade.se_gen.se_gen=Генератор сонячної енергії
 industrialupgrade.adv_se_gen.adv_se_gen=Покращений генератор сонячної енергії
-industrialupgrade.imp_se_gen.imp_se_gen=Довершенний генератор сонячної енергії
+industrialupgrade.imp_se_gen.imp_se_gen=Просунутий генератор сонячної енергії
 industrialupgrade.basemachine3.combiner_se_generators=Об'єднувач генераторів сонячної енергії
 
 industrialupgrade.gen_sunnarium.gen_sunnarium=Виробник саннаріуму
-iu.sunnarium_maker_item.sunnarium_maker_item=Виробник саннаріуму
 industrialupgrade.gen_sunnarium_plate.gen_sunnarium_plate=Виробник саннаріумних пластин
-iu.sunnarium_maker_plate_item.sunnarium_maker_plate_item=Виробник саннаріумних пластин
 
 iu.doublescrapbox.name=Подвійна коробка утильсировини
 
@@ -1612,22 +1572,22 @@ iu.whitelist=Білий список
 # Частини електросхеми
 iu.circuit.circuit_part1=Конденсатор
 iu.circuit.circuit_part2=Чип SOIC
-iu.circuit.circuit_part3=Чіп QFP
+iu.circuit.circuit_part3=Чип QFP
 iu.circuit.advanced_part1=Покращений конденсатор
-iu.circuit.advanced_part2=Покращений чіп SOIC
-iu.circuit.advanced_part3=Покращений чіп QFP
+iu.circuit.advanced_part2=Покращений чип SOIC
+iu.circuit.advanced_part3=Покращений чип QFP
 iu.circuit.nanocircuit_part1=Нано-конденсатор
-iu.circuit.nanocircuit_part2=Нано-чіп SOIC
-iu.circuit.nanocircuit_part3=Нано-чіп QFP
+iu.circuit.nanocircuit_part2=Нано-чип SOIC
+iu.circuit.nanocircuit_part3=Нано-чип QFP
 iu.circuit.quantumcircuit_part1=Квантовий конденсатор
-iu.circuit.quantumcircuit_part2=Квантовий чіп SOIC
-iu.circuit.quantumcircuit_part3=Квантовий чіп QFP
+iu.circuit.quantumcircuit_part2=Квантовий чип SOIC
+iu.circuit.quantumcircuit_part3=Квантовий чип QFP
 iu.circuit.spectralcircuit_part1=Спектральний конденсатор
-iu.circuit.spectralcircuit_part2=Спектральний чіп SOIC
-iu.circuit.spectralcircuit_part3=Спектральний чіп QFP
+iu.circuit.spectralcircuit_part2=Спектральний чип SOIC
+iu.circuit.spectralcircuit_part3=Спектральний чип QFP
 iu.circuit.photon_part1=Фотонний конденсатор
-iu.circuit.photon_part2=Фотонний чіп SOIC
-iu.circuit.photon_part3=Фотонний чіп QFP
+iu.circuit.photon_part2=Фотонний чип SOIC
+iu.circuit.photon_part3=Фотонний чип QFP
 
 #Електросхеми
 iu.circuit.nanocircuit=Нано-електросхема
@@ -1658,14 +1618,14 @@ iu.seconds=с.
 iu.time1= до першої стадії забруднення
 iu.time2= до другої стадії забруднення
 iu.time3= до третьої стадії забруднення
-pollutionpnale=Панель забруднений
+pollutionpnale=Панель забруднена
 pollutioninformation=Наведіть курсор
 iu.panelinformation=Інформація про сонячну панель
 iu.panelinformation1=Панелі мають стадії забруднення.
 iu.panelinformation2=Кожна стадія зменшує 25% вироблення панелі.
-iu.panelinformation3=Очищати панелі можна за допомогою очисника.
+iu.panelinformation3=Очищати панелі можна за допомогою очищувача.
 iu.panelinformation4=Використовуйте модулі для покращення панелей.
-iu.panelinformation5=Читайте про модулі.
+iu.panelinformation5=Читайте детальну інформацію про модуль.
 iu.panelinformation6=Панель тепер потрібно демотувати за допомогою ключа.
 iu.panelinformation7=Кнопка перемикання режиму працює лише за модулем "RF".
 iu.panelinformation8=Щоб заряджати речі на панелі, потрібний модуль "Заряджання предметів".
@@ -1749,7 +1709,7 @@ button.allow=Увімкнути
 button.sunnarium=§cВикл§r/§aВкл
 
 iu.quarryinformation=Інформація про кар'єру
-iu.quarryinformation1=Використовуйте модулі, щоб удосконалити кар'єр.
+iu.quarryinformation1=Використовуйте модулі, щоб удовершити кар'єр.
 iu.quarryinformation2=Кожен наступний рівень модуля "Ефективність" зменшує витрати на 5%.
 iu.quarryinformation3=Кожний наступний рівень модуля "Удача" підвищує кількість кристалів, що видобуваються.
 iu.quarryinformation4=Для автоматичної роботи кар'єра вставте модуль "Аналізатор" у верхній слот.
@@ -1842,7 +1802,7 @@ iu.blindness=Сліпучий
 iu.protection_arrow=Захист від стріл:
 iu.falling_damage=Витрати енергії зменшені при падінні на
 iu.macerator=Дробальний інструмент
-iu.comb_macerator=Подрібнювач руд (1 до 3)
+iu.comb_macerator=Дробарка руд (1 до 3)
 iu.random=Шанс отримати випадкову річ при використанні:
 iu.hungry=Викликає голод
 iu.generator=Заряджання в генераторі
@@ -1864,7 +1824,6 @@ item.adv_iu_bags.name=Покращена сумка
 item.imp_iu_bags.name=Просунута сумка
 
 iu.vertical=Щоб увімкнути вертикальний режим, натисніть
-iu.streak=Щоб змінити колір лінії за гравцем, натисніть
 iu.magnet_mode=Щоб увімкнути магніт, натисніть
 iu.notfindoil=Нафта не виявлена, поставте бурову установку, щоб вивчити чанк
 iu.create_sunnarium=Створюється у генераторах сонячної енергії
@@ -1952,8 +1911,8 @@ achievement.adv_core=Просування науки
 achievement.adv_core.desc=Отримайте покращене ядро
 achievement.hyb_core=Гібрид
 achievement.hyb_core.desc=Отримайте гібридне ядро
-achievement.per_core=Досконалість
-achievement.per_core.desc=Отримайте досконале ядро
+achievement.per_core=Довершеність
+achievement.per_core.desc=Отримайте довершене ядро
 achievement.qua_core=Квантовий світ
 achievement.qua_core.desc=Отримайте квантове ядро
 achievement.spe_core=Спектр
@@ -1982,7 +1941,7 @@ achievement.adv_panel.desc=Створіть покращену сонячну п
 achievement.hyb_panel=Панельна гібридизація
 achievement.hyb_panel.desc=Створіть гібридну сонячну панель
 achievement.per_panel=Довершений гібрид
-achievement.per_panel.desc=Створіть досконалу гібридну сонячну панель
+achievement.per_panel.desc=Створіть довершену гібридну сонячну панель
 achievement.qua_panel=Квантифікація зеленої енергії
 achievement.qua_panel.desc=Створіть квантову сонячну панель
 achievement.spe_panel=Спектрограма

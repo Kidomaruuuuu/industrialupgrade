@@ -29,6 +29,20 @@ public class GuiPlasticCreator extends GuiIC2<ContainerPlasticCreator> {
         this.container = container1;
     }
 
+    private static List<ItemStack> getCompatibleUpgrades(IUpgradableBlock block) {
+        List<ItemStack> ret = new ArrayList<>();
+        Set<UpgradableProperty> properties = block.getUpgradableProperties();
+
+        for (final ItemStack stack : UpgradeRegistry.getUpgrades()) {
+            IUpgradeItem item = (IUpgradeItem) stack.getItem();
+            if (item.isSuitableFor(stack, properties)) {
+                ret.add(stack);
+            }
+        }
+
+        return ret;
+    }
+
     protected void drawForegroundLayer(int par1, int par2) {
         super.drawForegroundLayer(par1, par2);
         TankGauge.createNormal(this, 6, 5, container.base.fluidTank).drawForeground(par1, par2);
@@ -43,6 +57,7 @@ public class GuiPlasticCreator extends GuiIC2<ContainerPlasticCreator> {
                 .drawForeground(par1, par2);
         this.handleUpgradeTooltip(par1, par2);
     }
+
     public void handleUpgradeTooltip(int mouseX, int mouseY) {
         if (mouseX >= 0 && mouseX <= 12 && mouseY >= 0 && mouseY <= 12) {
             List<String> text = new ArrayList<>();
@@ -55,19 +70,7 @@ public class GuiPlasticCreator extends GuiIC2<ContainerPlasticCreator> {
             this.drawTooltip(mouseX, mouseY, text);
         }
     }
-    private static List<ItemStack> getCompatibleUpgrades(IUpgradableBlock block) {
-        List<ItemStack> ret = new ArrayList<>();
-        Set<UpgradableProperty> properties = block.getUpgradableProperties();
 
-        for (final ItemStack stack : UpgradeRegistry.getUpgrades()) {
-            IUpgradeItem item = (IUpgradeItem) stack.getItem();
-            if (item.isSuitableFor(stack, properties)) {
-                ret.add(stack);
-            }
-        }
-
-        return ret;
-    }
     protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
         super.drawGuiContainerBackgroundLayer(f, x, y);
         this.mc.getTextureManager().bindTexture(getTexture());

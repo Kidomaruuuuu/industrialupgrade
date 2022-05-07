@@ -33,7 +33,7 @@ public class GuiElectricBlock extends GuiIC2<ContainerElectricBlock> {
         this.container = container1;
         this.armorInv = Localization.translate("ic2.EUStorage.gui.info.armor");
 
-        this.name = container1.base.getInventoryName();
+        this.name = Localization.translate(container.base.getName());
     }
 
     protected void mouseClicked(int i, int j, int k) throws IOException {

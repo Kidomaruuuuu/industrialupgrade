@@ -48,7 +48,7 @@ public class WorldGenOres implements IWorldGenerator {
             )) == Biome.getBiome(2)) {
                 for (var2 = 0; var2 < 1; ++var2) {
                     var3 = chunkX * 16 + random.nextInt(16) + 8;
-                    var4 = random.nextInt(random.nextInt(random.nextInt(112) + 8) + 8)+ 60;
+                    var4 = random.nextInt(random.nextInt(random.nextInt(112) + 8) + 8) + 60;
                     var5 = chunkZ * 16 + random.nextInt(16) + 8;
                     if (block != null) {
                         new WorldGenOil(block, block)
@@ -59,11 +59,10 @@ public class WorldGenOres implements IWorldGenerator {
             }
             if (world.provider.getDimension() == 0 && random.nextInt(1000) + 1 > 900) {
 
-                    var3 = chunkX * 16 + random.nextInt(16) + 8;
-                    var4 = random.nextInt(random.nextInt(random.nextInt(112) + 8) + 8);
-                    var5 = chunkZ * 16 + random.nextInt(16) + 8;
-                    new WorldGenMinerals().generate(world, random, new BlockPos(var3, var4, var5));
-
+                var3 = chunkX * 16 + random.nextInt(16) + 8;
+                var4 = random.nextInt(random.nextInt(random.nextInt(112) + 8) + 8);
+                var5 = chunkZ * 16 + random.nextInt(16) + 8;
+                new WorldGenMinerals().generate(world, random, new BlockPos(var3, var4, var5));
 
 
             }

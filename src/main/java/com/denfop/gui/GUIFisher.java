@@ -88,7 +88,7 @@ public class GuiFisher extends GuiIC2<ContainerFisher> {
     }
 
     public String getName() {
-        return Localization.translate("iu.blockFisher.name");
+        return Localization.translate(this.container.base.getName());
     }
 
     public ResourceLocation getTexture() {
