@@ -580,6 +580,7 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
                     initiate(0);
                     col[i] = this.inputSlots.get(i).getCount();
                 }
+                if (Config.coolingsystem)
                 this.cold.addEnergy(0.1);
                 if (this.inputSlots.get(i).getCount() != col[i] && this.modulesize) {
                     this.progress[i] = (short) (col[i] * this.progress[i] / this.inputSlots.get(i).getCount());
