@@ -75,7 +75,7 @@ public class GUIQuantumQuarry extends GuiIC2<ContainerQuantumQuarry> {
 
         this.drawString(fontRenderer,
                 "" + ModUtils.getString(this.container.base.getblock),
-                h + 146, k + 7, 4210752
+                h + 143, k + 7, 4210752
         );
 
     }

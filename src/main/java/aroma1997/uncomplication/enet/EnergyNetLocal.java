@@ -10,7 +10,6 @@ import ic2.api.energy.tile.IEnergySink;
 import ic2.api.energy.tile.IEnergySource;
 import ic2.api.energy.tile.IEnergyTile;
 import ic2.api.energy.tile.IMetaDelegate;
-import ic2.api.energy.tile.IMultiEnergySource;
 import ic2.api.info.ILocatable;
 import ic2.core.ExplosionIC2;
 import ic2.core.block.wiring.TileEntityTransformer;
@@ -165,11 +164,10 @@ public class EnergyNetLocal {
     }
 
     public double emitEnergyFrom(IEnergySource energySource, double amount) {
-        double totalInvLoss = 0.0D;
         double source = energySource.getSourceTier();
         List<EnergyPath> energyPaths = this.energySourceToEnergyPathMap.get(energySource);
         if(energyPaths == null) {
-            this.energySourceToEnergyPathMap.put(energySource, this.discover(energySource,energySource.getOfferedEnergy()));
+            this.energySourceToEnergyPathMap.put(energySource, this.discover(energySource));
             energyPaths = this.energySourceToEnergyPathMap.get(energySource);
         }
         if(amount > 0.0D)
@@ -186,10 +184,8 @@ public class EnergyNetLocal {
             if (Config.enableIC2EasyMode && conductorToWeak(energyPath.conductors, amount)) {
                 continue;
             }
-            totalInvLoss += 1.0D / energyPath.loss;
             double energyConsumed = 0.0D;
-            double newTotalInvLoss = 0.0D;
-            double energyProvided = Math.floor(Math.round(amount / totalInvLoss / energyPath.loss));
+            double energyProvided = Math.floor(Math.round(amount));
                 double energyLoss = Math.floor(energyPath.loss);
                 if (energyProvided > energyLoss) {
                     double providing = energyProvided - energyLoss;
@@ -211,8 +207,9 @@ public class EnergyNetLocal {
                     energyConsumed -= energyReturned;
 
                     double energyInjected = adding - energyConsumed;
+                    amount -= energyConsumed;
+                    amount = Math.max(0, amount);
                     energyPath.totalEnergyConducted = (long) energyInjected;
-
                     energyPath.maxSendedEnergy = (long) Math.max(energyPath.maxSendedEnergy, energyInjected);
                     for (IEnergyConductor energyConductor3 : energyPath.conductors) {
                         if (energyInjected > energyPath.minInsulationEnergyAbsorption &&
@@ -227,24 +224,15 @@ public class EnergyNetLocal {
                             }
                         }
 
-                        if (energySource.getOfferedEnergy() >= energyConductor3.getConductorBreakdownEnergy()) {
+                        if (energyInjected >= energyConductor3.getConductorBreakdownEnergy()) {
                             energyConductor3.removeConductor();
                         }
 
                     }
-                    continue;
                 }
-                newTotalInvLoss += 1.0D / energyPath.loss;
 
-            totalInvLoss = newTotalInvLoss;
-            amount -= energyConsumed;
-            amount = Math.max(0, amount);
+
         }
-
-
-
-
-
 
         return amount;
     }
@@ -293,7 +281,7 @@ public class EnergyNetLocal {
         return null;
     }
 
-    private List<EnergyPath> discover(IEnergyTile emitter, double lossLimit) {
+    private List<EnergyPath> discover(IEnergyTile emitter) {
         Map<IEnergyTile, EnergyBlockLink> reachedTileEntities = new HashMap<>();
         LinkedList<IEnergyTile> tileEntitiesToCheck = new LinkedList<>();
         tileEntitiesToCheck.add(emitter);
@@ -304,26 +292,15 @@ public class EnergyNetLocal {
                 tile = this.getTileFromIEnergy(currentTileEntity);
             }
             if (!tile.isInvalid()) {
-                double currentLoss = 0.0D;
                 List<EnergyTarget> validReceivers = getValidReceivers(currentTileEntity, false);
                 for (EnergyTarget validReceiver : validReceivers) {
                     if (validReceiver.tileEntity != emitter) {
-                        double additionalLoss = 0.0D;
-                        if (validReceiver.tileEntity instanceof IEnergyConductor) {
-                            additionalLoss = ((IEnergyConductor) validReceiver.tileEntity).getConductionLoss();
-                            if (additionalLoss < 1.0E-4D) {
-                                additionalLoss = 1.0E-4D;
-                            }
-                            if (currentLoss + additionalLoss >= lossLimit) {
-                                continue;
-                            }
-                        }
-                        if (reachedTileEntities.containsKey(validReceiver.tileEntity) && reachedTileEntities.get(validReceiver.tileEntity).loss <= currentLoss + additionalLoss) {
+                        if (reachedTileEntities.containsKey(validReceiver.tileEntity)) {
                             continue;
                         }
                         reachedTileEntities.put(
                                 validReceiver.tileEntity,
-                                new EnergyBlockLink(validReceiver.direction, currentLoss + additionalLoss)
+                                new EnergyBlockLink(validReceiver.direction)
                         );
                         if (!(validReceiver.tileEntity instanceof IEnergyConductor)) {
                             continue;
@@ -340,7 +317,6 @@ public class EnergyNetLocal {
             if (tileEntity instanceof IEnergySink) {
                 EnergyBlockLink energyBlockLink = entry.getValue();
                 EnergyPath energyPath = new EnergyPath();
-                energyPath.loss = Math.max(energyBlockLink.loss, 0.1D);
                 energyPath.target = (IEnergySink) tileEntity;
                 energyPath.targetDirection = energyBlockLink.direction;
                 if (emitter instanceof IEnergySource) {
@@ -355,6 +331,7 @@ public class EnergyNetLocal {
                         }
                         IEnergyConductor energyConductor = (IEnergyConductor) tileEntity;
                         energyPath.conductors.add(energyConductor);
+                        energyPath.loss+=energyConductor.getConductionLoss();
                         if (energyConductor.getInsulationEnergyAbsorption() < energyPath.minInsulationEnergyAbsorption) {
                             energyPath.minInsulationEnergyAbsorption = (int) energyConductor.getInsulationEnergyAbsorption();
                         }
@@ -522,10 +499,11 @@ public class EnergyNetLocal {
                             .getPowerFromTier(entry.getSourceTier()));
                     if (offer > 0.0D) {
                         for (int i = 0; i < getPacketAmount(entry); i++) {
+
                             offer = Math.min(entry
                                     .getOfferedEnergy(), EnergyNet.instance
                                     .getPowerFromTier(entry.getSourceTier()));
-                            if (offer < 1.0D) {
+                            if (offer < 1) {
                                 break;
                             }
                             double removed = offer - emitEnergyFrom(entry, offer);
@@ -541,9 +519,6 @@ public class EnergyNetLocal {
     }
 
     private double getPacketAmount(IEnergySource source) {
-        if (source instanceof IMultiEnergySource && ((IMultiEnergySource) source).sendMultipleEnergyPackets()) {
-            return ((IMultiEnergySource) source).getMultipleEnergyPacketAmount();
-        }
         if (source instanceof TileEntityTransformer) {
             NBTTagCompound nbt = ((TileEntityTransformer) (source)).writeToNBT(new NBTTagCompound());
             TileEntityTransformer.Mode red = TileEntityTransformer.Mode.redstone;
@@ -650,12 +625,8 @@ public class EnergyNetLocal {
     static class EnergyBlockLink {
 
         final EnumFacing direction;
-
-        final double loss;
-
-        EnergyBlockLink(EnumFacing direction, double loss) {
+        EnergyBlockLink(EnumFacing direction) {
             this.direction = direction;
-            this.loss = loss;
         }
 
     }

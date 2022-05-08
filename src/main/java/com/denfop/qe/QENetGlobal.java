@@ -95,7 +95,7 @@ public class QENetGlobal implements IQENet {
         if (local == null) {
             return new NodeQEStats(0.0, 0.0);
         }
-        return local.getNodeQEStats(var1);
+        return local.getNodeStats(var1);
     }
 
 
