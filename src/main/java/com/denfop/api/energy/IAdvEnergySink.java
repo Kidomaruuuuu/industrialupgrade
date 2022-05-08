@@ -1,13 +1,8 @@
-package com.denfop.api.qe;
+package com.denfop.api.energy;
 
-import net.minecraft.util.EnumFacing;
+import ic2.api.energy.tile.IEnergySink;
 
-public interface IQESink extends IQEAcceptor {
-
-    double getDemandedQE();
-
-    double injectQE(EnumFacing var1, double var2, double var4);
-
+public interface IAdvEnergySink extends IEnergySink {
     double getPerEnergy();
 
     double getPastEnergy();
@@ -21,5 +16,4 @@ public interface IQESink extends IQEAcceptor {
     double getTick();
 
     boolean isSink();
-
 }

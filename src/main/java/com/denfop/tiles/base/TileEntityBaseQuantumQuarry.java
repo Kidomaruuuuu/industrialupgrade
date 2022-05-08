@@ -243,7 +243,7 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
         }
 
         if (getActive()) {
-            if (this.world.getWorldTime() % 2 == 0) {
+            if (this.world.getWorldTime() % 8 == 0) {
                 ItemStack stack3 = Ic2Items.ejectorUpgrade;
                 ((IUpgradeItem) stack3.getItem()).onTick(stack3, this);
             }

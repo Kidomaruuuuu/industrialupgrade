@@ -1,10 +1,8 @@
-package com.denfop.api.qe;
+package com.denfop.api.energy;
 
-public interface IQESource extends IQEEmitter {
+import ic2.api.energy.tile.IEnergySource;
 
-    double getOfferedQE();
-
-    void drawQE(double var1);
+public interface IAdvEnergySource extends IEnergySource {
 
     double getPerEnergy();
 

@@ -184,13 +184,14 @@ public class TileEntityTEConverter extends TileEntityInventory implements IHasGu
                     this.differenceenergy1 = stats.getEnergyIn();
                 }
                 this.differenceenergy = this.energy2 - this.perenergy;
-
+                this.perenergy = this.energy2;
             } else {
                 this.perenergy1 = this.energy.getEnergy();
                 NodeStats stats = EnergyNet.instance.getNodeStats(this.energy.getDelegate());
                 if (stats != null) {
                     this.differenceenergy = stats.getEnergyOut();
                 }
+
             }
         }
 

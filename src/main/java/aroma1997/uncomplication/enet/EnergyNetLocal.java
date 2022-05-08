@@ -1,15 +1,11 @@
 package aroma1997.uncomplication.enet;
 
 import com.denfop.Config;
+import com.denfop.api.energy.IAdvEnergySink;
+import com.denfop.api.energy.IAdvEnergySource;
 import ic2.api.energy.EnergyNet;
 import ic2.api.energy.NodeStats;
-import ic2.api.energy.tile.IEnergyAcceptor;
-import ic2.api.energy.tile.IEnergyConductor;
-import ic2.api.energy.tile.IEnergyEmitter;
-import ic2.api.energy.tile.IEnergySink;
-import ic2.api.energy.tile.IEnergySource;
-import ic2.api.energy.tile.IEnergyTile;
-import ic2.api.energy.tile.IMetaDelegate;
+import ic2.api.energy.tile.*;
 import ic2.api.info.ILocatable;
 import ic2.core.ExplosionIC2;
 import ic2.core.block.wiring.TileEntityTransformer;
@@ -20,13 +16,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class EnergyNetLocal {
 
@@ -37,6 +27,7 @@ public class EnergyNetLocal {
     private final Map<BlockPos, IEnergyTile> chunkCoordinatesIEnergyTileMap;
     private final List<IEnergySource> sources;
     private final EnergyNetLocal.WaitingList waitingList;
+    private double tick;
 
     EnergyNetLocal(World world) {
         this.energySourceToEnergyPathMap = new EnergyNetLocal.EnergyPathMap();
@@ -46,6 +37,7 @@ public class EnergyNetLocal {
         this.chunkCoordinatesIEnergyTileMap = new HashMap<>();
         this.chunkCoordinatesMap = new HashMap<>();
         this.energyTileTileEntityMap = new HashMap<>();
+        this.tick = 0;
     }
 
     public void addTile(IEnergyTile tile1) {
@@ -166,26 +158,30 @@ public class EnergyNetLocal {
     public double emitEnergyFrom(IEnergySource energySource, double amount) {
         double source = energySource.getSourceTier();
         List<EnergyPath> energyPaths = this.energySourceToEnergyPathMap.get(energySource);
-        if(energyPaths == null) {
+        if (energyPaths == null) {
             this.energySourceToEnergyPathMap.put(energySource, this.discover(energySource));
             energyPaths = this.energySourceToEnergyPathMap.get(energySource);
         }
-        if(amount > 0.0D)
-        for (EnergyPath energyPath : energyPaths) {
-            if(amount <= 0.0D)
-                break;
-            IEnergySink energySink = energyPath.target;
-            if (energySink.getDemandedEnergy() <= 0.0D) {
-                continue;
-            }
-            if (energyPath.loss >= amount) {
-                continue;
-            }
-            if (Config.enableIC2EasyMode && conductorToWeak(energyPath.conductors, amount)) {
-                continue;
-            }
-            double energyConsumed = 0.0D;
-            double energyProvided = Math.floor(Math.round(amount));
+        if (energySource instanceof IAdvEnergySource) {
+            ((IAdvEnergySource) energySource).setPastEnergy(((IAdvEnergySource) energySource).getPerEnergy());
+        }
+        if (amount > 0.0D) {
+            for (EnergyPath energyPath : energyPaths) {
+                if (amount <= 0.0D) {
+                    break;
+                }
+                IEnergySink energySink = energyPath.target;
+                if (energySink.getDemandedEnergy() <= 0.0D) {
+                    continue;
+                }
+                if (energyPath.loss >= amount) {
+                    continue;
+                }
+                if (Config.enableIC2EasyMode && conductorToWeak(energyPath.conductors, amount)) {
+                    continue;
+                }
+                double energyConsumed = 0.0D;
+                double energyProvided = Math.floor(Math.round(amount));
                 double energyLoss = Math.floor(energyPath.loss);
                 if (energyProvided > energyLoss) {
                     double providing = energyProvided - energyLoss;
@@ -207,13 +203,24 @@ public class EnergyNetLocal {
                     energyConsumed -= energyReturned;
 
                     double energyInjected = adding - energyConsumed;
+                    if (energySource instanceof IAdvEnergySource) {
+                        ((IAdvEnergySource) energySource).addPerEnergy(energyConsumed);
+                    }
+                    if (energySink instanceof IAdvEnergySink) {
+                        IAdvEnergySink AdvenergySink = ((IAdvEnergySink) energySink);
+                        if (AdvenergySink.getTick() != this.tick) {
+                            AdvenergySink.addTick(this.tick);
+                            AdvenergySink.setPastEnergy(AdvenergySink.getPerEnergy());
+                        }
+                        AdvenergySink.addPerEnergy(energyConsumed);
+                    }
                     amount -= energyConsumed;
                     amount = Math.max(0, amount);
                     energyPath.totalEnergyConducted = (long) energyInjected;
                     energyPath.maxSendedEnergy = (long) Math.max(energyPath.maxSendedEnergy, energyInjected);
                     for (IEnergyConductor energyConductor3 : energyPath.conductors) {
                         if (energyInjected > energyPath.minInsulationEnergyAbsorption &&
-                                energyInjected >= energyPath.minInsulationBreakdownEnergy){
+                                energyInjected >= energyPath.minInsulationBreakdownEnergy) {
                             if (energyInjected >= energyConductor3.getInsulationBreakdownEnergy()) {
                                 energyConductor3.removeInsulation();
                                 if (energyConductor3.getInsulationEnergyAbsorption() >= energyPath.minInsulationEnergyAbsorption) {
@@ -232,37 +239,49 @@ public class EnergyNetLocal {
                 }
 
 
+            }
         }
 
         return amount;
     }
 
-    public double getTotalEnergyEmitted(IEnergyTile tileEntity) {
-        double ret = 0.0D;
+    public double getTotalEnergyEmitted(final IEnergyTile tileEntity) {
+        double ret = 0.0;
         if (tileEntity instanceof IEnergyConductor) {
-            for (EnergyPath energyPath : this.energySourceToEnergyPathMap.getPaths((IEnergyAcceptor) tileEntity)) {
+            for (final EnergyPath energyPath : this.energySourceToEnergyPathMap.getPaths((IEnergyAcceptor) tileEntity)) {
                 if (energyPath.conductors.contains(tileEntity)) {
                     ret += energyPath.totalEnergyConducted;
                 }
             }
         }
-        if (tileEntity instanceof IEnergySource && this.energySourceToEnergyPathMap.containsKey((IEnergySource) tileEntity)) {
-            for (EnergyPath energyPath2 : this.energySourceToEnergyPathMap.get((IEnergySource) tileEntity)) {
-                ret += energyPath2.totalEnergyConducted;
+        if (!(tileEntity instanceof IAdvEnergySource)) {
+            if (tileEntity instanceof IEnergySource && this.energySourceToEnergyPathMap.containsKey((IEnergySource) tileEntity)) {
+                for (final EnergyPath energyPath2 : this.energySourceToEnergyPathMap.get((IEnergySource) tileEntity)) {
+                    ret += energyPath2.totalEnergyConducted;
+                }
             }
+        } else {
+            IAdvEnergySource advEnergySource = (IAdvEnergySource) tileEntity;
+            ret = advEnergySource.getPerEnergy() - advEnergySource.getPastEnergy();
         }
         return ret;
     }
 
-    public double getTotalEnergySunken(IEnergyTile tileEntity) {
-        double ret = 0.0D;
-        if (tileEntity instanceof IEnergyConductor || tileEntity instanceof IEnergySink) {
-            for (EnergyPath energyPath : this.energySourceToEnergyPathMap.getPaths((IEnergyAcceptor) tileEntity)) {
-                if ((tileEntity instanceof IEnergySink && energyPath.target == tileEntity) || (tileEntity instanceof IEnergyConductor && energyPath.conductors.contains(
-                        tileEntity))) {
-                    ret += energyPath.totalEnergyConducted;
+    public double getTotalEnergySunken(final IEnergyTile tileEntity) {
+        double ret = 0.0;
+        if (!(tileEntity instanceof IAdvEnergySink)) {
+            if (tileEntity instanceof IEnergyConductor || tileEntity instanceof IEnergySink) {
+                for (final EnergyPath energyPath : this.energySourceToEnergyPathMap.getPaths((IEnergyAcceptor) tileEntity)) {
+                    if ((tileEntity instanceof IEnergySink && energyPath.target == tileEntity) || (tileEntity instanceof IEnergyConductor && energyPath.conductors.contains(
+                            tileEntity))) {
+                        ret += energyPath.totalEnergyConducted;
+                    }
                 }
             }
+        }else{
+            IAdvEnergySink advEnergySink = (IAdvEnergySink) tileEntity;
+            ret = advEnergySink.getPerEnergy() - advEnergySink.getPastEnergy();
+
         }
         return ret;
     }
@@ -288,7 +307,7 @@ public class EnergyNetLocal {
         while (!tileEntitiesToCheck.isEmpty()) {
             IEnergyTile currentTileEntity = tileEntitiesToCheck.remove();
             TileEntity tile = getTileFromMap(emitter);
-            if(tile == null){
+            if (tile == null) {
                 tile = this.getTileFromIEnergy(currentTileEntity);
             }
             if (!tile.isInvalid()) {
@@ -331,7 +350,7 @@ public class EnergyNetLocal {
                         }
                         IEnergyConductor energyConductor = (IEnergyConductor) tileEntity;
                         energyPath.conductors.add(energyConductor);
-                        energyPath.loss+=energyConductor.getConductionLoss();
+                        energyPath.loss += energyConductor.getConductionLoss();
                         if (energyConductor.getInsulationEnergyAbsorption() < energyPath.minInsulationEnergyAbsorption) {
                             energyPath.minInsulationEnergyAbsorption = (int) energyConductor.getInsulationEnergyAbsorption();
                         }
@@ -512,9 +531,16 @@ public class EnergyNetLocal {
                             }
                             entry.drawEnergy(removed);
                         }
+                    } else {
+
+                        if (entry instanceof IAdvEnergySource) {
+                            ((IAdvEnergySource) entry).setPastEnergy(((IAdvEnergySource) entry).getPerEnergy());
+                        }
+
                     }
                 }
             }
+            this.tick++;
         }
     }
 
@@ -625,6 +651,7 @@ public class EnergyNetLocal {
     static class EnergyBlockLink {
 
         final EnumFacing direction;
+
         EnergyBlockLink(EnumFacing direction) {
             this.direction = direction;
         }

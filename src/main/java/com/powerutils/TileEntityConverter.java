@@ -162,6 +162,7 @@ public class TileEntityConverter extends TileEntityInventory implements IHasGui,
                     this.differenceenergy1 = stats.getEnergyIn();
                 }
                 this.differenceenergy = this.energy2 - this.perenergy;
+                this.perenergy = this.energy2;
 
             } else {
                 this.perenergy1 = this.energy.getEnergy();
@@ -169,6 +170,7 @@ public class TileEntityConverter extends TileEntityInventory implements IHasGui,
                 if (stats != null) {
                     this.differenceenergy = stats.getEnergyOut();
                 }
+
             }
         }
 

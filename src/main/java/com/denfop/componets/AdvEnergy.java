@@ -5,6 +5,8 @@
 
 package com.denfop.componets;
 
+import com.denfop.api.energy.IAdvEnergySink;
+import com.denfop.api.energy.IAdvEnergySource;
 import ic2.api.energy.EnergyNet;
 import ic2.api.energy.event.EnergyTileLoadEvent;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
@@ -12,9 +14,7 @@ import ic2.api.energy.tile.IChargingSlot;
 import ic2.api.energy.tile.IDischargingSlot;
 import ic2.api.energy.tile.IEnergyAcceptor;
 import ic2.api.energy.tile.IEnergyEmitter;
-import ic2.api.energy.tile.IEnergySink;
 import ic2.api.energy.tile.IEnergyTile;
-import ic2.api.energy.tile.IMultiEnergySource;
 import ic2.core.block.TileEntityBlock;
 import ic2.core.block.comp.TileEntityComponent;
 import ic2.core.block.invslot.InvSlot;
@@ -35,6 +35,9 @@ import java.util.Set;
 public class AdvEnergy extends TileEntityComponent {
 
     public final boolean fullEnergy;
+    public double tick;
+    protected double pastEnergy;
+    protected double perenergy;
     public boolean upgrade;
     public double capacity;
     public double storage;
@@ -82,6 +85,9 @@ public class AdvEnergy extends TileEntityComponent {
         this.sinkDirections = sinkDirections;
         this.sourceDirections = sourceDirections;
         this.fullEnergy = fullEnergy;
+        this.pastEnergy = 0;
+        this.perenergy  = 0;
+        this.tick = 0;
     }
 
     public static AdvEnergy asBasicSink(TileEntityBlock parent, double capacity) {
@@ -370,7 +376,7 @@ public class AdvEnergy extends TileEntityComponent {
 
     }
 
-    private class EnergyNetDelegateDual extends AdvEnergy.EnergyNetDelegate implements IEnergySink, IMultiEnergySource {
+    private class EnergyNetDelegateDual extends AdvEnergy.EnergyNetDelegate implements IAdvEnergySink, IAdvEnergySource {
 
         private EnergyNetDelegateDual() {
             super();
@@ -415,17 +421,50 @@ public class AdvEnergy extends TileEntityComponent {
             AdvEnergy.this.storage = AdvEnergy.this.storage - amount;
         }
 
-        public boolean sendMultipleEnergyPackets() {
-            return AdvEnergy.this.multiSource;
+
+        @Override
+        public double getPerEnergy() {
+            return AdvEnergy.this.perenergy;
         }
 
-        public int getMultipleEnergyPacketAmount() {
-            return AdvEnergy.this.getPacketCount();
+        @Override
+        public double getPastEnergy() {
+            return AdvEnergy.this.pastEnergy;
+        }
+
+        @Override
+        public void setPastEnergy(final double pastEnergy) {
+            AdvEnergy.this.pastEnergy = pastEnergy;
+        }
+
+        @Override
+        public void addPerEnergy(final double setEnergy) {
+            AdvEnergy.this.perenergy += setEnergy;
+        }
+
+        @Override
+        public boolean isSource() {
+            return !AdvEnergy.this.sendingSidabled;
+        }
+
+        @Override
+        public void addTick(final double tick) {
+            AdvEnergy.this.tick = tick;
+        }
+
+        @Override
+        public double getTick() {
+            return AdvEnergy.this.tick;
+        }
+
+        @Override
+        public boolean isSink() {
+            return AdvEnergy.this.sendingSidabled;
         }
 
     }
 
-    private class EnergyNetDelegateSink extends AdvEnergy.EnergyNetDelegate implements IEnergySink {
+    private class EnergyNetDelegateSink extends AdvEnergy.EnergyNetDelegate implements IAdvEnergySink {
 
         private EnergyNetDelegateSink() {
             super();
@@ -451,10 +490,44 @@ public class AdvEnergy extends TileEntityComponent {
             AdvEnergy.this.storage = AdvEnergy.this.storage + amount;
             return 0.0D;
         }
+        @Override
+        public double getPerEnergy() {
+            return AdvEnergy.this.perenergy;
+        }
+
+        @Override
+        public double getPastEnergy() {
+            return AdvEnergy.this.pastEnergy;
+        }
+
+        @Override
+        public void setPastEnergy(final double pastEnergy) {
+            AdvEnergy.this.pastEnergy = pastEnergy;
+        }
+
+        @Override
+        public void addPerEnergy(final double setEnergy) {
+            AdvEnergy.this.perenergy += setEnergy;
+        }
+
+        @Override
+        public void addTick(final double tick) {
+            AdvEnergy.this.tick = tick;
+        }
+
+        @Override
+        public double getTick() {
+            return AdvEnergy.this.tick;
+        }
+
+        @Override
+        public boolean isSink() {
+            return true;
+        }
 
     }
 
-    private class EnergyNetDelegateSource extends AdvEnergy.EnergyNetDelegate implements IMultiEnergySource {
+    private class EnergyNetDelegateSource extends AdvEnergy.EnergyNetDelegate implements IAdvEnergySource {
 
         private EnergyNetDelegateSource() {
             super();
@@ -480,12 +553,29 @@ public class AdvEnergy extends TileEntityComponent {
             AdvEnergy.this.storage = AdvEnergy.this.storage - amount;
         }
 
-        public boolean sendMultipleEnergyPackets() {
-            return AdvEnergy.this.multiSource;
+        @Override
+        public double getPerEnergy() {
+            return AdvEnergy.this.perenergy;
         }
 
-        public int getMultipleEnergyPacketAmount() {
-            return AdvEnergy.this.getPacketCount();
+        @Override
+        public double getPastEnergy() {
+            return AdvEnergy.this.pastEnergy;
+        }
+
+        @Override
+        public void setPastEnergy(final double pastEnergy) {
+            AdvEnergy.this.pastEnergy = pastEnergy;
+        }
+
+        @Override
+        public void addPerEnergy(final double setEnergy) {
+            AdvEnergy.this.perenergy += setEnergy;
+        }
+
+        @Override
+        public boolean isSource() {
+            return true;
         }
 
     }

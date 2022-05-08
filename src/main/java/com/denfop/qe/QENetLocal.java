@@ -1,5 +1,7 @@
 package com.denfop.qe;
 
+import com.denfop.api.energy.IAdvEnergySink;
+import com.denfop.api.energy.IAdvEnergySource;
 import com.denfop.api.qe.IQEAcceptor;
 import com.denfop.api.qe.IQEConductor;
 import com.denfop.api.qe.IQEEmitter;
@@ -38,7 +40,7 @@ public class QENetLocal {
     private final Map<BlockPos, IQETile> chunkCoordinatesIQETileMap;
     private final List<IQESource> sources;
     private final WaitingList waitingList;
-
+    private int tick;
     public QENetLocal(final World world) {
         this.QESourceToQEPathMap = new QEPathMap();
         this.sources = new ArrayList<>();
@@ -47,6 +49,7 @@ public class QENetLocal {
         this.chunkCoordinatesIQETileMap = new HashMap<>();
         this.chunkCoordinatesMap = new HashMap<>();
         this.QETileTileEntityMap = new HashMap<>();
+        this.tick = 0;
     }
 
     public void addTile(IQETile tile1) {
@@ -155,23 +158,28 @@ public class QENetLocal {
                 }
             }
         }
-        if (tileEntity instanceof IQESource && this.QESourceToQEPathMap.containsKey((IQESource) tileEntity)) {
-            for (final QEPath QEPath2 : this.QESourceToQEPathMap.get((IQESource) tileEntity)) {
-                ret += QEPath2.totalQEConducted;
-            }
+        if(tileEntity instanceof IQESource) {
+            IQESource advEnergySink = (IQESource) tileEntity;
+            if (advEnergySink.isSource())
+                ret = advEnergySink.getPerEnergy() - advEnergySink.getPastEnergy();
         }
         return ret;
     }
 
     public double getTotalQESunken(final IQETile tileEntity) {
         double ret = 0.0;
-        if (tileEntity instanceof IQEConductor || tileEntity instanceof IQESink) {
+        if (tileEntity instanceof IQEConductor) {
             for (final QEPath QEPath : this.QESourceToQEPathMap.getPaths((IQEAcceptor) tileEntity)) {
-                if ((tileEntity instanceof IQESink && QEPath.target == tileEntity) || (tileEntity instanceof IQEConductor && QEPath.conductors.contains(
-                        tileEntity))) {
+                if (QEPath.conductors.contains(
+                                        tileEntity)) {
                     ret += QEPath.totalQEConducted;
                 }
             }
+        }
+        if(tileEntity instanceof IQESink) {
+            IQESink advEnergySink = (IQESink) tileEntity;
+                if (advEnergySink.isSink())
+                    ret = advEnergySink.getPerEnergy() - advEnergySink.getPastEnergy();
         }
         return ret;
     }
@@ -364,10 +372,13 @@ public class QENetLocal {
 
                             entry.drawQE(removed);
                         }
+                    }else{
+                            entry.setPastEnergy(entry.getPerEnergy());
                     }
 
                 }
             }
+            this.tick++;
         }
     }
 

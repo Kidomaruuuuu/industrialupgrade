@@ -50,7 +50,9 @@ public class QEComponent extends TileEntityComponent {
     public boolean loaded;
     public boolean receivingDisabled;
     public boolean sendingSidabled;
-
+    public double tick;
+    protected double pastEnergy;
+    protected double perenergy;
     public QEComponent(TileEntityBlock parent, double capacity) {
         this(parent, capacity, Collections.emptySet(), Collections.emptySet(), 1);
     }
@@ -84,6 +86,9 @@ public class QEComponent extends TileEntityComponent {
         this.sourceDirections = sourceDirections;
         this.fullEnergy = fullEnergy;
         this.world = parent.getWorld();
+        this.pastEnergy = 0;
+        this.perenergy  = 0;
+        this.tick = 0;
     }
 
     public static QEComponent asBasicSink(TileEntityBlock parent, double capacity) {
@@ -426,6 +431,46 @@ public class QEComponent extends TileEntityComponent {
         }
 
 
+        @Override
+        public double getPerEnergy() {
+            return QEComponent.this.perenergy;
+        }
+
+        @Override
+        public double getPastEnergy() {
+            return QEComponent.this.pastEnergy;
+        }
+
+        @Override
+        public void setPastEnergy(final double pastEnergy) {
+            QEComponent.this.pastEnergy = pastEnergy;
+        }
+
+        @Override
+        public void addPerEnergy(final double setEnergy) {
+            QEComponent.this.perenergy += setEnergy;
+        }
+
+        @Override
+        public boolean isSource() {
+            return !QEComponent.this.sendingSidabled;
+        }
+
+        @Override
+        public void addTick(final double tick) {
+            QEComponent.this.tick = tick;
+        }
+
+        @Override
+        public double getTick() {
+            return QEComponent.this.tick;
+        }
+
+        @Override
+        public boolean isSink() {
+            return QEComponent.this.sendingSidabled;
+        }
+
     }
 
     private class EnergyNetDelegateSink extends QEComponent.EnergyNetDelegate implements IQESink {
@@ -454,6 +499,40 @@ public class QEComponent extends TileEntityComponent {
             QEComponent.this.storage = QEComponent.this.storage + amount;
             return 0.0D;
         }
+        @Override
+        public double getPerEnergy() {
+            return QEComponent.this.perenergy;
+        }
+
+        @Override
+        public double getPastEnergy() {
+            return QEComponent.this.pastEnergy;
+        }
+
+        @Override
+        public void setPastEnergy(final double pastEnergy) {
+            QEComponent.this.pastEnergy = pastEnergy;
+        }
+
+        @Override
+        public void addPerEnergy(final double setEnergy) {
+            QEComponent.this.perenergy += setEnergy;
+        }
+
+        @Override
+        public void addTick(final double tick) {
+            QEComponent.this.tick = tick;
+        }
+
+        @Override
+        public double getTick() {
+            return QEComponent.this.tick;
+        }
+
+        @Override
+        public boolean isSink() {
+            return true;
+        }
 
     }
 
@@ -481,6 +560,30 @@ public class QEComponent extends TileEntityComponent {
             assert amount <= QEComponent.this.storage;
 
             QEComponent.this.storage = QEComponent.this.storage - amount;
+        }
+        @Override
+        public double getPerEnergy() {
+            return QEComponent.this.perenergy;
+        }
+
+        @Override
+        public double getPastEnergy() {
+            return QEComponent.this.pastEnergy;
+        }
+
+        @Override
+        public void setPastEnergy(final double pastEnergy) {
+            QEComponent.this.pastEnergy = pastEnergy;
+        }
+
+        @Override
+        public void addPerEnergy(final double setEnergy) {
+            QEComponent.this.perenergy += setEnergy;
+        }
+
+        @Override
+        public boolean isSource() {
+            return true;
         }
 
 
