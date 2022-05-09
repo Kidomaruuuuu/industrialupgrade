@@ -354,6 +354,8 @@ public class CommonProxy implements IGuiHandler {
         for (Map.Entry<ItemStack, ItemStack> entry : map.entrySet()) {
             output = entry.getValue();
             input = entry.getKey();
+            if(input.isEmpty())
+                continue;
             NBTTagCompound nbt = new NBTTagCompound();
             nbt.setFloat("experience", recipes.getSmeltingExperience(output) * (float) StackUtil.getSize(output));
             Recipes.recipes.addRecipe(

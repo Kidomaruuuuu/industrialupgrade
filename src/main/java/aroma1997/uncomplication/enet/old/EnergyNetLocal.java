@@ -315,7 +315,7 @@ public class EnergyNetLocal {
                 if (emitter != null) {
                     while (true) {
                         BlockPos te = this.chunkCoordinatesMap.get(tileEntity);
-                        if (energyBlockLink != null) {
+                        if (energyBlockLink != null && te != null) {
                             tileEntity = this.getTileEntity(te.offset(energyBlockLink.direction));
                         }
                         if (tileEntity == emitter) {
@@ -330,6 +330,7 @@ public class EnergyNetLocal {
                         if (energyBlockLink != null) {
                             continue;
                         }
+                        assert te != null;
                         IC2.platform.displayError("An energy network pathfinding entry is corrupted.\nThis could happen due to " +
                                 "incorrect Minecraft behavior or a bug.\n\n(Technical information: energyBlockLink, tile " +
                                 "entities below)\nE: " + emitter + " (" + te.getX() + "," + te.getY() + "," + te
