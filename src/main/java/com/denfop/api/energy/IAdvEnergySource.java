@@ -13,4 +13,5 @@ public interface IAdvEnergySource extends IEnergySource {
     void addPerEnergy(double setEnergy);
 
     boolean isSource();
+
 }

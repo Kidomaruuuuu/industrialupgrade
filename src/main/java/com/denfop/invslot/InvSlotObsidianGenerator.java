@@ -19,7 +19,7 @@ public class InvSlotObsidianGenerator extends InvSlotProcessable {
     }
 
     public boolean accepts(ItemStack itemStack) {
-        return itemStack == null || !(itemStack.getItem() instanceof ItemUpgradeModule);
+        return itemStack.isEmpty() || !(itemStack.getItem() instanceof ItemUpgradeModule);
 
     }
 

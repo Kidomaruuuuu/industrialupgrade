@@ -36,8 +36,6 @@ public class AdvEnergy extends TileEntityComponent {
 
     public final boolean fullEnergy;
     public double tick;
-    protected double pastEnergy;
-    protected double perenergy;
     public boolean upgrade;
     public double capacity;
     public double storage;
@@ -52,6 +50,8 @@ public class AdvEnergy extends TileEntityComponent {
     public boolean loaded;
     public boolean receivingDisabled;
     public boolean sendingSidabled;
+    protected double pastEnergy;
+    protected double perenergy;
 
     public AdvEnergy(TileEntityBlock parent, double capacity) {
         this(parent, capacity, Collections.emptySet(), Collections.emptySet(), 1);
@@ -77,6 +77,7 @@ public class AdvEnergy extends TileEntityComponent {
             boolean fullEnergy
     ) {
         super(parent);
+
         this.multiSource = false;
         this.sourcePackets = 1;
         this.capacity = capacity;
@@ -86,7 +87,7 @@ public class AdvEnergy extends TileEntityComponent {
         this.sourceDirections = sourceDirections;
         this.fullEnergy = fullEnergy;
         this.pastEnergy = 0;
-        this.perenergy  = 0;
+        this.perenergy = 0;
         this.tick = 0;
     }
 
@@ -378,6 +379,7 @@ public class AdvEnergy extends TileEntityComponent {
 
     private class EnergyNetDelegateDual extends AdvEnergy.EnergyNetDelegate implements IAdvEnergySink, IAdvEnergySource {
 
+
         private EnergyNetDelegateDual() {
             super();
         }
@@ -447,6 +449,7 @@ public class AdvEnergy extends TileEntityComponent {
             return !AdvEnergy.this.sendingSidabled;
         }
 
+
         @Override
         public void addTick(final double tick) {
             AdvEnergy.this.tick = tick;
@@ -490,6 +493,7 @@ public class AdvEnergy extends TileEntityComponent {
             AdvEnergy.this.storage = AdvEnergy.this.storage + amount;
             return 0.0D;
         }
+
         @Override
         public double getPerEnergy() {
             return AdvEnergy.this.perenergy;
@@ -529,9 +533,12 @@ public class AdvEnergy extends TileEntityComponent {
 
     private class EnergyNetDelegateSource extends AdvEnergy.EnergyNetDelegate implements IAdvEnergySource {
 
+
         private EnergyNetDelegateSource() {
             super();
+
         }
+
 
         public int getSourceTier() {
             return AdvEnergy.this.sourceTier;
@@ -546,6 +553,7 @@ public class AdvEnergy extends TileEntityComponent {
 
             return !AdvEnergy.this.sendingSidabled ? AdvEnergy.this.getSourceEnergy() : 0.0D;
         }
+
 
         public void drawEnergy(double amount) {
             assert amount <= AdvEnergy.this.storage;

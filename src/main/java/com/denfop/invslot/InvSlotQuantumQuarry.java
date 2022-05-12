@@ -146,7 +146,7 @@ public class InvSlotQuantumQuarry extends InvSlot {
             if (itemStack.getItem() instanceof ItemQuarryModule && (EnumQuarryModules.getFromID(itemStack.getItemDamage()).type == EnumQuarryType.WHITELIST || EnumQuarryModules.getFromID(
                     itemStack.getItemDamage()).type == EnumQuarryType.BLACKLIST)) {
                 ((TileEntityBaseQuantumQuarry) this.base).list = ModUtils.getListFromModule(itemStack);
-                return true;
+                return !itemStack.getItem().equals(IUItem.analyzermodule);
             }
 
         }

@@ -3,6 +3,7 @@ package com.denfop.tiles.base;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.InvSlotRecipes;
+import com.denfop.componets.AdvEnergy;
 import com.denfop.container.ContainerTripleElectricMachine;
 import com.denfop.tiles.mechanism.TileEntityAdvAlloySmelter;
 import ic2.api.network.INetworkTileEntityEventListener;
@@ -14,7 +15,6 @@ import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.audio.AudioSource;
 import ic2.core.audio.PositionSpec;
-import ic2.core.block.comp.Energy;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.block.invslot.InvSlotDischarge;
 import ic2.core.block.invslot.InvSlotUpgrade;
@@ -73,7 +73,7 @@ public abstract class TileEntityTripleElectricMachine extends TileEntityStandart
         this.type = type;
         this.dischargeSlot = new InvSlotDischarge(this, InvSlot.Access.NONE, aDefaultTier, false, InvSlot.InvSide.ANY);
 
-        this.energy = this.addComponent(Energy
+        this.energy = this.addComponent(AdvEnergy
                 .asBasicSink(this, (double) energyPerTick * length, aDefaultTier)
                 .addManagedSlot(this.dischargeSlot));
     }

@@ -6,6 +6,7 @@ import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.audio.AudioSource;
 import com.denfop.audio.PositionSpec;
+import com.denfop.componets.AdvEnergy;
 import com.denfop.container.ContainerDoubleElectricMachine;
 import com.denfop.tiles.mechanism.TileEntityAlloySmelter;
 import ic2.api.network.INetworkTileEntityEventListener;
@@ -16,7 +17,6 @@ import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
-import ic2.core.block.comp.Energy;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.block.invslot.InvSlotDischarge;
 import ic2.core.block.invslot.InvSlotOutput;
@@ -32,7 +32,7 @@ import java.util.Set;
 public abstract class TileEntityDoubleElectricMachine extends TileEntityInventory implements IHasGui,
         INetworkTileEntityEventListener, IUpgradableBlock, IUpdateTick {
 
-    public final Energy energy;
+    public final AdvEnergy energy;
     public final InvSlotDischarge dischargeSlot;
     public final int defaultEnergyConsume;
     public final int defaultOperationLength;
@@ -80,7 +80,7 @@ public abstract class TileEntityDoubleElectricMachine extends TileEntityInventor
         this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
         this.name = name;
         this.dischargeSlot = new InvSlotDischarge(this, InvSlot.Access.NONE, aDefaultTier, false, InvSlot.InvSide.ANY);
-        this.energy = this.addComponent(Energy
+        this.energy = this.addComponent(AdvEnergy
                 .asBasicSink(this, (double) energyPerTick * length, aDefaultTier)
                 .addManagedSlot(this.dischargeSlot));
         this.inputSlotA = new InvSlotRecipes(this, type.recipe_name, this);

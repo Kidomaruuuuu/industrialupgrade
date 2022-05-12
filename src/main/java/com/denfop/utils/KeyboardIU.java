@@ -21,10 +21,6 @@ public class KeyboardIU implements IKeyboard {
         return this.get(player, KeyboardIU.Key.CHANGE);
     }
 
-    public boolean isStreakKeyDown(EntityPlayer player) {
-        return this.get(player, Key.STREAKMODE);
-    }
-
     public boolean isVerticalMode(EntityPlayer player) {
         return this.get(player, Key.VERTICALMODE);
     }

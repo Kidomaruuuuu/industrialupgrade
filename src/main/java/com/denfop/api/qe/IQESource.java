@@ -15,4 +15,5 @@ public interface IQESource extends IQEEmitter {
     void addPerEnergy(double setEnergy);
 
     boolean isSource();
+
 }

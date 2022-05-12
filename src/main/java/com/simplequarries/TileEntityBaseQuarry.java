@@ -7,6 +7,7 @@ import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.vein.Vein;
 import com.denfop.audio.AudioSource;
 import com.denfop.audio.PositionSpec;
+import com.denfop.componets.AdvEnergy;
 import com.denfop.componets.QEComponent;
 import com.denfop.items.modules.EnumQuarryModules;
 import com.denfop.items.modules.EnumQuarryType;
@@ -21,7 +22,6 @@ import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
-import ic2.core.block.comp.Energy;
 import ic2.core.block.invslot.InvSlotOutput;
 import ic2.core.init.Localization;
 import net.minecraft.block.Block;
@@ -63,7 +63,7 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
     public int max_y;
     public AudioSource audioSource;
     public double energyconsume;
-    public Energy energy;
+    public AdvEnergy energy;
     public BlockPos blockpos = null;
     public FakePlayerSpawner player;
     public boolean work;
@@ -83,7 +83,7 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
     public TileEntityBaseQuarry(String name, double coef, int index) {
         this.name = name;
         this.energyconsume = 500 * coef;
-        this.energy = this.addComponent(Energy.asBasicSink(this, 5E7D, 14));
+        this.energy = this.addComponent(AdvEnergy.asBasicSink(this, 5E7D, 14));
         this.energy1 = this.addComponent(QEComponent.asBasicSink(this, 200000, 14));
 
         this.outputSlot = new InvSlotOutput(this, "output", 24);

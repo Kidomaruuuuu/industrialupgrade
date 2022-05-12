@@ -1,7 +1,5 @@
 package com.denfop.qe;
 
-import com.denfop.api.energy.IAdvEnergySink;
-import com.denfop.api.energy.IAdvEnergySource;
 import com.denfop.api.qe.IQEAcceptor;
 import com.denfop.api.qe.IQEConductor;
 import com.denfop.api.qe.IQEEmitter;
@@ -41,6 +39,7 @@ public class QENetLocal {
     private final List<IQESource> sources;
     private final WaitingList waitingList;
     private int tick;
+
     public QENetLocal(final World world) {
         this.QESourceToQEPathMap = new QEPathMap();
         this.sources = new ArrayList<>();
@@ -158,10 +157,11 @@ public class QENetLocal {
                 }
             }
         }
-        if(tileEntity instanceof IQESource) {
+        if (tileEntity instanceof IQESource) {
             IQESource advEnergySink = (IQESource) tileEntity;
-            if (advEnergySink.isSource())
+            if (advEnergySink.isSource()) {
                 ret = advEnergySink.getPerEnergy() - advEnergySink.getPastEnergy();
+            }
         }
         return ret;
     }
@@ -171,15 +171,16 @@ public class QENetLocal {
         if (tileEntity instanceof IQEConductor) {
             for (final QEPath QEPath : this.QESourceToQEPathMap.getPaths((IQEAcceptor) tileEntity)) {
                 if (QEPath.conductors.contains(
-                                        tileEntity)) {
+                        tileEntity)) {
                     ret += QEPath.totalQEConducted;
                 }
             }
         }
-        if(tileEntity instanceof IQESink) {
+        if (tileEntity instanceof IQESink) {
             IQESink advEnergySink = (IQESink) tileEntity;
-                if (advEnergySink.isSink())
-                    ret = advEnergySink.getPerEnergy() - advEnergySink.getPastEnergy();
+            if (advEnergySink.isSink()) {
+                ret = advEnergySink.getPerEnergy() - advEnergySink.getPastEnergy();
+            }
         }
         return ret;
     }
@@ -372,8 +373,8 @@ public class QENetLocal {
 
                             entry.drawQE(removed);
                         }
-                    }else{
-                            entry.setPastEnergy(entry.getPerEnergy());
+                    } else {
+                        entry.setPastEnergy(entry.getPerEnergy());
                     }
 
                 }

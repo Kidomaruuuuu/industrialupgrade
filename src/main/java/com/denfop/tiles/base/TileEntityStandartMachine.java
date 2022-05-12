@@ -1,12 +1,12 @@
 package com.denfop.tiles.base;
 
+import com.denfop.componets.AdvEnergy;
 import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.audio.AudioSource;
 import ic2.core.audio.PositionSpec;
 import ic2.core.block.TileEntityInventory;
-import ic2.core.block.comp.Energy;
 import ic2.core.block.invslot.InvSlotOutput;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -19,7 +19,7 @@ public abstract class TileEntityStandartMachine extends TileEntityInventory impl
 
     public InvSlotOutput outputSlot = null;
 
-    public Energy energy;
+    public AdvEnergy energy;
 
     public TileEntityStandartMachine(int count) {
         if (count != 0) {

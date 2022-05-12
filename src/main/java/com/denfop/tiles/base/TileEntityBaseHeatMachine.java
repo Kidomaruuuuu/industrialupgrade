@@ -6,10 +6,10 @@ import com.denfop.api.heat.IHeatAcceptor;
 import com.denfop.api.heat.IHeatSource;
 import com.denfop.api.heat.event.HeatTileLoadEvent;
 import com.denfop.api.heat.event.HeatTileUnloadEvent;
+import com.denfop.componets.AdvEnergy;
 import com.denfop.container.ContainerHeatMachine;
 import com.denfop.gui.GuiHeatMachine;
 import ic2.api.network.INetworkClientTileEntityEventListener;
-import ic2.core.block.comp.Energy;
 import ic2.core.block.comp.Fluids;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.block.invslot.InvSlotConsumableLiquid;
@@ -50,7 +50,7 @@ public class TileEntityBaseHeatMachine extends TileEntityElectricMachine impleme
         this.hasFluid = hasFluid;
         this.fluidTank = new FluidTank(12000);
         if (this.hasFluid) {
-            this.energy = this.addComponent(Energy.asBasicSink(this, 0, 14));
+            this.energy = this.addComponent(AdvEnergy.asBasicSink(this, 0, 14));
         }
         if (this.hasFluid) {
             this.fluids = this.addComponent(new Fluids(this));

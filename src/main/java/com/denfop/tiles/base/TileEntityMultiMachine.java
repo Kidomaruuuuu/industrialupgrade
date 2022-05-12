@@ -10,6 +10,7 @@ import com.denfop.api.recipe.IMultiUpdateTick;
 import com.denfop.api.recipe.InvSlotMultiRecipes;
 import com.denfop.audio.AudioSource;
 import com.denfop.audio.PositionSpec;
+import com.denfop.componets.AdvEnergy;
 import com.denfop.componets.CoolComponent;
 import com.denfop.container.ContainerMultiMachine;
 import com.denfop.gui.GuiMultiMachine;
@@ -31,7 +32,6 @@ import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
-import ic2.core.block.comp.Energy;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.block.invslot.InvSlotDischarge;
 import ic2.core.block.invslot.InvSlotOutput;
@@ -68,7 +68,7 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
     public final int defaultEnergyStorage;
     public final InvSlotOutput outputSlot;
     public final InvSlotUpgrade upgradeSlot;
-    public final Energy energy;
+    public final AdvEnergy energy;
     public final InvSlotDischarge dischargeSlot;
     protected final double[] guiProgress;
     protected final CoolComponent cold;
@@ -124,7 +124,7 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
         this.outputSlot = new InvSlotOutput(this, "output", sizeWorkingSlot);
         this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
         this.dischargeSlot = new InvSlotDischarge(this, InvSlot.Access.NONE, aDefaultTier, false, InvSlot.InvSide.ANY);
-        this.energy = this.addComponent(Energy
+        this.energy = this.addComponent(AdvEnergy
                 .asBasicSink(this, (double) energyconsume * OperationsPerTick, aDefaultTier)
                 .addManagedSlot(this.dischargeSlot));
         this.maxEnergy2 = energyconsume * OperationsPerTick * 4;
@@ -580,8 +580,9 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
                     initiate(0);
                     col[i] = this.inputSlots.get(i).getCount();
                 }
-                if (Config.coolingsystem)
-                this.cold.addEnergy(0.1);
+                if (Config.coolingsystem) {
+                    this.cold.addEnergy(0.1);
+                }
                 if (this.inputSlots.get(i).getCount() != col[i] && this.modulesize) {
                     this.progress[i] = (short) (col[i] * this.progress[i] / this.inputSlots.get(i).getCount());
                     col[i] = this.inputSlots.get(i).getCount();

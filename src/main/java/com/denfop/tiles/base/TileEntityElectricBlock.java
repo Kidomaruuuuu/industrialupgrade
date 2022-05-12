@@ -6,6 +6,7 @@ import cofh.redstoneflux.api.IEnergyProvider;
 import cofh.redstoneflux.api.IEnergyReceiver;
 import com.denfop.Config;
 import com.denfop.api.IStorage;
+import com.denfop.componets.AdvEnergy;
 import com.denfop.container.ContainerElectricBlock;
 import com.denfop.gui.GuiElectricBlock;
 import com.denfop.invslot.InvSlotElectricBlock;
@@ -24,7 +25,6 @@ import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
-import ic2.core.block.comp.Energy;
 import ic2.core.init.Localization;
 import ic2.core.init.MainConfig;
 import ic2.core.ref.TeBlock;
@@ -65,7 +65,7 @@ public class TileEntityElectricBlock extends TileEntityInventory implements IHas
     public final double tier;
     public final boolean chargepad;
     public final String name;
-    public final Energy energy;
+    public final AdvEnergy energy;
     public final double maxStorage2;
     public final double l;
     public final InvSlotElectricBlock inputslotA;
@@ -104,7 +104,7 @@ public class TileEntityElectricBlock extends TileEntityInventory implements IHas
         this.temp = 0;
         this.wireless = false;
         this.l = output1;
-        this.energy = this.addComponent((new Energy(this, maxStorage1,
+        this.energy = this.addComponent((new AdvEnergy(this, maxStorage1,
                 EnumSet.complementOf(EnumSet.of(EnumFacing.DOWN)), EnumSet.of(EnumFacing.DOWN),
                 EnergyNet.instance.getTierFromPower(this.output),
                 EnergyNet.instance.getTierFromPower(this.output), false

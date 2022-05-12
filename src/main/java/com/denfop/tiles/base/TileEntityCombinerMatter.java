@@ -1,6 +1,7 @@
 package com.denfop.tiles.base;
 
 
+import com.denfop.componets.AdvEnergy;
 import com.denfop.container.ContainerCombinerMatter;
 import com.denfop.gui.GuiCombinerMatter;
 import com.denfop.invslot.InvSlotMatter;
@@ -15,7 +16,6 @@ import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.audio.AudioSource;
 import ic2.core.audio.PositionSpec;
-import ic2.core.block.comp.Energy;
 import ic2.core.block.comp.Redstone;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.block.invslot.InvSlotConsumableLiquid;
@@ -84,7 +84,7 @@ public class TileEntityCombinerMatter extends TileEntityElectricLiquidTankInvent
                 return this.scrap > 0 ? 1 : 0;
             }
         });
-        this.energy = this.addComponent(Energy.asBasicSink(this, 0, 14).addManagedSlot(this.dischargeSlot));
+        this.energy = this.addComponent(AdvEnergy.asBasicSink(this, 0, 14).addManagedSlot(this.dischargeSlot));
 
     }
 

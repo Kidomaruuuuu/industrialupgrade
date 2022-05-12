@@ -344,7 +344,6 @@ public class SENetLocal {
     }
 
 
-
     void update(final int x, final int y, final int z) {
         for (final EnumFacing dir : EnumFacing.values()) {
             if (this.world.isChunkGeneratedAt(x + dir.getFrontOffsetX() >> 4, z + dir.getFrontOffsetZ() >> 4)) {

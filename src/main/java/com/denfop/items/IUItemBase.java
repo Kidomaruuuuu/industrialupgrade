@@ -9,7 +9,6 @@ import ic2.api.recipe.Recipes;
 import ic2.core.init.BlocksItems;
 import ic2.core.item.ItemIC2;
 import ic2.core.ref.ItemName;
-import ic2.core.util.StackUtil;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -70,12 +69,12 @@ public class IUItemBase extends ItemIC2 implements IModelRegister {
             @Nonnull final EntityPlayer player,
             @Nonnull final EnumHand hand
     ) {
-        if(!player.getHeldItem(hand).getItem().equals(IUItem.doublescrapBox))
-        return super.onItemRightClick(world, player, hand);
-        else{
+        if (!player.getHeldItem(hand).getItem().equals(IUItem.doublescrapBox)) {
+            return super.onItemRightClick(world, player, hand);
+        } else {
             int i = 0;
             ItemStack stack = player.getHeldItem(hand);
-            while (i < 9){
+            while (i < 9) {
                 if (!player.getEntityWorld().isRemote) {
                     ItemStack drop = Recipes.scrapboxDrops.getDrop(Ic2Items.scrapBox, false);
                     player.dropItem(drop, false);

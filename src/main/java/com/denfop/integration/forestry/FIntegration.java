@@ -11,7 +11,7 @@ import java.util.List;
 public class FIntegration {
 
     public static void init() {
-        if(BackpackManager.backpackInterface != null) {
+        if (BackpackManager.backpackInterface != null) {
             IBackpackDefinition definition = BackpackManager.backpackInterface.getBackpackDefinition("forestry.miner");
             if (definition != null) {
                 for (int i = 0; i < RegisterOreDictionary.itemNames().size(); i++) {

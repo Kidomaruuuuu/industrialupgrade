@@ -53,6 +53,7 @@ public class QEComponent extends TileEntityComponent {
     public double tick;
     protected double pastEnergy;
     protected double perenergy;
+
     public QEComponent(TileEntityBlock parent, double capacity) {
         this(parent, capacity, Collections.emptySet(), Collections.emptySet(), 1);
     }
@@ -87,7 +88,7 @@ public class QEComponent extends TileEntityComponent {
         this.fullEnergy = fullEnergy;
         this.world = parent.getWorld();
         this.pastEnergy = 0;
-        this.perenergy  = 0;
+        this.perenergy = 0;
         this.tick = 0;
     }
 
@@ -499,6 +500,7 @@ public class QEComponent extends TileEntityComponent {
             QEComponent.this.storage = QEComponent.this.storage + amount;
             return 0.0D;
         }
+
         @Override
         public double getPerEnergy() {
             return QEComponent.this.perenergy;
@@ -561,6 +563,7 @@ public class QEComponent extends TileEntityComponent {
 
             QEComponent.this.storage = QEComponent.this.storage - amount;
         }
+
         @Override
         public double getPerEnergy() {
             return QEComponent.this.perenergy;

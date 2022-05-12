@@ -35,9 +35,8 @@ public class EventHandler {
 
     @SubscribeEvent
     public void tick(final TickEvent.WorldTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) {
-            EnergyNetGlobal.onTickStart(event.world);
-        } else if (event.phase == TickEvent.Phase.END) {
+
+        if (event.phase == TickEvent.Phase.END) {
             EnergyNetGlobal.onTickEnd(event.world);
         }
     }

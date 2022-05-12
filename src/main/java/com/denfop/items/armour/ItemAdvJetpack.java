@@ -55,28 +55,6 @@ public class ItemAdvJetpack extends ItemArmorElectric implements IElectricItem, 
     private final int TransferLimit;
     private final int tier;
 
-    @Override
-    public void addInformation(
-            @Nonnull final ItemStack stack,
-            @Nullable final World p_77624_2_,
-            @Nonnull final List<String> tooltip,
-            @Nonnull final ITooltipFlag p_77624_4_
-    ) {
-        super.addInformation(stack, p_77624_2_, tooltip, p_77624_4_);
-        NBTTagCompound nbtData = ModUtils.nbt(stack);
-        if (stack.getItem() == IUItem.perjetpack) {
-            tooltip.add(Localization.translate("iu.fly") + " " + ModUtils.Boolean(nbtData.getBoolean("jetpack")));
-            if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-                tooltip.add(Localization.translate("press.lshift"));
-            }
-
-
-            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-                tooltip.add(Localization.translate("iu.changemode_fly") + Keyboard.getKeyName(KeyboardClient.flymode.getKeyCode()));
-            }
-        }
-    }
-
     public ItemAdvJetpack(String name, int maxStorage, int TransferLimit, int tier) {
         super(null, "", EntityEquipmentSlot.CHEST, maxStorage, TransferLimit, tier);
 
@@ -102,6 +80,28 @@ public class ItemAdvJetpack extends ItemArmorElectric implements IElectricItem, 
                 "armour" + "/" + name + extraName;
 
         return new ModelResourceLocation(loc, null);
+    }
+
+    @Override
+    public void addInformation(
+            @Nonnull final ItemStack stack,
+            @Nullable final World p_77624_2_,
+            @Nonnull final List<String> tooltip,
+            @Nonnull final ITooltipFlag p_77624_4_
+    ) {
+        super.addInformation(stack, p_77624_2_, tooltip, p_77624_4_);
+        NBTTagCompound nbtData = ModUtils.nbt(stack);
+        if (stack.getItem() == IUItem.perjetpack) {
+            tooltip.add(Localization.translate("iu.fly") + " " + ModUtils.Boolean(nbtData.getBoolean("jetpack")));
+            if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                tooltip.add(Localization.translate("press.lshift"));
+            }
+
+
+            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                tooltip.add(Localization.translate("iu.changemode_fly") + Keyboard.getKeyName(KeyboardClient.flymode.getKeyCode()));
+            }
+        }
     }
 
     public void setDamage(ItemStack stack, int damage) {

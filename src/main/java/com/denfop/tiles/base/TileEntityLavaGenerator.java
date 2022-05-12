@@ -16,7 +16,6 @@ import ic2.core.block.invslot.InvSlotConsumableLiquid.OpType;
 import ic2.core.block.invslot.InvSlotConsumableLiquidByList;
 import ic2.core.block.invslot.InvSlotOutput;
 import ic2.core.block.invslot.InvSlotUpgrade;
-import ic2.core.block.machine.tileentity.TileEntityElectricMachine;
 import ic2.core.init.MainConfig;
 import ic2.core.profile.NotClassic;
 import ic2.core.util.ConfigUtil;
@@ -47,7 +46,7 @@ public class TileEntityLavaGenerator extends TileEntityElectricMachine implement
     private AudioSource audioSource;
 
     public TileEntityLavaGenerator() {
-        super(20000, 14);
+        super(20000, 14, 1);
 
         this.energycost = 80;
         this.outputSlot = new InvSlotOutput(this, "output", 1);
@@ -95,7 +94,7 @@ public class TileEntityLavaGenerator extends TileEntityElectricMachine implement
         super.onUnloaded();
     }
 
-    private void initiate(int soundEvent) {
+    public void initiate(int soundEvent) {
         IC2.network.get(true).initiateTileEntityEvent(this, soundEvent, true);
     }
 

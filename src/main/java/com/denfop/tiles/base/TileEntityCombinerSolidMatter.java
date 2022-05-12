@@ -1,6 +1,7 @@
 package com.denfop.tiles.base;
 
 import com.denfop.IUItem;
+import com.denfop.componets.AdvEnergy;
 import com.denfop.container.ContainerCombinerSolidMatter;
 import com.denfop.gui.GuiCombinerSolidMatter;
 import com.denfop.invslot.InvSlotSolidMatter;
@@ -12,7 +13,6 @@ import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
-import ic2.core.block.comp.Energy;
 import ic2.core.block.invslot.InvSlotOutput;
 import ic2.core.block.invslot.InvSlotUpgrade;
 import net.minecraft.client.gui.GuiScreen;
@@ -45,7 +45,7 @@ public class TileEntityCombinerSolidMatter extends TileEntityInventory implement
     public final InvSlotSolidMatter inputSlot;
     public final InvSlotUpgrade upgradeSlot;
     public final InvSlotOutput outputSlot;
-    public final Energy energy;
+    public final AdvEnergy energy;
     public EnumSolidMatter[] solid;
 
     public TileEntityCombinerSolidMatter() {
@@ -54,7 +54,7 @@ public class TileEntityCombinerSolidMatter extends TileEntityInventory implement
         this.outputSlot = new InvSlotOutput(this, "output", 9);
         this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
 
-        this.energy = this.addComponent(Energy.asBasicSink(this, 0, 14));
+        this.energy = this.addComponent(AdvEnergy.asBasicSink(this, 0, 14));
         this.solid = new EnumSolidMatter[0];
     }
 

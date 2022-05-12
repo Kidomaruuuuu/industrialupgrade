@@ -95,7 +95,6 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
     }
 
 
-
     public static GraviToolMode readToolMode(ItemStack stack) {
         return GraviToolMode.getFromID(StackUtil.getOrCreateNbtData(stack).getInteger("toolMode"));
     }
@@ -138,6 +137,14 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
         return false;
     }
 
+    public static boolean hasToolMode(ItemStack stack) {
+        if (!stack.hasTagCompound()) {
+            return false;
+        }
+        assert stack.getTagCompound() != null;
+        return stack.getTagCompound().hasKey("toolMode", 4);
+    }
+
     @SideOnly(Side.CLIENT)
     public void registerModels() {
         ModelLoader.setCustomMeshDefinition(this, stack -> {
@@ -152,6 +159,7 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
         }
 
     }
+
     @Nonnull
     @Override
     public String getItemStackDisplayName(@Nonnull ItemStack stack) {
@@ -161,18 +169,13 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
                 Localization.translate(readToolMode(stack).translationName)
         ) : Localization.translate(this.getUnlocalizedName(stack));
     }
-    public static boolean hasToolMode(ItemStack stack) {
-        if (!stack.hasTagCompound()) {
-            return false;
-        }
-        assert stack.getTagCompound() != null;
-        return stack.getTagCompound().hasKey("toolMode", 4);
-    }
+
     @Override
     @SideOnly(Side.CLIENT)
     public boolean isFull3D() {
         return true;
     }
+
     @SideOnly(Side.CLIENT)
     @Override
     public void addInformation(
@@ -182,7 +185,7 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
             @Nonnull final ITooltipFlag flagIn
     ) {
         ItemGraviTool.GraviToolMode mode = readToolMode(par1ItemStack);
-        par3List.add(Localization.translate("message.text.mode")+": "+ mode.colour + Localization.translate(mode.translationName));
+        par3List.add(Localization.translate("message.text.mode") + ": " + mode.colour + Localization.translate(mode.translationName));
         if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             par3List.add(Localization.translate("press.lshift"));
         }

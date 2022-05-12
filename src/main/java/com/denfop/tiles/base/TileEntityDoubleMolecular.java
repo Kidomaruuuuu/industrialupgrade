@@ -10,6 +10,7 @@ import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.api.recipe.RecipeOutput;
+import com.denfop.componets.AdvEnergy;
 import com.denfop.container.ContainerBaseDoubleMolecular;
 import com.denfop.gui.GuiDoubleMolecularTransformer;
 import com.denfop.items.modules.ItemAdditionModule;
@@ -21,7 +22,6 @@ import ic2.api.recipe.IRecipeInputFactory;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.audio.AudioSource;
-import ic2.core.block.comp.Energy;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.entity.player.EntityPlayer;
@@ -70,7 +70,7 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
         this.queue = false;
         this.redstoneMode = 0;
         this.inputSlot = new InvSlotRecipes(this, "doublemolecular", this);
-        this.energy = this.addComponent(Energy.asBasicSink(this, 0, 14).addManagedSlot(this.dischargeSlot));
+        this.energy = this.addComponent(AdvEnergy.asBasicSink(this, 0, 14).addManagedSlot(this.dischargeSlot));
         this.output = null;
         this.need = false;
     }

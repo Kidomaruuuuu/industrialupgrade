@@ -34,12 +34,6 @@ public class EnergyNetGlobal implements IAdvEnergyNet {
         return EnergyNetGlobal.worldToEnergyNetMap.get(world);
     }
 
-    public static void onTickStart(final World world) {
-        final EnergyNetLocal energyNet = getForWorld(world);
-        if (energyNet != null) {
-            energyNet.onTickStart();
-        }
-    }
 
     public static void onTickEnd(final World world) {
         final EnergyNetLocal energyNet = getForWorld(world);

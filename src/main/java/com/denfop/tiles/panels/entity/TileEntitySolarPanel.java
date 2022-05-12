@@ -4,6 +4,7 @@ package com.denfop.tiles.panels.entity;
 import cofh.redstoneflux.api.IEnergyProvider;
 import cofh.redstoneflux.api.IEnergyReceiver;
 import com.denfop.Config;
+import com.denfop.api.energy.IAdvEnergySource;
 import com.denfop.container.ContainerSolarPanels;
 import com.denfop.gui.GuiSolarPanels;
 import com.denfop.invslot.InvSlotPanel;
@@ -12,7 +13,6 @@ import ic2.api.energy.EnergyNet;
 import ic2.api.energy.event.EnergyTileLoadEvent;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
 import ic2.api.energy.tile.IEnergyAcceptor;
-import ic2.api.energy.tile.IEnergySource;
 import ic2.api.energy.tile.IEnergyTile;
 import ic2.api.network.INetworkClientTileEntityEventListener;
 import ic2.api.network.INetworkDataProvider;
@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class TileEntitySolarPanel extends TileEntityInventory implements IEnergySource, IHasGui,
+public class TileEntitySolarPanel extends TileEntityInventory implements IAdvEnergySource, IHasGui,
         IWrenchable, IEnergyProvider, INetworkDataProvider, INetworkClientTileEntityEventListener,
         INetworkUpdateListener {
 
@@ -89,10 +89,13 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IEnergy
     public double storage2;
     public boolean rf = true;
     public double moonPhase;
+    public double tick;
     protected double tierPower;
     protected boolean canRain;
     protected boolean hasSky;
     protected boolean addedToEnet;
+    protected double pastEnergy;
+    protected double perenergy;
 
     public TileEntitySolarPanel(
             final int tier, final double gDay,
@@ -111,7 +114,6 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IEnergy
         this.time1 = 14400;
         this.time2 = 14400;
         this.maxStorage2 = this.maxStorage * 4;
-
         this.production = gOutput;
         this.u = gOutput;
         this.tier = tier;
@@ -122,6 +124,9 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IEnergy
         this.solarpanels = type;
         this.list = new ArrayList<>();
         this.coef = 0;
+        this.pastEnergy = 0;
+        this.perenergy = 0;
+        this.tick = 0;
     }
 
     public TileEntitySolarPanel(EnumSolarPanels solarpanels) {
@@ -615,6 +620,31 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IEnergy
         }
         setType(EnumType.DEFAULT);
         return 0;
+    }
+
+    @Override
+    public double getPerEnergy() {
+        return this.perenergy;
+    }
+
+    @Override
+    public double getPastEnergy() {
+        return this.pastEnergy;
+    }
+
+    @Override
+    public void setPastEnergy(final double pastEnergy) {
+        this.pastEnergy = pastEnergy;
+    }
+
+    @Override
+    public void addPerEnergy(final double setEnergy) {
+        this.perenergy += setEnergy;
+    }
+
+    @Override
+    public boolean isSource() {
+        return true;
     }
 
 

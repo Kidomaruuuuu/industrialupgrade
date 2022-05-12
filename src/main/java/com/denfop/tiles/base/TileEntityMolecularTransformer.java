@@ -9,6 +9,7 @@ import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.api.recipe.RecipeOutput;
+import com.denfop.componets.AdvEnergy;
 import com.denfop.container.ContainerBaseMolecular;
 import com.denfop.gui.GuiMolecularTransformer;
 import com.denfop.items.modules.ItemAdditionModule;
@@ -21,7 +22,6 @@ import ic2.api.recipe.IRecipeInputFactory;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.audio.AudioSource;
-import ic2.core.block.comp.Energy;
 import ic2.core.item.type.MiscResourceType;
 import ic2.core.item.type.NuclearResourceType;
 import ic2.core.ref.ItemName;
@@ -63,7 +63,7 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
         this.progress = 0;
         this.queue = false;
         this.redstoneMode = 0;
-        this.energy = this.addComponent(Energy.asBasicSink(this, 0, 14).addManagedSlot(this.dischargeSlot));
+        this.energy = this.addComponent(AdvEnergy.asBasicSink(this, 0, 14).addManagedSlot(this.dischargeSlot));
         this.inputSlot = new InvSlotRecipes(this, "molecular", this);
         this.output = null;
     }
