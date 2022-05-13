@@ -9,6 +9,7 @@ import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.InvSlotRecipes;
+import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.container.ContainerBaseGenerationChipMachine;
 import com.denfop.gui.GuiGenerationMicrochip;
@@ -373,12 +374,12 @@ public class TileEntityGenerationMicrochip extends TileEntityBaseGenerationMicro
     }
 
     @Override
-    public BaseMachineRecipe getRecipeOutput() {
+    public MachineRecipe getRecipeOutput() {
         return this.output;
     }
 
     @Override
-    public void setRecipeOutput(final BaseMachineRecipe output) {
+    public void setRecipeOutput(final MachineRecipe output) {
         this.output = output;
     }
 

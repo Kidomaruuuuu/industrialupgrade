@@ -5,6 +5,7 @@ import com.denfop.api.heat.IHeatSink;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.InvSlotRecipes;
+import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.audio.AudioSource;
 import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.upgrade.IUpgradableBlock;
@@ -35,7 +36,7 @@ public abstract class TileEntityBaseHandlerHeavyOre extends TileEntityElectricMa
     public short temperature;
     public AudioSource audioSource;
     public InvSlotRecipes inputSlotA;
-    public BaseMachineRecipe output;
+    public MachineRecipe output;
     protected boolean needTemperature;
     protected short progress;
     protected double guiProgress;
@@ -120,9 +121,9 @@ public abstract class TileEntityBaseHandlerHeavyOre extends TileEntityElectricMa
         this.progress = (short) (int) Math.floor(previousProgress * this.operationLength + 0.1D);
     }
 
-    public void operate(BaseMachineRecipe output) {
+    public void operate(MachineRecipe output) {
         for (int i = 0; i < this.operationsPerTick; i++) {
-            List<ItemStack> processResult = output.output.items;
+            List<ItemStack> processResult = output.getRecipe().output.items;
             for (int j = 0; j < this.upgradeSlot.size(); j++) {
                 ItemStack stack = this.upgradeSlot.get(j);
                 if (stack != null && stack.getItem() instanceof IUpgradeItem) {
@@ -130,22 +131,16 @@ public abstract class TileEntityBaseHandlerHeavyOre extends TileEntityElectricMa
                 }
             }
             operateOnce(processResult, output);
-            if (this.inputSlotA.get().isEmpty() || this.inputSlotA.get().getCount() < this.output.input
-                    .getInputs()
-                    .get(0)
-                    .getInputs()
-                    .get(0)
-                    .getCount()) {
+            if(!this.inputSlotA.continue_process(this.output))
                 getOutput();
-            }
             if (this.output == null) {
                 break;
             }
         }
     }
 
-    public void operateOnce(List<ItemStack> processResult, final BaseMachineRecipe output) {
-        final NBTTagCompound nbt = output.output.metadata;
+    public void operateOnce(List<ItemStack> processResult, final MachineRecipe output) {
+        final NBTTagCompound nbt = output.getRecipe().output.metadata;
         int[] col = new int[processResult.size()];
         for (int i = 0; i < col.length; i++) {
             col[i] = nbt.getInteger(("input" + i));
@@ -157,7 +152,7 @@ public abstract class TileEntityBaseHandlerHeavyOre extends TileEntityElectricMa
         this.inputSlotA.consume();
     }
 
-    public BaseMachineRecipe getOutput() {
+    public MachineRecipe getOutput() {
 
         this.output = this.inputSlotA.process();
 

@@ -4,8 +4,8 @@ public interface IUpdateTick {
 
     void onUpdate();
 
-    BaseMachineRecipe getRecipeOutput();
+    MachineRecipe getRecipeOutput();
 
-    void setRecipeOutput(BaseMachineRecipe output);
+    void setRecipeOutput(MachineRecipe output);
 
 }

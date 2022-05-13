@@ -7,6 +7,7 @@ import com.denfop.api.heat.event.HeatTileLoadEvent;
 import com.denfop.api.heat.event.HeatTileUnloadEvent;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.InvSlotRecipes;
+import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.audio.AudioSource;
 import com.denfop.container.ContainerBaseGenerationChipMachine;
 import ic2.api.network.INetworkTileEntityEventListener;
@@ -41,7 +42,7 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
 
 
     public InvSlotRecipes inputSlotA;
-    public BaseMachineRecipe output;
+    public MachineRecipe output;
     protected short progress;
     protected double guiProgress;
     private ITemperature source;
@@ -128,12 +129,13 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
     public void updateEntityServer() {
         super.updateEntityServer();
         boolean needsInvUpdate = false;
-        BaseMachineRecipe output = this.output;
-        if (output != null && this.outputSlot.canAdd(output.output.items) && this.energy.canUseEnergy(energyConsume) && output.output.metadata != null) {
-            if (output.output.metadata.getInteger("temperature") > this.temperature) {
+        MachineRecipe output = this.output;
+        if (output != null && this.outputSlot.canAdd(output.getRecipe().output.items) && this.energy.canUseEnergy(energyConsume) && output.getRecipe().output.metadata != null) {
+            if (output.getRecipe().output.metadata.getInteger("temperature") > this.temperature) {
                 needTemperature = true;
             }
-            if (output.output.metadata.getShort("temperature") == 0 || output.output.metadata.getInteger("temperature") > this.temperature) {
+            if (output.getRecipe().output.metadata.getShort("temperature") == 0 || output.getRecipe().output.metadata.getInteger(
+                    "temperature") > this.temperature) {
                 return;
             }
             if (needTemperature) {
@@ -202,9 +204,9 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
         this.progress = (short) (int) Math.floor(previousProgress * this.operationLength + 0.1D);
     }
 
-    public void operate(BaseMachineRecipe output) {
+    public void operate(MachineRecipe output) {
         for (int i = 0; i < this.operationsPerTick; i++) {
-            List<ItemStack> processResult = output.output.items;
+            List<ItemStack> processResult = output.getRecipe().output.items;
             for (int j = 0; j < this.upgradeSlot.size(); j++) {
                 ItemStack stack = this.upgradeSlot.get(j);
                 if (stack != null && stack.getItem() instanceof IUpgradeItem) {
@@ -212,12 +214,8 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
                 }
             }
             operateOnce(processResult);
-            for (int k = 0; k < this.inputSlotA.size(); k++) {
-                if (this.inputSlotA.get(k).isEmpty()) {
-                    output = getOutput();
-                    break;
-                }
-            }
+            if(!this.inputSlotA.continue_process(this.output))
+                getOutput();
             if (this.output == null) {
                 break;
             }
@@ -230,7 +228,7 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
         this.outputSlot.add(processResult);
     }
 
-    public BaseMachineRecipe getOutput() {
+    public MachineRecipe getOutput() {
         this.output = this.inputSlotA.process();
 
 

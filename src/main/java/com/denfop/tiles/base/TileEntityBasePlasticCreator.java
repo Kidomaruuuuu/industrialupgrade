@@ -4,6 +4,7 @@ import com.denfop.IUCore;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.InvSlotRecipes;
+import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.audio.AudioSource;
 import com.denfop.container.ContainerPlasticCreator;
 import com.denfop.gui.GuiPlasticCreator;
@@ -49,7 +50,7 @@ public class TileEntityBasePlasticCreator extends TileEntityElectricLiquidTankIn
     public AudioSource audioSource;
 
     public InvSlotRecipes inputSlotA;
-    public BaseMachineRecipe output;
+    public MachineRecipe output;
     protected short progress;
     protected double guiProgress;
 
@@ -136,9 +137,9 @@ public class TileEntityBasePlasticCreator extends TileEntityElectricLiquidTankIn
 
     }
 
-    public void operate(BaseMachineRecipe output) {
+    public void operate(MachineRecipe output) {
         for (int i = 0; i < this.operationsPerTick; i++) {
-            List<ItemStack> processResult = output.output.items;
+            List<ItemStack> processResult = output.getRecipe().output.items;
             for (int j = 0; j < this.upgradeSlot.size(); j++) {
                 ItemStack stack = this.upgradeSlot.get(j);
                 if (stack != null && stack.getItem() instanceof IUpgradeItem) {
@@ -146,12 +147,8 @@ public class TileEntityBasePlasticCreator extends TileEntityElectricLiquidTankIn
                 }
             }
             operateOnce(processResult);
-            for (int k = 0; k < this.inputSlotA.size(); k++) {
-                if (this.inputSlotA.get(k).isEmpty()) {
-                    this.output = getOutput();
-                    break;
-                }
-            }
+            if(!this.inputSlotA.continue_process(this.output))
+                getOutput();
 
             if (this.output == null) {
                 break;
@@ -182,7 +179,7 @@ public class TileEntityBasePlasticCreator extends TileEntityElectricLiquidTankIn
 
         }
         if (this.output != null && this.energy.canUseEnergy(energyConsume) && !this.inputSlotA.isEmpty() && this.outputSlot.canAdd(
-                this.output.getOutput().items)) {
+                this.output.getRecipe().getOutput().items)) {
             setActive(true);
             if (this.progress == 0) {
                 IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
@@ -233,7 +230,7 @@ public class TileEntityBasePlasticCreator extends TileEntityElectricLiquidTankIn
 
     }
 
-    public BaseMachineRecipe getOutput() {
+    public MachineRecipe getOutput() {
         this.output = this.inputSlotA.process();
 
 
@@ -309,12 +306,12 @@ public class TileEntityBasePlasticCreator extends TileEntityElectricLiquidTankIn
     }
 
     @Override
-    public BaseMachineRecipe getRecipeOutput() {
+    public MachineRecipe getRecipeOutput() {
         return this.output;
     }
 
     @Override
-    public void setRecipeOutput(final BaseMachineRecipe output) {
+    public void setRecipeOutput(final MachineRecipe output) {
         this.output = output;
     }
 

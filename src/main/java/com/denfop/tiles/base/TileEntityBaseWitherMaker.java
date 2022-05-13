@@ -4,6 +4,7 @@ import com.denfop.IUCore;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.InvSlotRecipes;
+import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.audio.AudioSource;
 import com.denfop.container.ContainerBaseWitherMaker;
 import ic2.api.network.INetworkTileEntityEventListener;
@@ -35,7 +36,7 @@ public abstract class TileEntityBaseWitherMaker extends TileEntityElectricMachin
     public int operationLength;
     public int operationsPerTick;
     public AudioSource audioSource;
-    public BaseMachineRecipe output;
+    public MachineRecipe output;
 
     public InvSlotRecipes inputSlotA;
     protected short progress;
@@ -105,7 +106,7 @@ public abstract class TileEntityBaseWitherMaker extends TileEntityElectricMachin
     public void updateEntityServer() {
         super.updateEntityServer();
         boolean needsInvUpdate = false;
-        BaseMachineRecipe output = this.output;
+        MachineRecipe output = this.output;
         if (this.getWorld().provider.getWorldTime() % 20 == 0) {
             if (!this.inputSlotA.isEmpty()) {
                 for (int i = 0; i < 3; i++) {
@@ -142,7 +143,7 @@ public abstract class TileEntityBaseWitherMaker extends TileEntityElectricMachin
                 }
             }
         }
-        if (output != null && this.outputSlot.canAdd(output.output.items) && this.energy.canUseEnergy(energyConsume)) {
+        if (output != null && this.outputSlot.canAdd(output.getRecipe().output.items) && this.energy.canUseEnergy(energyConsume)) {
             setActive(true);
             if (this.progress == 0) {
                 IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
@@ -207,9 +208,9 @@ public abstract class TileEntityBaseWitherMaker extends TileEntityElectricMachin
         this.progress = (short) (int) Math.floor(previousProgress * this.operationLength + 0.1D);
     }
 
-    public void operate(BaseMachineRecipe output) {
+    public void operate(MachineRecipe output) {
         for (int i = 0; i < this.operationsPerTick; i++) {
-            List<ItemStack> processResult = output.output.items;
+            List<ItemStack> processResult = output.getRecipe().output.items;
             for (int j = 0; j < this.upgradeSlot.size(); j++) {
                 ItemStack stack = this.upgradeSlot.get(j);
                 if (stack != null && stack.getItem() instanceof IUpgradeItem) {
@@ -217,7 +218,8 @@ public abstract class TileEntityBaseWitherMaker extends TileEntityElectricMachin
                 }
             }
             operateOnce(processResult);
-            getOutput();
+            if(!this.inputSlotA.continue_process(this.output))
+                getOutput();
             if (this.output == null) {
                 break;
             }
@@ -230,7 +232,7 @@ public abstract class TileEntityBaseWitherMaker extends TileEntityElectricMachin
         this.outputSlot.add(processResult);
     }
 
-    public BaseMachineRecipe getOutput() {
+    public MachineRecipe getOutput() {
 
         this.output = this.inputSlotA.process();
 

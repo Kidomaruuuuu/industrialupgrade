@@ -4,6 +4,7 @@ import com.denfop.Constants;
 import com.denfop.IUItem;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
+import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.container.ContainerBaseGenerationChipMachine;
 import com.denfop.utils.ModUtils;
 import ic2.core.GuiIC2;
@@ -37,9 +38,9 @@ public class GuiGenerationMicrochip extends GuiIC2<ContainerBaseGenerationChipMa
                 .withTooltip(Localization.translate("iu.temperature") + ModUtils.getString(this.container.base.getTemperature()) + "/" + ModUtils.getString(
                         this.container.base.getMaxTemperature()) + "°C")
                 .drawForeground(par1, par2);
-        final BaseMachineRecipe output = this.container.base.inputSlotA.process();
+        final MachineRecipe output = this.container.base.output;
         if (output != null) {
-            if (!Recipes.mechanism.hasHeaters(this.container.base) && this.container.base.getTemperature() < output.output.metadata.getShort(
+            if (!Recipes.mechanism.hasHeaters(this.container.base) && this.container.base.getTemperature() < output.getRecipe().output.metadata.getShort(
                     "temperature")) {
                 new AdvArea(this, 48, 61, 66, 79)
                         .withTooltip(Localization.translate("iu.needheaters"))

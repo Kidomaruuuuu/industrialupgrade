@@ -8,6 +8,7 @@ import com.denfop.IUItem;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.IMultiUpdateTick;
 import com.denfop.api.recipe.InvSlotMultiRecipes;
+import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.audio.AudioSource;
 import com.denfop.audio.PositionSpec;
 import com.denfop.componets.AdvEnergy;
@@ -86,7 +87,8 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
     public InvSlotMultiRecipes inputSlots;
     public AudioSource audioSource;
     public boolean modulestorage;
-    public BaseMachineRecipe[] output;
+    public MachineRecipe[] output;
+    private int tick;
 
     public TileEntityMultiMachine(int energyconsume, int OperationsPerTick, int type) {
         this(1, energyconsume, OperationsPerTick, 0, 0, false, type);
@@ -137,7 +139,7 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
         this.type = type;
         this.expstorage = 0;
         this.solartype = null;
-        this.output = new BaseMachineRecipe[sizeWorkingSlot];
+        this.output = new MachineRecipe[sizeWorkingSlot];
         this.cold = this.addComponent(CoolComponent.asBasicSink(this, 100));
         this.inputSlots = new InvSlotMultiRecipes(this, getMachine().type.recipe, this, sizeWorkingSlot);
     }
@@ -426,19 +428,19 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
 
     }
 
-    public BaseMachineRecipe getRecipeOutput(int slotId) {
+    public MachineRecipe getRecipeOutput(int slotId) {
         return this.output[slotId];
     }
 
-    public void setRecipeOutput(BaseMachineRecipe output, int slotId) {
+    public void setRecipeOutput(MachineRecipe output, int slotId) {
         this.output[slotId] = output;
     }
 
-    public BaseMachineRecipe getRecipeOutput() {
+    public MachineRecipe getRecipeOutput() {
         return this.output[0];
     }
 
-    public void setRecipeOutput(BaseMachineRecipe output) {
+    public void setRecipeOutput(MachineRecipe output) {
         this.output[0] = output;
     }
 
@@ -546,7 +548,7 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
         }
 
         for (int i = 0; i < sizeWorkingSlot; i++) {
-            BaseMachineRecipe output = this.output[i];
+            MachineRecipe output = this.output[i];
 
             if (this.quickly) {
                 quickly = 100;
@@ -554,7 +556,7 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
             int size = 1;
             if (this.output[i] != null && !this.inputSlots.get(i).isEmpty()) {
                 if (this.modulesize) {
-                    size = this.output[i].input.getInputs().get(0).getInputs().get(0).getCount();
+                    size = this.output[i].getRecipe().input.getInputs().get(0).getInputs().get(0).getCount();
                     size = (int) Math.floor((float) this.inputSlots.get(i).getCount() / size);
                     int size1 = 0;
 
@@ -566,7 +568,7 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
                         }
                     }
                     if (output != null) {
-                        size1 = size1 / output.output.items.get(0).getCount();
+                        size1 = size1 / output.getRecipe().output.items.get(0).getCount();
                     }
                     size = Math.min(size1, size);
                 }
@@ -627,7 +629,16 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
             }
 
         }
+        if(!getActive()){
+            this.tick++;
 
+            if(this.tick % 120 == 0) {
+                this.cold.useEnergy(0.2);
+                this.tick = 0;
+            }
+        }else{
+            tick = 0;
+        }
         if (getActive() != isActive) {
             setActive(isActive);
         }
@@ -682,11 +693,11 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
 
     }
 
-    public void operate(int slotId, BaseMachineRecipe output, int size) {
+    public void operate(int slotId, MachineRecipe output, int size) {
         for (int i = 0; i < this.operationsPerTick; i++) {
 
-            operateOnce(slotId, output.output.items, size);
-            if (this.inputSlots.get(slotId).isEmpty() || this.inputSlots.get(slotId).getCount() < this.output[slotId].input
+            operateOnce(slotId, output.getRecipe().output.items, size);
+            if (this.inputSlots.get(slotId).isEmpty() || this.inputSlots.get(slotId).getCount() < this.output[slotId].getRecipe().input
                     .getInputs()
                     .get(0)
                     .getInputs()
@@ -720,7 +731,7 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
 
     }
 
-    public BaseMachineRecipe getOutput(int slotId) {
+    public MachineRecipe getOutput(int slotId) {
 
         if (this.inputSlots.isEmpty(slotId)) {
             this.output[slotId] = null;
@@ -730,7 +741,7 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
         if (output[slotId] == null) {
             return null;
         }
-        if (this.outputSlot.canAdd(output[slotId].output.items)) {
+        if (this.outputSlot.canAdd(output[slotId].getRecipe().output.items)) {
             return output[slotId];
         }
 

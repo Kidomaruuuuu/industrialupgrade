@@ -44,7 +44,8 @@ public class InvSlotRecipes extends InvSlot {
     @Override
     public void put(final int index, final ItemStack content) {
         super.put(index, content);
-        this.tile.setRecipeOutput(this.process());
+        final MachineRecipe recipe1 = this.process();
+        this.tile.setRecipeOutput(recipe1);
         this.tile.onUpdate();
     }
 
@@ -55,6 +56,10 @@ public class InvSlotRecipes extends InvSlot {
 
     public void consume(int number, int amount) {
         this.consume(number, amount, false, false);
+    }
+
+    public boolean continue_process(MachineRecipe recipe) {
+        return Recipes.recipes.needContinue(recipe, this);
     }
 
     public void consume(int number, int amount, boolean simulate, boolean consumeContainers) {
@@ -88,18 +93,18 @@ public class InvSlotRecipes extends InvSlot {
         return super.get(index);
     }
 
-    public BaseMachineRecipe process() {
+    public MachineRecipe process() {
         for (int i = 0; i < this.size(); i++) {
             if (this.get(i).isEmpty()) {
                 return null;
             }
         }
-        BaseMachineRecipe output;
+        MachineRecipe output;
         output = this.getOutputFor();
         if (this.tile instanceof TileEntityConverterSolidMatter) {
             TileEntityConverterSolidMatter mechanism = (TileEntityConverterSolidMatter) this.tile;
-            final BaseMachineRecipe output1 = getOutputFor();
-            mechanism.getrequiredmatter(output1.getOutput());
+            final MachineRecipe output1 = getOutputFor();
+            mechanism.getrequiredmatter(output1.getRecipe().getOutput());
         }
 
         return output;
@@ -122,7 +127,7 @@ public class InvSlotRecipes extends InvSlot {
     }
 
     public boolean continue_proccess(InvSlotOutput slot) {
-        return slot.canAdd(tile.getRecipeOutput().output.items) && this.get().getCount() >= tile.getRecipeOutput().input
+        return slot.canAdd(tile.getRecipeOutput().getRecipe().output.items) && this.get().getCount() >= tile.getRecipeOutput().getRecipe().input
                 .getInputs()
                 .get(0)
                 .getInputs()
@@ -130,13 +135,13 @@ public class InvSlotRecipes extends InvSlot {
                 .getCount();
     }
 
-    private BaseMachineRecipe getOutputFor() {
+    private MachineRecipe getOutputFor() {
         List<ItemStack> list = new ArrayList<>();
         this.forEach(list::add);
         if (this.tank == null) {
-            return Recipes.recipes.getRecipeOutput(this.recipe, this.recipe_list, false, list);
+            return Recipes.recipes.getRecipeMachineRecipeOutput(this.recipe, this.recipe_list, false, list);
         } else {
-            return Recipes.recipes.getRecipeOutputFluid(this.recipe.getName(), false, list, this.tank);
+            return Recipes.recipes.getRecipeOutputMachineFluid(this.recipe.getName(), false, list, this.tank);
         }
     }
 

@@ -5,18 +5,7 @@ import com.denfop.blocks.BlockOre;
 import com.denfop.blocks.BlockPreciousOre;
 import com.denfop.blocks.BlockThoriumOre;
 import com.denfop.blocks.BlocksRadiationOre;
-import com.denfop.items.IUItemBase;
-import com.denfop.items.ItemCell;
-import com.denfop.items.ItemCoolPipes;
-import com.denfop.items.ItemCoolingUpgrade;
-import com.denfop.items.ItemCoreWind;
-import com.denfop.items.ItemExcitedNucleus;
-import com.denfop.items.ItemPipes;
-import com.denfop.items.ItemQCable;
-import com.denfop.items.ItemSCable;
-import com.denfop.items.ItemUpgradePanelKit;
-import com.denfop.items.ItemWindRod;
-import com.denfop.items.ItemsTemplates;
+import com.denfop.items.*;
 import com.denfop.items.bags.ItemLeadBox;
 import com.denfop.items.book.ItemBook;
 import com.denfop.items.energy.ItemKatana;
@@ -370,6 +359,11 @@ public class IUItem {
     public static ItemCoreWind corewind;
     public static Block simplemachine;
     public static IUItemBase upgrade_speed_creation;
+    public static ItemAdvancedWindRotor rotor_carbon;
+    public static ItemAdvancedWindRotor rotor_steel;
+    public static ItemAdvancedWindRotor rotor_iron;
+    public static ItemAdvancedWindRotor rotor_wood;
+    public static ItemAdvancedWindRotor rotor_bronze;
 
     public static void register_mineral() {
         name_mineral = new ArrayList<>();

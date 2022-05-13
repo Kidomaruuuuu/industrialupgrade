@@ -6,6 +6,7 @@ import com.denfop.Ic2Items;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
+import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.container.ContainerDoubleElectricMachine;
 import com.denfop.gui.GuiEnriched;
@@ -74,7 +75,7 @@ public class TileEntityEnrichment extends TileEntityDoubleElectricMachine {
     }
 
     @Override
-    public void operateOnce(BaseMachineRecipe output, List<ItemStack> processResult) {
+    public void operateOnce(MachineRecipe output, List<ItemStack> processResult) {
         this.inputSlotA.consume();
         this.outputSlot.add(processResult);
     }

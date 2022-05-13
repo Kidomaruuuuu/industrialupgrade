@@ -8,6 +8,7 @@ import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.InvSlotRecipes;
+import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.componets.AdvEnergy;
 import com.denfop.container.ContainerBaseMolecular;
@@ -51,7 +52,7 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
     public int operationsPerTick;
     public AudioSource audioSource;
     public InvSlotRecipes inputSlot;
-    public BaseMachineRecipe output;
+    public MachineRecipe output;
     public double perenergy;
     public double differenceenergy;
     public double size;
@@ -330,13 +331,13 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
         }
     }
 
-    public void operate(BaseMachineRecipe output) {
-        List<ItemStack> processResult = output.output.items;
+    public void operate(MachineRecipe output) {
+        List<ItemStack> processResult = output.getRecipe().output.items;
         operateOnce(processResult);
     }
 
-    public void operate(BaseMachineRecipe output, int size) {
-        List<ItemStack> processResult = output.output.items;
+    public void operate(MachineRecipe output, int size) {
+        List<ItemStack> processResult = output.getRecipe().output.items;
         operateOnce(processResult, size);
     }
 
@@ -344,7 +345,8 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
 
         this.inputSlot.consume();
         this.outputSlot.add(processResult);
-        this.getOutput();
+        if(!this.inputSlot.continue_process(this.output))
+            getOutput();
     }
 
     public void operateOnce(List<ItemStack> processResult, int size) {
@@ -354,7 +356,8 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
             this.outputSlot.add(processResult);
 
         }
-        this.getOutput();
+        if(!this.inputSlot.continue_process(this.output))
+            getOutput();
     }
 
     protected void onLoaded() {
@@ -368,12 +371,12 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
     }
 
     public void setOverclockRates() {
-        BaseMachineRecipe output = getOutput();
+        MachineRecipe output = getOutput();
         if (!this.queue) {
             if (inputSlot.isEmpty() || !this.inputSlot.continue_proccess(this.outputSlot)) {
                 this.energy.setCapacity(0);
             } else if (output != null) {
-                this.energy.setCapacity(output.output.metadata.getDouble("energy"));
+                this.energy.setCapacity(output.getRecipe().output.metadata.getDouble("energy"));
             } else {
                 this.energy.setCapacity(0);
             }
@@ -383,8 +386,8 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
                 this.energy.setCapacity(0);
             } else if (output != null) {
                 int size;
-                ItemStack output1 = this.output.output.items.get(0);
-                size = this.output.input.getInputs().get(0).getInputs().get(0).getCount();
+                ItemStack output1 = this.output.getRecipe().output.items.get(0);
+                size = this.output.getRecipe().input.getInputs().get(0).getInputs().get(0).getCount();
                 size = (int) Math.floor((float) this.inputSlot.get().getCount() / size);
                 int size1 = this.outputSlot.get() != null
                         ? (64 - this.outputSlot.get().getCount()) / output1.stackSize
@@ -392,7 +395,7 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
 
                 size = Math.min(size1, size);
                 size = Math.min(size, output1.getMaxStackSize());
-                this.energy.setCapacity(output.output.metadata.getDouble("energy") * size);
+                this.energy.setCapacity(output.getRecipe().output.metadata.getDouble("energy") * size);
             } else {
                 this.energy.setCapacity(0);
             }
@@ -404,9 +407,9 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
     public void updateEntityServer() {
         super.updateEntityServer();
 
-        BaseMachineRecipe output = this.output;
+        MachineRecipe output = this.output;
         if (!queue) {
-            if (output != null && this.outputSlot.canAdd(output.output.items)) {
+            if (output != null && this.outputSlot.canAdd(output.getRecipe().output.items)) {
                 this.differenceenergy = this.energy.getEnergy() - this.perenergy;
                 this.perenergy = this.energy.getEnergy();
                 setActive(true);
@@ -418,10 +421,10 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
 
                 this.progress = this.energy.getEnergy();
                 double k = this.progress;
-                this.guiProgress = (k / output.output.metadata.getDouble("energy"));
+                this.guiProgress = (k / output.getRecipe().output.metadata.getDouble("energy"));
 
 
-                if (this.energy.getEnergy() >= output.output.metadata.getDouble("energy")) {
+                if (this.energy.getEnergy() >= output.getRecipe().output.metadata.getDouble("energy")) {
                     operate(output);
 
                     this.progress = 0;
@@ -450,8 +453,8 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
 
 
                 int size;
-                ItemStack output1 = this.output.output.items.get(0);
-                size = this.output.input.getInputs().get(0).getInputs().get(0).getCount();
+                ItemStack output1 = this.output.getRecipe().output.items.get(0);
+                size = this.output.getRecipe().input.getInputs().get(0).getInputs().get(0).getCount();
 
                 size = (int) Math.floor((float) this.inputSlot.get().getCount() / size);
                 int size1 = this.outputSlot.get() != null
@@ -461,14 +464,14 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
                 size = Math.min(size1, size);
                 size = Math.min(size, output1.getMaxStackSize());
 
-                double p = (this.energy.getEnergy() / (output.output.metadata.getDouble("energy") * size));
+                double p = (this.energy.getEnergy() / (output.getRecipe().output.metadata.getDouble("energy") * size));
                 if (p <= 1) {
                     this.guiProgress = p;
                 }
                 if (p > 1) {
                     this.guiProgress = 1;
                 }
-                if (this.energy.getEnergy() >= (output.output.metadata.getDouble("energy") * size)) {
+                if (this.energy.getEnergy() >= (output.getRecipe().output.metadata.getDouble("energy") * size)) {
                     operate(output, size);
 
                     this.progress = 0;
@@ -491,7 +494,7 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
         }
     }
 
-    public BaseMachineRecipe getOutput() {
+    public MachineRecipe getOutput() {
 
         this.output = this.inputSlot.process();
         return this.output;
@@ -547,12 +550,12 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
     }
 
     @Override
-    public BaseMachineRecipe getRecipeOutput() {
+    public MachineRecipe getRecipeOutput() {
         return this.output;
     }
 
     @Override
-    public void setRecipeOutput(final BaseMachineRecipe output) {
+    public void setRecipeOutput(final MachineRecipe output) {
         this.output = output;
     }
 

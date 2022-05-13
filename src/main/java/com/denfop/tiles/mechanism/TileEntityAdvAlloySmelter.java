@@ -9,6 +9,7 @@ import com.denfop.api.heat.event.HeatTileLoadEvent;
 import com.denfop.api.heat.event.HeatTileUnloadEvent;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
+import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.container.ContainerTripleElectricMachine;
 import com.denfop.gui.GuiAdvAlloySmelter;
@@ -228,7 +229,7 @@ public class TileEntityAdvAlloySmelter extends TileEntityTripleElectricMachine i
     }
 
     @Override
-    public void operateOnce(final BaseMachineRecipe output, final List<ItemStack> processResult) {
+    public void operateOnce(final MachineRecipe output, final List<ItemStack> processResult) {
         this.inputSlotA.consume();
         this.outputSlot.add(processResult);
     }

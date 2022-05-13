@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidTank;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class InvSlotMultiRecipes extends InvSlot {
@@ -102,11 +103,11 @@ public class InvSlotMultiRecipes extends InvSlot {
     }
 
     public boolean continue_proccess(InvSlotOutput slot, int slotid) {
-        return slot.canAdd(tile.getRecipeOutput(slotid).output.items) && this.get(slotid).getCount() >= tile.getRecipeOutput(
-                slotid).input.getInputs().get(0).getInputs().get(0).getCount();
+        return slot.canAdd(tile.getRecipeOutput(slotid).getRecipe().output.items) && this.get(slotid).getCount() >= tile.getRecipeOutput(
+                slotid).getRecipe().input.getInputs().get(0).getInputs().get(0).getCount();
     }
 
-    public BaseMachineRecipe process(int slotid) {
+    public MachineRecipe process(int slotid) {
 
         if (this.get(slotid).isEmpty()) {
             return null;
@@ -115,20 +116,20 @@ public class InvSlotMultiRecipes extends InvSlot {
         return getOutputFor(slotid);
     }
 
-    public BaseMachineRecipe fastprocess(int slotid) {
+    public MachineRecipe fastprocess(int slotid) {
 
         if (this.get(slotid).isEmpty()) {
             return null;
         }
 
-        BaseMachineRecipe output;
+        MachineRecipe output;
         output = getOutputFor(slotid);
 
 
         return output;
     }
 
-    public BaseMachineRecipe consume(int slotid) {
+    public MachineRecipe consume(int slotid) {
 
         if (this.get(slotid).isEmpty()) {
             throw new NullPointerException();
@@ -137,24 +138,25 @@ public class InvSlotMultiRecipes extends InvSlot {
             List<ItemStack> list = new ArrayList<>();
             list.add(this.get(slotid));
             if (this.tank == null) {
-                return Recipes.recipes.getRecipeOutput(this.recipe, this.recipe_list, this.recipe.consume(), list);
+                return Recipes.recipes.getRecipeMachineRecipeOutput(this.recipe, this.recipe_list, this.recipe.consume(), list);
             } else {
-                return Recipes.recipes.getRecipeOutputFluid(this.recipe.getName(), this.recipe.consume(), list, this.tank);
+                return Recipes.recipes.getRecipeOutputMachineFluid(this.recipe.getName(), this.recipe.consume(), list, this.tank);
             }
         } else {
             this.get(slotid).shrink(1);
             final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
-            return new BaseMachineRecipe(new Input(input.forStack(this.get(slotid))), new RecipeOutput(null, Ic2Items.scrap));
+            return new MachineRecipe( new BaseMachineRecipe(new Input(input.forStack(this.get(slotid))), new RecipeOutput(null,
+                    Ic2Items.scrap)), Collections.singletonList(1));
         }
     }
 
-    private BaseMachineRecipe getOutputFor(int slotid) {
+    private MachineRecipe getOutputFor(int slotid) {
         List<ItemStack> list = new ArrayList<>();
         list.add(this.get(slotid));
         if (this.tank == null) {
-            return Recipes.recipes.getRecipeMultiOutput(this.recipe, this.recipe_list, false, list);
+            return Recipes.recipes.getRecipeMachineMultiOutput(this.recipe, this.recipe_list, false, list);
         } else {
-            return Recipes.recipes.getRecipeOutputFluid(this.recipe.getName(), false, list, this.tank);
+            return Recipes.recipes.getRecipeOutputMachineFluid(this.recipe.getName(), false, list, this.tank);
         }
 
     }

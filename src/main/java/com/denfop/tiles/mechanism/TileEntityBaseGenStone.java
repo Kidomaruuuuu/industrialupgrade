@@ -4,6 +4,7 @@ import com.denfop.IUCore;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.InvSlotRecipes;
+import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.audio.AudioSource;
 import com.denfop.container.ContainerGenStone;
 import com.denfop.tiles.base.TileEntityElectricMachine;
@@ -35,7 +36,7 @@ public abstract class TileEntityBaseGenStone extends TileEntityElectricMachine i
     public int operationsPerTick;
     public AudioSource audioSource;
     public InvSlotRecipes inputSlotA;
-    public BaseMachineRecipe output;
+    public MachineRecipe output;
     protected short progress;
     protected double guiProgress;
 
@@ -108,8 +109,8 @@ public abstract class TileEntityBaseGenStone extends TileEntityElectricMachine i
         boolean needsInvUpdate = false;
 
 
-        BaseMachineRecipe output = this.output;
-        if (output != null && this.outputSlot.canAdd(output.output.items) && this.energy.getEnergy() >= this.energyConsume) {
+        MachineRecipe output = this.output;
+        if (output != null && this.outputSlot.canAdd(output.getRecipe().output.items) && this.energy.getEnergy() >= this.energyConsume) {
             setActive(true);
             this.progress = (short) (this.progress + 1);
             this.energy.useEnergy(this.energyConsume);
@@ -158,9 +159,9 @@ public abstract class TileEntityBaseGenStone extends TileEntityElectricMachine i
         dischargeSlot.setTier(tier);
     }
 
-    public void operate(BaseMachineRecipe output) {
+    public void operate(MachineRecipe output) {
         for (int i = 0; i < this.operationsPerTick; i++) {
-            List<ItemStack> processResult = output.output.items;
+            List<ItemStack> processResult = output.getRecipe().output.items;
             operateOnce(output, processResult);
             if (this.output == null) {
                 break;
@@ -168,11 +169,11 @@ public abstract class TileEntityBaseGenStone extends TileEntityElectricMachine i
         }
     }
 
-    public void operateOnce(BaseMachineRecipe output, List<ItemStack> processResult) {
+    public void operateOnce(MachineRecipe output, List<ItemStack> processResult) {
         this.outputSlot.add(processResult);
     }
 
-    public BaseMachineRecipe getOutput() {
+    public MachineRecipe getOutput() {
         this.output = this.inputSlotA.process();
         return this.output;
     }

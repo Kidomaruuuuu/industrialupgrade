@@ -9,6 +9,7 @@ import com.denfop.api.heat.event.HeatTileLoadEvent;
 import com.denfop.api.heat.event.HeatTileUnloadEvent;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
+import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.container.ContainerHandlerHeavyOre;
 import com.denfop.gui.GuiHandlerHeavyOre;
@@ -139,9 +140,10 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
     public void updateEntityServer() {
         super.updateEntityServer();
         boolean needsInvUpdate = false;
-        if (!this.inputSlotA.isEmpty() && output != null && this.outputSlot.canAdd(this.output.output.items) && this.energy.getEnergy() >= this.energyConsume && output.output.metadata != null) {
+        if (!this.inputSlotA.isEmpty() && output != null && this.outputSlot.canAdd(this.output.getRecipe().output.items) && this.energy.getEnergy() >= this.energyConsume && output.getRecipe().output.metadata != null) {
 
-            if (output.output.metadata.getShort("temperature") == 0 || output.output.metadata.getInteger("temperature") > this.temperature) {
+            if (output.getRecipe().output.metadata.getShort("temperature") == 0 || output.getRecipe().output.metadata.getInteger(
+                    "temperature") > this.temperature) {
                 return;
             }
 
@@ -356,12 +358,12 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
     }
 
     @Override
-    public BaseMachineRecipe getRecipeOutput() {
+    public MachineRecipe getRecipeOutput() {
         return this.output;
     }
 
     @Override
-    public void setRecipeOutput(final BaseMachineRecipe output) {
+    public void setRecipeOutput(final MachineRecipe output) {
         this.output = output;
     }
 

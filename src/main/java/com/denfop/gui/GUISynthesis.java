@@ -2,6 +2,7 @@ package com.denfop.gui;
 
 import com.denfop.Constants;
 import com.denfop.api.recipe.BaseMachineRecipe;
+import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.container.ContainerDoubleElectricMachine;
 import com.denfop.utils.ModUtils;
 import ic2.core.GuiIC2;
@@ -56,10 +57,10 @@ public class GuiSynthesis extends GuiIC2<ContainerDoubleElectricMachine> {
             drawTexturedModalRect(xoffset + 82, yoffset + 30, 177, 52, progress1 + 1, 23);
         }
 
-        final BaseMachineRecipe output = this.container.base.getOutput();
+        final MachineRecipe output = this.container.base.output;
         if (output != null) {
             this.fontRenderer.drawString(
-                    TextFormatting.GREEN + Localization.translate("chance") + output.output.metadata.getInteger(
+                    TextFormatting.GREEN + Localization.translate("chance") + output.getRecipe().output.metadata.getInteger(
                             "percent") + "%", xoffset + 69,
                     yoffset + 67, ModUtils.convertRGBcolorToInt(217, 217, 217)
             );

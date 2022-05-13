@@ -6,6 +6,7 @@ import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.InvSlotRecipes;
+import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.container.ContainerConverterSolidMatter;
 import com.denfop.gui.GuiConverterSolidMatter;
@@ -52,7 +53,7 @@ public class TileEntityConverterSolidMatter extends TileEntityElectricMachine
     public double guiProgress = 0;
     public int operationLength;
     public int operationsPerTick;
-    public BaseMachineRecipe output;
+    public MachineRecipe output;
     public boolean required;
 
     public TileEntityConverterSolidMatter() {
@@ -147,9 +148,9 @@ public class TileEntityConverterSolidMatter extends TileEntityElectricMachine
         super.updateEntityServer();
 
 
-        BaseMachineRecipe output = this.output;
+        MachineRecipe output = this.output;
         boolean needsInvUpdate = false;
-        if (output != null && this.outputSlot.canAdd(this.output.output.items) && !this.inputSlot.isEmpty() && this.required) {
+        if (output != null && this.outputSlot.canAdd(this.output.getRecipe().output.items) && !this.inputSlot.isEmpty() && this.required) {
             setActive(true);
 
 
@@ -220,15 +221,15 @@ public class TileEntityConverterSolidMatter extends TileEntityElectricMachine
     }
 
 
-    public void operate(BaseMachineRecipe output) {
-        List<ItemStack> processResult = output.output.items;
+    public void operate(MachineRecipe output) {
+        List<ItemStack> processResult = output.getRecipe().output.items;
         operateOnce(processResult, output);
     }
 
-    public void operateOnce(List<ItemStack> processResult, BaseMachineRecipe output) {
-        useMatter(output.getOutput());
+    public void operateOnce(List<ItemStack> processResult, MachineRecipe output) {
+        useMatter(output.getRecipe().getOutput());
         this.outputSlot.add(processResult);
-        this.getrequiredmatter(this.output.getOutput());
+        this.getrequiredmatter(this.output.getRecipe().getOutput());
         this.MatterSlot.getmatter();
     }
 
@@ -238,13 +239,13 @@ public class TileEntityConverterSolidMatter extends TileEntityElectricMachine
         inputSlot.load();
         this.getOutput();
         if (this.output != null) {
-            this.getrequiredmatter(this.output.getOutput());
+            this.getrequiredmatter(this.output.getRecipe().getOutput());
         }
         this.MatterSlot.getmatter();
 
     }
 
-    public BaseMachineRecipe getOutput() {
+    public MachineRecipe getOutput() {
         this.output = this.inputSlot.process();
 
         return this.output;
@@ -411,12 +412,12 @@ public class TileEntityConverterSolidMatter extends TileEntityElectricMachine
     }
 
     @Override
-    public BaseMachineRecipe getRecipeOutput() {
+    public MachineRecipe getRecipeOutput() {
         return this.output;
     }
 
     @Override
-    public void setRecipeOutput(final BaseMachineRecipe output) {
+    public void setRecipeOutput(final MachineRecipe output) {
         this.output = output;
     }
 

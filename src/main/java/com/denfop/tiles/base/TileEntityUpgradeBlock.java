@@ -4,6 +4,7 @@ import com.denfop.IUItem;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
+import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.api.upgrade.IUpgradeItem;
 import com.denfop.api.upgrade.IUpgradeWithBlackList;
@@ -115,13 +116,13 @@ public class TileEntityUpgradeBlock extends TileEntityDoubleElectricMachine {
     }
 
     @Override
-    public BaseMachineRecipe getOutput() {
+    public MachineRecipe getOutput() {
         this.output = this.inputSlotA.process();
         if (this.output == null) {
             return null;
         }
 
-        if (this.output.output.metadata.getString("type").isEmpty()) {
+        if (this.output.getRecipe().output.metadata.getString("type").isEmpty()) {
             ItemStack stack1 = getUpgradeItem(this.inputSlotA.get(0)) ? this.inputSlotA.get(0) : this.inputSlotA.get(1);
             ItemStack module = getUpgradeItem(this.inputSlotA.get(0)) ? this.inputSlotA.get(1) : this.inputSlotA.get(0);
             if (module.getItem() instanceof ItemUpgradeModule) {
@@ -153,8 +154,8 @@ public class TileEntityUpgradeBlock extends TileEntityDoubleElectricMachine {
 
     }
 
-    public void operateOnce(BaseMachineRecipe output, List<ItemStack> processResult) {
-        if (this.output.output.metadata.getString("type").isEmpty()) {
+    public void operateOnce(MachineRecipe output, List<ItemStack> processResult) {
+        if (this.output.getRecipe().output.metadata.getString("type").isEmpty()) {
 
             ItemStack stack1 = getUpgradeItem(this.inputSlotA.get(0)) ? this.inputSlotA.get(0) : this.inputSlotA.get(1);
             ItemStack module = getUpgradeItem(this.inputSlotA.get(0)) ? this.inputSlotA.get(1) : this.inputSlotA.get(0);
@@ -180,7 +181,7 @@ public class TileEntityUpgradeBlock extends TileEntityDoubleElectricMachine {
                 ItemStack stack = this.outputSlot.get();
                 stack.setTagCompound(nbt1);
                 NBTTagCompound nbt = ModUtils.nbt(stack);
-                String mode = output.output.metadata.getString("mode_module");
+                String mode = output.getRecipe().output.metadata.getString("mode_module");
                 final List<UpgradeModificator> list = UpgradeSystem.system.getListModifications(stack);
                 int k = 0;
                 for (int i = 0; i < 4 + list.size(); i++) {
@@ -240,7 +241,7 @@ public class TileEntityUpgradeBlock extends TileEntityDoubleElectricMachine {
                 this.outputSlot.add(processResult);
                 ItemStack stack = this.outputSlot.get();
                 stack.setTagCompound(nbt1);
-                UpgradeSystem.system.addModificate(stack, this.output.output.metadata.getString("type"));
+                UpgradeSystem.system.addModificate(stack, this.output.getRecipe().output.metadata.getString("type"));
                 ElectricItem.manager.charge(stack, newCharge, Integer.MAX_VALUE, true, false);
                 EnchantmentHelper.setEnchantments(enchantmentMap, stack);
                 stack.setItemDamage(Damage);

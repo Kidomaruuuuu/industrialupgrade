@@ -2,6 +2,7 @@ package com.denfop.gui;
 
 import com.denfop.Constants;
 import com.denfop.api.recipe.BaseMachineRecipe;
+import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.container.ContainerBaseMolecular;
 import com.denfop.utils.ModUtils;
 import ic2.core.GuiIC2;
@@ -45,7 +46,7 @@ public class GuiMolecularTransformer extends GuiIC2<ContainerBaseMolecular> {
 
 
         if (chargeLevel > 0 && !this.container.base.inputSlot.isEmpty() && this.container.base.inputSlot.continue_proccess(this.container.base.outputSlot)) {
-            BaseMachineRecipe output1 = this.container.base.output;
+            MachineRecipe output1 = this.container.base.output;
 
             List<Double> time;
             if (!this.container.base.queue) {
@@ -56,10 +57,10 @@ public class GuiMolecularTransformer extends GuiIC2<ContainerBaseMolecular> {
                         this.guiLeft + 60, this.guiTop + 25, 4210752
                 );
 
-                this.fontRenderer.drawString(output + output1.output.items.get(0).getDisplayName(), this.guiLeft + 60,
+                this.fontRenderer.drawString(output + output1.getRecipe().output.items.get(0).getDisplayName(), this.guiLeft + 60,
                         this.guiTop + 25 + 11, 4210752
                 );
-                this.fontRenderer.drawString(energyPerOperation + ModUtils.getString(output1.output.metadata.getDouble("energy")) +
+                this.fontRenderer.drawString(energyPerOperation + ModUtils.getString(output1.getRecipe().output.metadata.getDouble("energy")) +
                                 " EU",
                         this.guiLeft + 60, this.guiTop + 25 + 22, 4210752
                 );
@@ -82,7 +83,7 @@ public class GuiMolecularTransformer extends GuiIC2<ContainerBaseMolecular> {
                 double hours = 0;
                 double minutes = 0;
                 double seconds = 0;
-                time = this.container.base.getTime(output1.output.metadata.getDouble("energy"));
+                time = this.container.base.getTime(output1.getRecipe().output.metadata.getDouble("energy"));
                 if (time.size() > 0) {
                     hours = time.get(0);
                     minutes = time.get(1);
@@ -98,8 +99,8 @@ public class GuiMolecularTransformer extends GuiIC2<ContainerBaseMolecular> {
                 );
 
             } else {
-                ItemStack output2 = this.container.base.output.output.items.get(0);
-                int size = this.container.base.output.input.getInputs().get(0).getInputs().get(0).getCount();
+                ItemStack output2 = this.container.base.output.getRecipe().output.items.get(0);
+                int size = this.container.base.output.getRecipe().input.getInputs().get(0).getInputs().get(0).getCount();
 
                 int col = size;
                 size = (int) Math.floor((float) this.container.base.inputSlot.get().getCount() / size);
@@ -120,12 +121,12 @@ public class GuiMolecularTransformer extends GuiIC2<ContainerBaseMolecular> {
                     );
 
                     this.fontRenderer.drawString(
-                            output + output2.stackSize * size + "x" + output1.output.items.get(0).getDisplayName(),
+                            output + output2.stackSize * size + "x" + output1.getRecipe().output.items.get(0).getDisplayName(),
                             this.guiLeft + 60,
                             this.guiTop + 25 + 11,
                             4210752
                     );
-                    this.fontRenderer.drawString(energyPerOperation + ModUtils.getString(output1.output.metadata.getDouble(
+                    this.fontRenderer.drawString(energyPerOperation + ModUtils.getString(output1.getRecipe().output.metadata.getDouble(
                                     "energy") * size) + " EU",
                             this.guiLeft + 60, this.guiTop + 25 + 22, 4210752
                     );
@@ -149,7 +150,7 @@ public class GuiMolecularTransformer extends GuiIC2<ContainerBaseMolecular> {
                     double hours = 0;
                     double minutes = 0;
                     double seconds = 0;
-                    time = this.container.base.getTime(output1.output.metadata.getDouble("energy") * size);
+                    time = this.container.base.getTime(output1.getRecipe().output.metadata.getDouble("energy") * size);
 
 
                     if (time.size() > 0) {

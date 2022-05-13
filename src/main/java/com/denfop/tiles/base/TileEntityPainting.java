@@ -4,6 +4,7 @@ import com.denfop.IUItem;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
+import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.container.ContainerDoubleElectricMachine;
 import com.denfop.gui.GuiPainting;
@@ -199,7 +200,7 @@ public class TileEntityPainting extends TileEntityDoubleElectricMachine {
         ));
     }
 
-    public void operateOnce(BaseMachineRecipe output, List<ItemStack> processResult) {
+    public void operateOnce(MachineRecipe output, List<ItemStack> processResult) {
         ItemStack stack1 = this.inputSlotA.get(1).getItem() instanceof IElectricItem
                 ? this.inputSlotA.get(1)
                 : this.inputSlotA.get(0);
@@ -212,7 +213,7 @@ public class TileEntityPainting extends TileEntityDoubleElectricMachine {
         ItemStack stack = this.outputSlot.get();
         stack.setTagCompound(tNBT);
         NBTTagCompound nbt = ModUtils.nbt(stack);
-        String mode = output.output.metadata.getString("mode");
+        String mode = output.getRecipe().output.metadata.getString("mode");
         nbt.setString("mode", mode);
         ElectricItem.manager.charge(stack, newCharge, Integer.MAX_VALUE, true, false);
         EnchantmentHelper.setEnchantments(enchantmentMap, stack);

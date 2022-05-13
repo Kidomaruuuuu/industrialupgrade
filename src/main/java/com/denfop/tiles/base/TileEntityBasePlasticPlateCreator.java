@@ -3,6 +3,7 @@ package com.denfop.tiles.base;
 import com.denfop.IUCore;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.InvSlotRecipes;
+import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.audio.AudioSource;
 import com.denfop.blocks.FluidName;
 import ic2.api.network.INetworkTileEntityEventListener;
@@ -46,7 +47,7 @@ public class TileEntityBasePlasticPlateCreator extends TileEntityElectricLiquidT
     public AudioSource audioSource;
 
     public InvSlotRecipes inputSlotA;
-    public BaseMachineRecipe output;
+    public MachineRecipe output;
     protected short progress;
     protected double guiProgress;
 
@@ -131,9 +132,9 @@ public class TileEntityBasePlasticPlateCreator extends TileEntityElectricLiquidT
         this.progress = (short) (int) Math.floor(previousProgress * this.operationLength + 0.1D);
     }
 
-    public void operate(BaseMachineRecipe output) {
+    public void operate(MachineRecipe output) {
         for (int i = 0; i < this.operationsPerTick; i++) {
-            List<ItemStack> processResult = output.output.items;
+            List<ItemStack> processResult = output.getRecipe().output.items;
             for (int j = 0; j < this.upgradeSlot.size(); j++) {
                 ItemStack stack = this.upgradeSlot.get(j);
                 if (stack != null && stack.getItem() instanceof IUpgradeItem) {
@@ -142,7 +143,8 @@ public class TileEntityBasePlasticPlateCreator extends TileEntityElectricLiquidT
             }
             operateOnce(processResult);
 
-            getOutput();
+            if(!this.inputSlotA.continue_process(this.output))
+                getOutput();
             if (this.output == null) {
                 break;
             }
@@ -171,8 +173,8 @@ public class TileEntityBasePlasticPlateCreator extends TileEntityElectricLiquidT
             }
 
         }
-        BaseMachineRecipe output = this.output;
-        if (output != null && !this.inputSlotA.isEmpty() && this.outputSlot.canAdd(output.output.items) && this.energy.canUseEnergy(
+        MachineRecipe output = this.output;
+        if (output != null && !this.inputSlotA.isEmpty() && this.outputSlot.canAdd(output.getRecipe().output.items) && this.energy.canUseEnergy(
                 energyConsume)) {
             setActive(true);
             if (this.progress == 0) {
@@ -224,7 +226,7 @@ public class TileEntityBasePlasticPlateCreator extends TileEntityElectricLiquidT
         return null;
     }
 
-    public BaseMachineRecipe getOutput() {
+    public MachineRecipe getOutput() {
         this.output = this.inputSlotA.process();
         return this.output;
     }

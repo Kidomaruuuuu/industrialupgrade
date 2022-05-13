@@ -4,6 +4,7 @@ import com.denfop.IUItem;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
+import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.componets.SEComponent;
 import com.denfop.container.ContainerDoubleElectricMachine;
@@ -147,7 +148,7 @@ public class TileEntitySunnariumPanelMaker extends TileEntityDoubleElectricMachi
         boolean needsInvUpdate = false;
 
 
-        BaseMachineRecipe output = this.output;
+        MachineRecipe output = this.output;
         if (output != null && this.energy.getEnergy() >= this.energyConsume && this.sunenergy.getEnergy() >= 5) {
             setActive(true);
             if (this.progress == 0) {
@@ -233,7 +234,7 @@ public class TileEntitySunnariumPanelMaker extends TileEntityDoubleElectricMachi
     }
 
     @Override
-    public void operateOnce(BaseMachineRecipe output, List<ItemStack> processResult) {
+    public void operateOnce(MachineRecipe output, List<ItemStack> processResult) {
         this.inputSlotA.consume();
         this.outputSlot.add(processResult);
     }

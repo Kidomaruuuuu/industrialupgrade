@@ -4,6 +4,7 @@ import com.denfop.IUCore;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.InvSlotRecipes;
+import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.audio.AudioSource;
 import com.denfop.audio.PositionSpec;
 import com.denfop.componets.AdvEnergy;
@@ -48,7 +49,7 @@ public abstract class TileEntityDoubleElectricMachine extends TileEntityInventor
     public int operationsPerTick;
     public AudioSource audioSource;
     public short temperature;
-    public BaseMachineRecipe output;
+    public MachineRecipe output;
     protected short progress;
     protected double guiProgress;
 
@@ -88,11 +89,11 @@ public abstract class TileEntityDoubleElectricMachine extends TileEntityInventor
         this.output = null;
     }
 
-    public BaseMachineRecipe getRecipeOutput() {
+    public MachineRecipe getRecipeOutput() {
         return this.output;
     }
 
-    public void setRecipeOutput(BaseMachineRecipe output) {
+    public void setRecipeOutput(MachineRecipe output) {
         this.output = output;
     }
 
@@ -149,10 +150,11 @@ public abstract class TileEntityDoubleElectricMachine extends TileEntityInventor
         boolean needsInvUpdate = false;
 
 
-        BaseMachineRecipe output = this.output;
-        if (output != null && this.outputSlot.canAdd(output.output.items) && this.energy.getEnergy() >= this.energyConsume) {
+        MachineRecipe output = this.output;
+        if (output != null && this.outputSlot.canAdd(output.getRecipe().output.items) && this.energy.getEnergy() >= this.energyConsume) {
             if (this.type.equals(EnumDoubleElectricMachine.ALLOY_SMELTER)) {
-                if (output.output.metadata.getShort("temperature") == 0 || output.output.metadata.getInteger("temperature") > ((TileEntityAlloySmelter) this).temperature) {
+                if (output.getRecipe().output.metadata.getShort("temperature") == 0 || output.getRecipe().output.metadata.getInteger(
+                        "temperature") > ((TileEntityAlloySmelter) this).temperature) {
                     return;
                 }
             }
@@ -211,27 +213,22 @@ public abstract class TileEntityDoubleElectricMachine extends TileEntityInventor
         dischargeSlot.setTier(tier);
     }
 
-    public void operate(BaseMachineRecipe output) {
+    public void operate(MachineRecipe output) {
         for (int i = 0; i < this.operationsPerTick; i++) {
-            List<ItemStack> processResult = output.output.items;
+            List<ItemStack> processResult = output.getRecipe().output.items;
             operateOnce(output, processResult);
-            for (int k = 0; k < this.inputSlotA.size(); k++) {
-                if (this.inputSlotA.get(k).isEmpty()) {
-                    getOutput();
-                    break;
-                }
-            }
-            this.output = getOutput();
+            if(!this.inputSlotA.continue_process(this.output))
+                getOutput();
             if (this.output == null) {
                 break;
             }
         }
     }
 
-    public abstract void operateOnce(BaseMachineRecipe output, List<ItemStack> processResult);
+    public abstract void operateOnce(MachineRecipe output, List<ItemStack> processResult);
 
 
-    public BaseMachineRecipe getOutput() {
+    public MachineRecipe getOutput() {
         this.output = this.inputSlotA.process();
         return this.output;
     }
