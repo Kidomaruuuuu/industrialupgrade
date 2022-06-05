@@ -30,7 +30,6 @@ public class ContainerMultiMachine extends ContainerFullInv<TileEntityMultiMachi
     public List<String> getNetworkedFields() {
         List<String> ret = super.getNetworkedFields();
         ret.add("guiProgress");
-        ret.add("expstorage");
         ret.add("energy2");
         ret.add("maxEnergy2");
         ret.add("energy");

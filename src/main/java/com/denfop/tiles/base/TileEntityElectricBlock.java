@@ -109,8 +109,7 @@ public class TileEntityElectricBlock extends TileEntityInventory implements IHas
                 EnergyNet.instance.getTierFromPower(this.output),
                 EnergyNet.instance.getTierFromPower(this.output), false
         )));
-        this.energy.setDirections(EnumSet.complementOf(EnumSet.copyOf(Util.verticalFacings)), EnumSet.of(EnumFacing.DOWN));
-
+        this.energy.setDirections(Util.allFacings,(EnumSet.of( EnumFacing.DOWN)));
     }
 
     public TileEntityElectricBlock(EnumElectricBlock electricBlock) {
@@ -505,6 +504,7 @@ public class TileEntityElectricBlock extends TileEntityInventory implements IHas
 
     protected void updateEntityServer() {
         super.updateEntityServer();
+        this.needsInvUpdate = false;
         this.energy.setSendingEnabled(this.shouldEmitEnergy());
         if (this.wireless) {
             this.inputslotC.wirelessmodule();
@@ -587,7 +587,7 @@ public class TileEntityElectricBlock extends TileEntityInventory implements IHas
                 needsInvUpdate = ((this.energy.getEnergy() > 1D ? this.energy.getEnergy() : 0) > 0.0D);
             }
         }
-
+        if (this.energy2 > 0)
         for (EnumFacing facing : EnumFacing.VALUES) {
             BlockPos pos = new BlockPos(
                     this.pos.getX() + facing.getFrontOffsetX(),
@@ -754,10 +754,7 @@ public class TileEntityElectricBlock extends TileEntityInventory implements IHas
 
     public void readFromNBT(NBTTagCompound nbttagcompound) {
         super.readFromNBT(nbttagcompound);
-        this.energy.setDirections(
-                EnumSet.complementOf(EnumSet.of(this.getFacing(), EnumFacing.UP)),
-                EnumSet.of(this.getFacing())
-        );
+        this.energy.setDirections(Util.allFacings,(EnumSet.of( this.getFacing())));
         this.UUID = nbttagcompound.getString("UUID");
         this.energy2 = Util.limit(nbttagcompound.getDouble("energy2"), 0.0D,
                 this.maxStorage2
@@ -767,7 +764,7 @@ public class TileEntityElectricBlock extends TileEntityInventory implements IHas
 
     public void setFacing(EnumFacing facing) {
         super.setFacing(facing);
-        this.energy.setDirections(EnumSet.complementOf(EnumSet.of(this.getFacing())), EnumSet.of(this.getFacing()));
+        this.energy.setDirections(Util.allFacings,(EnumSet.of( this.getFacing())));
 
     }
 

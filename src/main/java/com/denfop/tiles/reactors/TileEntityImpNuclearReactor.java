@@ -10,6 +10,7 @@ import ic2.core.init.MainConfig;
 import ic2.core.util.ConfigUtil;
 import ic2.core.util.LogCategory;
 import ic2.core.util.Util;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -138,6 +139,8 @@ public class TileEntityImpNuclearReactor extends TileEntityBaseNuclearReactorEle
 
         return cols;
     }
+
+
 
 
 }

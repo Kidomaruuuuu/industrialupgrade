@@ -15,18 +15,15 @@ import com.denfop.render.ModelPipes;
 import com.denfop.render.ModelQCable;
 import com.denfop.render.ModelSCable;
 import com.denfop.render.advoilrefiner.TileEntityAdvOilRefinerRender;
-import com.denfop.render.doublemoleculartransformer.TileEntityDoubleMolecularRender;
-import com.denfop.render.moleculartransformer.TileEntityMolecularRender;
 import com.denfop.render.oilquarry.TileEntityQuarryOilRender;
 import com.denfop.render.oilrefiner.TileEntityOilRefinerRender;
 import com.denfop.render.sintezator.TileEntitySintezatorRender;
 import com.denfop.render.tank.TileEntityTankRender;
 import com.denfop.render.tile.TileEntityAdminPanelRender;
+import com.denfop.tiles.base.EnumMultiMachine;
 import com.denfop.tiles.base.TileEntityAdminSolarPanel;
 import com.denfop.tiles.base.TileEntityAdvOilRefiner;
-import com.denfop.tiles.base.TileEntityDoubleMolecular;
 import com.denfop.tiles.base.TileEntityLiquedTank;
-import com.denfop.tiles.base.TileEntityMolecularTransformer;
 import com.denfop.tiles.base.TileEntityQuarryVein;
 import com.denfop.tiles.base.TileEntitySintezator;
 import com.denfop.tiles.mechanism.TileEntityOilRefiner;
@@ -91,7 +88,7 @@ public class ClientProxy extends CommonProxy {
 
         ModelLoaderRegistry.registerLoader(loader);
         ProfileManager.doTextureChanges();
-
+        EnumMultiMachine.write();
 
     }
 
@@ -156,11 +153,8 @@ public class ClientProxy extends CommonProxy {
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySintezator.class, new TileEntitySintezatorRender());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityQuarryVein.class, new TileEntityQuarryOilRender());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMolecularTransformer.class, new TileEntityMolecularRender());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAdminSolarPanel.class, new TileEntityAdminPanelRender());
-
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityOilRefiner.class, new TileEntityOilRefinerRender());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDoubleMolecular.class, new TileEntityDoubleMolecularRender());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAdvOilRefiner.class, new TileEntityAdvOilRefinerRender());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityLiquedTank.class, new TileEntityTankRender());
 
@@ -169,7 +163,6 @@ public class ClientProxy extends CommonProxy {
 
     public void postInit(FMLPostInitializationEvent event) {
         super.postInit(event);
-
     }
 
     public boolean addIModelRegister(IModelRegister modelRegister) {

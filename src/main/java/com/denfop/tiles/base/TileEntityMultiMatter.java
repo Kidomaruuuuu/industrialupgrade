@@ -2,6 +2,7 @@ package com.denfop.tiles.base;
 
 import com.denfop.container.ContainerMultiMatter;
 import com.denfop.gui.GuiMultiMatter;
+import com.denfop.invslot.InvSlotUpgrade;
 import ic2.api.energy.tile.IExplosionPowerOverride;
 import ic2.api.recipe.IRecipeInput;
 import ic2.api.recipe.MachineRecipeResult;
@@ -22,7 +23,6 @@ import ic2.core.block.invslot.InvSlotConsumableLiquid.OpType;
 import ic2.core.block.invslot.InvSlotConsumableLiquidByList;
 import ic2.core.block.invslot.InvSlotOutput;
 import ic2.core.block.invslot.InvSlotProcessable;
-import ic2.core.block.invslot.InvSlotUpgrade;
 import ic2.core.init.MainConfig;
 import ic2.core.network.GuiSynced;
 import ic2.core.profile.NotClassic;
@@ -79,7 +79,7 @@ public abstract class TileEntityMultiMatter extends TileEntityElectricMachine im
         this.containerslot = new InvSlotConsumableLiquidByList(this, "container", Access.I, 1, InvSide.TOP, OpType.Fill,
                 FluidName.uu_matter.getInstance()
         );
-        this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
+        this.upgradeSlot = new com.denfop.invslot.InvSlotUpgrade(this, "upgrade", 4);
         this.redstone = this.addComponent(new Redstone(this));
         this.redstone.subscribe(newLevel -> TileEntityMultiMatter.this.energy.setEnabled(newLevel == 0));
         this.fluids = this.addComponent(new Fluids(this));

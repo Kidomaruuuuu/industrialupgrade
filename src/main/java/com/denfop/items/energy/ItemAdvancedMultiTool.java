@@ -53,11 +53,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
 import net.minecraft.network.play.server.SPacketBlockChange;
 import net.minecraft.network.play.server.SPacketEntityTeleport;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -74,11 +70,7 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class ItemAdvancedMultiTool extends ItemTool implements IElectricItem, IUpgradeWithBlackList, IModelRegister {
 
@@ -119,7 +111,7 @@ public class ItemAdvancedMultiTool extends ItemTool implements IElectricItem, IU
             Blocks.CHEST.getDefaultState(),
             Blocks.PUMPKIN_STEM.getDefaultState(),
             Blocks.LIT_PUMPKIN.getDefaultState(),
-            Blocks.LEAVES2.getDefaultState(),
+            Blocks.LEAVES.getDefaultState(),
             Blocks.LEAVES2.getDefaultState(),
             Blocks.CLAY.getDefaultState(),
             Blocks.FARMLAND.getDefaultState(),
@@ -201,7 +193,7 @@ public class ItemAdvancedMultiTool extends ItemTool implements IElectricItem, IU
         int x = pos.getX();
         int y = pos.getY();
         int z = pos.getZ();
-        switch (mop.sideHit.getIndex()) {
+        switch (mop.sideHit.ordinal()) {
             case 0:
             case 1:
                 yRange = 0;
@@ -226,6 +218,8 @@ public class ItemAdvancedMultiTool extends ItemTool implements IElectricItem, IU
         float energy = energy(stack);
         byte dig_depth = (byte) (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.DIG_DEPTH, stack) ?
                 UpgradeSystem.system.getModules(EnumInfoUpgradeModules.DIG_DEPTH, stack).number : 0);
+
+
         zRange = zRange > 0 ? zRange : (byte) (zRange + dig_depth);
         xRange = xRange > 0 ? xRange : (byte) (xRange + dig_depth);
         yRange = yRange > 0 ? yRange : (byte) (yRange + dig_depth);
@@ -235,15 +229,19 @@ public class ItemAdvancedMultiTool extends ItemTool implements IElectricItem, IU
                 for (int yPos = y - yRange + Yy; yPos <= y + yRange + Yy; yPos++) {
                     for (int zPos = z - zRange; zPos <= z + zRange; zPos++) {
                         if (ElectricItem.manager.canUse(stack, energy)) {
+
                             BlockPos pos_block = new BlockPos(xPos, yPos, zPos);
-                            IBlockState state = world.getBlockState(pos_block);
-                            Block localBlock = world.getBlockState(pos_block).getBlock();
                             if (save) {
                                 if (world.getTileEntity(pos_block) != null) {
                                     continue;
                                 }
                             }
-                            if (canHarvestBlock(state, stack)
+
+                            IBlockState state = world.getBlockState(pos_block);
+                            Block localBlock = world.getBlockState(pos_block).getBlock();
+                            if (localBlock.equals(Blocks.SKULL))
+                                continue;
+                            if (!localBlock.equals(Blocks.AIR) && canHarvestBlock(state, stack)
                                     && state.getBlockHardness(world, pos_block) >= 0.0F
                             ) {
                                 if (state.getBlockHardness(world, pos_block) > 0.0F) {
@@ -255,6 +253,7 @@ public class ItemAdvancedMultiTool extends ItemTool implements IElectricItem, IU
                                     ExperienceUtils.addPlayerXP(player, getExpierence(state, world, pos_block, fortune, stack
                                             , localBlock));
                                 }
+
 
                             } else {
                                 if (state.getBlockHardness(world, pos_block) > 0.0F && materials.contains(state.getMaterial())) {
@@ -278,6 +277,8 @@ public class ItemAdvancedMultiTool extends ItemTool implements IElectricItem, IU
             if (ElectricItem.manager.canUse(stack, energy)) {
                 Block localBlock = world.getBlockState(pos).getBlock();
                 IBlockState state = world.getBlockState(pos);
+                if (localBlock.equals(Blocks.SKULL))
+                    return  false;
                 if (localBlock.equals(Blocks.AIR) && canHarvestBlock(state, stack)
                         && state.getBlockHardness(world, pos) >= 0.0F
                         && (materials.contains(state.getMaterial())
@@ -288,8 +289,9 @@ public class ItemAdvancedMultiTool extends ItemTool implements IElectricItem, IU
                         );
                     }
                     if (!silktouch) {
-                        ExperienceUtils.addPlayerXP(player, getExpierence(state, world, pos, fortune, stack
-                                , localBlock));
+                        localBlock.dropXpOnBlockBreak(world, pos,
+                                localBlock.getExpDrop(state, world, pos, fortune)
+                        );
                     }
 
 
@@ -306,6 +308,8 @@ public class ItemAdvancedMultiTool extends ItemTool implements IElectricItem, IU
             if (ElectricItem.manager.canUse(stack, energy)) {
                 IBlockState state = world.getBlockState(pos);
                 Block localBlock = state.getBlock();
+                if (localBlock.equals(Blocks.SKULL))
+                    return  false;
                 if (!localBlock.equals(Blocks.AIR) && canHarvestBlock(state, stack)
                         && state.getBlockHardness(world, pos) >= 0.0F
                         && (materials.contains(state.getMaterial())
@@ -317,8 +321,9 @@ public class ItemAdvancedMultiTool extends ItemTool implements IElectricItem, IU
                         );
                     }
                     if (!silktouch) {
-                        ExperienceUtils.addPlayerXP(player, getExpierence(state, world, pos, fortune, stack
-                                , localBlock));
+                        localBlock.dropXpOnBlockBreak(world, pos,
+                                localBlock.getExpDrop(state, world, pos, fortune)
+                        );
                     }
 
 
@@ -507,13 +512,12 @@ public class ItemAdvancedMultiTool extends ItemTool implements IElectricItem, IU
 
             byte aoe = (byte) (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.AOE_DIG, stack) ?
                     UpgradeSystem.system.getModules(EnumInfoUpgradeModules.AOE_DIG, stack).number : 0);
-            if (materials.contains(state.getMaterial()) || block == Blocks.MONSTER_EGG) {
                 if (player.isSneaking()) {
                     return break_block(world, block, mop, aoe, player, pos, stack);
                 }
 
                 return break_block(world, block, mop, (byte) (1 + aoe), player, pos, stack);
-            }
+
         }
         if (readToolMode(stack) == 2) {
             World world = player.getEntityWorld();
@@ -530,14 +534,13 @@ public class ItemAdvancedMultiTool extends ItemTool implements IElectricItem, IU
             byte aoe = (byte) (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.AOE_DIG, stack) ?
                     UpgradeSystem.system.getModules(EnumInfoUpgradeModules.AOE_DIG, stack).number : 0);
 
-            if (materials.contains(state.getMaterial()) || block == Blocks.MONSTER_EGG) {
                 if (player.isSneaking()) {
                     if (!mop.typeOfHit.equals(RayTraceResult.Type.MISS)) {
                         return break_block(world, block, mop, aoe, player, pos, stack);
                     }
                 }
                 return break_block(world, block, mop, (byte) (2 + aoe), player, pos, stack);
-            }
+
         }
         if (readToolMode(stack) == 3) {
             World world = player.getEntityWorld();
@@ -554,14 +557,13 @@ public class ItemAdvancedMultiTool extends ItemTool implements IElectricItem, IU
 
             byte aoe = (byte) (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.AOE_DIG, stack) ?
                     UpgradeSystem.system.getModules(EnumInfoUpgradeModules.AOE_DIG, stack).number : 0);
-            if (materials.contains(state.getMaterial()) || block == Blocks.MONSTER_EGG) {
-                if (player.isSneaking()) {
+                 if (player.isSneaking()) {
                     if (!mop.typeOfHit.equals(RayTraceResult.Type.MISS)) {
                         return break_block(world, block, mop, aoe, player, pos, stack);
                     }
                 }
                 return break_block(world, block, mop, (byte) (3 + aoe), player, pos, stack);
-            }
+
         }
         if (readToolMode(stack) == 5) {
             if (isTree(player.getEntityWorld(), pos)) {
@@ -604,7 +606,11 @@ public class ItemAdvancedMultiTool extends ItemTool implements IElectricItem, IU
             }
 
         }
-        return super.onBlockStartBreak(stack, pos, player);
+        return player.getEntityWorld().getBlockState(pos).getBlock().equals(Blocks.SKULL) || super.onBlockStartBreak(
+                stack,
+                pos,
+                player
+        );
     }
 
     private void ore_break(

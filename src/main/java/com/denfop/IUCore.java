@@ -5,8 +5,10 @@ import com.denfop.api.IElectricBlock;
 import com.denfop.api.IStorage;
 import com.denfop.api.Recipes;
 import com.denfop.api.cooling.CoolNet;
+import com.denfop.api.exp.EXPNet;
 import com.denfop.api.heat.HeatNet;
 import com.denfop.api.qe.QENet;
+import com.denfop.api.radiationsystem.RadiationSystem;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.ListRecipes;
 import com.denfop.api.se.SENet;
@@ -57,11 +59,13 @@ import com.denfop.blocks.mechanism.SSPBlock;
 import com.denfop.cool.CoolNetGlobal;
 import com.denfop.events.TickHandler;
 import com.denfop.events.TickHandlerIU;
+import com.denfop.exp.EXPNetGlobal;
 import com.denfop.heat.HeatNetGlobal;
 import com.denfop.integration.avaritia.BlockAvaritiaSolarPanel;
 import com.denfop.integration.botania.BlockBotSolarPanel;
 import com.denfop.integration.de.BlockDESolarPanel;
 import com.denfop.integration.thaumcraft.BlockThaumSolarPanel;
+import com.denfop.items.ItemUpgradeMachinesKit;
 import com.denfop.items.energy.ItemQuantumSaber;
 import com.denfop.items.energy.ItemSpectralSaber;
 import com.denfop.items.modules.EnumModule;
@@ -130,6 +134,7 @@ public final class IUCore {
     public static final CreativeTabs RecourseTab = new TabCore(5, "ResourceTab");
     public static final CreativeTabs ReactorsTab = new TabCore(6, "ReactorsTab");
     public static final CreativeTabs UpgradeTab = new TabCore(7, "UpgradeTab");
+    public static final CreativeTabs BlueprintTab = new TabCore(8, "BlueprintTab");
 
     public static final Map<Integer, EnumModule> modules = new HashMap<>();
     public static final List<ItemStack> list = new ArrayList<>();
@@ -267,7 +272,9 @@ public final class IUCore {
         CoolNet.instance = CoolNetGlobal.initialize();
         QENet.instance = QENetGlobal.initialize();
         SENet.instance = SENetGlobal.initialize();
+        EXPNet.instance = EXPNetGlobal.initialize();
         new VeinSystem();
+        new RadiationSystem();
     }
 
     @SubscribeEvent
@@ -306,16 +313,12 @@ public final class IUCore {
 
     }
 
+
+
     @SubscribeEvent
     public void getore(OreDictionary.OreRegisterEvent event) {
         String oreClass = event.getName();
         if (oreClass.startsWith("ore")) {
-            if (oreClass.equals("oreChargedCertusQuartz")) {
-                return;
-            }
-            if (oreClass.equals("oreCertusQuartz")) {
-                return;
-            }
             if (get_ore == null) {
 
                 assert false;
@@ -343,7 +346,6 @@ public final class IUCore {
             } else {
                 if (!list.contains(OreDictionary.getOres("gem" + temp).get(0))) {
                     list.add(OreDictionary.getOres("gem" + temp).get(0));
-                    get_ingot.add(OreDictionary.getOres("gem" + temp).get(0));
                 }
             }
 
@@ -357,9 +359,7 @@ public final class IUCore {
             if (!list.contains(OreDictionary.getOres(oreClass).get(0))) {
                 list.add(OreDictionary.getOres(oreClass).get(0));
             }
-            if (!get_ingot.contains(OreDictionary.getOres(oreClass).get(0))) {
-                get_ingot.add(OreDictionary.getOres(oreClass).get(0));
-            }
+
 
 
         }
@@ -404,13 +404,7 @@ public final class IUCore {
         addInList1(new ItemStack(Items.GLOWSTONE_DUST));
 
 
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).isItemEqual(Ic2Items.iridiumOre)) {
-                list.remove(i);
-            }
-        }
 
-        list.add(new ItemStack(IUItem.ore, 1, 14));
 
 
         addOre("oreCoal");
@@ -421,6 +415,8 @@ public final class IUCore {
         addOre("oreEmerald");
         addOre1("oreIron");
         addOre1("oreGold");
+        addOre1("oreIridium");
+        addOre("oreIridium");
         removeOre("oreEndLapis");
         removeOre("oreEndEmerald");
         removeOre("oreEndDiamond");
@@ -447,6 +443,8 @@ public final class IUCore {
         removeOre("oreCrystalOrder");
         removeOre("oreCrystalEntropy");
         removeOre("oreCrystalTaint");
+        removeOre("gemIridium");
+
         for (ItemStack stack : IUCore.list) {
             BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput("macerator", false, stack);
             if (recipe != null) {
@@ -464,6 +462,7 @@ public final class IUCore {
                 this.get_comb_crushed.add(stack);
             }
         }
+        get_ingot.clear();
         for (ItemStack stack : IUCore.list) {
             BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput("furnace", false, stack);
             if (recipe != null) {
@@ -505,7 +504,18 @@ public final class IUCore {
         }
 
     }
+    @SubscribeEvent
+    public void onServerTick(TickEvent.ClientTickEvent event) {
+        if (event.phase == TickEvent.Phase.START) {
+            ++ItemUpgradeMachinesKit.tick;
+            if(ItemUpgradeMachinesKit.tick % 40 == 0)
+            for(int i =0; i < ItemUpgradeMachinesKit.inform.length;i++){
+                final List<ItemStack> list1 = IUItem.map_upgrades.get(i);
+                ItemUpgradeMachinesKit.inform[i] = ++ItemUpgradeMachinesKit.inform[i] % list1.size();
+            }
+        }
 
+    }
 
     @Mod.EventHandler
     public void init(final FMLFingerprintViolationEvent event) {

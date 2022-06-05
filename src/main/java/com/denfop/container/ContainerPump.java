@@ -23,6 +23,7 @@ public class ContainerPump extends ContainerElectricMachine<TileEntityPump> {
         List<String> ret = super.getNetworkedFields();
         ret.add("fluidTank");
         ret.add("guiProgress");
+        ret.add("energy");
         return ret;
     }
 

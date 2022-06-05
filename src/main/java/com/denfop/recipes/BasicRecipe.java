@@ -1631,7 +1631,7 @@ public class BasicRecipe {
         }
         for (int i = 0; i < RegisterOreDictionary.list_string1.size(); i++) {
             Recipes.advRecipes.addShapelessRecipe(
-                    new ItemStack(IUItem.alloysingot, 1, i),
+                    new ItemStack(IUItem.alloysingot, 9, i),
                     new ItemStack(IUItem.alloysblock, 1, i)
             );
             Recipes.advRecipes.addShapelessRecipe(
@@ -3134,7 +3134,7 @@ public class BasicRecipe {
                         'A',
                         new ItemStack(IUItem.photonglass, 1, i),
                         'B',
-                        new ItemStack(IUItem.core, 1, i),
+                        new ItemStack(IUItem.excitednucleus, 1, i),
                         'C',
                         iridium[i],
                         'D',
@@ -3150,7 +3150,7 @@ public class BasicRecipe {
                         'A',
                         new ItemStack(IUItem.photonglass, 1, i),
                         'B',
-                        new ItemStack(IUItem.core, 1, i),
+                        new ItemStack(IUItem.excitednucleus, 1, i),
                         'C',
                         iridium[i],
                         'D',
@@ -3167,7 +3167,7 @@ public class BasicRecipe {
                         'A',
                         new ItemStack(IUItem.photonglass, 1, i),
                         'B',
-                        new ItemStack(IUItem.core, 1, i),
+                        new ItemStack(IUItem.excitednucleus, 1, i),
                         'C',
                         iridium[i],
                         'D',
@@ -3183,7 +3183,7 @@ public class BasicRecipe {
                         'A',
                         new ItemStack(IUItem.photonglass, 1, i),
                         'B',
-                        new ItemStack(IUItem.core, 1, i),
+                        new ItemStack(IUItem.excitednucleus, 1, i),
                         'C',
                         iridium[i],
                         'D',

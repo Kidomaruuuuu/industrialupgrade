@@ -32,21 +32,9 @@ public class GuiSolarGeneratorEnergy extends GuiIC2<ContainerSolarGeneratorEnerg
 
     }
 
-    public void initGui() {
-        super.initGui();
-        this.buttonList.add(new GuiButton(0, (this.width - this.xSize) / 2 + 13, (this.height - this.ySize) / 2 + 73,
-                50, 16, Localization.translate(
-                "button.sunnarium")
-        ));
-    }
 
-    protected void actionPerformed(GuiButton guibutton) {
 
-        if (guibutton.id == 0) {
-            IC2.network.get(false).initiateClientTileEntityEvent(this.container.base, 0);
 
-        }
-    }
 
     @Override
     protected void drawForegroundLayer(final int mouseX, final int mouseY) {

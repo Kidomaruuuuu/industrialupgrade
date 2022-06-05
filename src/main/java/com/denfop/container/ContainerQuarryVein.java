@@ -22,6 +22,7 @@ public class ContainerQuarryVein extends ContainerFullInv<TileEntityQuarryVein> 
         ret.add("progress");
         ret.add("level");
         ret.add("find");
+        ret.add("energy");
         return ret;
     }
 

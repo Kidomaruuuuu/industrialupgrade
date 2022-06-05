@@ -35,6 +35,8 @@ public class TabCore extends CreativeTabs {
                 return IUItem.reactormendeleviumQuad;
             case 7:
                 return new ItemStack(IUItem.machinekit, 1, 3);
+            case 8:
+                return new ItemStack(IUItem.templates);
 
         }
         return new ItemStack(IUItem.blockpanel);

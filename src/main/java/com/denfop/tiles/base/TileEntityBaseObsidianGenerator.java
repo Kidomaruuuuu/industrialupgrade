@@ -5,6 +5,7 @@ import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.audio.AudioSource;
 import com.denfop.container.ContainerObsidianGenerator;
 import com.denfop.invslot.InvSlotObsidianGenerator;
+import com.denfop.invslot.InvSlotUpgrade;
 import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.IUpgradeItem;
@@ -14,7 +15,6 @@ import ic2.core.IHasGui;
 import ic2.core.block.comp.Fluids;
 import ic2.core.block.invslot.InvSlotConsumableLiquidByList;
 import ic2.core.block.invslot.InvSlotOutput;
-import ic2.core.block.invslot.InvSlotUpgrade;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -59,7 +59,7 @@ public abstract class TileEntityBaseObsidianGenerator extends TileEntityElectric
         this.defaultOperationLength = this.operationLength = length;
         this.defaultTier = aDefaultTier;
         this.defaultEnergyStorage = energyPerTick * length;
-        this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
+        this.upgradeSlot = new com.denfop.invslot.InvSlotUpgrade(this, "upgrade", 4);
         this.outputSlot1 = new InvSlotOutput(this, "output1", 1);
 
         this.fluidSlot1 = new InvSlotConsumableLiquidByList(this, "fluidSlot", 1, FluidRegistry.WATER);
@@ -170,15 +170,8 @@ public abstract class TileEntityBaseObsidianGenerator extends TileEntityElectric
             }
             setActive(false);
         }
-        for (int i = 0; i < this.upgradeSlot.size(); i++) {
-            ItemStack stack = this.upgradeSlot.get(i);
-            if (stack != null && stack.getItem() instanceof IUpgradeItem) {
-                if (((IUpgradeItem) stack.getItem()).onTick(stack, this)) {
-                    needsInvUpdate = true;
-                }
-            }
-        }
-
+        if(this.upgradeSlot.tickNoMark())
+            setOverclockRates();
         if (needsInvUpdate) {
             super.markDirty();
         }

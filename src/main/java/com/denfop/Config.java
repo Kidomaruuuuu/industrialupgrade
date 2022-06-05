@@ -535,7 +535,7 @@ public final class Config {
             PerMFSUOutput = config.get("Configuration Energy storages", "Perfectoutput", 242144).getDouble(242144);
             tierPerMFSU = config.get("Configuration Energy storages", "Perfecttier", 7).getDouble(7);
             expstorage = config.get("Basic Mechanisms", "exp storage", 500).getInt(500);
-            enerycost = config.get("Quantum Querry", "energy consume", 25000).getInt(25000);
+            enerycost = config.get("Quantum Query", "energy consume in QE (1 QE = 16 EU)", 3000).getInt(3000);
             coefficientrf = config.get("general", "coefficient rf", 4).getInt(4);
             cost_aspect = config.get("general", "Aspect cost for energy", 2000).getInt(2000);
             if (coefficientrf < 1) {
@@ -837,7 +837,7 @@ public final class Config {
             String[] dimensionList = config.getStringList(
                     "Dimension List",
                     "spawn ore",
-                    new String[]{"0", "6"},
+                    new String[]{"0", "-6"},
                     "List of dimensions in which ore will spawn from the mod"
             );
             for (String s : dimensionList) {

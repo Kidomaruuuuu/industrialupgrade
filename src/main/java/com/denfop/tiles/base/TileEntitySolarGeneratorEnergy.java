@@ -37,11 +37,10 @@ public class TileEntitySolarGeneratorEnergy extends TileEntityInventory implemen
 
     public TileEntitySolarGeneratorEnergy(double cof) {
 
-        this.maxSunEnergy = 2500;
+        this.maxSunEnergy = 4500;
         this.cof = cof;
         this.outputSlot = new InvSlotOutput(this, "output", 1);
         this.input = new InvSlotGenSunarrium(this);
-        this.work = true;
         this.lst = new ArrayList<>();
         this.lst.add(0D);
         this.lst.add(0D);
@@ -98,11 +97,11 @@ public class TileEntitySolarGeneratorEnergy extends TileEntityInventory implemen
                 (this.world.getBlockState(this.pos.up()).getMaterial().getMaterialMapColor() ==
                         MapColor.AIR)) {
             energy(tick);
-            if (this.sunenergy.getEnergy() >= 2500 && this.work) {
-                if (this.outputSlot.get(0).stackSize < 64) {
+            if (this.sunenergy.getEnergy() >= 4500) {
+                if (this.outputSlot.get().stackSize < 64 || this.outputSlot.isEmpty()) {
                     if (this.outputSlot.canAdd(itemstack)) {
                         this.outputSlot.add(itemstack);
-                        this.sunenergy.addEnergy(-2500);
+                        this.sunenergy.addEnergy(-4500);
                     }
                 }
             }
@@ -154,16 +153,6 @@ public class TileEntitySolarGeneratorEnergy extends TileEntityInventory implemen
 
     }
 
-    public void readFromNBT(NBTTagCompound nbttagcompound) {
-        super.readFromNBT(nbttagcompound);
-        this.work = nbttagcompound.getBoolean("work");
-    }
-
-    public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound) {
-        super.writeToNBT(nbttagcompound);
-        nbttagcompound.setBoolean("work", this.work);
-        return nbttagcompound;
-    }
 
 
     @Override

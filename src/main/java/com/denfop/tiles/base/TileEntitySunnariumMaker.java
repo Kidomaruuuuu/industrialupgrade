@@ -1,6 +1,7 @@
 package com.denfop.tiles.base;
 
 import com.denfop.IUItem;
+import com.denfop.Ic2Items;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.IUpdateTick;
@@ -22,6 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -43,6 +45,105 @@ public class TileEntitySunnariumMaker extends TileEntityBaseSunnariumMaker imple
                 new ItemStack(IUItem.iuingot, 1, 3),
                 new ItemStack(IUItem.sunnarium, 1, 3)
         );
+        addSunnariumMaker(
+                new ItemStack(IUItem.core, 1, 0),
+                new ItemStack(Items.IRON_INGOT),
+                new ItemStack(IUItem.iuingot, 1, 1),
+                new ItemStack(IUItem.sunnarium, 1, 0),
+                new ItemStack(IUItem.excitednucleus, 1, 0)
+        );
+        addSunnariumMaker(
+                new ItemStack(IUItem.core, 1, 1),
+                Ic2Items.bronzeIngot,
+                new ItemStack(IUItem.alloysingot, 1, 7),
+                new ItemStack(IUItem.sunnarium, 1, 0),
+                new ItemStack(IUItem.excitednucleus, 1, 1)
+        );
+        addSunnariumMaker(
+                new ItemStack(IUItem.core, 1, 2),
+                new ItemStack(IUItem.iuingot, 1, 13),
+                new ItemStack(IUItem.alloysingot, 1, 3),
+                new ItemStack(IUItem.sunnarium, 1, 0),
+                new ItemStack(IUItem.excitednucleus, 1, 2)
+        );
+        addSunnariumMaker(
+                new ItemStack(IUItem.core, 1, 3),
+                Ic2Items.leadIngot,
+                new ItemStack(IUItem.iuingot, 1, 4),
+                new ItemStack(IUItem.sunnarium, 1, 0),
+                new ItemStack(IUItem.excitednucleus, 1, 3)
+        );
+        addSunnariumMaker(
+                new ItemStack(IUItem.core, 1, 4),
+                new ItemStack(Items.PRISMARINE_SHARD),
+                new ItemStack(Items.EMERALD),
+                new ItemStack(IUItem.sunnarium, 1, 0),
+                new ItemStack(IUItem.excitednucleus, 1, 4)
+        );
+        addSunnariumMaker(
+                new ItemStack(IUItem.core, 1, 5),
+                new ItemStack(Items.ENDER_PEARL),
+                new ItemStack(Items.BLAZE_ROD),
+                new ItemStack(IUItem.sunnarium, 1, 0),
+                new ItemStack(IUItem.excitednucleus, 1, 5)
+        );
+        addSunnariumMaker(
+                new ItemStack(IUItem.core, 1, 6),
+                new ItemStack(Items.QUARTZ),
+                new ItemStack(Items.ENDER_EYE),
+                new ItemStack(IUItem.sunnarium, 1, 0),
+                new ItemStack(IUItem.excitednucleus, 1, 6)
+        );
+        addSunnariumMaker(
+                new ItemStack(IUItem.core, 1, 7),
+                new ItemStack(IUItem.alloysingot, 1, 1),
+                new ItemStack(IUItem.alloysingot, 1, 8),
+                new ItemStack(IUItem.sunnarium, 1, 0),
+                new ItemStack(IUItem.excitednucleus, 1, 7)
+        );
+        addSunnariumMaker(
+                new ItemStack(IUItem.core, 1, 8),
+                new ItemStack(IUItem.alloysingot, 1, 6),
+                new ItemStack(IUItem.alloysingot, 1, 2),
+                new ItemStack(IUItem.sunnarium, 1, 0),
+                new ItemStack(IUItem.excitednucleus, 1, 8)
+        );
+        addSunnariumMaker(
+                new ItemStack(IUItem.core, 1, 9),
+                Ic2Items.RTGPellets,
+                new ItemStack(IUItem.photoniy),
+                new ItemStack(IUItem.sunnarium, 1, 0),
+                new ItemStack(IUItem.excitednucleus, 1, 9)
+        );
+        addSunnariumMaker(
+                new ItemStack(IUItem.core, 1, 10),
+                new ItemStack(IUItem.neutroniumingot),
+                new ItemStack(Items.CHORUS_FRUIT),
+                new ItemStack(IUItem.sunnarium, 1, 0),
+                new ItemStack(IUItem.excitednucleus, 1, 10)
+        );
+        addSunnariumMaker(
+
+                new ItemStack(IUItem.core, 1, 11),
+                new ItemStack(IUItem.alloysingot, 1, 5),
+                new ItemStack(IUItem.alloysingot, 1, 4),
+                new ItemStack(IUItem.sunnarium, 1, 0),
+                new ItemStack(IUItem.excitednucleus, 1, 11)
+        );
+        addSunnariumMaker(
+                new ItemStack(IUItem.core, 1, 12),
+                new ItemStack(IUItem.alloysingot, 1, 0),
+                new ItemStack(Items.SKULL, 1, 1),
+                new ItemStack(IUItem.sunnarium, 1, 0),
+                new ItemStack(IUItem.excitednucleus, 1, 12)
+        );
+        addSunnariumMaker(
+                new ItemStack(IUItem.core, 1, 13),
+                new ItemStack(IUItem.alloysingot, 1, 9),
+                new ItemStack(Items.NETHER_STAR),
+                new ItemStack(IUItem.sunnarium, 1, 0),
+                new ItemStack(IUItem.excitednucleus, 1, 13)
+        );
     }
 
     public static void addSunnariumMaker(
@@ -53,11 +154,31 @@ public class TileEntitySunnariumMaker extends TileEntityBaseSunnariumMaker imple
             ItemStack output
     ) {
         final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
+        String name1 = "";
+        String name2 = "";
+        String name3 = "";
+        String name4 = "";
+        if (OreDictionary.getOreIDs(container).length > 0) {
+            name1 = OreDictionary.getOreName(OreDictionary.getOreIDs(container)[0]);
+        }
+        if (OreDictionary.getOreIDs(container1).length > 0) {
+            name2 = OreDictionary.getOreName(OreDictionary.getOreIDs(container1)[0]);
+        }
+        if (OreDictionary.getOreIDs(container2).length > 0) {
+            name3 = OreDictionary.getOreName(OreDictionary.getOreIDs(container2)[0]);
+        }
+        if (OreDictionary.getOreIDs(container3).length > 0) {
+            name4 = OreDictionary.getOreName(OreDictionary.getOreIDs(container3)[0]);
+        }
         Recipes.recipes.addRecipe(
                 "sunnurium",
                 new BaseMachineRecipe(
-                        new Input(input.forStack(container), input.forStack(container1),
-                                input.forStack(container2), input.forStack(container3)
+                        new Input(
+                                name1.isEmpty() ? input.forStack(container) : input.forOreDict(name1, container.getCount()),
+                                name2.isEmpty() ? input.forStack(container1) : input.forOreDict(name2, container1.getCount()),
+                                name3.isEmpty() ? input.forStack(container2) : input.forOreDict(name3, container2.getCount()),
+                                name4.isEmpty() ? input.forStack(container3) : input.forOreDict(name4, container3.getCount())
+
                         ),
                         new RecipeOutput(null, output)
                 )

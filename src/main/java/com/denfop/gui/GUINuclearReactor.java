@@ -3,6 +3,7 @@ package com.denfop.gui;
 import com.denfop.Constants;
 import com.denfop.container.ContainerBaseNuclearReactor;
 import ic2.core.GuiIC2;
+import ic2.core.IC2;
 import ic2.core.gui.Gauge;
 import ic2.core.gui.LinkedGauge;
 import ic2.core.gui.Text;
@@ -13,6 +14,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
+
+import java.io.IOException;
 
 @SideOnly(Side.CLIENT)
 public class GuiNuclearReactor extends GuiIC2<ContainerBaseNuclearReactor> {
@@ -29,9 +32,18 @@ public class GuiNuclearReactor extends GuiIC2<ContainerBaseNuclearReactor> {
         this.container = container1;
         this.name = Localization.translate("iu.blockAdvRea.name");
         this.ySize = 243;
-        this.xSize = 212;
+        this.xSize = 256;
     }
-
+    protected void mouseClicked(int i, int j, int k) throws IOException {
+        super.mouseClicked(i, j, k);
+        int xMin = (this.width - this.xSize) / 2;
+        int yMin = (this.height - this.ySize) / 2;
+        int x = i - xMin;
+        int y = j - yMin;
+        if (x >= 216 && x <= 229 && y >= 39 && y <= 51) {
+            IC2.network.get(false).initiateClientTileEntityEvent(this.container.base, 0);
+        }
+    }
     public void drawForegroundLayer(int par1, int par2) {
         super.drawForegroundLayer(par1, par2);
 
@@ -48,7 +60,8 @@ public class GuiNuclearReactor extends GuiIC2<ContainerBaseNuclearReactor> {
                 Math.round(((GuiNuclearReactor.this.container).base).getOfferedEnergy())
         )), 5752026, false, 4, 0, false, true).drawForeground(par1, par2)
         ;
-
+        new AdvArea(this,216,39,229,51).withTooltip(this.container.base.work ? Localization.translate("turn_off") :
+                Localization.translate("turn_on")).drawForeground(par1, par2);
     }
 
     @Override
@@ -61,7 +74,7 @@ public class GuiNuclearReactor extends GuiIC2<ContainerBaseNuclearReactor> {
         this.mc.getTextureManager().bindTexture(this.background);
         int xOffset = (this.width - this.xSize) / 2;
         int yOffset = (this.height - this.ySize) / 2;
-        this.drawTexturedModalRect(xOffset, yOffset, 0, 0, this.xSize, this.ySize);
+        this.drawTexturedModalRect(xOffset, yOffset, 0, 0, 212, this.ySize);
         int size = this.container.base.getReactorSize();
         int startX = xOffset + 26 - 18;
         int startY = yOffset + 25;
@@ -85,6 +98,14 @@ public class GuiNuclearReactor extends GuiIC2<ContainerBaseNuclearReactor> {
                 Math.round(((GuiNuclearReactor.this.container).base).getOfferedEnergy())
         )), 5752026, false, 4, 0, false, true).drawBackground(xOffset, yOffset)
         ;
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        this.mc.getTextureManager().bindTexture(this.background);
+        this.drawTexturedModalRect(xOffset+209, yOffset+27, 209, 27, 40, 61-27);
+        if(this.container.base.work){
+            this.drawTexturedModalRect(xOffset+215, yOffset+38, 224, 70, 239-224, 84-70);
+
+        }
+
     }
 
 }

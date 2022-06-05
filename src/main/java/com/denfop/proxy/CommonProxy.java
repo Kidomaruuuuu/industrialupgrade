@@ -8,6 +8,7 @@ import com.denfop.api.IModelRegister;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
+import com.denfop.api.recipe.RecipeInputStack;
 import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.api.research.BaseResearchSystem;
 import com.denfop.api.research.ResearchSystem;
@@ -56,6 +57,7 @@ import com.denfop.blocks.mechanism.IUStorage;
 import com.denfop.blocks.mechanism.SSPBlock;
 import com.denfop.componets.AdvEnergy;
 import com.denfop.componets.CoolComponent;
+import com.denfop.componets.EXPComponent;
 import com.denfop.componets.QEComponent;
 import com.denfop.componets.SEComponent;
 import com.denfop.events.EventUpdate;
@@ -309,6 +311,9 @@ public class CommonProxy implements IGuiHandler {
         if (Components.getId(SEComponent.class) == null) {
             Components.register(SEComponent.class, "SEComponent");
         }
+        if (Components.getId(EXPComponent.class) == null) {
+            Components.register(EXPComponent.class, "EXPComponent");
+        }
         EnumUpgradesMultiMachine.register();
         if (Loader.isModLoaded("mets")) {
             METSIntegration.init();
@@ -368,6 +373,7 @@ public class CommonProxy implements IGuiHandler {
                             new RecipeOutput(nbt, output)
                     )
             );
+            Recipes.recipes.getMap_recipe_managers_itemStack("furnace").add(new RecipeInputStack(input));
         }
     }
 

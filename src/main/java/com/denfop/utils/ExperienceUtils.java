@@ -56,6 +56,22 @@ public class ExperienceUtils {
         return storage;
     }
 
+    public static double removePlayerXP(EntityPlayer player, double maxStorage, double storage) {
+        int experience = getPlayerXP(player);
+        if (experience > 0) {
+            double tmp = maxStorage - storage;
+
+            storage += Math.min(experience, tmp);
+            experience -= Math.min(experience, tmp);
+
+        }
+        player.experienceTotal = experience;
+        player.experienceLevel = getLevelForExperience(experience);
+        int expForLevel = getExperienceForLevel(player.experienceLevel);
+        player.experience = (float) (experience - expForLevel) / (float) player.xpBarCap();
+        return storage;
+    }
+
     public static int getExperienceForLevel(int level) {
         return level == 0
                 ? 0

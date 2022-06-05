@@ -8,6 +8,7 @@ import com.denfop.api.vein.Vein;
 import com.denfop.audio.AudioSource;
 import com.denfop.audio.PositionSpec;
 import com.denfop.componets.AdvEnergy;
+import com.denfop.componets.EXPComponent;
 import com.denfop.componets.QEComponent;
 import com.denfop.items.modules.EnumQuarryModules;
 import com.denfop.items.modules.EnumQuarryType;
@@ -56,9 +57,8 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
     public final InvSlotBaseQuarry input;
     public final double constenergyconsume;
     public final double speed;
-    public final int exp_max_storage;
     public final InvSlotOutput outputSlot;
-    public int exp_storage;
+    public final EXPComponent exp;
     public int min_y;
     public int max_y;
     public AudioSource audioSource;
@@ -94,13 +94,13 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
         this.constenergyconsume = 500 * coef;
         this.min_y = 0;
         this.max_y = 256;
-        this.exp_max_storage = 5000;
-        this.exp_storage = 0;
         this.chance = 0;
         this.col = 1;
         this.furnace = false;
         this.list_modules = null;
         this.consume = this.energyconsume;
+        this.exp = this.addComponent(EXPComponent.asBasicSource(this, 5000, 14));
+
     }
 
 
@@ -111,7 +111,6 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
         int z = nbttagcompound.getInteger("blockpos_z");
         this.min_y = nbttagcompound.getInteger("min_y");
         this.max_y = nbttagcompound.getInteger("max_y");
-        this.exp_storage = nbttagcompound.getInteger("exp_storage");
         this.blockpos = new BlockPos(x, y, z);
         this.work = nbttagcompound.getBoolean("work");
     }
@@ -125,7 +124,6 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
         }
         nbttagcompound.setInteger("min_y", this.min_y);
         nbttagcompound.setInteger("max_y", this.max_y);
-        nbttagcompound.setInteger("exp_storage", this.exp_storage);
         nbttagcompound.setBoolean("work", work);
         return nbttagcompound;
     }
@@ -192,8 +190,10 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
         for (int i = 0; i < this.speed; i++) {
             if (this.energy.canUseEnergy(this.energyconsume)) {
                 this.energy.useEnergy(this.energyconsume);
-                initiate(0);
-                setActive(true);
+                if(!this.getActive()) {
+                    initiate(0);
+                    setActive(true);
+                }
                 if (!this.getWorld().isAirBlock(this.blockpos)) {
                     Block block = this.getWorld().getBlockState(this.blockpos).getBlock();
                     ItemStack stack = new ItemStack(block, 1,
@@ -250,7 +250,7 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
                                     block.onBlockDestroyedByPlayer(world, this.blockpos, state);
                                     block.harvestBlock(world, player, this.blockpos, state, null, stack1);
                                     this.getWorld().setBlockToAir(this.blockpos);
-                                    this.exp_storage = Math.min(this.exp_storage + exp, this.exp_max_storage);
+                                    this.exp.addEnergy(exp);
                                     List<EntityItem> items = player.getEntityWorld().getEntitiesWithinAABB(
                                             EntityItem.class,
                                             new AxisAlignedBB(
@@ -413,14 +413,14 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
                 }
 
             } else {
-                setActive(false);
+                if(this.getActive()) {
+                    initiate(2);
+                    setActive(false);
+                }
             }
         }
 
 
-        if (this.getWorld().provider.getWorldTime() % 200 == 0) {
-            initiate(2);
-        }
         if (getActive()) {
             ItemStack stack3 = Ic2Items.ejectorUpgrade;
             ((IUpgradeItem) stack3.getItem()).onTick(stack3, this);
@@ -552,7 +552,7 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
                 }
                 break;
             case 4:
-                this.exp_storage = ExperienceUtils.addPlayerXP1(entityPlayer, this.exp_storage);
+                this.exp.useEnergy(ExperienceUtils.addPlayerXP1(entityPlayer, (int) this.exp.getEnergy()));
                 break;
         }
     }

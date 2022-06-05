@@ -5,14 +5,25 @@ import com.denfop.blocks.BlockOre;
 import com.denfop.blocks.BlockPreciousOre;
 import com.denfop.blocks.BlockThoriumOre;
 import com.denfop.blocks.BlocksRadiationOre;
-import com.denfop.items.*;
+import com.denfop.items.IUItemBase;
+import com.denfop.items.ItemAdvancedWindRotor;
+import com.denfop.items.ItemBlueprint;
+import com.denfop.items.ItemCell;
+import com.denfop.items.ItemCoolPipes;
+import com.denfop.items.ItemCoolingUpgrade;
+import com.denfop.items.ItemCoreWind;
+import com.denfop.items.ItemExcitedNucleus;
+import com.denfop.items.ItemPipes;
+import com.denfop.items.ItemQCable;
+import com.denfop.items.ItemSCable;
+import com.denfop.items.ItemUpgradePanelKit;
+import com.denfop.items.ItemWindRod;
+import com.denfop.items.ItemsTemplates;
 import com.denfop.items.bags.ItemLeadBox;
 import com.denfop.items.book.ItemBook;
 import com.denfop.items.energy.ItemKatana;
 import com.denfop.items.machines.ItemsAdminPanel;
 import com.denfop.items.machines.ItemsAdvRefiner;
-import com.denfop.items.machines.ItemsDoubleMolecular;
-import com.denfop.items.machines.ItemsMolecular;
 import com.denfop.items.machines.ItemsQuarryVein;
 import com.denfop.items.machines.ItemsRefiner;
 import com.denfop.items.machines.ItemsSintezator;
@@ -128,7 +139,7 @@ public class IUItem {
     public static ItemStack adronrotor;
     public static ItemStack ultramarinerotor;
     public static Item plate;
-    public static ItemsMolecular blockmolecular;
+    public static Block blockmolecular;
     public static Block blockSE;
     public static Item sunnarium;
     public static Block AdvblockSE;
@@ -278,7 +289,7 @@ public class IUItem {
     public static Item UpgradePanelKit;
     public static Item upgrademodule;
     public static Block upgradeblock;
-    public static ItemsDoubleMolecular blockdoublemolecular;
+    public static Block blockdoublemolecular;
     public static ItemsRefiner oilrefiner;
     public static Block oilblock;
     public static ItemsQuarryVein oilquarry;
@@ -364,6 +375,8 @@ public class IUItem {
     public static ItemAdvancedWindRotor rotor_iron;
     public static ItemAdvancedWindRotor rotor_wood;
     public static ItemAdvancedWindRotor rotor_bronze;
+    public static ItemBlueprint blueprint;
+    public static Map<Integer, List<ItemStack>> map_upgrades;
 
     public static void register_mineral() {
         name_mineral = new ArrayList<>();

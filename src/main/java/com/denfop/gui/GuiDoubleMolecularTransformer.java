@@ -1,7 +1,6 @@
 package com.denfop.gui;
 
 import com.denfop.Constants;
-import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.container.ContainerBaseDoubleMolecular;
 import com.denfop.utils.ModUtils;
@@ -64,7 +63,8 @@ public class GuiDoubleMolecularTransformer extends GuiIC2<ContainerBaseDoubleMol
                 this.fontRenderer.drawString(output + output3.getRecipe().output.items.get(0).getDisplayName(), this.guiLeft + 60,
                         this.guiTop + 47, 4210752
                 );
-                this.fontRenderer.drawString(energyPerOperation + ModUtils.getString(output3.getRecipe().output.metadata.getDouble("energy")) +
+                this.fontRenderer.drawString(energyPerOperation + ModUtils.getString(output3.getRecipe().output.metadata.getDouble(
+                                "energy")) +
                                 " EU",
                         this.guiLeft + 60, this.guiTop + 58, 4210752
                 );

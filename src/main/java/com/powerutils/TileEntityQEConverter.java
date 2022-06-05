@@ -128,6 +128,7 @@ public class TileEntityQEConverter extends TileEntityInventory implements IHasGu
             }
 
         }
+        if(this.energy2.getEnergy() > 0)
         if (!this.list.isEmpty()) {
             if (this.rf) {
                 NodeStats stats = EnergyNet.instance.getNodeStats(this.energy.getDelegate());
@@ -157,7 +158,7 @@ public class TileEntityQEConverter extends TileEntityInventory implements IHasGu
 
         final boolean needsInvUpdate = this.upgradeSlot.tickNoMark();
         if (needsInvUpdate) {
-            super.markDirty();
+            setOverclockRates();
         }
 
     }

@@ -56,8 +56,7 @@ public class ContainerBaseQuarry extends ContainerFullInv<TileEntityBaseQuarry> 
         ret.add("blockpos");
         ret.add("min_y");
         ret.add("max_y");
-        ret.add("exp_storage");
-        ret.add("exp_max_storage");
+        ret.add("exp");
         return ret;
     }
 

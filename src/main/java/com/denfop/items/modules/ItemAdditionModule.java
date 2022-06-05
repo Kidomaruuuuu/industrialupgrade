@@ -3,6 +3,7 @@ package com.denfop.items.modules;
 import com.denfop.Constants;
 import com.denfop.IUCore;
 import com.denfop.api.IModelRegister;
+import com.denfop.componets.AdvEnergy;
 import com.denfop.tiles.base.TileEntityElectricBlock;
 import com.denfop.utils.ModUtils;
 import ic2.core.block.TileEntityBlock;
@@ -86,6 +87,23 @@ public class ItemAdditionModule extends ItemMulti<ItemAdditionModule.CraftingTyp
                     nbttagcompound.setInteger("Ycoord", tile.getPos().getY());
                     nbttagcompound.setInteger("Zcoord", tile.getPos().getZ());
                     nbttagcompound.setInteger("tier", tile.getComponent(Energy.class).getSinkTier());
+                    nbttagcompound.setInteger("World1", tile.getWorld().provider.getDimension());
+                    nbttagcompound.setString("World", tile.getWorld().provider.getDimensionType().getName());
+                    nbttagcompound.setString(
+                            "Name",
+                            Localization.translate(Objects.requireNonNull(tile.getDisplayName()).getFormattedText())
+                    );
+                    return EnumActionResult.SUCCESS;
+                }else  if (tile.getComponent(AdvEnergy.class) != null) {
+                    NBTTagCompound nbttagcompound = ModUtils.nbt(player.getHeldItem(hand));
+                    boolean charge = nbttagcompound.getBoolean("change");
+                    if (tile instanceof TileEntityElectricBlock && charge) {
+                        return EnumActionResult.PASS;
+                    }
+                    nbttagcompound.setInteger("Xcoord", tile.getPos().getX());
+                    nbttagcompound.setInteger("Ycoord", tile.getPos().getY());
+                    nbttagcompound.setInteger("Zcoord", tile.getPos().getZ());
+                    nbttagcompound.setInteger("tier", tile.getComponent(AdvEnergy.class).getSinkTier());
                     nbttagcompound.setInteger("World1", tile.getWorld().provider.getDimension());
                     nbttagcompound.setString("World", tile.getWorld().provider.getDimensionType().getName());
                     nbttagcompound.setString(

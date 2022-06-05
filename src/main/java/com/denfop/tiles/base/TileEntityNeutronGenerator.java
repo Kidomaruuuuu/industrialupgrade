@@ -4,6 +4,7 @@ import com.denfop.Config;
 import com.denfop.blocks.FluidName;
 import com.denfop.container.ContainerNeutronGenerator;
 import com.denfop.gui.GuiNeutronGenerator;
+import com.denfop.invslot.InvSlotUpgrade;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
@@ -17,7 +18,6 @@ import ic2.core.block.invslot.InvSlotConsumableLiquid;
 import ic2.core.block.invslot.InvSlotConsumableLiquid.OpType;
 import ic2.core.block.invslot.InvSlotConsumableLiquidByList;
 import ic2.core.block.invslot.InvSlotOutput;
-import ic2.core.block.invslot.InvSlotUpgrade;
 import ic2.core.init.MainConfig;
 import ic2.core.network.GuiSynced;
 import ic2.core.profile.NotClassic;
@@ -55,7 +55,7 @@ public class TileEntityNeutronGenerator extends TileEntityElectricMachine implem
         this.containerslot = new InvSlotConsumableLiquidByList(this, "container", Access.I, 1, InvSide.TOP, OpType.Fill,
                 FluidName.fluidNeutron.getInstance()
         );
-        this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
+        this.upgradeSlot = new com.denfop.invslot.InvSlotUpgrade(this, "upgrade", 4);
         this.fluids = this.addComponent(new Fluids(this));
         this.fluidTank = this.fluids.addTank("fluidTank", 9 * 1000,
                 Fluids.fluidPredicate(FluidName.fluidNeutron.getInstance())

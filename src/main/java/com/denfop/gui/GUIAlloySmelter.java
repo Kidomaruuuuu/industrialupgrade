@@ -4,7 +4,6 @@ import com.denfop.Constants;
 import com.denfop.IUItem;
 import com.denfop.api.ITemperature;
 import com.denfop.api.Recipes;
-import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.container.ContainerDoubleElectricMachine;
 import com.denfop.utils.ModUtils;

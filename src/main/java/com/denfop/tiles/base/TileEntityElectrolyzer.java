@@ -84,13 +84,14 @@ public class TileEntityElectrolyzer extends TileEntityBaseLiquedMachine {
 
 
         if (this.cathodeslot.isEmpty() || this.anodeslot.isEmpty()) {
-            setActive(false);
+            if(this.getActive()) {
+                this.setActive(false);
+                initiate(2);
+            }
             return;
         }
 
-        if (getWorld().provider.getWorldTime() % 200 == 0) {
-            initiate(2);
-        }
+
         boolean drain = false;
         boolean drain1 = false;
         if (this.getFluidTank(0).getFluidAmount() >= 3 && this.energy.getEnergy() >= 25) {
@@ -115,7 +116,10 @@ public class TileEntityElectrolyzer extends TileEntityBaseLiquedMachine {
                 drains = drain ? drains + 2 * cap : drains;
                 drains = drain1 ? drains + cap1 : drains;
                 this.getFluidTank(0).drain(drains, true);
-                initiate(0);
+                if(!this.getActive()) {
+                    this.setActive(true);
+                    initiate(0);
+                }
                 this.useEnergy(25);
 
 

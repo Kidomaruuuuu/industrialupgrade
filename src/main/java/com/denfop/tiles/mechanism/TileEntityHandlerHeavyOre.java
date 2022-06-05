@@ -176,15 +176,10 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
         if (this.temperature > 0) {
             this.temperature--;
         }
-        for (int i = 0; i < this.upgradeSlot.size(); i++) {
-            ItemStack stack = this.upgradeSlot.get(i);
-            if (stack != null && stack.getItem() instanceof IUpgradeItem) {
-                if (((IUpgradeItem) stack.getItem()).onTick(stack, this)) {
-                    needsInvUpdate = true;
-                }
-            }
-        }
 
+
+        if((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark())
+            setOverclockRates();
         if (needsInvUpdate) {
             super.markDirty();
         }

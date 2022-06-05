@@ -184,6 +184,7 @@ public class EnergyNetLocal {
                 if (amount <= 0.0D) {
                     break;
                 }
+
                 IEnergySink energySink = energyPath.target;
                 if (energySink.getDemandedEnergy() <= 0.0D) {
                     continue;
@@ -401,20 +402,28 @@ public class EnergyNetLocal {
         return flag;
     }
 
-    public IEnergyTile getNeighbor(IEnergyTile tile, EnumFacing dir) {
+    public IEnergyTile getNeighbor(final IEnergyTile tile, final EnumFacing dir) {
         if (tile == null) {
             return null;
         }
-        if (tile instanceof TileEntity) {
-            return getTileEntity(((TileEntity) tile).getPos().offset(dir));
+        if (!this.energyTileTileEntityMap.containsKey(tile)) {
+            return null;
         }
-        if (tile instanceof ILocatable) {
-            TileEntity tile1 = this.world.getTileEntity(((ILocatable) tile).getPosition().offset(dir));
-            if (tile1 != null) {
-                return getTileEntity(tile1.getPos());
-            }
+        return this.getTileEntity(this.energyTileTileEntityMap.get(tile).getPos().offset(dir));
+    }
+
+    public IEnergyTile getNeighbor(final IEnergyTile tile, final EnumFacing dir, List<IEnergyTile> tiles) {
+        if (tile == null) {
+            return null;
         }
-        return null;
+        if (!this.energyTileTileEntityMap.containsKey(tile)) {
+            return null;
+        }
+        IEnergyTile tile1 = this.getTileEntity(this.energyTileTileEntityMap.get(tile).getPos().offset(dir));
+        if (tiles.contains(tile1)) {
+            return null;
+        }
+        return tile1;
     }
 
     private List<EnergyTarget> getValidReceivers(IEnergyTile emitter, boolean reverse) {
@@ -424,7 +433,7 @@ public class EnergyNetLocal {
                 IMetaDelegate meta = (IMetaDelegate) emitter;
                 List<IEnergyTile> targets = meta.getSubTiles();
                 for (IEnergyTile tile : targets) {
-                    IEnergyTile target = getNeighbor(tile, direction);
+                    final IEnergyTile target = getNeighbor(tile, direction, targets);
                     if (target == emitter) {
                         continue;
                     }
@@ -483,7 +492,9 @@ public class EnergyNetLocal {
         }
         return validReceivers;
     }
-
+    public BlockPos getPos(final IEnergyTile tile){
+        return this.chunkCoordinatesMap.get(tile);
+    }
     public List<IEnergySource> discoverFirstPathOrSources(IEnergyTile par1) {
         Set<IEnergyTile> reached = new HashSet<>();
         List<IEnergySource> result = new ArrayList<>();
@@ -492,6 +503,8 @@ public class EnergyNetLocal {
         while (workList.size() > 0) {
             IEnergyTile tile = workList.remove(0);
             TileEntity te = getTileFromMap(tile);
+            if(te == null)
+                continue;
             if (!te.isInvalid()) {
                 List<EnergyTarget> targets = getValidReceivers(tile, true);
                 for (EnergyTarget energyTarget : targets) {

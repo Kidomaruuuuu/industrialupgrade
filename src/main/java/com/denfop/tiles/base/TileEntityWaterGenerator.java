@@ -111,12 +111,13 @@ public class TileEntityWaterGenerator extends TileEntityElectricMachine implemen
 
             if (this.energy.getEnergy() >= this.energycost) {
                 needsInvUpdate = this.attemptGeneration();
+                if(this.world.provider.getWorldTime() % 40 == 0)
                 initiate(0);
             } else {
+                if(this.world.provider.getWorldTime() % 40 == 0)
                 initiate(2);
             }
 
-            needsInvUpdate |= this.containerslot.processFromTank(this.fluidTank, this.outputSlot);
             this.lastEnergy = this.energy.getEnergy();
             if (needsInvUpdate) {
                 this.markDirty();
@@ -126,6 +127,8 @@ public class TileEntityWaterGenerator extends TileEntityElectricMachine implemen
 
             this.setActive(false);
         }
+        if(!this.containerslot.isEmpty() &&this.fluidTank.getFluidAmount() > 0)
+            this.containerslot.processFromTank(this.fluidTank, this.outputSlot);
 
     }
 

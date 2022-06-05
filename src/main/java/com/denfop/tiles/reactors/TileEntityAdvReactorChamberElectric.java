@@ -28,7 +28,6 @@ import java.util.Objects;
 
 public class TileEntityAdvReactorChamberElectric extends TileEntityBlock implements IInventory, IReactorChamber, IEnergyEmitter {
 
-    public final Redstone redstone = this.addComponent(new Redstone(this));
     protected final Fluids fluids = this.addComponent(new Fluids(this));
     private TileEntityAdvNuclearReactorElectric reactor;
     private long lastReactorUpdate;
@@ -40,19 +39,10 @@ public class TileEntityAdvReactorChamberElectric extends TileEntityBlock impleme
 
     protected void onLoaded() {
         super.onLoaded();
-        this.updateRedstoneLink();
-        this.onNeighborChange(this.getBlockType().getBlockState().getBlock(), this.getPos());
+         this.onNeighborChange(this.getBlockType().getBlockState().getBlock(), this.getPos());
     }
 
-    private void updateRedstoneLink() {
-        if (!this.getWorld().isRemote) {
-            TileEntityAdvNuclearReactorElectric reactor = this.getReactor();
-            if (reactor != null) {
-                this.redstone.linkTo(reactor.redstone);
-            }
 
-        }
-    }
 
     @SideOnly(Side.CLIENT)
     protected void updateEntityClient() {

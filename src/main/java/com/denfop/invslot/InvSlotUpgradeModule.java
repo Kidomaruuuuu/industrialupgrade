@@ -1,12 +1,19 @@
 package com.denfop.invslot;
 
 
+import com.denfop.Config;
 import com.denfop.items.modules.EnumSpawnerModules;
 import com.denfop.items.modules.EnumSpawnerType;
 import com.denfop.items.modules.ItemSpawnerModules;
 import com.denfop.tiles.base.TileEntityAutoSpawner;
+import com.denfop.utils.EnchantUtils;
 import ic2.core.block.invslot.InvSlot;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.init.Items;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
+
+import java.util.Objects;
 
 public class InvSlotUpgradeModule extends InvSlot {
 
@@ -61,6 +68,22 @@ public class InvSlotUpgradeModule extends InvSlot {
         this.tile.spawn = Math.min(4, spawn);
         this.tile.speed = Math.min(80, speed);
         this.tile.experience = Math.min(100, experience);
+        int fireAspect = this.tile.getEnchant(20);
+        int loot = this.tile.getEnchant(21);
+        int reaper = this.tile.getEnchant(11);
+        ItemStack stack = new ItemStack(Items.ENCHANTED_BOOK);
+        if (Config.DraconicLoaded) {
+            EnchantUtils.addEnchant(stack, reaper);
+        }
+        if (!this.tile.getWorld().isRemote) {
+            this.tile.player.fireAspect = fireAspect;
+            this.tile.player.loot = loot;
+            this.tile.player.loot += this.tile.chance;
+            stack.addEnchantment(Objects.requireNonNull(Enchantment.getEnchantmentByID(21)), this.tile.player.loot);
+            stack.addEnchantment(Objects.requireNonNull(Enchantment.getEnchantmentByID(20)), this.tile.player.fireAspect);
+
+            this.tile.player.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stack);
+        }
     }
 
     @Override
@@ -107,6 +130,22 @@ public class InvSlotUpgradeModule extends InvSlot {
         this.tile.spawn = Math.min(4, spawn);
         this.tile.speed = Math.min(80, speed);
         this.tile.experience = Math.min(100, experience);
+        int fireAspect = this.tile.getEnchant(20);
+        int loot = this.tile.getEnchant(21);
+        int reaper = this.tile.getEnchant(11);
+        ItemStack stack = new ItemStack(Items.ENCHANTED_BOOK);
+        if (Config.DraconicLoaded) {
+            EnchantUtils.addEnchant(stack, reaper);
+        }
+        if (!this.tile.getWorld().isRemote) {
+            this.tile.player.fireAspect = fireAspect;
+            this.tile.player.loot = loot;
+            this.tile.player.loot += this.tile.chance;
+            stack.addEnchantment(Objects.requireNonNull(Enchantment.getEnchantmentByID(21)), this.tile.player.loot);
+            stack.addEnchantment(Objects.requireNonNull(Enchantment.getEnchantmentByID(20)), this.tile.player.fireAspect);
+
+            this.tile.player.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stack);
+        }
     }
 
     public boolean accepts(ItemStack itemStack) {

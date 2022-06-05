@@ -30,7 +30,9 @@ public class ContainerPlasticPlateCreator extends ContainerFullInv<TileEntityPla
                     0, outputX, outputY
             ));
         }
-
+        addSlotToContainer(new SlotInvSlot(tileEntity1.outputSlot1,
+                0, 27, 62
+        ));
         addSlotToContainer(new SlotInvSlot(tileEntity1.fluidSlot,
                 0, 8, 62
         ));
@@ -45,6 +47,7 @@ public class ContainerPlasticPlateCreator extends ContainerFullInv<TileEntityPla
         List<String> ret = super.getNetworkedFields();
         ret.add("guiProgress");
         ret.add("fluidTank");
+        ret.add("energy");
         return ret;
     }
 

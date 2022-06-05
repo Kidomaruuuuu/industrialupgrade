@@ -68,12 +68,7 @@ public class TileEntityDoubleMetalFormer extends TileEntityMultiMachine
         }
     }
 
-    public void onNetworkUpdate(String field) {
-        super.onNetworkUpdate(field);
-        if (field.equals("mode")) {
-            setMode(this.mode);
-        }
-    }
+
 
     public int getMode() {
         return this.mode;
@@ -98,8 +93,6 @@ public class TileEntityDoubleMetalFormer extends TileEntityMultiMachine
         for (int i = 0; i < this.sizeWorkingSlot; i++) {
             this.setRecipeOutput(this.inputSlots.fastprocess(i), i);
         }
-
-
     }
 
     private void cycleMode() {

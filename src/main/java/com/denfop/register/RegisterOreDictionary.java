@@ -165,6 +165,7 @@ public class RegisterOreDictionary {
 
             }
         }
+
         for (int i = 0; i < list_heavyore.size(); i++) {
             OreDictionary.registerOre(
                     "ore" + list_heavyore.get(i),

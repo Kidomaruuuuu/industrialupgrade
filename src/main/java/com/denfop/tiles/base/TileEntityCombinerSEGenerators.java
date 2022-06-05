@@ -6,6 +6,7 @@ import com.denfop.container.ContainerCombinerSE;
 import com.denfop.gui.GuiCombinerSE;
 import com.denfop.invslot.InvSlotCombinerSEG;
 import com.denfop.invslot.InvSlotGenCombinerSunarrium;
+import com.denfop.invslot.InvSlotUpgrade;
 import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
@@ -14,7 +15,6 @@ import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlotOutput;
-import ic2.core.block.invslot.InvSlotUpgrade;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -48,7 +48,7 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
         this.input = new InvSlotGenCombinerSunarrium(this);
 
         this.outputSlot = new InvSlotOutput(this, "output", 9);
-        this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
+        this.upgradeSlot = new com.denfop.invslot.InvSlotUpgrade(this, "upgrade", 4);
         this.sunenergy = this.addComponent(SEComponent
                 .asBasicSource(this, 0, 1));
         this.lst = new ArrayList<>();
@@ -169,9 +169,9 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
             this.sunenergy.addEnergy(-2500);
         }
 
-        if (update) {
-            markDirty();
-        }
+        if(this.upgradeSlot.tickNoMark())
+            setOverclockRates();
+
 
 
     }

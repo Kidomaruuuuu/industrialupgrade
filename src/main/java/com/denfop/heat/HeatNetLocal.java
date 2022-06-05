@@ -6,6 +6,7 @@ import com.denfop.api.heat.IHeatEmitter;
 import com.denfop.api.heat.IHeatSink;
 import com.denfop.api.heat.IHeatSource;
 import com.denfop.api.heat.IHeatTile;
+import com.denfop.api.qe.IQEConductor;
 import ic2.core.IC2;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
@@ -342,6 +343,8 @@ public class HeatNetLocal {
         for (EnumFacing dir : EnumFacing.values()) {
             if (this.world.isChunkGeneratedAt(x + dir.getFrontOffsetX() >> 4, z + dir.getFrontOffsetZ() >> 4)) {
                 BlockPos pos = (new BlockPos(x, y, z)).offset(dir);
+                if(this.registeredTiles.containsKey(pos))
+                    if(this.registeredTiles.get(pos) instanceof IHeatConductor)
                 this.world.neighborChanged(pos, Blocks.AIR, pos);
             }
         }

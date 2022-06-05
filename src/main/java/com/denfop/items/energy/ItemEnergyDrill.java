@@ -251,24 +251,29 @@ public class ItemEnergyDrill extends ItemTool implements IElectricItem, IUpgrade
         float energy = energy(stack);
         byte dig_depth = (byte) (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.DIG_DEPTH, stack) ?
                 UpgradeSystem.system.getModules(EnumInfoUpgradeModules.DIG_DEPTH, stack).number : 0);
+
+
         zRange = zRange > 0 ? zRange : (byte) (zRange + dig_depth);
         xRange = xRange > 0 ? xRange : (byte) (xRange + dig_depth);
         yRange = yRange > 0 ? yRange : (byte) (yRange + dig_depth);
-
         boolean save = nbt.getBoolean("save");
         if (!player.capabilities.isCreativeMode) {
             for (int xPos = x - xRange; xPos <= x + xRange; xPos++) {
                 for (int yPos = y - yRange + Yy; yPos <= y + yRange + Yy; yPos++) {
                     for (int zPos = z - zRange; zPos <= z + zRange; zPos++) {
                         if (ElectricItem.manager.canUse(stack, energy)) {
+
                             BlockPos pos_block = new BlockPos(xPos, yPos, zPos);
                             if (save) {
                                 if (world.getTileEntity(pos_block) != null) {
                                     continue;
                                 }
                             }
+
                             IBlockState state = world.getBlockState(pos_block);
                             Block localBlock = world.getBlockState(pos_block).getBlock();
+                            if (localBlock.equals(Blocks.SKULL))
+                                continue;
                             if (!localBlock.equals(Blocks.AIR) && canHarvestBlock(state, stack)
                                     && state.getBlockHardness(world, pos_block) >= 0.0F
                             ) {
@@ -281,9 +286,7 @@ public class ItemEnergyDrill extends ItemTool implements IElectricItem, IUpgrade
                                     ExperienceUtils.addPlayerXP(player, getExpierence(state, world, pos_block, fortune, stack
                                             , localBlock));
                                 }
-                                if (mop.typeOfHit == RayTraceResult.Type.MISS) {
-                                    updateGhostBlocks(player, player.getEntityWorld());
-                                }
+
 
                             } else {
                                 if (state.getBlockHardness(world, pos_block) > 0.0F && materials.contains(state.getMaterial())) {
@@ -307,6 +310,8 @@ public class ItemEnergyDrill extends ItemTool implements IElectricItem, IUpgrade
             if (ElectricItem.manager.canUse(stack, energy)) {
                 Block localBlock = world.getBlockState(pos).getBlock();
                 IBlockState state = world.getBlockState(pos);
+                if (localBlock.equals(Blocks.SKULL))
+                    return  false;
                 if (localBlock.equals(Blocks.AIR) && canHarvestBlock(state, stack)
                         && state.getBlockHardness(world, pos) >= 0.0F
                         && (materials.contains(state.getMaterial())
@@ -336,6 +341,8 @@ public class ItemEnergyDrill extends ItemTool implements IElectricItem, IUpgrade
             if (ElectricItem.manager.canUse(stack, energy)) {
                 IBlockState state = world.getBlockState(pos);
                 Block localBlock = state.getBlock();
+                if (localBlock.equals(Blocks.SKULL))
+                    return  false;
                 if (!localBlock.equals(Blocks.AIR) && canHarvestBlock(state, stack)
                         && state.getBlockHardness(world, pos) >= 0.0F
                         && (materials.contains(state.getMaterial())
@@ -464,7 +471,6 @@ public class ItemEnergyDrill extends ItemTool implements IElectricItem, IUpgrade
 
             byte aoe = (byte) (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.AOE_DIG, stack) ?
                     UpgradeSystem.system.getModules(EnumInfoUpgradeModules.AOE_DIG, stack).number : 0);
-            if (materials.contains(state.getMaterial()) || block == Blocks.MONSTER_EGG) {
                 if (player.isSneaking()) {
                     if (!mop.typeOfHit.equals(RayTraceResult.Type.MISS)) {
                         return break_block(world, block, mop, aoe, player, pos, stack);
@@ -474,7 +480,7 @@ public class ItemEnergyDrill extends ItemTool implements IElectricItem, IUpgrade
                 if (!mop.typeOfHit.equals(RayTraceResult.Type.MISS)) {
                     return break_block(world, block, mop, (byte) (1 + aoe), player, pos, stack);
                 }
-            }
+
         }
         if (readToolMode(stack) == 2) {
             World world = player.getEntityWorld();
@@ -498,7 +504,11 @@ public class ItemEnergyDrill extends ItemTool implements IElectricItem, IUpgrade
             }
 
         }
-        return super.onBlockStartBreak(stack, pos, player);
+        return player.getEntityWorld().getBlockState(pos).getBlock().equals(Blocks.SKULL) || super.onBlockStartBreak(
+                stack,
+                pos,
+                player
+        );
     }
 
     private void ore_break(
@@ -596,6 +606,7 @@ public class ItemEnergyDrill extends ItemTool implements IElectricItem, IUpgrade
                 if (ForgeHooks.onBlockBreakEvent(world, world.getWorldInfo().getGameType(), (EntityPlayerMP) entity, pos) == -1) {
                     return false;
                 }
+
                 block.onBlockHarvested(world, pos, state, (EntityPlayerMP) entity);
 
                 if (block.removedByPlayer(state, world, pos, (EntityPlayerMP) entity, true)) {

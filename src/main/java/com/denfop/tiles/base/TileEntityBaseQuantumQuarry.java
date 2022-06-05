@@ -66,13 +66,16 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
     public int progress;
     public EnumQuarryModules list_modules;
     public Vein vein;
+    public List<ItemStack> main_list = new ArrayList<>(IUCore.list);
+    public boolean original = true;
+    public boolean can_dig_vein = true;
 
     public TileEntityBaseQuantumQuarry(String name, int coef) {
 
         this.progress = 0;
         this.name = name;
         this.getblock = 0;
-        this.energyconsume = 2000 * coef;
+        this.energyconsume = Config.enerycost * coef;
         this.energy = this.addComponent(QEComponent.asBasicSink(this, 5E7D, 14));
         this.inputslot = new InvSlotQuantumQuarry(this, 25, "input", 0);
         this.inputslotA = new InvSlotQuantumQuarry(this, 26, "input1", 1);
@@ -118,6 +121,12 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
         this.inputslotA.update();
         this.inputslotB.update();
         this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
+        if (this.vein != null) {
+            final ItemStack stack = new ItemStack(IUItem.heavyore, 1, vein.getMeta());
+            if (list(this.list_modules, stack)) {
+                this.can_dig_vein = false;
+            }
+        }
     }
 
     protected void onUnloaded() {
@@ -144,7 +153,7 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
             if (this.analyzer && this.vein.get()) {
                 if (this.vein.getType() == Type.VEIN && this.vein.getCol() > 0) {
                     final ItemStack stack = new ItemStack(IUItem.heavyore, 1, vein.getMeta());
-                    if (!list(this.list_modules, stack)) {
+                    if (!this.can_dig_vein) {
                         this.setActive(true);
                         if (this.outputSlot.canAdd(stack)) {
                             this.energy.useEnergy(proccent);
@@ -159,12 +168,10 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
         if (this.analyzer && !Config.enableonlyvein) {
             double col = this.col;
             int chance2 = this.chance;
-            boolean furnace = this.furnace;
-            EnumQuarryModules list_check = this.list_modules;
-
             int coble = rand.nextInt((int) col + 1);
             this.getblock += coble;
             col -= coble;
+
             for (double i = 0; i < col; i++) {
                 if (this.energy.getEnergy() >= proccent) {
                     if (!this.getActive()) {
@@ -173,73 +180,56 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
                     }
                     this.energy.useEnergy(proccent);
                     this.getblock++;
-
-
-                    if (furnace) {
-                        List<ItemStack> list = IUCore.get_ingot;
-                        int num = list.size();
-                        int chance1 = rand.nextInt(num);
-                        if (!list(list_check, list.get(chance1))) {
-                            if (this.outputSlot.canAdd(list.get(chance1))) {
-                                this.outputSlot.add(list.get(chance1));
-                            }
+                    int num = main_list.size();
+                    if(num <= 0)
+                        return;
+                    int chance1 = rand.nextInt(num);
+                    if(main_list.size() != IUCore.list.size()) {
+                        int chance3 = rand.nextInt(IUCore.list.size());
+                        if (!(chance3 <= chance1)) {
+                            continue;
                         }
-                    } else if (this.comb_mac_enabled) {
-                        List<ItemStack> list = IUCore.get_comb_crushed;
-                        int num = list.size();
-                        int chance1 = this.rand.nextInt(num);
-                        if (!list(list_check, list.get(chance1))) {
-                            if (this.outputSlot.canAdd(list.get(chance1))) {
-                                this.outputSlot.add(list.get(chance1));
-                            }
-                        }
-                    } else if (this.mac_enabled) {
-                        List<ItemStack> list = IUCore.get_crushed;
-                        int num = list.size();
-                        int chance1 = this.rand.nextInt(num);
-                        if (!list(list_check, list.get(chance1))) {
-                            if (this.outputSlot.canAdd(list.get(chance1))) {
-                                this.outputSlot.add(list.get(chance1));
-                            }
-                        }
-                    } else {
-                        List<ItemStack> list = IUCore.list;
-                        int num = list.size();
-                        int chance1 = rand.nextInt(num);
-                        if (!list(list_check, list.get(chance1))) {
-                            if (OreDictionary.getOreIDs(list.get(chance1)).length > 0) {
-                                if ((!OreDictionary
-                                        .getOreName(OreDictionary.getOreIDs(list.get(chance1))[0])
-                                        .startsWith("gem") && !OreDictionary
-                                        .getOreName(OreDictionary.getOreIDs(list.get(chance1))[0])
-                                        .startsWith("shard")
-                                        && list.get(chance1).getItem() != Items.REDSTONE && list
-                                        .get(chance1)
-                                        .getItem() != Items.DYE && list.get(chance1).getItem() != Items.COAL && list
-                                        .get(chance1)
-                                        .getItem() != Items.GLOWSTONE_DUST) && chance2 >= 0) {
-                                    if (this.outputSlot.canAdd(list.get(chance1))) {
-                                        this.outputSlot.add(list.get(chance1));
-                                    }
-                                } else {
-                                    for (int j = 0; j < chance2 + 1; j++) {
-                                        if (this.outputSlot.canAdd(list.get(chance1))) {
-                                            this.outputSlot.add(list.get(chance1));
-                                        }
+                    }
+                    ItemStack stack = main_list.get(chance1);
+                    if (this.original) {
+                        if (OreDictionary.getOreIDs(stack).length > 0) {
+                            String name = OreDictionary.getOreName(OreDictionary.getOreIDs(stack)[0]);
+                            if ((!name
+                                    .startsWith("gem") && !name
+                                    .startsWith("shard")
+                                    && stack.getItem() != Items.REDSTONE && stack
+                                    .getItem() != Items.DYE && stack.getItem() != Items.COAL && stack
+                                    .getItem() != Items.GLOWSTONE_DUST) && chance2 >= 1) {
+                                if (this.outputSlot.canAdd(stack)) {
+                                    this.outputSlot.add(stack);
+                                }
+                            } else {
+                                for (int j = 0; j < chance2 + 1; j++) {
+                                    if (this.outputSlot.canAdd(stack)) {
+                                        this.outputSlot.add(stack);
                                     }
                                 }
                             }
                         }
+                    } else {
+                        if (this.outputSlot.canAdd(main_list.get(chance1))) {
+                            this.outputSlot.add(main_list.get(chance1));
+                        }
                     }
 
+
                 } else {
-                    this.setActive(false);
-                    initiate(2);
+                    if(this.getActive()) {
+                        initiate(2);
+                        this.setActive(false);
+                    }
                 }
             }
         } else {
-            initiate(2);
-            this.setActive(false);
+            if(this.getActive()) {
+                initiate(2);
+                this.setActive(false);
+            }
         }
 
         if (getActive()) {

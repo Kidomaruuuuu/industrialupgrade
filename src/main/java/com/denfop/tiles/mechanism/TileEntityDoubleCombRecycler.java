@@ -32,10 +32,13 @@ public class TileEntityDoubleCombRecycler extends TileEntityMultiMachine {
         this.output[slotId] = this.inputSlots.process(slotId);
         if (output[slotId] == null) {
             final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
-            output[slotId] = new MachineRecipe(  new BaseMachineRecipe(new Input(input.forStack(this.inputSlots.get(slotId))), new RecipeOutput(
-                    null,
-                    Ic2Items.scrap
-            )), Collections.singletonList(1));
+            output[slotId] = new MachineRecipe(new BaseMachineRecipe(
+                    new Input(input.forStack(this.inputSlots.get(slotId))),
+                    new RecipeOutput(
+                            null,
+                            Ic2Items.scrap
+                    )
+            ), Collections.singletonList(1));
 
         }
         if (this.outputSlot.canAdd(output[slotId].getRecipe().output.items)) {

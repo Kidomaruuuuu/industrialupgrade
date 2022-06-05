@@ -5,6 +5,7 @@ import com.denfop.componets.AdvEnergy;
 import com.denfop.container.ContainerCombinerSolidMatter;
 import com.denfop.gui.GuiCombinerSolidMatter;
 import com.denfop.invslot.InvSlotSolidMatter;
+import com.denfop.invslot.InvSlotUpgrade;
 import com.denfop.tiles.solidmatter.EnumSolidMatter;
 import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.upgrade.IUpgradableBlock;
@@ -14,7 +15,6 @@ import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlotOutput;
-import ic2.core.block.invslot.InvSlotUpgrade;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -52,7 +52,7 @@ public class TileEntityCombinerSolidMatter extends TileEntityInventory implement
         this.inputSlot = new InvSlotSolidMatter(this);
 
         this.outputSlot = new InvSlotOutput(this, "output", 9);
-        this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
+        this.upgradeSlot = new com.denfop.invslot.InvSlotUpgrade(this, "upgrade", 4);
 
         this.energy = this.addComponent(AdvEnergy.asBasicSink(this, 0, 14));
         this.solid = new EnumSolidMatter[0];
@@ -142,9 +142,9 @@ public class TileEntityCombinerSolidMatter extends TileEntityInventory implement
                 }
             }
         }
-        if (update) {
-            markDirty();
-        }
+        if(this.upgradeSlot.tickNoMark())
+            setOverclockRates();
+
 
 
     }

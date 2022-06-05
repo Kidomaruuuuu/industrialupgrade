@@ -3,6 +3,7 @@ package com.denfop.tiles.base;
 import com.denfop.Config;
 import com.denfop.container.ContainerSolidMatter;
 import com.denfop.gui.GuiSolidMatter;
+import com.denfop.invslot.InvSlotUpgrade;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.IUpgradeItem;
 import ic2.api.upgrade.UpgradableProperty;
@@ -13,7 +14,6 @@ import ic2.core.audio.AudioSource;
 import ic2.core.block.TileEntityInventory;
 import ic2.core.block.comp.Energy;
 import ic2.core.block.invslot.InvSlotOutput;
-import ic2.core.block.invslot.InvSlotUpgrade;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -38,7 +38,7 @@ public abstract class TileEntityMatterGenerator extends TileEntityInventory impl
     public TileEntityMatterGenerator(ItemStack itemstack, String name) {
         this.itemstack = itemstack;
         this.outputSlot = new InvSlotOutput(this, "output", 1);
-        this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
+        this.upgradeSlot = new com.denfop.invslot.InvSlotUpgrade(this, "upgrade", 4);
         this.progress = 0;
         this.name = name;
         this.energy = this.addComponent(Energy.asBasicSink(this, Config.SolidMatterStorage, 10));
@@ -76,15 +76,9 @@ public abstract class TileEntityMatterGenerator extends TileEntityInventory impl
             }
 
         }
-        for (int i = 0; i < this.upgradeSlot.size(); i++) {
-            ItemStack stack = this.upgradeSlot.get(i);
-            if (stack != null && stack.getItem() instanceof IUpgradeItem && (
-                    (IUpgradeItem) stack.getItem()).onTick(stack, this)) {
-                needsInvUpdate = true;
-            }
-        }
 
-        if (needsInvUpdate && this.getWorld().provider.getWorldTime() % 10 == 0) {
+
+        if (this.getWorld().provider.getWorldTime() % 10 == 0 && this.upgradeSlot.tickNoMark()) {
             markDirty();
         }
 

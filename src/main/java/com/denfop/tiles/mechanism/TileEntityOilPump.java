@@ -111,6 +111,7 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
     private void updateTileEntityField() {
         IC2.network.get(true).updateTileEntityField(this, "level");
         IC2.network.get(true).updateTileEntityField(this, "count");
+        IC2.network.get(true).updateTileEntityField(this, "find");
     }
 
     @Override
@@ -195,13 +196,17 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
         }
         if (this.energy.getEnergy() >= 10 && this.vein.getType() == Type.OIL && this.vein.get()) {
             get_oil();
-            initiate(0);
+            if(!this.getActive()) {
+                this.setActive(true);
+                initiate(0);
+            }
         } else {
-            initiate(2);
+            if(this.getActive()) {
+                this.setActive(false);
+                initiate(2);
+            }
         }
-        if (getWorld().provider.getWorldTime() % 60 == 0) {
-            initiate(2);
-        }
+
         if (needsInvUpdate) {
             markDirty();
         }
@@ -217,6 +222,7 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
                 vein.removeCol(size);
                 this.count = vein.getCol();
                 this.energy.useEnergy(10);
+                markDirty();
             }
         }
     }

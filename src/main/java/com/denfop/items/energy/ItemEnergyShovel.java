@@ -140,21 +140,7 @@ public class ItemEnergyShovel extends ItemTool implements IElectricItem, IUpgrad
         UpgradeSystem.system.addRecipe(this, EnumUpgrades.INSTRUMENTS.list);
     }
 
-    public static void updateGhostBlocks(EntityPlayer player, World world) {
-        if (world.isRemote) {
-            return;
-        }
-        int xPos = (int) player.posX;
-        int yPos = (int) player.posY;
-        int zPos = (int) player.posZ;
-        for (int x = xPos - 6; x < xPos + 6; x++) {
-            for (int y = yPos - 6; y < yPos + 6; y++) {
-                for (int z = zPos - 6; z < zPos + 6; z++) {
-                    ((EntityPlayerMP) player).connection.sendPacket(new SPacketBlockChange(world, new BlockPos(x, y, z)));
-                }
-            }
-        }
-    }
+
 
     public static int readToolMode(ItemStack itemstack) {
         NBTTagCompound nbt = ModUtils.nbt(itemstack);
@@ -233,21 +219,33 @@ public class ItemEnergyShovel extends ItemTool implements IElectricItem, IUpgrad
 
         int Yy;
         Yy = yRange > 0 ? yRange - 1 : 0;
+        NBTTagCompound nbt = ModUtils.nbt(stack);
         float energy = energy(stack);
         byte dig_depth = (byte) (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.DIG_DEPTH, stack) ?
                 UpgradeSystem.system.getModules(EnumInfoUpgradeModules.DIG_DEPTH, stack).number : 0);
 
+
         zRange = zRange > 0 ? zRange : (byte) (zRange + dig_depth);
         xRange = xRange > 0 ? xRange : (byte) (xRange + dig_depth);
         yRange = yRange > 0 ? yRange : (byte) (yRange + dig_depth);
+        boolean save = nbt.getBoolean("save");
         if (!player.capabilities.isCreativeMode) {
             for (int xPos = x - xRange; xPos <= x + xRange; xPos++) {
                 for (int yPos = y - yRange + Yy; yPos <= y + yRange + Yy; yPos++) {
                     for (int zPos = z - zRange; zPos <= z + zRange; zPos++) {
                         if (ElectricItem.manager.canUse(stack, energy)) {
+
                             BlockPos pos_block = new BlockPos(xPos, yPos, zPos);
+                            if (save) {
+                                if (world.getTileEntity(pos_block) != null) {
+                                    continue;
+                                }
+                            }
+
                             IBlockState state = world.getBlockState(pos_block);
                             Block localBlock = world.getBlockState(pos_block).getBlock();
+                            if (localBlock.equals(Blocks.SKULL))
+                                continue;
                             if (!localBlock.equals(Blocks.AIR) && canHarvestBlock(state, stack)
                                     && state.getBlockHardness(world, pos_block) >= 0.0F
                             ) {
@@ -260,9 +258,7 @@ public class ItemEnergyShovel extends ItemTool implements IElectricItem, IUpgrad
                                     ExperienceUtils.addPlayerXP(player, getExpierence(state, world, pos_block, fortune, stack
                                             , localBlock));
                                 }
-                                if (mop.typeOfHit == RayTraceResult.Type.MISS) {
-                                    updateGhostBlocks(player, player.getEntityWorld());
-                                }
+
 
                             } else {
                                 if (state.getBlockHardness(world, pos_block) > 0.0F && materials.contains(state.getMaterial())) {
@@ -286,6 +282,8 @@ public class ItemEnergyShovel extends ItemTool implements IElectricItem, IUpgrad
             if (ElectricItem.manager.canUse(stack, energy)) {
                 Block localBlock = world.getBlockState(pos).getBlock();
                 IBlockState state = world.getBlockState(pos);
+                if (localBlock.equals(Blocks.SKULL))
+                    return  false;
                 if (localBlock.equals(Blocks.AIR) && canHarvestBlock(state, stack)
                         && state.getBlockHardness(world, pos) >= 0.0F
                         && (materials.contains(state.getMaterial())
@@ -315,6 +313,8 @@ public class ItemEnergyShovel extends ItemTool implements IElectricItem, IUpgrad
             if (ElectricItem.manager.canUse(stack, energy)) {
                 IBlockState state = world.getBlockState(pos);
                 Block localBlock = state.getBlock();
+                if (localBlock.equals(Blocks.SKULL))
+                    return  false;
                 if (!localBlock.equals(Blocks.AIR) && canHarvestBlock(state, stack)
                         && state.getBlockHardness(world, pos) >= 0.0F
                         && (materials.contains(state.getMaterial())
@@ -436,16 +436,19 @@ public class ItemEnergyShovel extends ItemTool implements IElectricItem, IUpgrad
 
             byte aoe = (byte) (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.AOE_DIG, stack) ?
                     UpgradeSystem.system.getModules(EnumInfoUpgradeModules.AOE_DIG, stack).number : 0);
-            if (materials.contains(state.getMaterial()) || block == Blocks.MONSTER_EGG) {
-                if (player.isSneaking()) {
+               if (player.isSneaking()) {
                     return break_block(world, block, mop, aoe, player, pos, stack);
                 }
 
                 return break_block(world, block, mop, (byte) (1 + aoe), player, pos, stack);
-            }
+
         }
 
-        return super.onBlockStartBreak(stack, pos, player);
+        return player.getEntityWorld().getBlockState(pos).getBlock().equals(Blocks.SKULL) || super.onBlockStartBreak(
+                stack,
+                pos,
+                player
+        );
     }
 
     public boolean onBlockDestroyed(

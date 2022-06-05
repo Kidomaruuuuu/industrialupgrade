@@ -206,17 +206,9 @@ public class WavefrontObject implements IModelCustom {
             String[] tokens = trimmedLine.split(" ");
             String[] subTokens;
             if (tokens.length == 3) {
-                if (this.currentGroupObject.glDrawingMode == -1) {
-                    this.currentGroupObject.glDrawingMode = 4;
-                } else if (this.currentGroupObject.glDrawingMode != 4) {
-                    throw new ModelFormatException("Error parsing entry ('" + line + "', line " + lineCount + ") in file '" + this.fileName + "' - Invalid number of points for face (expected 4, found " + tokens.length + ")");
-                }
+                this.currentGroupObject.glDrawingMode = 4;
             } else if (tokens.length == 4) {
-                if (this.currentGroupObject.glDrawingMode == -1) {
-                    this.currentGroupObject.glDrawingMode = 7;
-                } else if (this.currentGroupObject.glDrawingMode != 7) {
-                    throw new ModelFormatException("Error parsing entry ('" + line + "', line " + lineCount + ") in file '" + this.fileName + "' - Invalid number of points for face (expected 3, found " + tokens.length + ")");
-                }
+                this.currentGroupObject.glDrawingMode = 7;
             }
 
             int i;

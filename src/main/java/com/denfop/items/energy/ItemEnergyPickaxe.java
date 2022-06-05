@@ -149,21 +149,7 @@ public class ItemEnergyPickaxe extends ItemTool implements IElectricItem, IUpgra
         UpgradeSystem.system.addRecipe(this, EnumUpgrades.INSTRUMENTS.list);
     }
 
-    public static void updateGhostBlocks(EntityPlayer player, World world) {
-        if (world.isRemote) {
-            return;
-        }
-        int xPos = (int) player.posX;
-        int yPos = (int) player.posY;
-        int zPos = (int) player.posZ;
-        for (int x = xPos - 6; x < xPos + 6; x++) {
-            for (int y = yPos - 6; y < yPos + 6; y++) {
-                for (int z = zPos - 6; z < zPos + 6; z++) {
-                    ((EntityPlayerMP) player).connection.sendPacket(new SPacketBlockChange(world, new BlockPos(x, y, z)));
-                }
-            }
-        }
-    }
+
 
     public static int readToolMode(ItemStack itemstack) {
         NBTTagCompound nbt = ModUtils.nbt(itemstack);
@@ -261,8 +247,11 @@ public class ItemEnergyPickaxe extends ItemTool implements IElectricItem, IUpgra
                                     continue;
                                 }
                             }
+
                             IBlockState state = world.getBlockState(pos_block);
                             Block localBlock = world.getBlockState(pos_block).getBlock();
+                            if (localBlock.equals(Blocks.SKULL))
+                                continue;
                             if (!localBlock.equals(Blocks.AIR) && canHarvestBlock(state, stack)
                                     && state.getBlockHardness(world, pos_block) >= 0.0F
                             ) {
@@ -275,9 +264,7 @@ public class ItemEnergyPickaxe extends ItemTool implements IElectricItem, IUpgra
                                     ExperienceUtils.addPlayerXP(player, getExpierence(state, world, pos_block, fortune, stack
                                             , localBlock));
                                 }
-                                if (mop.typeOfHit == RayTraceResult.Type.MISS) {
-                                    updateGhostBlocks(player, player.getEntityWorld());
-                                }
+
 
                             } else {
                                 if (state.getBlockHardness(world, pos_block) > 0.0F && materials.contains(state.getMaterial())) {
@@ -301,6 +288,8 @@ public class ItemEnergyPickaxe extends ItemTool implements IElectricItem, IUpgra
             if (ElectricItem.manager.canUse(stack, energy)) {
                 Block localBlock = world.getBlockState(pos).getBlock();
                 IBlockState state = world.getBlockState(pos);
+                if (localBlock.equals(Blocks.SKULL))
+                    return  false;
                 if (localBlock.equals(Blocks.AIR) && canHarvestBlock(state, stack)
                         && state.getBlockHardness(world, pos) >= 0.0F
                         && (materials.contains(state.getMaterial())
@@ -330,6 +319,8 @@ public class ItemEnergyPickaxe extends ItemTool implements IElectricItem, IUpgra
             if (ElectricItem.manager.canUse(stack, energy)) {
                 IBlockState state = world.getBlockState(pos);
                 Block localBlock = state.getBlock();
+                if (localBlock.equals(Blocks.SKULL))
+                    return  false;
                 if (!localBlock.equals(Blocks.AIR) && canHarvestBlock(state, stack)
                         && state.getBlockHardness(world, pos) >= 0.0F
                         && (materials.contains(state.getMaterial())
@@ -452,13 +443,12 @@ public class ItemEnergyPickaxe extends ItemTool implements IElectricItem, IUpgra
 
             byte aoe = (byte) (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.AOE_DIG, stack) ?
                     UpgradeSystem.system.getModules(EnumInfoUpgradeModules.AOE_DIG, stack).number : 0);
-            if (materials.contains(state.getMaterial()) || block == Blocks.MONSTER_EGG) {
-                if (player.isSneaking()) {
+               if (player.isSneaking()) {
                     return break_block(world, block, mop, aoe, player, pos, stack);
                 }
 
                 return break_block(world, block, mop, (byte) (1 + aoe), player, pos, stack);
-            }
+
         }
         if (readToolMode(stack) == 2) {
             World world = player.getEntityWorld();
@@ -483,7 +473,11 @@ public class ItemEnergyPickaxe extends ItemTool implements IElectricItem, IUpgra
             }
 
         }
-        return super.onBlockStartBreak(stack, pos, player);
+        return player.getEntityWorld().getBlockState(pos).getBlock().equals(Blocks.SKULL) || super.onBlockStartBreak(
+                stack,
+                pos,
+                player
+        );
     }
 
     private void ore_break(
@@ -558,13 +552,11 @@ public class ItemEnergyPickaxe extends ItemTool implements IElectricItem, IUpgra
     ) {
 
         Block block = state.getBlock();
-        if (block.equals(Blocks.AIR)) {
+        if (block.equals(Blocks.AIR) || block.equals(Blocks.SKULL)) {
             return false;
         } else {
 
-            if (world.isAirBlock(pos)) {
-                return false;
-            }
+
             if (state.getMaterial() instanceof MaterialLiquid || (state.getBlockHardness(
                     world,
                     pos

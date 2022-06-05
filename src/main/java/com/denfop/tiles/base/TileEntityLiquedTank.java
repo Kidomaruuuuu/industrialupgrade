@@ -4,6 +4,7 @@ import com.denfop.Constants;
 import com.denfop.container.ContainerTank;
 import com.denfop.gui.GuiTank;
 import com.denfop.invslot.InvSlotConsumableLiquidByList;
+import com.denfop.invslot.InvSlotUpgrade;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.IUpgradeItem;
 import ic2.api.upgrade.UpgradableProperty;
@@ -15,7 +16,6 @@ import ic2.core.block.comp.Fluids;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.block.invslot.InvSlotConsumableLiquid;
 import ic2.core.block.invslot.InvSlotOutput;
-import ic2.core.block.invslot.InvSlotUpgrade;
 import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
@@ -56,7 +56,7 @@ public class TileEntityLiquedTank extends TileEntityInventory implements IHasGui
         this.containerslot1 = new InvSlotConsumableLiquidByList(this,
                 "containerslot1", InvSlot.Access.I, 1, InvSlot.InvSide.TOP, InvSlotConsumableLiquid.OpType.Drain
         );
-        this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
+        this.upgradeSlot = new com.denfop.invslot.InvSlotUpgrade(this, "upgrade", 4);
         this.texture = new ResourceLocation(
                 Constants.TEXTURES,
                 "textures/models/" + texturename + ".png"

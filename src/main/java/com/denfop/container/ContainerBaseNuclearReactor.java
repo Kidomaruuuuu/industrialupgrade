@@ -52,6 +52,7 @@ public class ContainerBaseNuclearReactor extends ContainerBase<TileEntityBaseNuc
         ret.add("background");
         ret.add("output");
         ret.add("coef");
+        ret.add("work");
         return ret;
     }
 

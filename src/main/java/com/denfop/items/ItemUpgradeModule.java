@@ -89,7 +89,7 @@ public class ItemUpgradeModule extends ItemMulti<ItemUpgradeModule.Types> implem
     @Override
     public boolean onTick(final ItemStack stack, final IUpgradableBlock types) {
 
-        return false;
+        return true;
 
 
     }

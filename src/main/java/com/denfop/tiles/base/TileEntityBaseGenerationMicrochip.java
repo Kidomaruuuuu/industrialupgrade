@@ -5,7 +5,6 @@ import com.denfop.api.ITemperature;
 import com.denfop.api.heat.IHeatSink;
 import com.denfop.api.heat.event.HeatTileLoadEvent;
 import com.denfop.api.heat.event.HeatTileUnloadEvent;
-import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.audio.AudioSource;
@@ -166,20 +165,15 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
             setActive(false);
 
         }
-        for (int i = 0; i < this.upgradeSlot.size(); i++) {
-            ItemStack stack = this.upgradeSlot.get(i);
-            if (stack != null && stack.getItem() instanceof IUpgradeItem) {
-                if (((IUpgradeItem) stack.getItem()).onTick(stack, this)) {
-                    needsInvUpdate = true;
-                }
-            }
+        if((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark())
+            setOverclockRates();
+        if (needsInvUpdate) {
+            super.markDirty();
         }
         if (this.temperature > 0) {
             this.temperature--;
         }
-        if (needsInvUpdate) {
-            super.markDirty();
-        }
+
     }
 
     public void setOverclockRates() {
@@ -214,8 +208,10 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
                 }
             }
             operateOnce(processResult);
-            if(!this.inputSlotA.continue_process(this.output))
+            if (!this.inputSlotA.continue_process(this.output) || !this.outputSlot.canAdd(output.getRecipe().output.items)) {
                 getOutput();
+                break;
+            }
             if (this.output == null) {
                 break;
             }

@@ -43,7 +43,6 @@ public class ContainerAutoSpawner extends ContainerFullInv<TileEntityAutoSpawner
         ret.add("progress");
         ret.add("energy2");
         ret.add("energy");
-        ret.add("expstorage");
         ret.add("tempprogress");
 
         return ret;

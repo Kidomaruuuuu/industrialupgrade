@@ -16,6 +16,7 @@ public class InvSlotRecipes extends InvSlot {
 
     private final IBaseRecipe recipe;
     private final IUpdateTick tile;
+    private final List<IRecipeInputStack> accepts;
     private List<BaseMachineRecipe> recipe_list;
     private FluidTank tank;
 
@@ -23,6 +24,7 @@ public class InvSlotRecipes extends InvSlot {
         super(base, "input", Access.I, baseRecipe.getSize());
         this.recipe = baseRecipe;
         this.recipe_list = Recipes.recipes.getRecipeList(this.recipe.getName());
+        this.accepts =  Recipes.recipes.getMap_recipe_managers_itemStack(this.recipe.getName());
         this.tile = tile;
         this.tank = null;
     }
@@ -51,7 +53,7 @@ public class InvSlotRecipes extends InvSlot {
 
     @Override
     public boolean accepts(final ItemStack itemStack) {
-        return !itemStack.isEmpty() && !(itemStack.getItem() instanceof IUpgradeItem);
+        return !itemStack.isEmpty() && !(itemStack.getItem() instanceof IUpgradeItem) && accepts.contains(new RecipeInputStack(itemStack));
     }
 
     public void consume(int number, int amount) {
@@ -127,7 +129,12 @@ public class InvSlotRecipes extends InvSlot {
     }
 
     public boolean continue_proccess(InvSlotOutput slot) {
-        return slot.canAdd(tile.getRecipeOutput().getRecipe().output.items) && this.get().getCount() >= tile.getRecipeOutput().getRecipe().input
+        if(tile.getRecipeOutput() == null)
+            return false;
+        return
+                slot.canAdd(tile.getRecipeOutput().getRecipe().output.items) && this.get().getCount() >= tile
+                .getRecipeOutput()
+                .getRecipe().input
                 .getInputs()
                 .get(0)
                 .getInputs()

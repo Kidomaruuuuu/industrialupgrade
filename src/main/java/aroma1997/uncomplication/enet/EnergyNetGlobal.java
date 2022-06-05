@@ -122,7 +122,10 @@ public class EnergyNetGlobal implements IAdvEnergyNet {
 
     @Override
     public BlockPos getPos(final IEnergyTile iEnergyTile) {
-        return ((TileEntity) iEnergyTile).getPos();
+        final EnergyNetLocal local = getForWorld(this.getWorld(iEnergyTile));
+        if(local != null)
+            return   local.getPos(iEnergyTile);
+        return null;
     }
 
     @Override

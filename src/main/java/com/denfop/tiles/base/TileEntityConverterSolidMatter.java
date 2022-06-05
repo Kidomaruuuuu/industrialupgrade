@@ -11,6 +11,7 @@ import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.container.ContainerConverterSolidMatter;
 import com.denfop.gui.GuiConverterSolidMatter;
 import com.denfop.invslot.InvSlotConverterSolidMatter;
+import com.denfop.invslot.InvSlotUpgrade;
 import com.denfop.utils.ModUtils;
 import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.recipe.IRecipeInputFactory;
@@ -20,7 +21,6 @@ import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.audio.AudioSource;
-import ic2.core.block.invslot.InvSlotUpgrade;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -59,7 +59,7 @@ public class TileEntityConverterSolidMatter extends TileEntityElectricMachine
     public TileEntityConverterSolidMatter() {
         super(50000, 14, 1);
         this.MatterSlot = new InvSlotConverterSolidMatter(this, "input");
-        this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 3);
+        this.upgradeSlot = new com.denfop.invslot.InvSlotUpgrade(this, "upgrade", 3);
         this.inputSlot = new InvSlotRecipes(this, "converter", this);
         this.progress = 0;
         this.defaultOperationLength = this.operationLength = 100;
@@ -181,7 +181,8 @@ public class TileEntityConverterSolidMatter extends TileEntityElectricMachine
 
             setActive(false);
         }
-        needsInvUpdate |= this.upgradeSlot.tickNoMark();
+        if((!this.inputSlot.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark())
+            setOverclockRates();
         if (needsInvUpdate) {
             super.markDirty();
         }

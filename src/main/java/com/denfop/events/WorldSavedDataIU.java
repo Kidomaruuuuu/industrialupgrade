@@ -1,6 +1,8 @@
 package com.denfop.events;
 
 import com.denfop.Constants;
+import com.denfop.api.radiationsystem.Radiation;
+import com.denfop.api.radiationsystem.RadiationSystem;
 import com.denfop.api.space.IBody;
 import com.denfop.api.space.SpaceNet;
 import com.denfop.api.space.fakebody.FakePlayer;
@@ -77,7 +79,16 @@ public class WorldSavedDataIU extends WorldSavedData {
         } else {
             compound.setTag("colonies", new NBTTagCompound());
         }
-
+        if (compound.hasKey("radiations")) {
+            NBTTagCompound tag1 = compound.getCompoundTag("radiations");
+            int size = tag1.getInteger("col");
+            for (int i = 0; i < size; i++) {
+                final NBTTagCompound tag2 = tag1.getCompoundTag(String.valueOf(i));
+                RadiationSystem.rad_system.addRadiation(tag2);
+            }
+        } else {
+            compound.setTag("radiations", new NBTTagCompound());
+        }
     }
 
     public NBTTagCompound getTagCompound() {
@@ -124,6 +135,18 @@ public class WorldSavedDataIU extends WorldSavedData {
         }
 
         compound.setTag("colonies", tag1);
+
+        NBTTagCompound tag2 = new NBTTagCompound();
+        tag2.setInteger("col", RadiationSystem.rad_system.radiationList.size());
+        final List<Radiation> list3 = RadiationSystem.rad_system.radiationList;
+        i = 0;
+        for (Radiation radiation : list3) {
+            tag2.setTag(String.valueOf(i), radiation.writeCompound());
+            i++;
+        }
+
+        compound.setTag("radiations", tag2);
+
         this.tagCompound = compound;
         return compound;
     }

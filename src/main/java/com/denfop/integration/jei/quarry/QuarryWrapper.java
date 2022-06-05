@@ -39,7 +39,7 @@ public class QuarryWrapper implements IRecipeWrapper {
 
 
     public void getIngredients(IIngredients ingredients) {
-        ingredients.setOutputs(VanillaTypes.ITEM, this.getOutputs());
+        ingredients.setOutput(VanillaTypes.ITEM, this.getOutput());
     }
 
 

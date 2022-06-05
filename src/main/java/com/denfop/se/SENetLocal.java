@@ -1,5 +1,6 @@
 package com.denfop.se;
 
+import com.denfop.api.qe.IQEConductor;
 import com.denfop.api.se.ISEAcceptor;
 import com.denfop.api.se.ISEConductor;
 import com.denfop.api.se.ISEEmitter;
@@ -85,6 +86,8 @@ public class SENetLocal {
             return;
         }
         final BlockPos coord = this.chunkCoordinatesMap.get(tile);
+        if(coord == null)
+            return;
         this.chunkCoordinatesMap.remove(tile);
         this.SETileTileEntityMap.remove(tile, this.SETileTileEntityMap.get(tile));
         this.chunkCoordinatesISETileMap.remove(coord, tile);
@@ -121,9 +124,6 @@ public class SENetLocal {
                 double SEConsumed = 0;
                 double SEProvided = Math.floor(Math.round(amount));
                 double adding = Math.min(SEProvided, SESink.getDemandedSE());
-                if (adding <= 0.0D) {
-                    adding = SESink.getDemandedSE();
-                }
                 if (adding <= 0.0D) {
                     continue;
                 }
@@ -230,6 +230,9 @@ public class SENetLocal {
         if (tile == null) {
             return null;
         }
+        if (!this.SETileTileEntityMap.containsKey(tile)) {
+            return null;
+        }
         return this.getTileEntity(this.SETileTileEntityMap.get(tile).getPos().offset(dir));
     }
 
@@ -276,6 +279,8 @@ public class SENetLocal {
         while (workList.size() > 0) {
             final ISETile tile = workList.remove(0);
             final TileEntity te = this.SETileTileEntityMap.get(tile);
+            if(te == null)
+                continue;
             if (!te.isInvalid()) {
                 final List<SETarget> targets = this.getValidReceivers(tile, true);
                 for (SETarget SETarget : targets) {
@@ -350,7 +355,9 @@ public class SENetLocal {
                 BlockPos pos = new BlockPos(x, y,
                         z
                 ).offset(dir);
-                this.world.neighborChanged(pos, Blocks.AIR, pos);
+                if(this.chunkCoordinatesISETileMap.containsKey(pos))
+                    if(this.chunkCoordinatesISETileMap.get(pos) instanceof ISEConductor)
+                        this.world.neighborChanged(pos, Blocks.AIR, pos);
 
             }
         }

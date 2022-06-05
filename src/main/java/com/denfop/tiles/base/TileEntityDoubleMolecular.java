@@ -554,15 +554,17 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
     public void operate(MachineRecipe output) {
         List<ItemStack> processResult = output.getRecipe().output.items;
         operateOnce(processResult);
-        if(!this.inputSlot.continue_process(this.output))
+        if (!this.inputSlot.continue_process(this.output)) {
             getOutput();
+        }
     }
 
     public void operate(MachineRecipe output, int size) {
         List<ItemStack> processResult = output.getRecipe().output.items;
         operateOnce(processResult, size);
-        if(!this.inputSlot.continue_process(this.output))
+        if (!this.inputSlot.continue_process(this.output)) {
             getOutput();
+        }
     }
 
     public void operateOnce(List<ItemStack> processResult) {
@@ -635,7 +637,7 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
                 this.differenceenergy = this.energy.getEnergy() - this.perenergy;
                 this.perenergy = this.energy.getEnergy();
                 if (!this.getActive()) {
-                    IC2.network.get(true).initiateTileEntityEvent(this, 2, true);
+                    IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
                     setActive(true);
                 }
 
@@ -671,7 +673,6 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
 
                 int size = 0;
                 int size2 = 0;
-                boolean getrecipe = false;
                 ItemStack output1;
                 output1 = this.output.getRecipe().getOutput().items.get(0);
 

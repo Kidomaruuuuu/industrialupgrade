@@ -81,6 +81,7 @@ public class ContainerDoubleElectricMachine extends ContainerBaseDoubleElectricM
         if (this.base instanceof TileEntitySunnariumPanelMaker) {
             ret.add("sunenergy");
         }
+        ret.add("energy");
         return ret;
     }
 

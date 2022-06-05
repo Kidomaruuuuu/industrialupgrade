@@ -25,12 +25,9 @@ public class ContainerStorageExp extends ContainerFullInv<TileEntityStorageExp> 
 
     public List<String> getNetworkedFields() {
         List<String> ret = super.getNetworkedFields();
-
-        ret.add("storage");
-        ret.add("storage1");
         ret.add("expirencelevel");
-
         ret.add("expirencelevel1");
+        ret.add("energy");
         return ret;
     }
 

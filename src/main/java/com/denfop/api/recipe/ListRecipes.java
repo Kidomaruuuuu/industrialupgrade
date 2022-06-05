@@ -4,17 +4,14 @@ import ic2.api.recipe.IRecipeInput;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidTank;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ListRecipes implements IRecipes {
 
     public Map<String, List<BaseMachineRecipe>> map_recipes = new HashMap<>();
     public Map<String, IBaseRecipe> map_recipe_managers = new HashMap<>();
+    public Map<String, List<IRecipeInputStack>> map_recipe_managers_itemStack = new HashMap<>();
 
     public ListRecipes() {
         init();
@@ -59,9 +56,13 @@ public class ListRecipes implements IRecipes {
         this.map_recipe_managers.put(name, new RecipeManager(name, size, consume));
         if (!this.map_recipes.containsKey(name)) {
             List<BaseMachineRecipe> lst = new ArrayList<>();
+            List<IRecipeInputStack> lst1 = new ArrayList<>();
             this.map_recipes.put(name, lst);
+            this.map_recipe_managers_itemStack.put(name, lst1);
         }
     }
+
+
 
     public void addRecipeManager(String name, int size, boolean consume, boolean require) {
         this.map_recipe_managers.put(name, new RecipeManager(name, size, consume, require));
@@ -192,7 +193,7 @@ public class ListRecipes implements IRecipes {
                     tank.drain(1000, true);
                     break;
                 } else {
-                    return new MachineRecipe(baseMachineRecipe,Arrays.stream(col)
+                    return new MachineRecipe(baseMachineRecipe, Arrays.stream(col)
                             .boxed()
                             .collect(Collectors.toList()));
                 }
@@ -210,8 +211,19 @@ public class ListRecipes implements IRecipes {
         }
     }
 
+    public List<IRecipeInputStack> getMap_recipe_managers_itemStack(String name) {
+        return map_recipe_managers_itemStack.get(name);
+    }
+
     public void addRecipe(String name, BaseMachineRecipe recipe) {
         if (!this.map_recipes.containsKey(name)) {
+            List<IRecipeInput> iRecipeInputList = recipe.input.getInputs();
+            List<IRecipeInputStack> inputStackList = new ArrayList<>();
+            if(!name.equals("furnace")) {
+                for (IRecipeInput recipeInput : iRecipeInputList)
+                    inputStackList.add(new RecipeInputStack(recipeInput));
+            }
+            this.map_recipe_managers_itemStack.put(name, inputStackList);
             List<BaseMachineRecipe> lst = new ArrayList<>();
             if (name.equals("comb_macerator")) {
                 recipe.output.items.get(0).setCount(3);
@@ -222,6 +234,30 @@ public class ListRecipes implements IRecipes {
             if (name.equals("comb_macerator")) {
                 recipe.output.items.get(0).setCount(3);
             }
+            List<IRecipeInputStack> iRecipeInputList = this.map_recipe_managers_itemStack.get(name);
+            if(!name.equals("furnace")) {
+                if (iRecipeInputList.isEmpty()) {
+                    for (IRecipeInput input1 : recipe.input.getInputs())
+                        iRecipeInputList.add(new RecipeInputStack(input1));
+                } else
+                    for (IRecipeInput input1 : recipe.input.getInputs()) {
+                        for (ItemStack stack : input1.getInputs()) {
+                            boolean continues1 = false;
+                            for (IRecipeInputStack input : iRecipeInputList) {
+                                if (!input.matched(stack)) {
+                                    iRecipeInputList.add(new RecipeInputStack(input1));
+                                    continues1 = true;
+                                    break;
+                                }
+
+                            }
+                            if (continues1) {
+                                break;
+                            }
+                        }
+                    }
+            }
+            this.map_recipe_managers_itemStack.replace(name,iRecipeInputList);
             this.map_recipes.get(name).add(recipe);
         }
     }
@@ -353,7 +389,7 @@ public class ListRecipes implements IRecipes {
                             }
                             break;
                         } else {
-                            return new MachineRecipe(baseMachineRecipe,Arrays.stream(col)
+                            return new MachineRecipe(baseMachineRecipe, Arrays.stream(col)
                                     .boxed()
                                     .collect(Collectors.toList()));
                         }
@@ -383,7 +419,7 @@ public class ListRecipes implements IRecipes {
                         }
 
                     } else {
-                        return new MachineRecipe(baseMachineRecipe,integer);
+                        return new MachineRecipe(baseMachineRecipe, integer);
                     }
                 }
             }
@@ -511,7 +547,7 @@ public class ListRecipes implements IRecipes {
                             }
                             break;
                         } else {
-                            return new MachineRecipe(baseMachineRecipe,Arrays.stream(col)
+                            return new MachineRecipe(baseMachineRecipe, Arrays.stream(col)
                                     .boxed()
                                     .collect(Collectors.toList()));
                         }
@@ -541,7 +577,7 @@ public class ListRecipes implements IRecipes {
                         }
 
                     } else {
-                        return new MachineRecipe(baseMachineRecipe,integer);
+                        return new MachineRecipe(baseMachineRecipe, integer);
 
                     }
                 }
@@ -554,10 +590,18 @@ public class ListRecipes implements IRecipes {
 
     @Override
     public boolean needContinue(final MachineRecipe recipe, final InvSlotRecipes slot) {
+        if(recipe == null)
+            return false;
         BaseMachineRecipe recipe1 = recipe.getRecipe();
-        for(int i = 0; i < recipe1.input.getInputs().size();i++){
-            if(slot.get(i).isEmpty() || slot.get(i).getCount() <  recipe1.input.getInputs().get(0).getInputs().get(0).getCount())
+        for (int i = 0; i < recipe1.input.getInputs().size(); i++) {
+            if (slot.get(i).isEmpty() || slot.get(i).getCount() < recipe1.input
+                    .getInputs()
+                    .get(0)
+                    .getInputs()
+                    .get(0)
+                    .getCount()) {
                 return false;
+            }
         }
         return true;
     }
@@ -756,7 +800,7 @@ public class ListRecipes implements IRecipes {
                         }
                         break;
                     } else {
-                        return new MachineRecipe(baseMachineRecipe,Arrays.stream(col)
+                        return new MachineRecipe(baseMachineRecipe, Arrays.stream(col)
                                 .boxed()
                                 .collect(Collectors.toList()));
                     }
@@ -786,7 +830,7 @@ public class ListRecipes implements IRecipes {
                     }
 
                 } else {
-                    return new MachineRecipe(baseMachineRecipe,integer);
+                    return new MachineRecipe(baseMachineRecipe, integer);
                 }
             }
         }
@@ -905,7 +949,7 @@ public class ListRecipes implements IRecipes {
                         }
                         break;
                     } else {
-                        return new MachineRecipe(baseMachineRecipe,Arrays.stream(col)
+                        return new MachineRecipe(baseMachineRecipe, Arrays.stream(col)
                                 .boxed()
                                 .collect(Collectors.toList()));
                     }
@@ -933,7 +977,7 @@ public class ListRecipes implements IRecipes {
                     }
 
                 } else {
-                    return new MachineRecipe(baseMachineRecipe,integer);
+                    return new MachineRecipe(baseMachineRecipe, integer);
                 }
             }
         }

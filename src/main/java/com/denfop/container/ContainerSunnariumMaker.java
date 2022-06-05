@@ -62,6 +62,7 @@ public class ContainerSunnariumMaker extends ContainerFullInv<TileEntityBaseSunn
         ret.add("guiChargeLevel");
         ret.add("tier");
         ret.add("sunenergy");
+        ret.add("energy");
         return ret;
     }
 

@@ -81,7 +81,7 @@ public class GuiBaseQuarry extends GuiIC2<ContainerBaseQuarry> {
         this.fontRenderer.drawString(TextFormatting.GREEN + "" + this.container.base.max_y, 187
                 , 48, ModUtils.convertRGBcolorToInt(217, 217, 217));
         new AdvArea(this, 172, 27, 175, 75)
-                .withTooltip(ModUtils.getString(this.container.base.exp_storage) + "/" + ModUtils.getString(this.container.base.exp_max_storage))
+                .withTooltip(ModUtils.getString(this.container.base.exp.getEnergy()) + "/" + ModUtils.getString(this.container.base.exp.getCapacity()))
                 .drawForeground(mouseX
                         , mouseY);
         new AdvArea(this, 146, 5, 160, 23).withTooltip(Localization.translate("sq.add_experience")).drawForeground(mouseX
@@ -107,8 +107,8 @@ public class GuiBaseQuarry extends GuiIC2<ContainerBaseQuarry> {
         this.mc.getTextureManager().bindTexture(getTexture());
         int chargeLevel = (int) (48.0F * this.container.base.energy.getEnergy()
                 / this.container.base.energy.getCapacity());
-        int exp = (int) (48.0F * this.container.base.exp_storage
-                / this.container.base.exp_max_storage);
+        int exp = (int) (48.0F * this.container.base.exp.getEnergy()
+                / this.container.base.exp.getCapacity());
 
         if (exp > 0) {
             drawTexturedModalRect(h + 172, k + 28 + 48 - exp, 194,

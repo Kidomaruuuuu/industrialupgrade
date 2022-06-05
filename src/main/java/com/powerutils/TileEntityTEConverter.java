@@ -194,7 +194,7 @@ public class TileEntityTEConverter extends TileEntityInventory implements IHasGu
 
             }
         }
-
+        if(this.energy2 > 0)
         if (this.rf) {
             for (EnumFacing facing : EnumFacing.VALUES) {
                 BlockPos pos = new BlockPos(
@@ -225,7 +225,7 @@ public class TileEntityTEConverter extends TileEntityInventory implements IHasGu
 
         final boolean needsInvUpdate = this.upgradeSlot.tickNoMark();
         if (needsInvUpdate) {
-            super.markDirty();
+            setOverclockRates();
         }
         this.energy2 = Math.min(this.energy2, this.maxStorage2);
 

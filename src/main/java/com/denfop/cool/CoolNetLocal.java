@@ -7,6 +7,7 @@ import com.denfop.api.cooling.ICoolSink;
 import com.denfop.api.cooling.ICoolSource;
 import com.denfop.api.cooling.ICoolTile;
 import ic2.api.energy.NodeStats;
+import ic2.api.energy.tile.IEnergyConductor;
 import ic2.api.info.ILocatable;
 import ic2.core.IC2;
 import net.minecraft.init.Blocks;
@@ -90,6 +91,8 @@ public class CoolNetLocal {
             return;
         }
         final BlockPos coord = this.chunkCoordinatesMap.get(tile);
+        if(coord == null)
+            return;
         this.listFromCoord.remove(coord);
         this.chunkCoordinatesMap.remove(tile);
         this.energyTileTileEntityMap.remove(tile, this.energyTileTileEntityMap.get(tile));
@@ -281,6 +284,9 @@ public class CoolNetLocal {
         if (tile == null) {
             return null;
         }
+        if (!this.energyTileTileEntityMap.containsKey(tile)) {
+            return null;
+        }
         return this.getTileEntity(this.energyTileTileEntityMap.get(tile).getPos().offset(dir));
     }
 
@@ -324,6 +330,8 @@ public class CoolNetLocal {
         while (workList.size() > 0) {
             final ICoolTile tile = workList.remove(0);
             final TileEntity te = this.energyTileTileEntityMap.get(tile);
+            if(te == null)
+                continue;
             if (!te.isInvalid()) {
                 final List<EnergyTarget> targets = this.getValidReceivers(tile, true);
                 for (EnergyTarget energyTarget : targets) {
@@ -403,7 +411,9 @@ public class CoolNetLocal {
                 BlockPos pos = new BlockPos(x, y,
                         z
                 ).offset(dir);
-                this.world.neighborChanged(pos, Blocks.AIR, pos);
+                if(this.chunkCoordinatesICoolTileMap.containsKey(pos))
+                    if(this.chunkCoordinatesICoolTileMap.get(pos) instanceof ICoolConductor)
+                        this.world.neighborChanged(pos, Blocks.AIR, pos);
 
             }
         }

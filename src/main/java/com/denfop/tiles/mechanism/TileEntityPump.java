@@ -2,6 +2,7 @@ package com.denfop.tiles.mechanism;
 
 import com.denfop.container.ContainerPump;
 import com.denfop.gui.GuiPump;
+import com.denfop.invslot.InvSlotUpgrade;
 import com.denfop.tiles.base.TileEntityElectricLiquidTankInventory;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.IUpgradeItem;
@@ -16,7 +17,6 @@ import ic2.core.block.invslot.InvSlot.InvSide;
 import ic2.core.block.invslot.InvSlotConsumableLiquid;
 import ic2.core.block.invslot.InvSlotConsumableLiquid.OpType;
 import ic2.core.block.invslot.InvSlotOutput;
-import ic2.core.block.invslot.InvSlotUpgrade;
 import ic2.core.init.Localization;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
@@ -59,7 +59,7 @@ public class TileEntityPump extends TileEntityElectricLiquidTankInventory implem
         super(20, operationLength, size);
         this.containerSlot = new InvSlotConsumableLiquid(this, "containerSlot", Access.I, 1, InvSide.TOP, OpType.Fill);
         this.outputSlot = new InvSlotOutput(this, "output", 1);
-        this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
+        this.upgradeSlot = new com.denfop.invslot.InvSlotUpgrade(this, "upgrade", 4);
         this.defaultEnergyConsume = this.energyConsume = 1;
         this.defaultOperationLength = this.operationLength = operationLength;
         this.defaultTier = 1;
@@ -84,7 +84,6 @@ public class TileEntityPump extends TileEntityElectricLiquidTankInventory implem
 
     public void updateEntityServer() {
         super.updateEntityServer();
-        boolean needsInvUpdate = false;
         if (this.energy.canUseEnergy((this.energyConsume * this.operationLength))) {
 
             if (this.progress < this.operationLength) {
@@ -110,20 +109,12 @@ public class TileEntityPump extends TileEntityElectricLiquidTankInventory implem
             }
         }
 
-        for (int i = 0; i < this.upgradeSlot.size(); ++i) {
-            ItemStack stack = this.upgradeSlot.get(i);
-            if (stack != null && stack.getItem() instanceof IUpgradeItem && ((IUpgradeItem) stack.getItem()).onTick(
-                    stack,
-                    this
-            )) {
-                needsInvUpdate = true;
-            }
-        }
+
 
         this.guiProgress = (float) this.progress / (float) this.operationLength;
-        if (needsInvUpdate) {
-            super.markDirty();
-        }
+        this.upgradeSlot.tickNoMark();
+
+
 
     }
 

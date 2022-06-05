@@ -1,7 +1,6 @@
 package com.denfop.gui;
 
 import com.denfop.Constants;
-import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.container.ContainerDoubleElectricMachine;
 import com.denfop.utils.ModUtils;

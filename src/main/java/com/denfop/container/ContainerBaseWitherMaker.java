@@ -58,6 +58,7 @@ public class ContainerBaseWitherMaker
         ret.add("guiProgress");
         ret.add("guiChargeLevel");
         ret.add("tier");
+        ret.add("energy");
         return ret;
     }
 

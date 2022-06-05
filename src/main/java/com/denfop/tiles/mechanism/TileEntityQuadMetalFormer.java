@@ -67,12 +67,7 @@ public class TileEntityQuadMetalFormer extends TileEntityMultiMachine
         }
     }
 
-    public void onNetworkUpdate(String field) {
-        super.onNetworkUpdate(field);
-        if (field.equals("mode")) {
-            setMode(this.mode);
-        }
-    }
+
 
     public int getMode() {
         return this.mode;
@@ -94,6 +89,9 @@ public class TileEntityQuadMetalFormer extends TileEntityMultiMachine
                 throw new RuntimeException("invalid mode: " + mode1);
         }
         this.mode = mode1;
+        for (int i = 0; i < this.sizeWorkingSlot; i++) {
+            this.setRecipeOutput(this.inputSlots.fastprocess(i), i);
+        }
     }
 
     private void cycleMode() {

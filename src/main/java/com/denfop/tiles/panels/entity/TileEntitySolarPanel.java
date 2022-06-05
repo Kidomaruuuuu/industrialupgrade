@@ -88,7 +88,7 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IAdvEne
     public double maxStorage2;
     public double storage2;
     public boolean rf = true;
-    public double moonPhase;
+    public double moonPhase = 1;
     public double tick;
     protected double tierPower;
     protected boolean canRain;
@@ -212,7 +212,6 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IAdvEne
 
         }
         double coefficient_phase;
-        double moonPhase = 1;
         coefficient_phase = experimental_generating();
 
 

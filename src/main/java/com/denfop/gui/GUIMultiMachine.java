@@ -111,7 +111,7 @@ public class GuiMultiMachine extends GuiIC2<ContainerMultiMachine> {
         this.drawXCenteredString(this.xSize / 2, 6, Localization.translate(this.container.base.getName()), 4210752, false);
         String tooltip1 = ModUtils.getString(this.container.base.energy2) + "/" + ModUtils.getString(this.container.base.maxEnergy2) + " RF";
         String tooltip2 =
-                ModUtils.getString(this.container.base.energy.getEnergy()) + "/" + ModUtils.getString(this.container.base.energy.getCapacity()) + " " +
+                ModUtils.getString(this.container.base.energy.getEnergy()) + "/" + ModUtils.getString(Math.max( this.container.base.energy.getEnergy(),this.container.base.energy.getCapacity())) + " " +
                         "EU";
 
         GuiTooltipHelper.drawAreaTooltip(this, x - this.guiLeft, y - this.guiTop, tooltip2, 5, 47, 19, 61);

@@ -106,17 +106,18 @@ public class TileEntityLavaGenerator extends TileEntityElectricMachine implement
         if (!(this.energy.getEnergy() <= 0.0D) && this.fluidTank.getFluidAmount() < this.fluidTank.getCapacity()) {
 
 
-            this.setActive(true);
+
 
             if (this.energy.getEnergy() >= this.energycost) {
                 needsInvUpdate = this.attemptGeneration();
+                if(this.world.provider.getWorldTime() % 40 == 0)
                 initiate(0);
             } else {
+                if(this.world.provider.getWorldTime() % 40 == 0)
                 initiate(2);
             }
 
-            needsInvUpdate |= this.containerslot.processFromTank(this.fluidTank, this.outputSlot);
-            this.lastEnergy = this.energy.getEnergy();
+             this.lastEnergy = this.energy.getEnergy();
             if (needsInvUpdate) {
                 this.markDirty();
                 this.setActive(true);
@@ -125,6 +126,8 @@ public class TileEntityLavaGenerator extends TileEntityElectricMachine implement
 
             this.setActive(false);
         }
+        if(!this.containerslot.isEmpty() &&this.fluidTank.getFluidAmount() > 0)
+        this.containerslot.processFromTank(this.fluidTank, this.outputSlot);
 
     }
 

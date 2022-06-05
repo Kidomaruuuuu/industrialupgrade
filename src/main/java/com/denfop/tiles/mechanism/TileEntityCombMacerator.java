@@ -12,6 +12,9 @@ import ic2.core.init.Localization;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
+import java.util.List;
+import java.util.Random;
+
 public class TileEntityCombMacerator extends TileEntityMultiMachine {
 
     public TileEntityCombMacerator() {
@@ -22,6 +25,23 @@ public class TileEntityCombMacerator extends TileEntityMultiMachine {
         );
     }
 
+    public void operateOnce(int slotId, List<ItemStack> processResult, int size) {
+
+        for (int i = 0; i < size; i++) {
+            if (!random) {
+                this.inputSlots.consume(slotId);
+                this.outputSlot.add(processResult);
+            } else {
+                Random rand = new Random();
+                if (rand.nextInt(max + 1) <= min) {
+                    this.inputSlots.consume(slotId);
+                    this.outputSlot.add(processResult);
+                }
+            }
+
+        }
+
+    }
     public static void init() {
         for (String name : OreDictionary.getOreNames()) {
 
@@ -61,6 +81,7 @@ public class TileEntityCombMacerator extends TileEntityMultiMachine {
                         new RecipeOutput(null, stack)
                 )
         );
+
     }
 
     @Override

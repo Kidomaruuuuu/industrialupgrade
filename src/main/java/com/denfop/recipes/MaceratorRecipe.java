@@ -1,5 +1,6 @@
 package com.denfop.recipes;
 
+import com.denfop.Ic2Items;
 import com.denfop.register.RegisterOreDictionary;
 import ic2.api.recipe.IRecipeInputFactory;
 import ic2.api.recipe.Recipes;
@@ -40,8 +41,11 @@ public class MaceratorRecipe {
 
 
         }
-
-
+        final IRecipeInputFactory input1 = Recipes.inputFactory;
+        if(!OreDictionary.getOres("oreYellorite").isEmpty())
+        Recipes.macerator.addRecipe(input1.forOreDict("oreYellorite", 1), null, false,
+                Ic2Items.uraniumOre
+        );
     }
 
     public static void addmacerator(String input, String output, int n) {

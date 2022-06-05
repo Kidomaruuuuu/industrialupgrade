@@ -67,16 +67,12 @@ public class TileEntityTripleMetalFormer extends TileEntityMultiMachine
         }
     }
 
-    public void onNetworkUpdate(String field) {
-        super.onNetworkUpdate(field);
-        if (field.equals("mode")) {
-            setMode(this.mode);
-        }
-    }
+
 
     public int getMode() {
         return this.mode;
     }
+
 
     public void setMode(int mode1) {
         final InvSlotMultiRecipes slot = this.inputSlots;

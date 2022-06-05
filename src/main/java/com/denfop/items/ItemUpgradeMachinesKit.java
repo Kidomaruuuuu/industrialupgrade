@@ -36,7 +36,8 @@ import java.util.Locale;
 public class ItemUpgradeMachinesKit extends ItemMulti<ItemUpgradeMachinesKit.Types> implements IModelRegister {
 
     protected static final String NAME = "upgradekitmachine";
-
+    public static int tick = 0;
+    public static int[] inform = new int[3];
     public ItemUpgradeMachinesKit() {
         super(null, Types.class);
         this.setCreativeTab(IUCore.UpgradeTab);
@@ -57,6 +58,14 @@ public class ItemUpgradeMachinesKit extends ItemMulti<ItemUpgradeMachinesKit.Typ
             @Nonnull final ITooltipFlag p_77624_4_
     ) {
         p_77624_3_.add(Localization.translate("waring_kit"));
+        if(p_77624_1_.getItemDamage() == 3) {
+            super.addInformation(p_77624_1_, p_77624_2_, p_77624_3_, p_77624_4_);
+            return;
+        }
+        p_77624_3_.add(Localization.translate("using_kit"));
+        final List<ItemStack> list = IUItem.map_upgrades.get(p_77624_1_.getItemDamage());
+        p_77624_3_.add(Localization.translate(list.get(inform[p_77624_1_.getItemDamage()] % list.size()).getUnlocalizedName()));
+
         super.addInformation(p_77624_1_, p_77624_2_, p_77624_3_, p_77624_4_);
 
     }

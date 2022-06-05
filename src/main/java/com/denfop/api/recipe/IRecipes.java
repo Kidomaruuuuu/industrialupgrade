@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidTank;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IRecipes {
 
@@ -15,6 +16,8 @@ public interface IRecipes {
     List<BaseMachineRecipe> getRecipeList(String name);
 
     void addRecipeManager(String name, int size, boolean consume);
+
+    List<IRecipeInputStack> getMap_recipe_managers_itemStack(String name);
 
     BaseMachineRecipe getRecipeOutput(
             final IBaseRecipe recipe,
@@ -34,10 +37,9 @@ public interface IRecipes {
 
     MachineRecipe getRecipeMachineOutput(String name, boolean adjustInput, ItemStack... stacks);
 
-    boolean needContinue(MachineRecipe recipe,InvSlotRecipes slot);
+    boolean needContinue(MachineRecipe recipe, InvSlotRecipes slot);
 
     BaseMachineRecipe getRecipeOutputFromInstruments(String name, boolean adjustInput, ItemStack... stacks);
-
 
 
     BaseMachineRecipe getRecipeOutput(

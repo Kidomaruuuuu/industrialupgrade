@@ -1,5 +1,6 @@
 package com.denfop.qe;
 
+import com.denfop.api.cooling.ICoolConductor;
 import com.denfop.api.qe.IQEAcceptor;
 import com.denfop.api.qe.IQEConductor;
 import com.denfop.api.qe.IQEEmitter;
@@ -88,6 +89,8 @@ public class QENetLocal {
             return;
         }
         final BlockPos coord = this.chunkCoordinatesMap.get(tile);
+        if(coord == null)
+            return;
         this.chunkCoordinatesMap.remove(tile);
         this.QETileTileEntityMap.remove(tile, this.QETileTileEntityMap.get(tile));
         this.chunkCoordinatesIQETileMap.remove(coord, tile);
@@ -124,9 +127,6 @@ public class QENetLocal {
                 double QEConsumed = 0;
                 double QEProvided = Math.floor(Math.round(amount));
                 double adding = Math.min(QEProvided, QESink.getDemandedQE());
-                if (adding <= 0.0D) {
-                    adding = QESink.getDemandedQE();
-                }
                 if (adding <= 0.0D) {
                     continue;
                 }
@@ -272,6 +272,9 @@ public class QENetLocal {
         if (tile == null) {
             return null;
         }
+        if (!this.QETileTileEntityMap.containsKey(tile)) {
+            return null;
+        }
         return this.getTileEntity(this.QETileTileEntityMap.get(tile).getPos().offset(dir));
     }
 
@@ -318,6 +321,8 @@ public class QENetLocal {
         while (workList.size() > 0) {
             final IQETile tile = workList.remove(0);
             final TileEntity te = this.QETileTileEntityMap.get(tile);
+            if(te == null)
+                continue;
             if (!te.isInvalid()) {
                 final List<QETarget> targets = this.getValidReceivers(tile, true);
                 for (QETarget QETarget : targets) {
@@ -400,7 +405,9 @@ public class QENetLocal {
                 BlockPos pos = new BlockPos(x, y,
                         z
                 ).offset(dir);
-                this.world.neighborChanged(pos, Blocks.AIR, pos);
+                if(this.chunkCoordinatesIQETileMap.containsKey(pos))
+                    if(this.chunkCoordinatesIQETileMap.get(pos) instanceof IQEConductor)
+                        this.world.neighborChanged(pos, Blocks.AIR, pos);
 
             }
         }

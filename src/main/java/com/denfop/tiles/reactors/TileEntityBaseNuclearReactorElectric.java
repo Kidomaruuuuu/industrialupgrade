@@ -15,6 +15,7 @@ import ic2.api.energy.tile.IEnergyAcceptor;
 import ic2.api.energy.tile.IEnergySource;
 import ic2.api.energy.tile.IEnergyTile;
 import ic2.api.energy.tile.IMetaDelegate;
+import ic2.api.network.INetworkClientTileEntityEventListener;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IC2DamageSource;
@@ -50,14 +51,14 @@ import java.util.List;
 import java.util.Random;
 
 public abstract class TileEntityBaseNuclearReactorElectric extends TileEntityInventory implements IHasGui, IAdvReactor,
-        IEnergySource, IMetaDelegate, IGuiValueProvider {
+        IEnergySource, IMetaDelegate, IGuiValueProvider, INetworkClientTileEntityEventListener {
 
     public final int sizeX;
     public final int sizeY;
     public final double coef;
     public final InvSlotReactor reactorSlot;
-    public final Redstone redstone;
     public boolean getblock;
+    public boolean work;
     public float output = 0.0F;
     public int updateTicker;
     public int heat = 0;
@@ -79,7 +80,6 @@ public abstract class TileEntityBaseNuclearReactorElectric extends TileEntityInv
         this.sizeY = sizeY;
         this.background = background;
         this.coef = coef;
-        this.redstone = this.addComponent(new Redstone(this));
     }
 
     public static void showHeatEffects(World world, BlockPos pos, int heat) {
@@ -170,6 +170,9 @@ public abstract class TileEntityBaseNuclearReactorElectric extends TileEntityInv
         this.heat = nbttagcompound.getInteger("heat");
         this.output = (float) nbttagcompound.getDouble("output");
         this.getblock = nbttagcompound.getBoolean("getblock");
+        this.work = nbttagcompound.getBoolean("work");
+        if(this.world != null)
+        this.setActive(this.work);
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound) {
@@ -177,6 +180,7 @@ public abstract class TileEntityBaseNuclearReactorElectric extends TileEntityInv
         nbttagcompound.setInteger("heat", this.heat);
         nbttagcompound.setDouble("output", this.getReactorEnergyOutput());
         nbttagcompound.setBoolean("getblock", this.getblock);
+        nbttagcompound.setBoolean("work", this.work);
         return nbttagcompound;
     }
 
@@ -409,7 +413,7 @@ public abstract class TileEntityBaseNuclearReactorElectric extends TileEntityInv
     }
 
     public boolean receiveredstone() {
-        return this.redstone.hasRedstoneInput();
+        return this.work;
     }
 
     public abstract short getReactorSize();
@@ -598,6 +602,12 @@ public abstract class TileEntityBaseNuclearReactorElectric extends TileEntityInv
 
     public int getInventoryStackLimit() {
         return 1;
+    }
+
+    @Override
+    public void onNetworkEvent(final EntityPlayer entityPlayer, final int i) {
+        this.work = !this.work;
+        this.setActive(this.work);
     }
 
 }

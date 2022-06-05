@@ -2,6 +2,7 @@ package com.denfop.invslot;
 
 import cofh.redstoneflux.api.IEnergyContainerItem;
 import com.denfop.IUItem;
+import com.denfop.componets.AdvEnergy;
 import com.denfop.items.modules.EnumModule;
 import com.denfop.items.modules.ItemAdditionModule;
 import com.denfop.items.modules.ItemBaseModules;
@@ -208,7 +209,12 @@ public class InvSlotElectricBlock extends InvSlot {
                     assert tile1 != null;
                     if (tile1.getComponent(Energy.class) != null) {
                         final Energy energy = tile1.getComponent(Energy.class);
-                        tile.energy.useEnergy(energy.addEnergy(tile.energy.getEnergy()));
+                        tile.energy.useEnergy(energy.addEnergy(Math.min(tile.energy.getEnergy(),
+                                energy.getCapacity() - energy.getEnergy())));
+                    }else  if (tile1.getComponent(AdvEnergy.class) != null) {
+                        final AdvEnergy energy = tile1.getComponent(AdvEnergy.class);
+                        tile.energy.useEnergy(energy.addEnergy(Math.min(tile.energy.getEnergy(),
+                                energy.getCapacity() - energy.getEnergy())));
                     }
 
                 }

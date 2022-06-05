@@ -108,8 +108,7 @@ public class TileEntityHeliumGenerator extends TileEntityElectricMachine impleme
                 needsInvUpdate = this.attemptGeneration();
             }
 
-            needsInvUpdate |= this.containerslot.processFromTank(this.fluidTank, this.outputSlot);
-            this.lastEnergy = this.energy.getEnergy();
+             this.lastEnergy = this.energy.getEnergy();
             if (needsInvUpdate) {
                 this.markDirty();
                 this.setActive(true);
@@ -118,6 +117,8 @@ public class TileEntityHeliumGenerator extends TileEntityElectricMachine impleme
 
             this.setActive(false);
         }
+        if(!this.containerslot.isEmpty() &&this.fluidTank.getFluidAmount() > 0)
+            this.containerslot.processFromTank(this.fluidTank, this.outputSlot);
 
     }
 

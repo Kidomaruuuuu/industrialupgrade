@@ -1,11 +1,11 @@
 package com.denfop.tiles.base;
 
-import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.componets.AdvEnergy;
 import com.denfop.container.ContainerTripleElectricMachine;
+import com.denfop.invslot.InvSlotUpgrade;
 import com.denfop.tiles.mechanism.TileEntityAdvAlloySmelter;
 import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.upgrade.IUpgradableBlock;
@@ -18,7 +18,6 @@ import ic2.core.audio.AudioSource;
 import ic2.core.audio.PositionSpec;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.block.invslot.InvSlotDischarge;
-import ic2.core.block.invslot.InvSlotUpgrade;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -68,7 +67,7 @@ public abstract class TileEntityTripleElectricMachine extends TileEntityStandart
         this.defaultOperationLength = this.operationLength = length;
         this.defaultTier = aDefaultTier;
         this.defaultEnergyStorage = energyPerTick * length;
-        this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
+        this.upgradeSlot = new com.denfop.invslot.InvSlotUpgrade(this, "upgrade", 4);
         this.name = name;
         this.inputSlotA = new InvSlotRecipes(this, type.recipe_name, this);
         this.type = type;
@@ -178,15 +177,8 @@ public abstract class TileEntityTripleElectricMachine extends TileEntityStandart
             }
             setActive(false);
         }
-        for (int i = 0; i < this.upgradeSlot.size(); i++) {
-            ItemStack stack = this.upgradeSlot.get(i);
-            if (stack != null && stack.getItem() instanceof IUpgradeItem) {
-                if (((IUpgradeItem) stack.getItem()).onTick(stack, this)) {
-                    needsInvUpdate = true;
-                }
-            }
-        }
-
+        if((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark())
+            setOverclockRates();
         if (needsInvUpdate) {
             super.markDirty();
         }
@@ -211,21 +203,12 @@ public abstract class TileEntityTripleElectricMachine extends TileEntityStandart
     public void operate(MachineRecipe output) {
         for (int i = 0; i < this.operationsPerTick; i++) {
             List<ItemStack> processResult = output.getRecipe().output.items;
-            for (int j = 0; j < this.upgradeSlot.size(); j++) {
-                ItemStack stack = this.upgradeSlot.get(j);
-                if (stack != null && stack.getItem() instanceof IUpgradeItem) {
-                    ((IUpgradeItem) stack.getItem()).onProcessEnd(stack, this, processResult);
-                }
-            }
             operateOnce(output, processResult);
-            for (int k = 0; k < this.inputSlotA.size(); k++) {
-                if (this.inputSlotA.get(k).isEmpty()) {
-                    output = getOutput();
-                    break;
-                }
+            if (!this.inputSlotA.continue_process(this.output) || !this.outputSlot.canAdd(output.getRecipe().output.items)) {
+                getOutput();
+                break;
             }
-
-            if (output == null) {
+            if (this.output == null) {
                 break;
             }
         }

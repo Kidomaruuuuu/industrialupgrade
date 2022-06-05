@@ -2,6 +2,7 @@ package com.denfop.invslot;
 
 import cofh.redstoneflux.api.IEnergyContainerItem;
 import com.denfop.Config;
+import com.denfop.componets.AdvEnergy;
 import com.denfop.items.modules.EnumBaseType;
 import com.denfop.items.modules.EnumModule;
 import com.denfop.items.modules.ItemAdditionModule;
@@ -229,13 +230,13 @@ public class InvSlotPanel extends InvSlot implements IChargingSlot {
         tile.coef = 0;
         tile.wireless = false;
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null && this.get(i).getItem() instanceof ItemAdditionModule && this.get(i).getItemDamage() == 10) {
+            if (!this.get(i).isEmpty() && this.get(i).getItem() instanceof ItemAdditionModule && this.get(i).getItemDamage() == 10) {
                 tile.wireless = true;
                 break;
             }
         }
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null && EnumModule.getFromID(this
+            if (!this.get(i).isEmpty() && EnumModule.getFromID(this
                     .get(i).getItemDamage()) != null && this.get(i).getItem() instanceof ItemBaseModules) {
                 EnumModule module = EnumModule.getFromID(this.get(i).getItemDamage());
                 EnumBaseType type = module.type;
@@ -246,9 +247,8 @@ public class InvSlotPanel extends InvSlot implements IChargingSlot {
 
             }
         }
-        if (tile.active == TileEntitySolarPanel.GenerationState.NIGHT || tile.active == TileEntitySolarPanel.GenerationState.RAINNIGHT) {
             for (int i = 0; i < this.size(); i++) {
-                if (this.get(i) != null && EnumModule.getFromID(this
+                if (!this.get(i).isEmpty() && EnumModule.getFromID(this
                         .get(i).getItemDamage()) != null && this.get(i).getItem() instanceof ItemBaseModules) {
                     EnumModule module = EnumModule.getFromID(this.get(i).getItemDamage());
                     EnumBaseType type = module.type;
@@ -259,7 +259,7 @@ public class InvSlotPanel extends InvSlot implements IChargingSlot {
 
                 }
             }
-        }
+
 
     }
 
@@ -306,7 +306,10 @@ public class InvSlotPanel extends InvSlot implements IChargingSlot {
                     assert tile1 != null;
                     if (tile1.getComponent(Energy.class) != null) {
                         final Energy energy = tile1.getComponent(Energy.class);
-                        tile.storage -= energy.addEnergy(tile.storage);
+                        tile.storage -= energy.addEnergy(Math.min(tile.storage,energy.getCapacity() - energy.getEnergy()));
+                    }else  if (tile1.getComponent(AdvEnergy.class) != null) {
+                        final AdvEnergy energy = tile1.getComponent(AdvEnergy.class);
+                        tile.storage -= energy.addEnergy(Math.min(tile.storage,energy.getCapacity() - energy.getEnergy()));
                     }
 
                 }

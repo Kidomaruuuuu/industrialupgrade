@@ -1,7 +1,6 @@
 package com.denfop.gui;
 
 import com.denfop.Constants;
-import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.container.ContainerBaseMolecular;
 import com.denfop.utils.ModUtils;
@@ -42,7 +41,7 @@ public class GuiMolecularTransformer extends GuiIC2<ContainerBaseMolecular> {
                 ModUtils.convertRGBcolorToInt(23, 119, 167)
         );
 
-        double chargeLevel = (15.0D * this.container.base.energy.getFillRatio());
+        double chargeLevel = (15.0D * this.container.base.getProgress());
 
 
         if (chargeLevel > 0 && !this.container.base.inputSlot.isEmpty() && this.container.base.inputSlot.continue_proccess(this.container.base.outputSlot)) {
@@ -60,7 +59,8 @@ public class GuiMolecularTransformer extends GuiIC2<ContainerBaseMolecular> {
                 this.fontRenderer.drawString(output + output1.getRecipe().output.items.get(0).getDisplayName(), this.guiLeft + 60,
                         this.guiTop + 25 + 11, 4210752
                 );
-                this.fontRenderer.drawString(energyPerOperation + ModUtils.getString(output1.getRecipe().output.metadata.getDouble("energy")) +
+                this.fontRenderer.drawString(energyPerOperation + ModUtils.getString(output1.getRecipe().output.metadata.getDouble(
+                                "energy")) +
                                 " EU",
                         this.guiLeft + 60, this.guiTop + 25 + 22, 4210752
                 );

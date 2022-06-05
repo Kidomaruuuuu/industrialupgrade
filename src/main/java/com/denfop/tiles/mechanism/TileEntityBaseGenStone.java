@@ -1,7 +1,6 @@
 package com.denfop.tiles.mechanism;
 
 import com.denfop.IUCore;
-import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.api.recipe.MachineRecipe;

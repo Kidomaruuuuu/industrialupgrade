@@ -43,7 +43,6 @@ public class ContainerAnalyzer extends ContainerFullInv<TileEntityAnalyzer> {
         ret.add("analysis");
         ret.add("y");
         ret.add("energy");
-        ret.add("energy");
         ret.add("yore");
         ret.add("middleheightores");
 

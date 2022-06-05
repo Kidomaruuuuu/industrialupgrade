@@ -24,8 +24,10 @@ import com.denfop.blocks.mechanism.BlockBaseMachine3;
 import com.denfop.blocks.mechanism.BlockCable;
 import com.denfop.blocks.mechanism.BlockCombinerSolid;
 import com.denfop.blocks.mechanism.BlockConverterMatter;
+import com.denfop.blocks.mechanism.BlockDoubleMolecularTransfomer;
 import com.denfop.blocks.mechanism.BlockImpChamber;
 import com.denfop.blocks.mechanism.BlockImpSolarEnergy;
+import com.denfop.blocks.mechanism.BlockMolecular;
 import com.denfop.blocks.mechanism.BlockMoreMachine;
 import com.denfop.blocks.mechanism.BlockMoreMachine1;
 import com.denfop.blocks.mechanism.BlockMoreMachine2;
@@ -54,6 +56,7 @@ import com.denfop.items.CellType;
 import com.denfop.items.IUItemBase;
 import com.denfop.items.ItemAdvancedWindRotor;
 import com.denfop.items.ItemBaseCircuit;
+import com.denfop.items.ItemBlueprint;
 import com.denfop.items.ItemCable;
 import com.denfop.items.ItemCell;
 import com.denfop.items.ItemChemistry;
@@ -99,8 +102,6 @@ import com.denfop.items.energy.ItemQuantumSaber;
 import com.denfop.items.energy.ItemSpectralSaber;
 import com.denfop.items.machines.ItemsAdminPanel;
 import com.denfop.items.machines.ItemsAdvRefiner;
-import com.denfop.items.machines.ItemsDoubleMolecular;
-import com.denfop.items.machines.ItemsMolecular;
 import com.denfop.items.machines.ItemsQuarryVein;
 import com.denfop.items.machines.ItemsRefiner;
 import com.denfop.items.machines.ItemsSintezator;
@@ -144,8 +145,6 @@ import com.denfop.items.resource.alloys.ItemAlloysPlate;
 import com.denfop.items.resource.itemSunnarium;
 import com.denfop.items.resource.preciousresources.ItemPreciousGem;
 import ic2.core.block.TeBlockRegistry;
-import ic2.core.item.resources.ItemWindRotor;
-import ic2.core.ref.ItemName;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -171,21 +170,27 @@ public class Register {
     public static void init() {
 
         IUItem.excitednucleus = new ItemExcitedNucleus();
-        if (Config.experiment) {
-            IUItem.templates = new ItemsTemplates();
-        }
-        IUItem.rotor_wood = new ItemAdvancedWindRotor("rotor_wood", 5, 10800, 0.25F, 10, 60, new ResourceLocation("ic2",
-            "textures/items/rotor" +
-                "/wood_rotor_model.png"));
-        IUItem.rotor_bronze = new ItemAdvancedWindRotor("rotor_bronze", 7, 86400, 0.5F, 14, 75, new ResourceLocation("ic2",
-                "textures/items/rotor/bronze_rotor_model.png"));
-        IUItem.rotor_iron = new ItemAdvancedWindRotor("rotor_iron", 7, 86400, 0.5F, 14, 75, new ResourceLocation("ic2",
-            "textures/items/rotor/iron_rotor_model.png"));
-        IUItem.rotor_steel = new ItemAdvancedWindRotor("rotor_steel", 9, 172800, 0.75F, 17, 90, new ResourceLocation("ic2",
-            "textures/items/rotor/steel_rotor_model.png"));
-        IUItem.rotor_carbon =  new ItemAdvancedWindRotor("rotor_carbon", 11, 604800, 1.0F, 20, 110, new ResourceLocation(
+        IUItem.templates = new ItemsTemplates();
+        IUItem.rotor_wood = new ItemAdvancedWindRotor("rotor_wood", 5, 10800, 0.25F, 10, 60, new ResourceLocation(
+                "ic2",
+                "textures/items/rotor" +
+                        "/wood_rotor_model.png"
+        ));
+        IUItem.rotor_bronze = new ItemAdvancedWindRotor("rotor_bronze", 7, 86400, 0.5F, 14, 75, new ResourceLocation(
+                "ic2",
+                "textures/items/rotor/bronze_rotor_model.png"
+        ));
+        IUItem.rotor_iron = new ItemAdvancedWindRotor("rotor_iron", 7, 86400, 0.5F, 14, 75, new ResourceLocation(
+                "ic2",
+                "textures/items/rotor/iron_rotor_model.png"
+        ));
+        IUItem.rotor_steel = new ItemAdvancedWindRotor("rotor_steel", 9, 172800, 0.75F, 17, 90, new ResourceLocation(
+                "ic2",
+                "textures/items/rotor/steel_rotor_model.png"
+        ));
+        IUItem.rotor_carbon = new ItemAdvancedWindRotor("rotor_carbon", 11, 604800, 1.0F, 20, 110, new ResourceLocation(
                 "ic2", "textures/items/rotor/carbon_rotor_model.png"));
-
+        IUItem.blueprint = new ItemBlueprint();
         IUItem.neutroniumingot = new IUItemBase("neutroniumingot");
         IUItem.upgrade_speed_creation = (IUItemBase) new IUItemBase("upgrade_speed_creation").setCreativeTab(IUCore.tabssp1);
         IUItem.core = new ItemCore();
@@ -211,7 +216,7 @@ public class Register {
         IUItem.UpgradeKit = new ItemUpgradeKit();
         IUItem.AdvblockSE = TeBlockRegistry.get(BlockAdvSolarEnergy.IDENTITY).setCreativeTab(IUCore.SSPTab);
         IUItem.ImpblockSE = TeBlockRegistry.get(BlockImpSolarEnergy.IDENTITY).setCreativeTab(IUCore.SSPTab);
-        IUItem.blockmolecular = new ItemsMolecular();
+        IUItem.blockmolecular = TeBlockRegistry.get(BlockMolecular.IDENTITY).setCreativeTab(IUCore.SSPTab);
         IUItem.basemachine = TeBlockRegistry.get(BlockBaseMachine1.IDENTITY).setCreativeTab(IUCore.SSPTab);
         IUItem.basemachine1 = TeBlockRegistry.get(BlockBaseMachine2.IDENTITY).setCreativeTab(IUCore.SSPTab);
         IUItem.basemachine2 = TeBlockRegistry.get(BlockBaseMachine3.IDENTITY).setCreativeTab(IUCore.SSPTab);
@@ -227,7 +232,7 @@ public class Register {
         IUItem.perchamberblock = TeBlockRegistry.get(BlockPerChamber.IDENTITY).setCreativeTab(IUCore.SSPTab);
         IUItem.tranformer = TeBlockRegistry.get(BlockTransformer.IDENTITY).setCreativeTab(IUCore.SSPTab);
         IUItem.GraviTool = new ItemGraviTool("GraviTool");
-        IUItem.blockdoublemolecular = new ItemsDoubleMolecular();
+        IUItem.blockdoublemolecular = TeBlockRegistry.get(BlockDoubleMolecularTransfomer.IDENTITY).setCreativeTab(IUCore.SSPTab);
         IUItem.blockadmin = new ItemsAdminPanel();
         IUItem.cableblock = TeBlockRegistry.get(BlockCable.IDENTITY).setCreativeTab(IUCore.SSPTab);
         IUItem.oilquarry = new ItemsQuarryVein();

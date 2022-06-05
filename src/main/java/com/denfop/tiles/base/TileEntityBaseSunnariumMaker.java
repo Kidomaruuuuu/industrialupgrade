@@ -1,11 +1,11 @@
 package com.denfop.tiles.base;
 
 
-import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.componets.SEComponent;
 import com.denfop.container.ContainerSunnariumMaker;
+import com.denfop.invslot.InvSlotUpgrade;
 import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.IUpgradeItem;
@@ -13,7 +13,6 @@ import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.audio.AudioSource;
-import ic2.core.block.invslot.InvSlotUpgrade;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -49,7 +48,7 @@ public abstract class TileEntityBaseSunnariumMaker extends TileEntityElectricMac
         this.defaultOperationLength = this.operationLength = length;
         this.defaultTier = aDefaultTier;
         this.defaultEnergyStorage = energyPerTick * length;
-        this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
+        this.upgradeSlot = new com.denfop.invslot.InvSlotUpgrade(this, "upgrade", 4);
         this.output = null;
         this.sunenergy = this.addComponent(SEComponent
                 .asBasicSink(this, 10000, 1));
@@ -100,7 +99,7 @@ public abstract class TileEntityBaseSunnariumMaker extends TileEntityElectricMac
         }
     }
 
-    public void markDirty() {
+    public void  markDirty() {
         super.markDirty();
         if (IC2.platform.isSimulating()) {
             setOverclockRates();
@@ -142,15 +141,8 @@ public abstract class TileEntityBaseSunnariumMaker extends TileEntityElectricMac
             }
             setActive(false);
         }
-        for (int i = 0; i < this.upgradeSlot.size(); i++) {
-            ItemStack stack = this.upgradeSlot.get(i);
-            if (stack != null && stack.getItem() instanceof IUpgradeItem) {
-                if (((IUpgradeItem) stack.getItem()).onTick(stack, this)) {
-                    needsInvUpdate = true;
-                }
-            }
-        }
-
+        if((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark())
+            setOverclockRates();
         if (needsInvUpdate) {
             super.markDirty();
         }
@@ -181,16 +173,12 @@ public abstract class TileEntityBaseSunnariumMaker extends TileEntityElectricMac
     public void operate(MachineRecipe output) {
         for (int i = 0; i < this.operationsPerTick; i++) {
             List<ItemStack> processResult = output.getRecipe().output.items;
-            for (int j = 0; j < this.upgradeSlot.size(); j++) {
-                ItemStack stack = this.upgradeSlot.get(j);
-                if (stack != null && stack.getItem() instanceof IUpgradeItem) {
-                    ((IUpgradeItem) stack.getItem()).onProcessEnd(stack, this, processResult);
-                }
-            }
             operateOnce(processResult);
 
-            if(!this.inputSlotA.continue_process(this.output))
+            if (!this.inputSlotA.continue_process(this.output) || !this.outputSlot.canAdd(output.getRecipe().output.items)) {
                 getOutput();
+                break;
+            }
             if (this.output == null) {
                 break;
             }

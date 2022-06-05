@@ -1,5 +1,6 @@
 package com.denfop.api.recipe;
 
+import cofh.thermalfoundation.item.ItemUpgrade;
 import com.denfop.Ic2Items;
 import com.denfop.api.Recipes;
 import com.denfop.tiles.base.TileEntityMultiMachine;
@@ -18,6 +19,7 @@ import java.util.List;
 public class InvSlotMultiRecipes extends InvSlot {
 
     private final IMultiUpdateTick tile;
+    private List<IRecipeInputStack> accepts;
     private List<BaseMachineRecipe> recipe_list;
     private IBaseRecipe recipe;
     private FluidTank tank;
@@ -28,6 +30,12 @@ public class InvSlotMultiRecipes extends InvSlot {
         this.recipe_list = Recipes.recipes.getRecipeList(this.recipe.getName());
         this.tile = tile;
         this.tank = null;
+        this.accepts =  Recipes.recipes.getMap_recipe_managers_itemStack(this.recipe.getName());
+
+    }
+
+    public IBaseRecipe getRecipe() {
+        return recipe;
     }
 
     public InvSlotMultiRecipes(final TileEntityInventory base, String baseRecipe, IMultiUpdateTick tile, int size) {
@@ -64,7 +72,8 @@ public class InvSlotMultiRecipes extends InvSlot {
 
     @Override
     public boolean accepts(final ItemStack itemStack) {
-        return !itemStack.isEmpty() && !(itemStack.getItem() instanceof ItemUpgradeModule);
+          return !itemStack.isEmpty() && !(itemStack.getItem() instanceof ItemUpgrade)  && (recipe.getName().equals("recycler") || accepts.contains(
+                  new RecipeInputStack(itemStack)));
     }
 
     public void consume(int number, int amount) {
@@ -103,8 +112,17 @@ public class InvSlotMultiRecipes extends InvSlot {
     }
 
     public boolean continue_proccess(InvSlotOutput slot, int slotid) {
-        return slot.canAdd(tile.getRecipeOutput(slotid).getRecipe().output.items) && this.get(slotid).getCount() >= tile.getRecipeOutput(
-                slotid).getRecipe().input.getInputs().get(0).getInputs().get(0).getCount();
+        if(tile.getRecipeOutput(slotid) == null)
+            return false;
+        return slot.canAdd(tile.getRecipeOutput(slotid).getRecipe().output.items) && this.get(slotid).getCount() >= tile
+                .getRecipeOutput(
+                        slotid)
+                .getRecipe().input
+                .getInputs()
+                .get(0)
+                .getInputs()
+                .get(0)
+                .getCount();
     }
 
     public MachineRecipe process(int slotid) {
@@ -143,10 +161,13 @@ public class InvSlotMultiRecipes extends InvSlot {
                 return Recipes.recipes.getRecipeOutputMachineFluid(this.recipe.getName(), this.recipe.consume(), list, this.tank);
             }
         } else {
+          ItemStack stack =  this.get(slotid).copy();
             this.get(slotid).shrink(1);
             final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
-            return new MachineRecipe( new BaseMachineRecipe(new Input(input.forStack(this.get(slotid))), new RecipeOutput(null,
-                    Ic2Items.scrap)), Collections.singletonList(1));
+            return new MachineRecipe(new BaseMachineRecipe(new Input(input.forStack(stack)), new RecipeOutput(
+                    null,
+                    Ic2Items.scrap
+            )), Collections.singletonList(1));
         }
     }
 
@@ -163,6 +184,9 @@ public class InvSlotMultiRecipes extends InvSlot {
 
     public void setNameRecipe(String nameRecipe) {
         this.recipe = Recipes.recipes.getRecipe(nameRecipe);
+        this.recipe_list = Recipes.recipes.getRecipeList(this.recipe.getName());
+        this.accepts =  Recipes.recipes.getMap_recipe_managers_itemStack(this.recipe.getName());
+
     }
 
 

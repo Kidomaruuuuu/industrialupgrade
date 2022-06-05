@@ -52,7 +52,7 @@ public class ContainerBaseGenerationChipMachine
         ret.add("guiChargeLevel");
         ret.add("tier");
         ret.add("temperature");
-
+        ret.add("energy");
         return ret;
     }
 

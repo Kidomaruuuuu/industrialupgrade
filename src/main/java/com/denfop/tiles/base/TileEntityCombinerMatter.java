@@ -5,6 +5,7 @@ import com.denfop.componets.AdvEnergy;
 import com.denfop.container.ContainerCombinerMatter;
 import com.denfop.gui.GuiCombinerMatter;
 import com.denfop.invslot.InvSlotMatter;
+import com.denfop.invslot.InvSlotUpgrade;
 import ic2.api.recipe.IRecipeInput;
 import ic2.api.recipe.MachineRecipeResult;
 import ic2.api.recipe.Recipes;
@@ -22,7 +23,6 @@ import ic2.core.block.invslot.InvSlotConsumableLiquid;
 import ic2.core.block.invslot.InvSlotConsumableLiquidByList;
 import ic2.core.block.invslot.InvSlotOutput;
 import ic2.core.block.invslot.InvSlotProcessable;
-import ic2.core.block.invslot.InvSlotUpgrade;
 import ic2.core.init.Localization;
 import ic2.core.ref.FluidName;
 import net.minecraft.client.gui.GuiScreen;
@@ -71,7 +71,7 @@ public class TileEntityCombinerMatter extends TileEntityElectricLiquidTankInvent
         this.containerslot = new InvSlotConsumableLiquidByList(this, "containerslot", InvSlot.Access.I, 1,
                 InvSlot.InvSide.TOP, InvSlotConsumableLiquid.OpType.Fill, FluidName.uu_matter.getInstance()
         );
-        this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
+        this.upgradeSlot = new com.denfop.invslot.InvSlotUpgrade(this, "upgrade", 4);
         this.inputSlot = new InvSlotMatter(this);
 
         this.redstone = addComponent(new Redstone(this));
