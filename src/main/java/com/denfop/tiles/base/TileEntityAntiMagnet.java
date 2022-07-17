@@ -7,6 +7,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -76,14 +77,14 @@ public class TileEntityAntiMagnet extends TileEntityInventory {
             for (int x = this.pos.getX() - 10; x <= this.pos.getX() + 10; x++) {
                 for (int y = this.pos.getY() - 10; y <= this.pos.getY() + 10; y++) {
                     for (int z = this.pos.getZ() - 10; z <= this.pos.getZ() + 10; z++) {
-                        if (getWorld().getTileEntity(new BlockPos(x, y, z)) != null && !(new BlockPos(
+                        final TileEntity tileEntity = getWorld().getTileEntity(new BlockPos(x, y, z));
+                        if (tileEntity != null && !(new BlockPos(
                                 x,
                                 y,
                                 z
                         ).equals(this.pos))) {
-                            if (getWorld().getTileEntity(new BlockPos(x, y, z)) instanceof TileEntityMagnet) {
-                                TileEntityMagnet tile = (TileEntityMagnet) getWorld().getTileEntity(new BlockPos(x, y, z));
-                                assert tile != null;
+                            if (tileEntity instanceof TileEntityMagnet) {
+                                TileEntityMagnet tile = (TileEntityMagnet) tileEntity;
                                 if (!tile.player.equals(this.player)) {
                                     tile.work = false;
                                 }

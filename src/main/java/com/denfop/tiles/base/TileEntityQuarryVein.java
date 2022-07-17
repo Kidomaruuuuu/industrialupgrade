@@ -5,7 +5,7 @@ import com.denfop.api.vein.Vein;
 import com.denfop.api.vein.VeinSystem;
 import com.denfop.container.ContainerQuarryVein;
 import com.denfop.gui.GuiQuarryVein;
-import com.denfop.items.ItemUpgradeMachinesKit;
+import com.denfop.items.upgradekit.ItemUpgradeMachinesKit;
 import com.denfop.utils.ModUtils;
 import ic2.api.network.INetworkClientTileEntityEventListener;
 import ic2.api.network.INetworkDataProvider;
@@ -32,13 +32,15 @@ public class TileEntityQuarryVein extends TileEntityElectricMachine implements I
     public int progress;
     public Vein vein;
     public boolean find;
+    public int count;
+    public boolean start = true;
 
     public TileEntityQuarryVein() {
         super(400, 14, 1);
         this.progress = 0;
         this.time = 0;
         this.level = 1;
-
+        this.count = 0;
     }
 
     @Override
@@ -95,10 +97,12 @@ public class TileEntityQuarryVein extends TileEntityElectricMachine implements I
                         (player.getHeldItem(hand).getItemDamage() + 1)) {
                     this.level++;
                     player.getHeldItem(hand).setCount(player.getHeldItem(hand).getCount() - 1);
+                    updateTileEntityField();
                     return true;
                 } else if (this.level < 4 && player.getHeldItem(hand).getItemDamage() == 3) {
                     this.level = 4;
                     player.getHeldItem(hand).setCount(player.getHeldItem(hand).getCount() - 1);
+                    updateTileEntityField();
                     return true;
                 }
             }
@@ -119,6 +123,7 @@ public class TileEntityQuarryVein extends TileEntityElectricMachine implements I
             if (this.vein.get()) {
                 this.progress = 1200;
             }
+            this.count = this.vein.getCol();
         }
 
 
@@ -132,12 +137,24 @@ public class TileEntityQuarryVein extends TileEntityElectricMachine implements I
         } else {
             this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
             this.find = this.vein.get();
+            if (this.vein.get()) {
+                this.progress = 1200;
+            }
+            if (this.progress >= 1200) {
+                this.find = true;
+                this.vein.setFind(true);
+            }
+            this.count = this.vein.getCol();
+
         }
+        updateTileEntityField();
     }
 
     private void updateTileEntityField() {
         IC2.network.get(true).updateTileEntityField(this, "level");
         IC2.network.get(true).updateTileEntityField(this, "find");
+        IC2.network.get(true).updateTileEntityField(this, "count");
+
     }
 
     public void updateEntityServer() {
@@ -145,11 +162,15 @@ public class TileEntityQuarryVein extends TileEntityElectricMachine implements I
         if (this.vein == null) {
             return;
         }
-        if (getWorld().provider.getWorldTime() % 40 == 0) {
-            updateTileEntityField();
+        if (this.vein.getCol() != this.count) {
+            this.count = this.vein.getCol();
+            if (this.getWorld().provider.getWorldTime() % 4 == 0) {
+                IC2.network.get(true).updateTileEntityField(this, "count");
+            }
         }
-
-
+        if (this.find) {
+            return;
+        }
         if (this.progress < 1200 && this.energy.getEnergy() >= 5 && !this.vein.get()) {
             if (progress == 0) {
                 initiate(2);
@@ -171,6 +192,7 @@ public class TileEntityQuarryVein extends TileEntityElectricMachine implements I
                 this.progress = 1200;
                 this.vein.setFind(true);
                 this.find = this.vein.get();
+                updateTileEntityField();
             }
 
 
@@ -180,6 +202,7 @@ public class TileEntityQuarryVein extends TileEntityElectricMachine implements I
                 this.time = 0;
             }
         }
+
     }
 
 

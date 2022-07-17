@@ -136,6 +136,10 @@ public class ItemQuantumSaber extends ItemTool implements IElectricItem, IUpgrad
         return new ModelResourceLocation(loc, null);
     }
 
+    public boolean isBookEnchantable(@Nonnull ItemStack stack, @Nonnull ItemStack book) {
+        return false;
+    }
+
     @Override
     public void getSubItems(@Nonnull final CreativeTabs subs, @Nonnull final NonNullList<ItemStack> items) {
         if (this.isInCreativeTab(subs)) {
@@ -196,9 +200,6 @@ public class ItemQuantumSaber extends ItemTool implements IElectricItem, IUpgrad
         return this.maxCharge;
     }
 
-    public boolean isBookEnchantable(@Nonnull ItemStack stack, @Nonnull ItemStack book) {
-        return true;
-    }
 
     @Override
     public boolean canProvideEnergy(ItemStack itemStack) {
@@ -537,11 +538,6 @@ public class ItemQuantumSaber extends ItemTool implements IElectricItem, IUpgrad
             ModelBakery.registerItemVariants(this, getModelLocation1(name, s));
         }
 
-    }
-
-
-    @Override
-    public void setUpdate(final boolean update) {
     }
 
 

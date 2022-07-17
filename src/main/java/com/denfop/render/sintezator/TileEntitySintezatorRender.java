@@ -3,7 +3,7 @@ package com.denfop.render.sintezator;
 import com.denfop.Constants;
 import com.denfop.IUItem;
 import com.denfop.api.render.IModelCustom;
-import com.denfop.render.AdvancedModelLoader;
+import com.denfop.render.base.AdvancedModelLoader;
 import com.denfop.tiles.base.TileEntitySintezator;
 import com.denfop.tiles.panels.entity.EnumSolarPanels;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;

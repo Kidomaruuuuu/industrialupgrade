@@ -18,6 +18,9 @@ public class EventHandler {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onEnergyTileLoad(final HeatTileLoadEvent event) {
+        if (event.getWorld().isRemote) {
+            return;
+        }
         final HeatNetLocal local = HeatNetGlobal.getForWorld(event.getWorld());
 
         if (local != null) {
@@ -27,6 +30,9 @@ public class EventHandler {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onEnergyTileUnload(final HeatTileUnloadEvent event) {
+        if (event.getWorld().isRemote) {
+            return;
+        }
         final HeatNetLocal local = HeatNetGlobal.getForWorld(event.getWorld());
         if (local != null) {
             local.removeTile(event.tile);
@@ -35,15 +41,20 @@ public class EventHandler {
 
     @SubscribeEvent
     public void tick(final TickEvent.WorldTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) {
-            HeatNetGlobal.onTickStart(event.world);
-        } else if (event.phase == TickEvent.Phase.END) {
+        if (event.world.isRemote) {
+            return;
+        }
+        if (event.phase == TickEvent.Phase.END) {
             HeatNetGlobal.onTickEnd(event.world);
         }
     }
 
     @SubscribeEvent
     public void onWorldUnload(final WorldEvent.Unload event) {
+
+        if (event.getWorld().isRemote) {
+            return;
+        }
         HeatNetGlobal.onWorldUnload(event.getWorld());
     }
 

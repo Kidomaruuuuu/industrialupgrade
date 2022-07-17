@@ -1,14 +1,12 @@
 package com.denfop.api.recipe;
 
-import cofh.thermalfoundation.item.ItemUpgrade;
+
 import com.denfop.Ic2Items;
 import com.denfop.api.Recipes;
 import com.denfop.tiles.base.TileEntityMultiMachine;
-import ic2.api.recipe.IRecipeInputFactory;
+import ic2.api.upgrade.IUpgradeItem;
 import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlot;
-import ic2.core.block.invslot.InvSlotOutput;
-import ic2.core.item.upgrade.ItemUpgradeModule;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidTank;
 
@@ -19,6 +17,7 @@ import java.util.List;
 public class InvSlotMultiRecipes extends InvSlot {
 
     private final IMultiUpdateTick tile;
+    public MachineRecipe recycler_output;
     private List<IRecipeInputStack> accepts;
     private List<BaseMachineRecipe> recipe_list;
     private IBaseRecipe recipe;
@@ -30,12 +29,12 @@ public class InvSlotMultiRecipes extends InvSlot {
         this.recipe_list = Recipes.recipes.getRecipeList(this.recipe.getName());
         this.tile = tile;
         this.tank = null;
-        this.accepts =  Recipes.recipes.getMap_recipe_managers_itemStack(this.recipe.getName());
+        this.accepts = Recipes.recipes.getMap_recipe_managers_itemStack(this.recipe.getName());
 
-    }
-
-    public IBaseRecipe getRecipe() {
-        return recipe;
+        recycler_output = new MachineRecipe(new BaseMachineRecipe(null, new RecipeOutput(
+                null,
+                Ic2Items.scrap
+        )), Collections.singletonList(1));
     }
 
     public InvSlotMultiRecipes(final TileEntityInventory base, String baseRecipe, IMultiUpdateTick tile, int size) {
@@ -54,8 +53,18 @@ public class InvSlotMultiRecipes extends InvSlot {
         this.tank = tank;
     }
 
+    public IBaseRecipe getRecipe() {
+        return recipe;
+    }
+
     public void load() {
         this.recipe_list = Recipes.recipes.getRecipeList(this.recipe.getName());
+        if (this.recipe.getName().equals("recycler")) {
+            this.recycler_output = new MachineRecipe(new BaseMachineRecipe(null, new RecipeOutput(
+                    null,
+                    Ic2Items.scrap
+            )), Collections.singletonList(1));
+        }
     }
 
     @Override
@@ -70,10 +79,32 @@ public class InvSlotMultiRecipes extends InvSlot {
         this.tile.onUpdate();
     }
 
+    public BaseMachineRecipe consume(MachineRecipe recipe) {
+        for (int i = 0; i < this.size(); i++) {
+            if (this.get(i).isEmpty()) {
+                return null;
+            }
+        }
+        List<ItemStack> list = new ArrayList<>();
+        this.forEach(list::add);
+        if (this.tank == null) {
+            return Recipes.recipes.getRecipeConsume(this.recipe, recipe, this.recipe.consume(), list);
+        } else {
+            return Recipes.recipes.getRecipeOutputFluid(this.recipe.getName(), this.recipe.consume(), list, this.tank);
+        }
+
+    }
+
     @Override
     public boolean accepts(final ItemStack itemStack) {
-          return !itemStack.isEmpty() && !(itemStack.getItem() instanceof ItemUpgrade)  && (recipe.getName().equals("recycler") || accepts.contains(
-                  new RecipeInputStack(itemStack)));
+        return !itemStack.isEmpty() && !(itemStack.getItem() instanceof IUpgradeItem) && (recipe
+                .getName()
+                .equals("painter") || recipe
+                .getName()
+                .equals("upgradeblock") || recipe
+                .getName()
+                .equals("recycler") || accepts.contains(
+                new RecipeInputStack(itemStack)));
     }
 
     public void consume(int number, int amount) {
@@ -112,17 +143,16 @@ public class InvSlotMultiRecipes extends InvSlot {
     }
 
     public boolean continue_proccess(InvSlotOutput slot, int slotid) {
-        if(tile.getRecipeOutput(slotid) == null)
+        if (tile.getRecipeOutput(slotid) == null) {
             return false;
-        return slot.canAdd(tile.getRecipeOutput(slotid).getRecipe().output.items) && this.get(slotid).getCount() >= tile
-                .getRecipeOutput(
-                        slotid)
-                .getRecipe().input
-                .getInputs()
-                .get(0)
-                .getInputs()
-                .get(0)
-                .getCount();
+        }
+        if (!this.recipe.getName().equals("recycler")) {
+            return slot.canAdd(tile.getRecipeOutput(slotid).getRecipe().output.items) && this.get(slotid).getCount() >= tile
+                    .getRecipeOutput(
+                            slotid).getList().get(0);
+        } else {
+            return !this.get(slotid).isEmpty() && slot.canAdd(tile.getRecipeOutput(slotid).getRecipe().output.items);
+        }
     }
 
     public MachineRecipe process(int slotid) {
@@ -156,18 +186,18 @@ public class InvSlotMultiRecipes extends InvSlot {
             List<ItemStack> list = new ArrayList<>();
             list.add(this.get(slotid));
             if (this.tank == null) {
-                return Recipes.recipes.getRecipeMachineRecipeOutput(this.recipe, this.recipe_list, this.recipe.consume(), list);
+                return Recipes.recipes.getMachineRecipeConsume(
+                        this.recipe,
+                        this.tile.getRecipeOutput(slotid),
+                        this.recipe.consume(),
+                        list
+                );
             } else {
                 return Recipes.recipes.getRecipeOutputMachineFluid(this.recipe.getName(), this.recipe.consume(), list, this.tank);
             }
         } else {
-          ItemStack stack =  this.get(slotid).copy();
             this.get(slotid).shrink(1);
-            final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
-            return new MachineRecipe(new BaseMachineRecipe(new Input(input.forStack(stack)), new RecipeOutput(
-                    null,
-                    Ic2Items.scrap
-            )), Collections.singletonList(1));
+            return recycler_output;
         }
     }
 
@@ -185,7 +215,7 @@ public class InvSlotMultiRecipes extends InvSlot {
     public void setNameRecipe(String nameRecipe) {
         this.recipe = Recipes.recipes.getRecipe(nameRecipe);
         this.recipe_list = Recipes.recipes.getRecipeList(this.recipe.getName());
-        this.accepts =  Recipes.recipes.getMap_recipe_managers_itemStack(this.recipe.getName());
+        this.accepts = Recipes.recipes.getMap_recipe_managers_itemStack(this.recipe.getName());
 
     }
 

@@ -27,7 +27,7 @@ public class UpgradeBlockHandler {
         this.metadata = metadata;
     }
 
-    public static List<UpgradeBlockHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<UpgradeBlockHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

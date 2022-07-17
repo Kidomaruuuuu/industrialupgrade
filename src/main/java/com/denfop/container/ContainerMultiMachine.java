@@ -34,6 +34,9 @@ public class ContainerMultiMachine extends ContainerFullInv<TileEntityMultiMachi
         ret.add("maxEnergy2");
         ret.add("energy");
         ret.add("cold");
+        if (this.base.exp != null) {
+            ret.add("exp");
+        }
         return ret;
     }
 

@@ -11,17 +11,17 @@ import com.denfop.gui.GuiAutoSpawner;
 import com.denfop.invslot.InvSlotBook;
 import com.denfop.invslot.InvSlotModules;
 import com.denfop.invslot.InvSlotUpgradeModule;
+import com.denfop.utils.ModUtils;
 import ic2.api.energy.EnergyNet;
-import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.upgrade.IUpgradableBlock;
-import ic2.api.upgrade.IUpgradeItem;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
-import ic2.core.IHasGui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
@@ -36,7 +36,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 public class TileEntityAutoSpawner extends TileEntityElectricMachine
-        implements IHasGui, INetworkTileEntityEventListener, IEnergyReceiver, IEnergyHandler, IUpgradableBlock {
+        implements IEnergyReceiver, IEnergyHandler, IUpgradableBlock {
 
     public final InvSlotModules module_slot;
     public final InvSlotBook book_slot;
@@ -100,8 +100,9 @@ public class TileEntityAutoSpawner extends TileEntityElectricMachine
         if (!this.world.isRemote) {
             this.player = new FakePlayerSpawner(getWorld());
         }
-        this.module_upgrade.update();
         this.module_slot.update();
+        this.module_upgrade.update();
+
     }
 
     public boolean canConnectEnergy(EnumFacing arg0) {
@@ -133,8 +134,8 @@ public class TileEntityAutoSpawner extends TileEntityElectricMachine
 
 
         ItemStack stack3 = Ic2Items.ejectorUpgrade;
-        if (this.world.provider.getWorldTime() % 10 == 0 && !this.outputSlot.isEmpty()  ) {
-            ((IUpgradeItem) stack3.getItem()).onTick(stack3, this);
+        if (this.world.provider.getWorldTime() % 20 == 0 && !this.outputSlot.isEmpty()) {
+            ModUtils.tick(stack3, this.outputSlot, this);
         }
 
 
@@ -152,27 +153,17 @@ public class TileEntityAutoSpawner extends TileEntityElectricMachine
 
                 if (this.progress[i] >= this.tempprogress) {
                     this.progress[i] = 0;
-                    String name = this.module_slot.get(i).serializeNBT().getString("id");
-
-                    if (Config.EntityList.contains(name)) {
-                        return;
-                    }
-
                     if (this.mobUtils[i] == null) {
                         continue;
                     }
-                    final EntityLiving entity = this.mobUtils[i];
 
+                    final EntityLiving entity = this.mobUtils[i];
+                    entity.setWorld(this.getWorld());
                     for (int j = 0; j < this.spawn; j++) {
 
 
-                        dropItemFromEntity(entity, player, DamageSource.causePlayerDamage(player));
-                        int exp = net.minecraftforge.event.ForgeEventFactory.getExperienceDrop(
-                                entity,
-                                this.player,
-                                entity.experienceValue
-                        );
-
+                        dropItemFromEntity(entity, DamageSource.causePlayerDamage(player));
+                        int exp = Math.max(entity.getExperiencePoints(this.player), 1);
                         this.exp.addEnergy((exp + this.experience * exp / 100D));
 
 
@@ -184,53 +175,58 @@ public class TileEntityAutoSpawner extends TileEntityElectricMachine
         }
     }
 
-    private void dropItemFromEntity(EntityLiving entity, FakePlayerSpawner player, DamageSource source) {
+    private void dropItemFromEntity(EntityLiving entity, DamageSource source) {
+        if (entity.isNonBoss()) {
+            if (!this.world.isRemote) {
+                int i = this.player.loot;
 
-        if (!this.world.isRemote) {
-            int i = net.minecraftforge.common.ForgeHooks.getLootingLevel(entity, player, source);
-
-            entity.captureDrops = true;
-            entity.capturedDrops.clear();
-
-
-            boolean flag = entity.recentlyHit > 0;
-            entity.dropLoot(flag, i, source);
+                entity.captureDrops = true;
+                entity.capturedDrops.clear();
 
 
-            entity.captureDrops = false;
+                boolean flag = entity.recentlyHit > 0;
+                entity.dropLoot(flag, i, source);
 
-            if (!net.minecraftforge.common.ForgeHooks.onLivingDrops(
-                    entity,
-                    source,
-                    entity.capturedDrops,
-                    i,
-                    entity.recentlyHit > 0
-            )) {
-                for (EntityItem item : entity.capturedDrops) {
 
-                    if (item.isDead) {
-                        continue;
+                entity.captureDrops = false;
+
+                if (!net.minecraftforge.common.ForgeHooks.onLivingDrops(
+                        entity,
+                        source,
+                        entity.capturedDrops,
+                        i,
+                        entity.recentlyHit > 0
+                )) {
+                    if (entity instanceof EntityBlaze) {
+                        final EntityItem item = new EntityItem(world);
+                        item.setItem(new ItemStack(Items.BLAZE_ROD));
+                        entity.capturedDrops.add(item);
                     }
-                    ItemStack drop = item.getItem();
-                    ItemStack smelt = null;
-                    if (this.player.fireAspect > 0) {
+                    for (EntityItem item : entity.capturedDrops) {
 
-                        smelt = FurnaceRecipes.instance().getSmeltingResult(drop);
-                        if (!smelt.isEmpty()) {
-                            smelt.setCount(drop.getCount());
+                        if (item.isDead) {
+                            continue;
                         }
-                    }
-                    if (smelt == null || smelt.isEmpty()) {
-                        if (this.outputSlot.canAdd(drop)) {
+                        ItemStack drop = item.getItem();
+                        ItemStack smelt = null;
+                        if (this.player.fireAspect > 0) {
+
+                            smelt = FurnaceRecipes.instance().getSmeltingResult(drop);
+                            if (!smelt.isEmpty()) {
+                                smelt.setCount(drop.getCount());
+                            }
+                        }
+                        if (smelt == null || smelt.isEmpty()) {
                             this.outputSlot.add(drop);
-                        }
-                    } else {
-                        if (this.outputSlot.canAdd(smelt)) {
-                            this.outputSlot.add(smelt);
-                        }
-                    }
-                    item.setDead();
 
+
+                        } else {
+                            this.outputSlot.add(smelt);
+
+                        }
+                        item.setDead();
+
+                    }
                 }
             }
         }
@@ -265,11 +261,6 @@ public class TileEntityAutoSpawner extends TileEntityElectricMachine
     @Override
     public void onGuiClosed(EntityPlayer entityPlayer) {
 
-    }
-
-    @Override
-    public String getInventoryName() {
-        return null;
     }
 
 

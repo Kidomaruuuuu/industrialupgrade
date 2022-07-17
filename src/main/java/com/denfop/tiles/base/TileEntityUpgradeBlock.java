@@ -1,11 +1,7 @@
 package com.denfop.tiles.base;
 
 import com.denfop.IUItem;
-import com.denfop.api.Recipes;
-import com.denfop.api.recipe.BaseMachineRecipe;
-import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.MachineRecipe;
-import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.api.upgrade.IUpgradeItem;
 import com.denfop.api.upgrade.IUpgradeWithBlackList;
 import com.denfop.api.upgrade.UpgradeModificator;
@@ -19,14 +15,11 @@ import com.denfop.items.modules.ItemQuarryModule;
 import com.denfop.items.modules.ItemUpgradeModule;
 import com.denfop.utils.ModUtils;
 import ic2.api.item.ElectricItem;
-import ic2.api.recipe.IRecipeInputFactory;
 import ic2.api.upgrade.UpgradableProperty;
-import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -35,7 +28,6 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -47,30 +39,11 @@ import static com.denfop.events.IUEventHandler.getUpgradeItem;
 public class TileEntityUpgradeBlock extends TileEntityDoubleElectricMachine {
 
     public TileEntityUpgradeBlock() {
-        super(1, 300, 1, Localization.translate("blockUpgrade.name"), EnumDoubleElectricMachine.UPGRADE);
+        super(1, 300, 1, EnumDoubleElectricMachine.UPGRADE);
     }
 
     public static void init() {
 
-    }
-
-    public static void addupgrade(Item container, ItemStack fill) {
-        NBTTagCompound nbt = ModUtils.nbt();
-        nbt.setString(
-                "mode_module",
-                fill.getItem() instanceof ItemUpgradeModule ? ItemUpgradeModule.getType(fill.getItemDamage()).name : "blacklist"
-        );
-        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
-        Recipes.recipes.addRecipe(
-                "upgradeblock",
-                new BaseMachineRecipe(
-                        new Input(
-                                input.forStack(new ItemStack(container, 1, OreDictionary.WILDCARD_VALUE)),
-                                input.forStack(fill)
-                        ),
-                        new RecipeOutput(nbt, new ItemStack(container, 1, OreDictionary.WILDCARD_VALUE))
-                )
-        );
     }
 
 
@@ -191,10 +164,14 @@ public class TileEntityUpgradeBlock extends TileEntityDoubleElectricMachine {
                     }
                 }
                 nbt.setString("mode_module" + k, mode);
-                ElectricItem.manager.charge(stack, newCharge, Integer.MAX_VALUE, true, false);
+                stack.setItemDamage(Damage);
+                ElectricItem.manager.charge(stack, 1, Integer.MAX_VALUE, true, false);
+                ElectricItem.manager.use(stack, 1, null);
+
                 EnchantmentHelper.setEnchantments(enchantmentMap, stack);
                 MinecraftForge.EVENT_BUS.post(new EventItemLoad(world, (IUpgradeItem) stack.getItem(), stack));
-                stack.setItemDamage(Damage);
+
+
             }
 
             if (module.getItem() instanceof ItemQuarryModule && module.getItemDamage() == 12) {
@@ -208,15 +185,19 @@ public class TileEntityUpgradeBlock extends TileEntityDoubleElectricMachine {
                 ItemStack stack = this.outputSlot.get();
                 stack.setTagCompound(nbt1);
                 NBTTagCompound nbt = ModUtils.nbt(stack);
-                for (int j = 0; j < 18; j++) {
+                int size = nbt2.getInteger("size");
+                for (int j = 0; j < size; j++) {
                     String l = "number_" + j;
                     String temp = nbt2.getString(l);
                     nbt.setString(l, temp);
                 }
                 nbt.setBoolean("list", true);
-                ElectricItem.manager.charge(stack, newCharge, Integer.MAX_VALUE, true, false);
-                EnchantmentHelper.setEnchantments(enchantmentMap, stack);
+                nbt.setInteger("size",size);
                 stack.setItemDamage(Damage);
+                ElectricItem.manager.charge(stack, 1, Integer.MAX_VALUE, true, false);
+                ElectricItem.manager.use(stack, 1, null);
+                EnchantmentHelper.setEnchantments(enchantmentMap, stack);
+
                 MinecraftForge.EVENT_BUS.post(new EventItemBlackListLoad(
                         world,
                         (IUpgradeWithBlackList) stack.getItem(),
@@ -242,9 +223,11 @@ public class TileEntityUpgradeBlock extends TileEntityDoubleElectricMachine {
                 ItemStack stack = this.outputSlot.get();
                 stack.setTagCompound(nbt1);
                 UpgradeSystem.system.addModificate(stack, this.output.getRecipe().output.metadata.getString("type"));
-                ElectricItem.manager.charge(stack, newCharge, Integer.MAX_VALUE, true, false);
-                EnchantmentHelper.setEnchantments(enchantmentMap, stack);
                 stack.setItemDamage(Damage);
+                ElectricItem.manager.charge(stack, 1, Integer.MAX_VALUE, true, false);
+                ElectricItem.manager.use(stack, 1, null);
+                EnchantmentHelper.setEnchantments(enchantmentMap, stack);
+
                 MinecraftForge.EVENT_BUS.post(new EventItemLoad(world, (IUpgradeItem) stack.getItem(), stack));
 
             }

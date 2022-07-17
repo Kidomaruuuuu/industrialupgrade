@@ -1,6 +1,5 @@
 package com.denfop.gui;
 
-import com.denfop.Config;
 import com.denfop.Constants;
 import com.denfop.api.recipe.InvSlotMultiRecipes;
 import com.denfop.container.ContainerMultiMachine;
@@ -86,15 +85,23 @@ public class GuiMultiMachine extends GuiIC2<ContainerMultiMachine> {
                 drawTexturedModalRect(xX - 1, yY - 1, 238, 0, 18, 18);
             }
         }
-        if (Config.coolingsystem) {
-            if (heat >= 0) {
+
+        if (heat >= 0) {
+            drawTexturedModalRect(
+                    xoffset + 27, yoffset + 47 + 14 - heat, 216, 14 - heat, 4,
+                    heat
+            );
+
+        }
+        if (tile.exp != null) {
+            int exp = (int) (14.0F * tile.exp.getFillRatio());
+            if (exp >= 0) {
                 drawTexturedModalRect(
-                        xoffset + 27, yoffset + 47 + 14 - heat, 216, 14 - heat, 4,
-                        heat
+                        xoffset + 34, yoffset + 47 + 14 - exp, 223, 14 - exp, 4,
+                        exp
                 );
             }
         }
-
 
         if (chargeLevel >= 0) {
             drawTexturedModalRect(
@@ -111,7 +118,10 @@ public class GuiMultiMachine extends GuiIC2<ContainerMultiMachine> {
         this.drawXCenteredString(this.xSize / 2, 6, Localization.translate(this.container.base.getName()), 4210752, false);
         String tooltip1 = ModUtils.getString(this.container.base.energy2) + "/" + ModUtils.getString(this.container.base.maxEnergy2) + " RF";
         String tooltip2 =
-                ModUtils.getString(this.container.base.energy.getEnergy()) + "/" + ModUtils.getString(Math.max( this.container.base.energy.getEnergy(),this.container.base.energy.getCapacity())) + " " +
+                ModUtils.getString(this.container.base.energy.getEnergy()) + "/" + ModUtils.getString(Math.max(
+                        this.container.base.energy.getEnergy(),
+                        this.container.base.energy.getCapacity()
+                )) + " " +
                         "EU";
 
         GuiTooltipHelper.drawAreaTooltip(this, x - this.guiLeft, y - this.guiTop, tooltip2, 5, 47, 19, 61);
@@ -122,6 +132,14 @@ public class GuiMultiMachine extends GuiIC2<ContainerMultiMachine> {
                         .getEnergy()) + "°C" + "/" + ModUtils.getString(this.container.base.getComponent().getCapacity()) + "°C";
 
         GuiTooltipHelper.drawAreaTooltip(this, x - this.guiLeft, y - this.guiTop, tooltip, 27, 47, 30, 61);
+        if (tile.exp != null) {
+            String tooltip4 = "EXP: " +
+                    ModUtils.getString(this.container.base
+                            .exp
+                            .getEnergy()) + "/" + ModUtils.getString(this.container.base.exp.getCapacity());
+
+            GuiTooltipHelper.drawAreaTooltip(this, x - this.guiLeft, y - this.guiTop, tooltip4, 34, 47, 37, 61);
+        }
         i = 0;
         for (Slot slot : this.container.inventorySlots) {
             if (slot instanceof SlotInvSlot) {

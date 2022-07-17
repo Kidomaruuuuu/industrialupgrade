@@ -26,12 +26,12 @@ public class InvSlotCombinerSEG extends InvSlot {
             if (!this.get(i).isEmpty()) {
                 this.tile.count += Math.min(this.get(i).getCount(), 4);
                 Item item = this.get(i).getItem();
-                if (Item.getItemFromBlock(IUItem.AdvblockSE).equals(item)) {
-                    this.tile.coef += 2;
+                if (Item.getItemFromBlock(IUItem.adv_se_generator).equals(item)) {
+                    this.tile.coef += 2 * Math.min(this.get(i).getCount(), 4);
                 } else if (Item.getItemFromBlock(IUItem.blockSE).equals(item)) {
-                    this.tile.coef += 1;
-                } else if (Item.getItemFromBlock(IUItem.ImpblockSE).equals(item)) {
-                    this.tile.coef += 4;
+                    this.tile.coef += Math.min(this.get(i).getCount(), 4);
+                } else if (Item.getItemFromBlock(IUItem.imp_se_generator).equals(item)) {
+                    this.tile.coef += 4 * Math.min(this.get(i).getCount(), 4);
                 }
             }
         }
@@ -48,12 +48,12 @@ public class InvSlotCombinerSEG extends InvSlot {
             if (!this.get(i).isEmpty()) {
                 this.tile.count += Math.min(this.get(i).getCount(), 4);
                 Item item = this.get(i).getItem();
-                if (Item.getItemFromBlock(IUItem.AdvblockSE).equals(item)) {
-                    this.tile.coef += 2;
+                if (Item.getItemFromBlock(IUItem.adv_se_generator).equals(item)) {
+                    this.tile.coef += 2 * Math.min(this.get(i).getCount(), 4);
                 } else if (Item.getItemFromBlock(IUItem.blockSE).equals(item)) {
-                    this.tile.coef += 1;
-                } else if (Item.getItemFromBlock(IUItem.ImpblockSE).equals(item)) {
-                    this.tile.coef += 4;
+                    this.tile.coef += Math.min(this.get(i).getCount(), 4);
+                } else if (Item.getItemFromBlock(IUItem.imp_se_generator).equals(item)) {
+                    this.tile.coef += 4 * Math.min(this.get(i).getCount(), 4);
                 }
             }
         }
@@ -61,9 +61,9 @@ public class InvSlotCombinerSEG extends InvSlot {
 
 
     public boolean accepts(ItemStack itemStack) {
-        return itemStack.getItem().equals(Item.getItemFromBlock(IUItem.AdvblockSE))
+        return itemStack.getItem().equals(Item.getItemFromBlock(IUItem.adv_se_generator))
                 || itemStack.getItem().equals(Item.getItemFromBlock(IUItem.blockSE))
-                || itemStack.getItem().equals(Item.getItemFromBlock(IUItem.ImpblockSE))
+                || itemStack.getItem().equals(Item.getItemFromBlock(IUItem.imp_se_generator))
                 ;
     }
 

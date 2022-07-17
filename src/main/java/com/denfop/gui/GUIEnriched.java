@@ -51,9 +51,6 @@ public class GuiEnriched extends GuiIC2<ContainerDoubleElectricMachine> {
 
     }
 
-    public String getName() {
-        return this.container.base.getInventoryName();
-    }
 
     protected ResourceLocation getTexture() {
         return new ResourceLocation(Constants.MOD_ID, "textures/gui/GUEnrichment.png");

@@ -1,6 +1,6 @@
 package com.denfop.qe;
 
-import com.denfop.api.cooling.ICoolConductor;
+
 import com.denfop.api.qe.IQEAcceptor;
 import com.denfop.api.qe.IQEConductor;
 import com.denfop.api.qe.IQEEmitter;
@@ -89,8 +89,9 @@ public class QENetLocal {
             return;
         }
         final BlockPos coord = this.chunkCoordinatesMap.get(tile);
-        if(coord == null)
+        if (coord == null) {
             return;
+        }
         this.chunkCoordinatesMap.remove(tile);
         this.QETileTileEntityMap.remove(tile, this.QETileTileEntityMap.get(tile));
         this.chunkCoordinatesIQETileMap.remove(coord, tile);
@@ -321,8 +322,9 @@ public class QENetLocal {
         while (workList.size() > 0) {
             final IQETile tile = workList.remove(0);
             final TileEntity te = this.QETileTileEntityMap.get(tile);
-            if(te == null)
+            if (te == null) {
                 continue;
+            }
             if (!te.isInvalid()) {
                 final List<QETarget> targets = this.getValidReceivers(tile, true);
                 for (QETarget QETarget : targets) {
@@ -405,9 +407,11 @@ public class QENetLocal {
                 BlockPos pos = new BlockPos(x, y,
                         z
                 ).offset(dir);
-                if(this.chunkCoordinatesIQETileMap.containsKey(pos))
-                    if(this.chunkCoordinatesIQETileMap.get(pos) instanceof IQEConductor)
+                if (this.chunkCoordinatesIQETileMap.containsKey(pos)) {
+                    if (this.chunkCoordinatesIQETileMap.get(pos) instanceof IQEConductor) {
                         this.world.neighborChanged(pos, Blocks.AIR, pos);
+                    }
+                }
 
             }
         }

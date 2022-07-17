@@ -37,10 +37,6 @@ public class GuiTunerWireless extends GuiIC2<ContainerTunerWireless> {
     }
 
 
-    public String getName() {
-        return this.container.base.getInventoryName();
-    }
-
     protected void actionPerformed(@Nonnull GuiButton guibutton) throws IOException {
         super.actionPerformed(guibutton);
         if (guibutton.id == 0) {

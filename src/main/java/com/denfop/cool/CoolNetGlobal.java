@@ -1,10 +1,8 @@
 package com.denfop.cool;
 
 
-import com.denfop.api.cooling.ICoolNet;
-import com.denfop.api.cooling.ICoolTile;
-import com.denfop.componets.CoolComponent;
-import ic2.core.block.TileEntityBlock;
+import com.denfop.api.cool.ICoolNet;
+import com.denfop.api.cool.ICoolTile;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -42,12 +40,6 @@ public class CoolNetGlobal implements ICoolNet {
         return CoolNetGlobal.worldToEnergyNetMap.get(world);
     }
 
-    public static void onTickStart(final World world) {
-        final CoolNetLocal energyNet = getForWorld(world);
-        if (energyNet != null) {
-            energyNet.onTickStart();
-        }
-    }
 
     public static void onTickEnd(final World world) {
         final CoolNetLocal energyNet = getForWorld(world);
@@ -58,15 +50,9 @@ public class CoolNetGlobal implements ICoolNet {
 
     @Override
     public ICoolTile getTile(final World var1, final BlockPos var2) {
-        if (var1.getTileEntity(var2) instanceof ICoolTile) {
-            return (ICoolTile) var1.getTileEntity(var2);
-        }
-        if (var1.getTileEntity(var2) instanceof TileEntityBlock) {
-            TileEntityBlock tile = (TileEntityBlock) var1.getTileEntity(var2);
-            assert tile != null;
-            if (tile.hasComponent(CoolComponent.class)) {
-                return tile.getComponent(CoolComponent.class).getDelegate();
-            }
+        final CoolNetLocal local = getForWorld(var1);
+        if (local != null) {
+            return local.getTileEntity(var2);
         }
         return null;
     }

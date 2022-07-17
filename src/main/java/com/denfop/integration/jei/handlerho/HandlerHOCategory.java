@@ -21,7 +21,7 @@ import javax.annotation.Nonnull;
 public class HandlerHOCategory extends Gui implements IRecipeCategory<HandlerHORecipeWrapper> {
 
     private final IDrawableStatic bg;
-    private final int energy = 0;
+    private int energy = 0;
     private int progress = 0;
 
     public HandlerHOCategory(
@@ -62,6 +62,8 @@ public class HandlerHOCategory extends Gui implements IRecipeCategory<HandlerHOR
     public void drawExtras(@Nonnull final Minecraft mc) {
         progress++;
 
+        energy++;
+        int energylevel = (int) Math.min(14.0F * energy / 100, 14);
         int xScale = 44 * progress / 100;
         if (xScale > 44) {
             progress = 0;
@@ -70,7 +72,9 @@ public class HandlerHOCategory extends Gui implements IRecipeCategory<HandlerHOR
 
         mc.getTextureManager().bindTexture(getTexture());
         drawTexturedModalRect(45, 28, 177, 32, xScale + 1, 14);
-
+        drawTexturedModalRect(+22, 54 + 14 - energylevel, 176, 14 - energylevel,
+                14, energylevel
+        );
 
     }
 

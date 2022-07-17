@@ -5,8 +5,11 @@ import cofh.redstoneflux.api.IEnergyReceiver;
 import com.denfop.Config;
 import com.denfop.IUCore;
 import com.denfop.IUItem;
+import com.denfop.api.audio.EnumTypeAudio;
+import com.denfop.api.audio.IAudioFixer;
 import com.denfop.api.recipe.IMultiUpdateTick;
 import com.denfop.api.recipe.InvSlotMultiRecipes;
+import com.denfop.api.recipe.InvSlotOutput;
 import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.audio.AudioSource;
 import com.denfop.audio.PositionSpec;
@@ -25,9 +28,7 @@ import com.denfop.items.modules.ItemModuleTypePanel;
 import com.denfop.tiles.mechanism.EnumTypeMachines;
 import com.denfop.tiles.panels.entity.EnumSolarPanels;
 import com.denfop.tiles.panels.entity.TileEntitySolarPanel;
-import com.denfop.utils.ExperienceUtils;
 import ic2.api.energy.EnergyNet;
-import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
@@ -36,9 +37,10 @@ import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.block.invslot.InvSlotDischarge;
-import ic2.core.block.invslot.InvSlotOutput;
+import ic2.core.init.Localization;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -47,6 +49,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -54,7 +57,7 @@ import java.util.Random;
 import java.util.Set;
 
 public abstract class TileEntityMultiMachine extends TileEntityInventory implements IHasGui, IEnergyHandler, IEnergyReceiver,
-        INetworkTileEntityEventListener, IUpgradableBlock, IMultiUpdateTick {
+        IAudioFixer, IUpgradableBlock, IMultiUpdateTick {
 
     public final int min;
     public final int max;
@@ -88,6 +91,8 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
     public AudioSource audioSource;
     public boolean modulestorage;
     public MachineRecipe[] output;
+    public EnumTypeAudio typeAudio = EnumTypeAudio.OFF;
+    public EnumTypeAudio[] valuesAudio = EnumTypeAudio.values();
     private int tick;
 
     public TileEntityMultiMachine(int energyconsume, int OperationsPerTick, int type) {
@@ -148,6 +153,41 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
 
     }
 
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.multimachine.info"));
+        }
+        if (this.hasComponent(AdvEnergy.class)) {
+            AdvEnergy energy = this.getComponent(AdvEnergy.class);
+            if (!energy.getSourceDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSourceTier()));
+            } else if (!energy.getSinkDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSinkTier()));
+            }
+        }
+
+    }
+
+    public EnumTypeAudio getType() {
+        return typeAudio;
+    }
+
+    public void setType(EnumTypeAudio type) {
+        typeAudio = type;
+    }
+
+    public void initiate(int soundEvent) {
+        if (this.getType() == valuesAudio[soundEvent % valuesAudio.length]) {
+            return;
+        }
+        setType(valuesAudio[soundEvent % valuesAudio.length]);
+        IC2.network.get(true).initiateTileEntityEvent(this, soundEvent, true);
+    }
+
     public void onUpdate() {
 
     }
@@ -162,12 +202,14 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
 
     }
 
-    protected List<ItemStack> getWrenchDrops(EntityPlayer player, int fortune) {
+    public List<ItemStack> getWrenchDrops(EntityPlayer player, int fortune) {
         List<ItemStack> ret = super.getWrenchDrops(player, fortune);
         ItemStack stack_rf = ItemStack.EMPTY;
         ItemStack stack_quickly = ItemStack.EMPTY;
         ItemStack stack_modulesize = ItemStack.EMPTY;
+        ItemStack stack_modulestorage = ItemStack.EMPTY;
         ItemStack panel = ItemStack.EMPTY;
+        ItemStack colling = ItemStack.EMPTY;
         if (rf) {
             stack_rf = new ItemStack(IUItem.module7, 1, 4);
         }
@@ -177,14 +219,29 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
         if (modulesize) {
             stack_modulesize = new ItemStack(IUItem.module_stack);
         }
+        if (modulestorage) {
+            stack_modulestorage = new ItemStack(IUItem.module_storage);
+        }
         if (solartype != null) {
             panel = new ItemStack(IUItem.module6, 1, solartype.meta);
         }
-        if (!stack_rf.isEmpty() || !stack_quickly.isEmpty() || !stack_modulesize.isEmpty() || !panel.isEmpty()) {
+        if (solartype != null) {
+            panel = new ItemStack(IUItem.module6, 1, solartype.meta);
+        }
+        if (this.cold.upgrade) {
+            colling = new ItemStack(IUItem.coolupgrade, 1, this.cold.meta);
+
+        }
+        if (!stack_modulestorage.isEmpty() || !stack_rf.isEmpty() || !stack_quickly.isEmpty() || !stack_modulesize.isEmpty() || !panel.isEmpty() || !colling.isEmpty()) {
             if (!stack_rf.isEmpty()) {
                 ret.add(stack_rf);
                 module--;
                 rf = false;
+            }
+            if (!stack_modulestorage.isEmpty()) {
+                ret.add(stack_modulestorage);
+                module--;
+                modulestorage = false;
             }
             if (!stack_quickly.isEmpty()) {
                 ret.add(stack_quickly);
@@ -199,6 +256,11 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
             if (solartype != null) {
                 ret.add(panel);
                 solartype = null;
+            }
+            if (!colling.isEmpty()) {
+                ret.add(colling);
+                this.cold.upgrade = false;
+                this.cold.meta = 0;
             }
         }
         return ret;
@@ -270,10 +332,7 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
             final float hitY,
             final float hitZ
     ) {
-        if (this.exp != null && this.exp.getEnergy() > 0) {
-            ExperienceUtils.addPlayerXP(entityPlayer, (int) this.exp.getEnergy());
-            this.exp.storage = 0;
-        }
+
         if (!entityPlayer.getHeldItem(hand).isEmpty()) {
             if (entityPlayer.getHeldItem(hand).getItem() instanceof ItemModuleTypePanel) {
                 if (this.solartype != null) {
@@ -412,9 +471,6 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
         return nbttagcompound;
     }
 
-    protected void initiate(int soundEvent) {
-        IC2.network.get(true).initiateTileEntityEvent(this, soundEvent, true);
-    }
 
     protected void onLoaded() {
         super.onLoaded();
@@ -442,7 +498,7 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
         this.output[0] = output;
     }
 
-    public EnumTypeMachines getType() {
+    public EnumTypeMachines getTypeMachine() {
         return this.getMachine().type;
     }
 
@@ -471,7 +527,6 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
 
     protected void updateEntityServer() {
         super.updateEntityServer();
-        boolean needsInvUpdate = false;
         if (solartype != null) {
             if (this.energy.getEnergy() < this.energy.getCapacity() || (this.energy2 < this.maxEnergy2 && this.rf)) {
                 TileEntitySolarPanel panel = new TileEntitySolarPanel(solartype);
@@ -575,14 +630,18 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
                     this.outputSlot,
                     i
             ) && (this.energy.canUseEnergy(this.energyConsume * quickly * size) || this.energy2 >= Math.abs(this.energyConsume * 4 * quickly * size))) {
-                setActive(true);
+                if (!this.getActive()) {
+                    setActive(true);
+                }
                 if (this.progress[i] == 0) {
-                    initiate(0);
+                    if (this.operationLength > this.defaultOperationLength * 0.1) {
+                        initiate(0);
+                    }
                     col[i] = this.inputSlots.get(i).getCount();
                 }
-                if (Config.coolingsystem) {
-                    this.cold.addEnergy(0.1);
-                }
+
+                this.cold.addEnergy(0.05);
+
                 if (this.inputSlots.get(i).getCount() != col[i] && this.modulesize) {
                     this.progress[i] = (short) (col[i] * this.progress[i] / this.inputSlots.get(i).getCount());
                     col[i] = this.inputSlots.get(i).getCount();
@@ -610,12 +669,15 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
                     }
 
                     operate(i, output, size);
-                    needsInvUpdate = true;
-                    initiate(2);
+                    if (this.operationLength > this.defaultOperationLength * 0.1 || (this.getType() != valuesAudio[2 % valuesAudio.length])) {
+                        initiate(2);
+                    }
                 }
             } else {
                 if (this.progress[i] != 0 && getActive()) {
-                    initiate(1);
+                    if (this.operationLength > this.defaultOperationLength * 0.1 || (this.getType() != valuesAudio[1 % valuesAudio.length])) {
+                        initiate(1);
+                    }
                 }
                 if (output == null) {
                     this.progress[i] = 0;
@@ -637,45 +699,43 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
         if (getActive() != isActive) {
             setActive(isActive);
         }
-        if (Config.coolingsystem) {
-            final double fillratio = this.cold.getFillRatio();
-            if (fillratio >= 0.75 && fillratio < 1) {
-                this.operationLength = this.defaultOperationLength * 2;
-            }
-            if (fillratio >= 1) {
-                this.operationLength = Integer.MAX_VALUE;
-            }
-            if (fillratio >= 0.5 && fillratio < 0.75) {
-                this.operationLength = (int) (this.defaultOperationLength * 1.5);
-            }
-            if (fillratio < 0.5) {
-                this.operationLength = this.defaultOperationLength;
-            }
+
+        final double fillratio = this.cold.getFillRatio();
+        if (fillratio >= 0.75 && fillratio < 1) {
+            this.operationLength = this.defaultOperationLength * 2;
+        }
+        if (fillratio >= 1) {
+            this.operationLength = Integer.MAX_VALUE;
+        }
+        if (fillratio >= 0.5 && fillratio < 0.75) {
+            this.operationLength = (int) (this.defaultOperationLength * 1.5);
+        }
+        if (fillratio < 0.5) {
+            this.operationLength = this.defaultOperationLength;
         }
 
-        if((!this.inputSlots.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark())
+
+        if ((!this.inputSlots.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark()) {
             setOverclockRates();
-        if (needsInvUpdate) {
-            super.markDirty();
         }
+
     }
 
     public void setOverclockRates() {
-        this.upgradeSlot.onChanged();
         this.operationsPerTick = this.upgradeSlot.getOperationsPerTick(this.defaultOperationLength);
         this.operationLength = this.upgradeSlot.getOperationLength(this.defaultOperationLength);
-        if (Config.coolingsystem) {
-            final double fillratio = this.cold.getFillRatio();
-            if (fillratio >= 0.75 && fillratio < 1) {
-                this.operationLength *= 2;
-            }
-            if (fillratio >= 1) {
-                this.operationLength = Integer.MAX_VALUE;
-            }
-            if (fillratio >= 0.5 && fillratio < 0.75) {
-                this.operationLength *= 1.5;
-            }
+
+        final double fillratio = this.cold.getFillRatio();
+        if (fillratio >= 0.75 && fillratio < 1) {
+            this.operationLength *= 2;
         }
+        if (fillratio >= 1) {
+            this.operationLength = Integer.MAX_VALUE;
+        }
+        if (fillratio >= 0.5 && fillratio < 0.75) {
+            this.operationLength *= 1.5;
+        }
+
         this.energyConsume = this.upgradeSlot.getEnergyDemand(this.defaultEnergyConsume);
         int tier = this.upgradeSlot.getTier(this.defaultTier);
         this.energy.setSinkTier(tier);
@@ -715,15 +775,19 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
             if (!random) {
                 this.inputSlots.consume(slotId);
                 this.outputSlot.add(processResult);
+                if (this.getMachine().type == EnumTypeMachines.ELECTRICFURNACE) {
+                    this.exp.addEnergy(this.getRecipeOutput(slotId).getRecipe().output.metadata.getFloat("experience"));
+                }
             } else {
                 Random rand = new Random();
+                this.inputSlots.consume(slotId);
                 if (rand.nextInt(max + 1) <= min) {
-                    this.inputSlots.consume(slotId);
                     this.outputSlot.add(processResult);
                 }
             }
 
         }
+        this.cold.addEnergy(0.15);
 
     }
 

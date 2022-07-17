@@ -1,6 +1,7 @@
 package com.denfop.tiles.base;
 
 import com.denfop.IUItem;
+import com.denfop.api.recipe.InvSlotOutput;
 import com.denfop.componets.SEComponent;
 import com.denfop.container.ContainerSolarGeneratorEnergy;
 import com.denfop.gui.GuiSolarGeneratorEnergy;
@@ -9,16 +10,17 @@ import ic2.api.network.INetworkClientTileEntityEventListener;
 import ic2.core.ContainerBase;
 import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
-import ic2.core.block.invslot.InvSlotOutput;
+import ic2.core.init.Localization;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +36,9 @@ public class TileEntitySolarGeneratorEnergy extends TileEntityInventory implemen
     public boolean work;
     public SEComponent sunenergy;
     public List<Double> lst;
+    private boolean noSunWorld;
+    private boolean skyIsVisible;
+    private boolean sunIsUp;
 
     public TileEntitySolarGeneratorEnergy(double cof) {
 
@@ -47,6 +52,19 @@ public class TileEntitySolarGeneratorEnergy extends TileEntityInventory implemen
         this.lst.add(0D);
         this.sunenergy = this.addComponent(SEComponent
                 .asBasicSource(this, 10000, 1));
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.solarium_energy.info"));
+        }
+        super.addInformation(stack, tooltip, advanced);
+
     }
 
     @SideOnly(Side.CLIENT)
@@ -86,21 +104,30 @@ public class TileEntitySolarGeneratorEnergy extends TileEntityInventory implemen
     protected void onLoaded() {
         super.onLoaded();
         this.lst = this.input.coefday();
+        this.noSunWorld = this.world.provider.isNether();
+        updateVisibility();
+
+    }
+
+    public void updateVisibility() {
+        this.skyIsVisible = this.world.canBlockSeeSky(this.pos.up()) &&
+                (this.world.getBlockState(this.pos.up()).getMaterial().getMaterialMapColor() ==
+                        MapColor.AIR) && !this.noSunWorld;
+        this.sunIsUp = this.world.isDaytime();
     }
 
     public void updateEntityServer() {
 
         super.updateEntityServer();
-
+        if (this.world.provider.getWorldTime() % 80 == 0) {
+            updateVisibility();
+        }
         long tick = this.getWorld().provider.getWorldTime() % 24000L;
-        if (this.world.canBlockSeeSky(this.pos.up()) &&
-                (this.world.getBlockState(this.pos.up()).getMaterial().getMaterialMapColor() ==
-                        MapColor.AIR)) {
+        if (this.skyIsVisible) {
             energy(tick);
             if (this.sunenergy.getEnergy() >= 4500) {
                 if (this.outputSlot.get().stackSize < 64 || this.outputSlot.isEmpty()) {
-                    if (this.outputSlot.canAdd(itemstack)) {
-                        this.outputSlot.add(itemstack);
+                    if (this.outputSlot.add(itemstack)) {
                         this.sunenergy.addEnergy(-4500);
                     }
                 }
@@ -111,7 +138,7 @@ public class TileEntitySolarGeneratorEnergy extends TileEntityInventory implemen
 
     public void energy(long tick) {
         double k = 0;
-        if (this.getWorld().provider.isDaytime()) {
+        if (this.sunIsUp) {
             if (tick <= 1000L) {
                 k = 5;
             }
@@ -130,7 +157,7 @@ public class TileEntitySolarGeneratorEnergy extends TileEntityInventory implemen
             this.sunenergy.addEnergy(k * this.cof * (1 + lst.get(0)));
         }
 
-        if (lst.get(2) > 0 && !this.getWorld().provider.isDaytime()) {
+        if (lst.get(2) > 0 && !this.sunIsUp) {
             double tick1 = tick - 12000;
             if (tick1 <= 1000L) {
                 k = 5;
@@ -152,7 +179,6 @@ public class TileEntitySolarGeneratorEnergy extends TileEntityInventory implemen
         }
 
     }
-
 
 
     @Override

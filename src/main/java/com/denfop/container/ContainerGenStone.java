@@ -48,6 +48,7 @@ public class ContainerGenStone extends ContainerFullInv<TileEntityBaseGenStone> 
     public List<String> getNetworkedFields() {
         List<String> ret = super.getNetworkedFields();
         ret.add("guiProgress");
+        ret.add("energy");
         return ret;
     }
 

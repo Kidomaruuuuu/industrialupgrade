@@ -7,9 +7,9 @@ import com.denfop.api.vein.VeinSystem;
 import com.denfop.blocks.FluidName;
 import com.denfop.container.ContainerOilPump;
 import com.denfop.gui.GuiOilPump;
+import com.denfop.tiles.base.IManufacturerBlock;
 import com.denfop.tiles.base.TileEntityElectricLiquidTankInventory;
 import ic2.api.upgrade.IUpgradableBlock;
-import ic2.api.upgrade.IUpgradeItem;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
@@ -18,7 +18,11 @@ import ic2.core.block.invslot.InvSlot;
 import ic2.core.block.invslot.InvSlotConsumableLiquid;
 import ic2.core.block.invslot.InvSlotConsumableLiquidByList;
 import ic2.core.block.invslot.InvSlotUpgrade;
+import ic2.core.init.Localization;
+import ic2.core.ref.TeBlock;
+import ic2.core.util.StackUtil;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -27,7 +31,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
@@ -39,7 +42,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory implements IUpgradableBlock {
+public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory implements IUpgradableBlock, IManufacturerBlock {
 
     private static final List<AxisAlignedBB> aabbs = Collections.singletonList(new AxisAlignedBB(0, 0.0D, -1.0, 1.0, 2.0D,
             2.0
@@ -50,6 +53,7 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
     public int level;
     public boolean find;
     public int count;
+    public int maxcount;
     private Vein vein;
 
     public TileEntityOilPump() {
@@ -69,9 +73,36 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
     }
 
     @Override
+    public int getLevel() {
+        return this.level;
+    }
+
+    @Override
+    public void setLevel(final int level) {
+        this.level = level;
+    }
+
+    @Override
+    public void removeLevel(final int level) {
+        this.level -= level;
+    }
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
+        if (stack.hasTagCompound() && stack.getTagCompound().hasKey("fluid")) {
+            FluidStack fluidStack = FluidStack.loadFluidStackFromNBT((NBTTagCompound) stack.getTagCompound().getTag("fluid"));
+
+            tooltip.add(Localization.translate("iu.fluid.info") + fluidStack.getLocalizedName());
+            tooltip.add(Localization.translate("iu.fluid.info1") + fluidStack.amount / 1000 + " B");
+
+        }
+        super.addInformation(stack, tooltip, advanced);
+    }
+    @Override
     public NBTTagCompound writeToNBT(final NBTTagCompound nbttagcompound) {
         super.writeToNBT(nbttagcompound);
         nbttagcompound.setInteger("level", this.level);
+        nbttagcompound.setBoolean("find", this.find);
         return nbttagcompound;
     }
 
@@ -79,6 +110,7 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
     public void readFromNBT(final NBTTagCompound nbttagcompound) {
         super.readFromNBT(nbttagcompound);
         this.level = nbttagcompound.getInteger("level");
+        this.find = nbttagcompound.getBoolean("find");
     }
 
     public Vein getVein() {
@@ -94,6 +126,7 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
             final float hitY,
             final float hitZ
     ) {
+
         if (level < 10) {
             ItemStack stack = player.getHeldItem(hand);
             if (!stack.getItem().equals(IUItem.upgrade_speed_creation)) {
@@ -108,12 +141,32 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
         }
     }
 
+    protected List<ItemStack> getWrenchDrops(EntityPlayer player, int fortune) {
+        List<ItemStack> ret = super.getWrenchDrops(player, fortune);
+        if (this.level != 0) {
+            ret.add(new ItemStack(IUItem.upgrade_speed_creation, this.level));
+            this.level = 0;
+        }
+        return ret;
+    }
+
     private void updateTileEntityField() {
         IC2.network.get(true).updateTileEntityField(this, "level");
         IC2.network.get(true).updateTileEntityField(this, "count");
         IC2.network.get(true).updateTileEntityField(this, "find");
-    }
+        IC2.network.get(true).updateTileEntityField(this, "maxcount");
 
+    }
+    protected ItemStack adjustDrop(ItemStack drop, boolean wrench) {
+        drop = super.adjustDrop(drop, wrench);
+        if (wrench || this.teBlock.getDefaultDrop() == TeBlock.DefaultDrop.Self) {
+            NBTTagCompound nbt = StackUtil.getOrCreateNbtData(drop);
+            if (this.fluidTank.getFluidAmount() > 0) {
+                nbt.setTag("fluid", this.fluidTank.getFluid().writeToNBT(new NBTTagCompound()));
+            }
+        }
+        return drop;
+    }
     @Override
     public void onPlaced(final ItemStack stack, final EntityLivingBase placer, final EnumFacing facing) {
         super.onPlaced(stack, placer, facing);
@@ -121,7 +174,16 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
         if (this.vein != null) {
             this.find = this.vein.get();
             this.count = this.vein.getCol();
+            this.maxcount = this.vein.getMaxCol();
         }
+        if (stack.hasTagCompound() && stack.getTagCompound().hasKey("fluid")) {
+            FluidStack fluidStack = FluidStack.loadFluidStackFromNBT((NBTTagCompound) stack.getTagCompound().getTag("fluid"));
+            if (fluidStack != null) {
+                this.fluidTank.fill(fluidStack, true);
+            }
+            IC2.network.get(true).updateTileEntityField(this, "fluidTank");
+        }
+        updateTileEntityField();
     }
 
     @Override
@@ -129,14 +191,14 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
         super.onLoaded();
         this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
         if (this.vein != null) {
-            this.find = this.vein.get();
+            boolean find = this.vein.get();
+            if (this.find != find) {
+                this.vein.setFind(this.find);
+            }
             this.count = this.vein.getCol();
+            this.maxcount = this.vein.getMaxCol();
         }
-    }
-
-    @Override
-    protected ItemStack getPickBlock(final EntityPlayer player, final RayTraceResult target) {
-        return new ItemStack(IUItem.oilgetter);
+        updateTileEntityField();
     }
 
 
@@ -172,19 +234,10 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
 
     public void updateEntityServer() {
         super.updateEntityServer();
-        if (this.vein == null || this.vein.getType() == Type.EMPTY) {
+        if (this.vein == null || this.vein.getType() != Type.OIL) {
             return;
         }
-        updateTileEntityField();
-        boolean needsInvUpdate = false;
-        for (int i = 0; i < this.upgradeSlot.size(); i++) {
-            ItemStack stack = this.upgradeSlot.get(i);
-            if (stack != null && stack.getItem() instanceof IUpgradeItem) {
-                if (((IUpgradeItem) stack.getItem()).onTick(stack, this)) {
-                    needsInvUpdate = true;
-                }
-            }
-        }
+
         MutableObject<ItemStack> output = new MutableObject<>();
         if (this.containerslot.transferFromTank(this.fluidTank, output, true)
                 && (output.getValue() == null || this.outputSlot.canAdd(output.getValue()))) {
@@ -194,22 +247,19 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
                 this.outputSlot.add(output.getValue());
             }
         }
-        if (this.energy.getEnergy() >= 10 && this.vein.getType() == Type.OIL && this.vein.get()) {
+        if (this.energy.getEnergy() >= 10 && this.find) {
             get_oil();
-            if(!this.getActive()) {
+            if (!this.getActive()) {
                 this.setActive(true);
                 initiate(0);
             }
         } else {
-            if(this.getActive()) {
+            if (this.getActive()) {
                 this.setActive(false);
                 initiate(2);
             }
         }
 
-        if (needsInvUpdate) {
-            markDirty();
-        }
 
     }
 
@@ -222,7 +272,10 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
                 vein.removeCol(size);
                 this.count = vein.getCol();
                 this.energy.useEnergy(10);
-                markDirty();
+                updateTileEntityField();
+                if (this.upgradeSlot.tickNoMark()) {
+                    setUpgradestat();
+                }
             }
         }
     }
@@ -240,7 +293,6 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
     }
 
     public void setUpgradestat() {
-        this.upgradeSlot.onChanged();
         this.energy.setSinkTier(applyModifier(this.upgradeSlot.extraTier));
     }
 

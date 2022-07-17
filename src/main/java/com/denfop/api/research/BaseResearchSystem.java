@@ -128,6 +128,16 @@ public class BaseResearchSystem implements IResearchSystem {
                 BaseLevelSystem system = ResearchSystem.instance.getLevel((EntityPlayer) damage.getTrueSource());
                 system.addLevel(EnumLeveling.PVP, 1);
             }
+        } else if (event.getSource().damageType.equals("arrow")) {
+            if (event
+                    .getSource()
+                    .getTrueSource() instanceof EntityPlayer && event.getSource() instanceof EntityDamageSource && !(event
+                    .getSource()
+                    .getTrueSource() instanceof FakePlayer)) {
+                EntityDamageSource damage = (EntityDamageSource) event.getSource();
+                BaseLevelSystem system = ResearchSystem.instance.getLevel((EntityPlayer) damage.getTrueSource());
+                system.addLevel(EnumLeveling.PVP, 1);
+            }
         }
     }
 

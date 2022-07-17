@@ -54,32 +54,32 @@ public class CentrifugeRecipe {
 
         addcentrifuge(0, null);
         addcentrifuge(1, new ItemStack(Blocks.SAND));
-        addcentrifuge(2, new ItemStack(Ic2Items.smallLeadDust.getItem(), 1, 5));
+        addcentrifuge(2, new ItemStack(Ic2Items.smallLeadDust.getItem(), 1, 10));
         addcentrifuge(3, new ItemStack(IUItem.smalldust, 1, 16));
         addcentrifuge(6, new ItemStack(Ic2Items.smallLeadDust.getItem(), 1, 1));
         addcentrifuge(7, new ItemStack(IUItem.smalldust, 1, 16));
         addcentrifuge(8, new ItemStack(Ic2Items.smallLeadDust.getItem(), 1, 0));
         addcentrifuge(9, new ItemStack(Ic2Items.smallLeadDust.getItem(), 1, 2));
         addcentrifuge(10, new ItemStack(Ic2Items.smallLeadDust.getItem(), 1, 0));
-        addcentrifuge(11, new ItemStack(Ic2Items.smallLeadDust.getItem(), 1, 5));
+        addcentrifuge(11, new ItemStack(IUItem.smalldust, 1, 7));
         addcentrifuge(12, new ItemStack(IUItem.smalldust, 1, 10));
-        addcentrifuge(15, new ItemStack(Ic2Items.smallLeadDust.getItem(), 1, 5));
+        addcentrifuge(15, null);
         addcentrifuge(16, null);
         addcentrifuge(17, new ItemStack(IUItem.smalldust, 1, 9));
         addcentrifuge(18, new ItemStack(IUItem.smalldust, 1, 15));
 
         addcentrifuge1(0, null);
         addcentrifuge1(1, new ItemStack(Blocks.SAND));
-        addcentrifuge1(2, new ItemStack(Ic2Items.smallLeadDust.getItem(), 1, 5));
+        addcentrifuge1(2, new ItemStack(Ic2Items.smallLeadDust.getItem(), 1, 10));
         addcentrifuge1(3, new ItemStack(IUItem.smalldust, 1, 16));
         addcentrifuge1(6, new ItemStack(Ic2Items.smallLeadDust.getItem(), 1, 1));
         addcentrifuge1(7, new ItemStack(IUItem.smalldust, 1, 16));
         addcentrifuge1(8, new ItemStack(Ic2Items.smallLeadDust.getItem(), 1, 0));
         addcentrifuge1(9, new ItemStack(Ic2Items.smallLeadDust.getItem(), 1, 2));
         addcentrifuge1(10, new ItemStack(Ic2Items.smallLeadDust.getItem(), 1, 0));
-        addcentrifuge1(11, new ItemStack(Ic2Items.smallLeadDust.getItem(), 1, 5));
+        addcentrifuge1(11, new ItemStack(IUItem.smalldust, 1, 7));
         addcentrifuge1(12, new ItemStack(IUItem.smalldust, 1, 10));
-        addcentrifuge1(15, new ItemStack(Ic2Items.smallLeadDust.getItem(), 1, 5));
+        addcentrifuge1(15, null);
         addcentrifuge1(16, null);
         addcentrifuge1(17, new ItemStack(IUItem.smalldust, 1, 9));
         addcentrifuge1(18, new ItemStack(IUItem.smalldust, 1, 15));

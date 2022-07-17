@@ -24,7 +24,7 @@ public class ContainerNeutronGenerator extends ContainerFullInv<TileEntityNeutro
         List<String> ret = super.getNetworkedFields();
         ret.add("energy");
         ret.add("fluidTank");
-
+        ret.add("work");
         return ret;
     }
 

@@ -1,9 +1,18 @@
 package com.denfop;
 
+import com.denfop.utils.ModUtils;
+import ic2.core.block.BlockIC2Fence;
+import ic2.core.block.BlockScaffold;
+import ic2.core.block.BlockSheet;
 import ic2.core.block.BlockTexGlass;
+import ic2.core.block.machine.BlockMiningPipe;
 import ic2.core.block.type.ResourceBlock;
 import ic2.core.block.wiring.CableType;
 import ic2.core.item.ItemIC2Boat;
+import ic2.core.item.ItemMug;
+import ic2.core.item.block.ItemPipe;
+import ic2.core.item.tfbp.Tfbp;
+import ic2.core.item.type.BlockCuttingBladeType;
 import ic2.core.item.type.CasingResourceType;
 import ic2.core.item.type.CellType;
 import ic2.core.item.type.CraftingItemType;
@@ -24,25 +33,26 @@ import net.minecraft.item.ItemStack;
 
 public final class Ic2Items {
 
+    public static ItemStack tank = BlockName.te.getItemStack(TeBlock.bronze_tank);
+    public static ItemStack tank1 = BlockName.te.getItemStack(TeBlock.iridium_tank);
+    public static ItemStack tank2 = BlockName.te.getItemStack(TeBlock.iron_tank);
+    public static ItemStack tank3 = BlockName.te.getItemStack(TeBlock.steel_tank);
     public static ItemStack teBlock = BlockName.te.getItemStack(TeBlock.invalid);
     public static ItemStack copperOre = BlockName.resource.getItemStack(ResourceBlock.copper_ore);
     public static ItemStack tinOre = BlockName.resource.getItemStack(ResourceBlock.tin_ore);
     public static ItemStack uraniumOre = BlockName.resource.getItemStack(ResourceBlock.uranium_ore);
     public static ItemStack leadOre = BlockName.resource.getItemStack(ResourceBlock.lead_ore);
     public static ItemStack rubberWood = BlockName.rubber_wood.getItemStack();
-    public static ItemStack rubberLeaves;
-    public static ItemStack rubberSapling;
-    public static ItemStack resinSheet;
-    public static ItemStack rubberTrampoline;
-    public static ItemStack ironFence;
+    public static ItemStack rubberLeaves = BlockName.leaves.getItemStack();
+    public static ItemStack rubberSapling = BlockName.sapling.getItemStack();
+    public static ItemStack resinSheet = BlockName.sheet.getItemStack(BlockSheet.SheetType.resin);
+    public static ItemStack rubberTrampoline = BlockName.sheet.getItemStack(BlockSheet.SheetType.rubber);
+    public static ItemStack ironFence = BlockName.fence.getItemStack(BlockIC2Fence.IC2FenceType.iron);
     public static ItemStack reinforcedStone = BlockName.resource.getItemStack(ResourceBlock.reinforced_stone);
     public static ItemStack reinforcedGlass = BlockName.glass.getItemStack(BlockTexGlass.GlassType.reinforced);
-    public static ItemStack reinforcedDoorBlock;
-    public static ItemStack constructionreinforcedFoam;
-    public static ItemStack constructionFoam;
-    public static ItemStack constructionFoamWall;
-    public static ItemStack scaffold;
-    public static ItemStack ironScaffold;
+    public static ItemStack reinforcedDoorBlock = BlockName.reinforced_door.getItemStack();
+    public static ItemStack scaffold = BlockName.scaffold.getItemStack(BlockScaffold.ScaffoldType.wood);
+    public static ItemStack ironScaffold = BlockName.scaffold.getItemStack(BlockScaffold.ScaffoldType.iron);
     public static ItemStack basaltBlock = BlockName.resource.getItemStack(ResourceBlock.basalt);
     public static ItemStack bronzeBlock = BlockName.resource.getItemStack(ResourceBlock.bronze_block);
     public static ItemStack copperBlock = BlockName.resource.getItemStack(ResourceBlock.copper_block);
@@ -50,20 +60,6 @@ public final class Ic2Items {
     public static ItemStack uraniumBlock = BlockName.resource.getItemStack(ResourceBlock.uranium_block);
     public static ItemStack leadBlock = BlockName.resource.getItemStack(ResourceBlock.lead_block);
     public static ItemStack advironblock = BlockName.resource.getItemStack(ResourceBlock.steel_block);
-    public static ItemStack copperCableBlock;
-    public static ItemStack insulatedCopperCableBlock;
-    public static ItemStack goldCableBlock;
-    public static ItemStack insulatedGoldCableBlock;
-    public static ItemStack doubleInsulatedGoldCableBlock;
-    public static ItemStack ironCableBlock;
-    public static ItemStack insulatedIronCableBlock;
-    public static ItemStack doubleInsulatedIronCableBlock;
-    public static ItemStack trippleInsulatedIronCableBlock;
-    public static ItemStack glassFiberCableBlock;
-    public static ItemStack tinCableBlock;
-    public static ItemStack insulatedtinCableBlock;
-    public static ItemStack detectorCableBlock;
-    public static ItemStack splitterCableBlock;
     public static ItemStack generator = BlockName.te.getItemStack(TeBlock.generator);
     public static ItemStack geothermalGenerator = BlockName.te.getItemStack(TeBlock.geo_generator);
     public static ItemStack waterMill = BlockName.te.getItemStack(TeBlock.water_generator);
@@ -76,7 +72,7 @@ public final class Ic2Items {
     public static ItemStack nuclearReactor = BlockName.te.getItemStack(TeBlock.nuclear_reactor);
     public static ItemStack reactorChamber = BlockName.te.getItemStack(TeBlock.reactor_chamber);
     public static ItemStack reactorFluidPort = BlockName.te.getItemStack(TeBlock.reactor_fluid_port);
-    public static ItemStack reactorvessel;
+    public static ItemStack reactorvessel = BlockName.resource.getItemStack(ResourceBlock.reactor_vessel);
     public static ItemStack reactorAccessHatch = BlockName.te.getItemStack(TeBlock.reactor_access_hatch);
     public static ItemStack reactorRedstonePort = BlockName.te.getItemStack(TeBlock.reactor_redstone_port);
     public static ItemStack SolidHeatGenerator = BlockName.te.getItemStack(TeBlock.solid_heat_generator);
@@ -110,6 +106,7 @@ public final class Ic2Items {
     public static ItemStack compressor = BlockName.te.getItemStack(TeBlock.compressor);
     public static ItemStack canner = BlockName.te.getItemStack(TeBlock.canner);
     public static ItemStack miner = BlockName.te.getItemStack(TeBlock.miner);
+    public static ItemStack miner_pipe = BlockName.mining_pipe.getItemStack(BlockMiningPipe.MiningPipeType.pipe);
     public static ItemStack pump = BlockName.te.getItemStack(TeBlock.pump);
     public static ItemStack magnetizer = BlockName.te.getItemStack(TeBlock.magnetizer);
     public static ItemStack electrolyzer = BlockName.te.getItemStack(TeBlock.electrolyzer);
@@ -146,27 +143,24 @@ public final class Ic2Items {
     public static ItemStack energyOMat = BlockName.te.getItemStack(TeBlock.energy_o_mat);
     public static ItemStack industrialTnt = BlockName.te.getItemStack(TeBlock.itnt);
     public static ItemStack nuke = BlockName.te.getItemStack(TeBlock.nuke);
-    public static ItemStack dynamiteStick;
-    public static ItemStack dynamiteStickWithRemote;
-    public static ItemStack crop;
-    public static ItemStack cropmatron;
-    public static ItemStack resin;
+    public static ItemStack CoffeBeans = ItemName.crop_res.getItemStack(CropResItemType.coffee_beans);
+
     public static ItemStack rubber = ItemName.crafting.getItemStack(CraftingItemType.rubber);
     public static ItemStack woodrotor = ItemName.rotor_wood.getItemStack();
     public static ItemStack ironrotor = ItemName.rotor_iron.getItemStack();
     public static ItemStack steelrotor = ItemName.rotor_steel.getItemStack();
     public static ItemStack carbonrotor = ItemName.rotor_carbon.getItemStack();
-    public static ItemStack woodrotorblade;
-    public static ItemStack ironrotorblade;
-    public static ItemStack steelrotorblade;
-    public static ItemStack carbonrotorblade;
-    public static ItemStack steamturbine;
-    public static ItemStack steamturbineblade;
-    public static ItemStack ironblockcuttingblade;
-    public static ItemStack advironblockcuttingblade;
-    public static ItemStack diamondblockcuttingblade;
-    public static ItemStack ironshaft;
-    public static ItemStack steelshaft;
+    public static ItemStack woodrotorblade = ItemName.crafting.getItemStack(CraftingItemType.wood_rotor_blade);
+    public static ItemStack ironrotorblade = ItemName.crafting.getItemStack(CraftingItemType.iron_rotor_blade);
+    public static ItemStack steelrotorblade = ItemName.crafting.getItemStack(CraftingItemType.steel_rotor_blade);
+    public static ItemStack carbonrotorblade = ItemName.crafting.getItemStack(CraftingItemType.carbon_rotor_blade);
+    public static ItemStack steamturbine = ItemName.crafting.getItemStack(CraftingItemType.steam_turbine);
+    public static ItemStack steamturbineblade = ItemName.crafting.getItemStack(CraftingItemType.steam_turbine_blade);
+    public static ItemStack ironblockcuttingblade = ItemName.block_cutting_blade.getItemStack(BlockCuttingBladeType.iron);
+    public static ItemStack advironblockcuttingblade = ItemName.block_cutting_blade.getItemStack(BlockCuttingBladeType.steel);
+    public static ItemStack diamondblockcuttingblade = ItemName.block_cutting_blade.getItemStack(BlockCuttingBladeType.diamond);
+    public static ItemStack ironshaft = ItemName.crafting.getItemStack(CraftingItemType.iron_shaft);
+    public static ItemStack steelshaf = ItemName.crafting.getItemStack(CraftingItemType.steel_shaft);
     public static ItemStack FluidCell = ItemName.fluid_cell.getItemStack();
     public static ItemStack reactorLithiumCell = ItemName.lithium_fuel_rod.getItemStack();
     public static ItemStack TritiumCell = ItemName.tritium_fuel_rod.getItemStack();
@@ -232,7 +226,7 @@ public final class Ic2Items {
     public static ItemStack lithiumDust = ItemName.dust.getItemStack(DustResourceType.lithium);
     public static ItemStack silicondioxideDust = ItemName.dust.getItemStack(DustResourceType.silicon_dioxide);
     public static ItemStack diamondDust = ItemName.dust.getItemStack(DustResourceType.diamond);
-    public static ItemStack AshesDust;
+    public static ItemStack AshesDust = ItemName.misc_resource.getItemStack(MiscResourceType.ashes);
     public static ItemStack smallIronDust = ItemName.dust.getItemStack(DustResourceType.small_iron);
     public static ItemStack smallCopperDust = ItemName.dust.getItemStack(DustResourceType.small_copper);
     public static ItemStack smallGoldDust = ItemName.dust.getItemStack(DustResourceType.small_gold);
@@ -244,7 +238,7 @@ public final class Ic2Items {
     public static ItemStack smallBronzeDust = ItemName.dust.getItemStack(DustResourceType.small_bronze);
     public static ItemStack smallLapiDust = ItemName.dust.getItemStack(DustResourceType.small_lapis);
     public static ItemStack smallObsidianDust = ItemName.dust.getItemStack(DustResourceType.small_obsidian);
-    public static ItemStack mixedMetalIngot;
+    public static ItemStack mixedMetalIngot = ItemName.ingot.getItemStack(IngotResourceType.alloy);
     public static ItemStack copperIngot = ItemName.ingot.getItemStack(IngotResourceType.copper);
     public static ItemStack tinIngot = ItemName.ingot.getItemStack(IngotResourceType.tin);
     public static ItemStack bronzeIngot = ItemName.ingot.getItemStack(IngotResourceType.bronze);
@@ -254,14 +248,13 @@ public final class Ic2Items {
     public static ItemStack treetap = ItemName.treetap.getItemStack();
     public static ItemStack wrench = ItemName.wrench.getItemStack();
     public static ItemStack cutter = ItemName.cutter.getItemStack();
-    public static ItemStack constructionFoamSprayer;
+    public static ItemStack constructionFoamSprayer = ItemName.foam_sprayer.getItemStack();
     public static ItemStack bronzePickaxe = ItemName.bronze_pickaxe.getItemStack();
     public static ItemStack bronzeAxe = ItemName.bronze_axe.getItemStack();
     public static ItemStack bronzeSword = ItemName.bronze_sword.getItemStack();
     public static ItemStack bronzeShovel = ItemName.bronze_shovel.getItemStack();
     public static ItemStack bronzeHoe = ItemName.bronze_hoe.getItemStack();
     public static ItemStack ForgeHammer = ItemName.forge_hammer.getItemStack();
-    public static ItemStack LathingTool;
     public static ItemStack miningDrill = ItemName.drill.getItemStack();
     public static ItemStack diamondDrill = ItemName.diamond_drill.getItemStack();
     public static ItemStack iridiumDrill = ItemName.iridium_drill.getItemStack();
@@ -318,27 +311,15 @@ public final class Ic2Items {
     public static ItemStack chargingLapotronCrystal = ItemName.charging_lapotron_crystal.getItemStack();
     public static ItemStack mfsukit = ItemName.upgrade_kit.getItemStack(UpdateKitType.mfsu);
     public static ItemStack copperCableItem = ItemName.cable.getItemStack(CableType.copper);
-    public static ItemStack insulatedCopperCableItem = ItemName.cable.getItemStack(CableType.copper);
+    public static ItemStack insulatedCopperCableItem = ModUtils.getCable(ItemName.cable.getItemStack(CableType.copper), 1);
     public static ItemStack goldCableItem = ItemName.cable.getItemStack(CableType.gold);
-    public static ItemStack insulatedGoldCableItem = ItemName.cable.getItemStack(CableType.gold);
-    /**
-     * @deprecated
-     */
-    @Deprecated
-    public static ItemStack doubleInsulatedGoldCableItem = ItemName.cable.getItemStack(CableType.gold);
+    public static ItemStack insulatedGoldCableItem = ModUtils.getCable(ItemName.cable.getItemStack(CableType.gold), 1);
+    public static ItemStack doubleInsulatedGoldCableItem = ModUtils.getCable(ItemName.cable.getItemStack(CableType.gold), 2);
     public static ItemStack ironCableItem = ItemName.cable.getItemStack(CableType.iron);
-    public static ItemStack insulatedIronCableItem = ItemName.cable.getItemStack(CableType.iron);
-    /**
-     * @deprecated
-     */
-    @Deprecated
-    public static ItemStack doubleInsulatedIronCableItem = ItemName.cable.getItemStack(CableType.iron);
-    /**
-     * @deprecated
-     */
-    @Deprecated
-    public static ItemStack trippleInsulatedIronCableItem = ItemName.cable.getItemStack(CableType.iron);
-    public static ItemStack insulatedTinCableItem = ItemName.cable.getItemStack(CableType.tin);
+    public static ItemStack insulatedIronCableItem = ModUtils.getCable(ItemName.cable.getItemStack(CableType.iron), 1);
+    public static ItemStack doubleInsulatedIronCableItem = ModUtils.getCable(ItemName.cable.getItemStack(CableType.iron), 2);
+    public static ItemStack trippleInsulatedIronCableItem = ModUtils.getCable(ItemName.cable.getItemStack(CableType.iron), 3);
+    public static ItemStack insulatedTinCableItem = ModUtils.getCable(ItemName.cable.getItemStack(CableType.tin), 1);
     public static ItemStack glassFiberCableItem = ItemName.cable.getItemStack(CableType.glass);
     public static ItemStack tinCableItem = ItemName.cable.getItemStack(CableType.tin);
     public static ItemStack detectorCableItem = ItemName.cable.getItemStack(CableType.detector);
@@ -349,8 +330,8 @@ public final class Ic2Items {
     public static ItemStack fuelRod = ItemName.crafting.getItemStack(CraftingItemType.fuel_rod);
     public static ItemStack electrolyzedWaterCell = ItemName.cell.getItemStack(CellType.electrolyzed_water);
     public static ItemStack airCell = ItemName.cell.getItemStack(CellType.air);
-    public static ItemStack coolantCell;
-    public static ItemStack hotcoolantCell;
+    public static ItemStack coolantCell = ModUtils.getCellFromFluid("ic2coolant");
+    public static ItemStack hotcoolantCell = ModUtils.getCellFromFluid("ic2hotcoolant");
     public static ItemStack biomassCell = ItemName.cell.getItemStack(CellType.biofuel);
     public static ItemStack biogasCell = ItemName.cell.getItemStack(CellType.bio);
     public static ItemStack tinCan = ItemName.crafting.getItemStack(CraftingItemType.tin_can);
@@ -377,13 +358,13 @@ public final class Ic2Items {
     public static ItemStack reactorReflectorThick = ItemName.thick_neutron_reflector.getItemStack();
     public static ItemStack reactorCondensator = ItemName.rsh_condensator.getItemStack();
     public static ItemStack reactorCondensatorLap = ItemName.lzh_condensator.getItemStack();
-    public static ItemStack terraformerBlueprint;
-    public static ItemStack cultivationTerraformerBlueprint;
-    public static ItemStack irrigationTerraformerBlueprint;
-    public static ItemStack chillingTerraformerBlueprint;
-    public static ItemStack desertificationTerraformerBlueprint;
-    public static ItemStack flatificatorTerraformerBlueprint;
-    public static ItemStack mushroomTerraformerBlueprint;
+    public static ItemStack terraformerBlueprint = ItemName.tfbp.getItemStack(Tfbp.TfbpType.blank);
+    public static ItemStack cultivationTerraformerBlueprint = ItemName.tfbp.getItemStack(Tfbp.TfbpType.cultivation);
+    public static ItemStack irrigationTerraformerBlueprint = ItemName.tfbp.getItemStack(Tfbp.TfbpType.irrigation);
+    public static ItemStack chillingTerraformerBlueprint = ItemName.tfbp.getItemStack(Tfbp.TfbpType.chilling);
+    public static ItemStack desertificationTerraformerBlueprint = ItemName.tfbp.getItemStack(Tfbp.TfbpType.desertification);
+    public static ItemStack flatificatorTerraformerBlueprint = ItemName.tfbp.getItemStack(Tfbp.TfbpType.flatification);
+    public static ItemStack mushroomTerraformerBlueprint = ItemName.tfbp.getItemStack(Tfbp.TfbpType.mushroom);
     public static ItemStack coalBall = ItemName.crafting.getItemStack(CraftingItemType.coal_ball);
     public static ItemStack compressedCoalBall = ItemName.crafting.getItemStack(CraftingItemType.coal_block);
     public static ItemStack coalChunk = ItemName.crafting.getItemStack(CraftingItemType.coal_chunk);
@@ -413,6 +394,7 @@ public final class Ic2Items {
     public static ItemStack dynamite = ItemName.dynamite.getItemStack();
     public static ItemStack stickyDynamite = ItemName.dynamite_sticky.getItemStack();
     public static ItemStack remote = ItemName.remote.getItemStack();
+    public static ItemStack coal_chunk = ItemName.crafting.getItemStack(CraftingItemType.coal_chunk);
     public static ItemStack electronicCircuit = ItemName.crafting.getItemStack(CraftingItemType.circuit);
     public static ItemStack advancedCircuit = ItemName.crafting.getItemStack(CraftingItemType.advanced_circuit);
     public static ItemStack advancedAlloy = ItemName.crafting.getItemStack(CraftingItemType.alloy);
@@ -440,8 +422,6 @@ public final class Ic2Items {
     public static ItemStack denseplatelapi = ItemName.plate.getItemStack(PlateResourceType.dense_lapis);
     public static ItemStack denseplateobsidian = ItemName.plate.getItemStack(PlateResourceType.dense_obsidian);
     public static ItemStack denseplateadviron = ItemName.plate.getItemStack(PlateResourceType.dense_steel);
-    public static ItemStack turningBlankWood;
-    public static ItemStack turningBlankIron;
     public static ItemStack overclockerUpgrade = ItemName.upgrade.getItemStack(ItemUpgradeModule.UpgradeType.overclocker);
     public static ItemStack transformerUpgrade = ItemName.upgrade.getItemStack(ItemUpgradeModule.UpgradeType.transformer);
     public static ItemStack energyStorageUpgrade = ItemName.upgrade.getItemStack(ItemUpgradeModule.UpgradeType.energy_storage);
@@ -453,17 +433,16 @@ public final class Ic2Items {
     public static ItemStack pullingUpgrade = ItemName.upgrade.getItemStack(ItemUpgradeModule.UpgradeType.pulling);
     public static ItemStack coin = ItemName.crafting.getItemStack(CraftingItemType.coin);
     public static ItemStack reinforcedDoor = BlockName.reinforced_door.getItemStack();
-    public static ItemStack constructionFoamPowder;
-    public static ItemStack grinPowder;
+    public static ItemStack grinPowder = ItemName.crop_res.getItemStack(CropResItemType.grin_powder);
     public static ItemStack debug = ItemName.debug_item.getItemStack();
     public static ItemStack boatCarbon = ItemName.boat.getItemStack(ItemIC2Boat.BoatType.carbon);
     public static ItemStack boatRubber = ItemName.boat.getItemStack(ItemIC2Boat.BoatType.rubber);
     public static ItemStack boatRubberBroken = ItemName.boat.getItemStack(ItemIC2Boat.BoatType.broken_rubber);
     public static ItemStack boatElectric = ItemName.boat.getItemStack(ItemIC2Boat.BoatType.electric);
-    public static ItemStack rawcrystalmemory;
+    public static ItemStack rawcrystalmemory = ItemName.crafting.getItemStack(CraftingItemType.raw_crystal_memory);
     public static ItemStack crystalmemory = ItemName.crystal_memory.getItemStack();
-    public static ItemStack cropSeed;
-    public static ItemStack cropnalyzer;
+    public static ItemStack cropSeed = ItemName.crop_seed_bag.getItemStack();
+    public static ItemStack cropnalyzer = ItemName.cropnalyzer.getItemStack();
     public static ItemStack fertilizer = ItemName.crop_res.getItemStack(CropResItemType.fertilizer);
     public static ItemStack hydratingCell = ItemName.cell.getItemStack(CellType.hydration);
     public static ItemStack electricHoe = ItemName.electric_hoe.getItemStack();
@@ -471,14 +450,13 @@ public final class Ic2Items {
     public static ItemStack weedEx = ItemName.cell.getItemStack(CellType.weed_ex);
     public static ItemStack weedingTrowel = ItemName.weeding_trowel.getItemStack();
     public static ItemStack weed = ItemName.crop_res.getItemStack(CropResItemType.weed);
-    public static ItemStack mugEmpty;
+    public static ItemStack mugEmpty = ItemName.mug.getItemStack(ItemMug.MugType.empty);
     public static ItemStack coffeeBeans = ItemName.crop_res.getItemStack(CropResItemType.coffee_beans);
     public static ItemStack coffeePowder = ItemName.crop_res.getItemStack(CropResItemType.coffee_powder);
-    public static ItemStack mugCoffee;
+    public static ItemStack mugCoffee = ItemName.mug.getItemStack(ItemMug.MugType.coffee);
     public static ItemStack hops = ItemName.crop_res.getItemStack(CropResItemType.hops);
     public static ItemStack barrel = ItemName.barrel.getItemStack();
-    public static ItemStack blockBarrel;
-    public static ItemStack mugBooze;
+    public static ItemStack blockBarrel = ItemName.barrel.getItemStack();
 
     public Ic2Items() {
     }

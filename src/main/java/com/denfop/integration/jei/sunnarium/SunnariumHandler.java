@@ -24,7 +24,7 @@ public class SunnariumHandler {
         this.output = output;
     }
 
-    public static List<SunnariumHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<SunnariumHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

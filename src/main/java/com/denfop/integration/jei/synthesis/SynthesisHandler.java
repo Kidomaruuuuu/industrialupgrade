@@ -21,7 +21,7 @@ public class SynthesisHandler {
         this.percent = percent;
     }
 
-    public static List<SynthesisHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<SynthesisHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

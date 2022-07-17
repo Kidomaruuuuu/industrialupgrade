@@ -5,7 +5,7 @@ import com.denfop.IUItem;
 import com.denfop.items.modules.EnumQuarryModules;
 import com.denfop.items.modules.EnumQuarryType;
 import com.denfop.items.modules.ItemQuarryModule;
-import com.denfop.tiles.base.TileEntityBaseQuantumQuarry;
+import com.denfop.tiles.mechanism.quarry.TileEntityBaseQuantumQuarry;
 import com.denfop.utils.ModUtils;
 import ic2.core.block.invslot.InvSlot;
 import net.minecraft.item.ItemStack;

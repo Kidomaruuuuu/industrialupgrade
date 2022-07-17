@@ -40,7 +40,7 @@ public final class PowerUtils {
         TeBlockRegistry.addAll(enumClass, ref);
         TeBlockRegistry.setDefaultMaterial(ref, Material.ROCK);
         TeBlockRegistry.addCreativeRegisterer((list, block, itemblock, tab) -> {
-            if (tab == CreativeTabs.SEARCH || tab == IUCore.SSPTab) {
+            if (tab == CreativeTabs.SEARCH || tab == IUCore.IUTab) {
                 block.getAllTypes().forEach(type -> {
                     if (type.hasItem()) {
                         list.add(block.getItemStack(type));
@@ -73,7 +73,7 @@ public final class PowerUtils {
                 register.registerModels();
             }
         }
-        itemPowerConverter = TeBlockRegistry.get(BlockPowerConverter.IDENTITY).setCreativeTab(IUCore.SSPTab);
+        itemPowerConverter = TeBlockRegistry.get(BlockPowerConverter.IDENTITY).setCreativeTab(IUCore.IUTab);
 
         MinecraftForge.EVENT_BUS.register(this);
         PowerConfig.loadConfig(event.getSuggestedConfigurationFile(), event.getSide().isClient());
@@ -93,20 +93,20 @@ public final class PowerUtils {
                 Character.valueOf('A'),
                 Ic2Items.copperCableItem,
                 Character.valueOf('B'),
-                Ic2Items.mvTransformer,
+                new ItemStack(IUItem.tranformer,1,8),
                 Character.valueOf('C'),
                 Ic2Items.electronicCircuit,
                 Character.valueOf('D'),
                 new ItemStack(IUItem.electricblock, 1, 3)
         );
         Recipes.advRecipes.addRecipe(new ItemStack(PowerItem.module_rf), "ABA", "BDB", "ABA", Character.valueOf('A'),
-                OreDictionary.getOres("ingotElectrum"), Character.valueOf('B'), OreDictionary.getOres("plateCaravky"),
+                OreDictionary.getOres("ingotElectrum"), Character.valueOf('B'), new ItemStack(IUItem.plate, 1, 5),
                 Character.valueOf('D'),
                 new ItemStack(IUItem.module7, 1, 4)
         );
         Recipes.advRecipes.addRecipe(new ItemStack(PowerItem.module_fe),
                 "ABA", "CDC", "ABA", Character.valueOf('A'), new ItemStack(IUItem.basecircuit),
-                Character.valueOf('B'), Ic2Items.hvTransformer, Character.valueOf('C'), new ItemStack(IUItem.basecircuit, 1, 4),
+                Character.valueOf('B'), new ItemStack(IUItem.tranformer,1,9), Character.valueOf('C'), new ItemStack(IUItem.basecircuit, 1, 4),
                 Character.valueOf('D'),
                 new ItemStack(IUItem.core, 1, 1)
         );

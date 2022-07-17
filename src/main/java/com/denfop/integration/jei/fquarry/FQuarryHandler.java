@@ -16,7 +16,7 @@ public class FQuarryHandler {
         this.output = output;
     }
 
-    public static List<FQuarryHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<FQuarryHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

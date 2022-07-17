@@ -9,6 +9,8 @@ import com.denfop.gui.GuiSintezator;
 import com.denfop.invslot.InvSlotSintezator;
 import com.denfop.tiles.panels.entity.EnumType;
 import com.denfop.tiles.panels.entity.TileEntitySolarPanel;
+import com.denfop.tiles.panels.entity.TransferRFEnergy;
+import com.denfop.tiles.panels.entity.WirelessTransfer;
 import ic2.api.energy.event.EnergyTileLoadEvent;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
 import ic2.api.energy.tile.IEnergyAcceptor;
@@ -16,13 +18,11 @@ import ic2.api.energy.tile.IEnergySource;
 import ic2.api.network.INetworkClientTileEntityEventListener;
 import ic2.api.network.INetworkDataProvider;
 import ic2.api.network.INetworkUpdateListener;
-import ic2.api.tile.IWrenchable;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
 import net.minecraft.block.material.MapColor;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -31,15 +31,15 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TileEntitySintezator extends TileEntityInventory implements IEnergySource, IHasGui,
-        IWrenchable, IEnergyProvider, INetworkDataProvider, INetworkClientTileEntityEventListener,
+        IEnergyProvider, INetworkDataProvider, INetworkClientTileEntityEventListener,
         INetworkUpdateListener {
 
     public final InvSlotSintezator inputslot;
@@ -67,6 +67,8 @@ public class TileEntitySintezator extends TileEntityInventory implements IEnergy
     public boolean wetBiome;
     public EnumType type;
     public TileEntitySolarPanel.GenerationState active;
+    public List<WirelessTransfer> wirelessTransferList = new ArrayList<>();
+    List<TransferRFEnergy> transferRFEnergyList = new ArrayList<>();
 
     public TileEntitySintezator() {
         this.facing = 2;
@@ -111,7 +113,8 @@ public class TileEntitySintezator extends TileEntityInventory implements IEnergy
     public void intialize() {
         this.noSunWorld = this.getWorld().provider.isNether();
         this.updateVisibility();
-
+        this.wirelessTransferList.clear();
+        this.inputslot.wirelessmodule();
 
     }
 
@@ -253,7 +256,6 @@ public class TileEntitySintezator extends TileEntityInventory implements IEnergy
         return this.machineTire;
     }
 
-
     public double gaugeEnergyScaled1(int i) {
         return progress2 * i;
     }
@@ -263,9 +265,10 @@ public class TileEntitySintezator extends TileEntityInventory implements IEnergy
         return (int) this.maxStorage2;
     }
 
-    private void updateTileEntityField() {
-
-        IC2.network.get(true).updateTileEntityField(this, "solartype");
+    public void updateTileEntityField() {
+        if (this.world != null) {
+            IC2.network.get(true).updateTileEntityField(this, "solartype");
+        }
 
     }
 
@@ -273,7 +276,6 @@ public class TileEntitySintezator extends TileEntityInventory implements IEnergy
     public boolean canConnectEnergy(final EnumFacing enumFacing) {
         return true;
     }
-
 
     @Override
     public boolean emitsEnergyTo(final IEnergyAcceptor iEnergyAcceptor, final EnumFacing enumFacing) {
@@ -289,62 +291,53 @@ public class TileEntitySintezator extends TileEntityInventory implements IEnergy
         return new ContainerSinSolarPanel(entityPlayer, this);
     }
 
-    @Override
-    public EnumFacing getFacing(final World world, final BlockPos blockPos) {
-        return null;
-    }
-
-    @Override
-    public boolean setFacing(
-            final World world,
-            final BlockPos blockPos,
-            final EnumFacing enumFacing,
-            final EntityPlayer entityPlayer
-    ) {
-        return false;
-    }
-
-    @Override
-    public boolean wrenchCanRemove(final World world, final BlockPos blockPos, final EntityPlayer entityPlayer) {
-        return false;
-    }
-
-    @Override
-    public List<ItemStack> getWrenchDrops(
-            final World world,
-            final BlockPos blockPos,
-            final IBlockState iBlockState,
-            final TileEntity tileEntity,
-            final EntityPlayer entityPlayer,
-            final int i
-    ) {
-        return null;
-    }
-
     public void updateEntityServer() {
 
         super.updateEntityServer();
 
-        updateTileEntityField();
-        if (this.getmodulerf) {
-            for (EnumFacing facing : EnumFacing.VALUES) {
-                BlockPos pos = new BlockPos(
-                        this.pos.getX() + facing.getFrontOffsetX(),
-                        this.pos.getY() + facing.getFrontOffsetY(),
-                        this.pos.getZ() + facing.getFrontOffsetZ()
-                );
+        if (this.getmodulerf && this.storage2 > 0) {
+            if (this.getWorld().getWorldTime() % 60 == 0) {
+                transferRFEnergyList.clear();
+                for (EnumFacing facing : EnumFacing.VALUES) {
+                    BlockPos pos = new BlockPos(
+                            this.pos.getX() + facing.getFrontOffsetX(),
+                            this.pos.getY() + facing.getFrontOffsetY(),
+                            this.pos.getZ() + facing.getFrontOffsetZ()
+                    );
+                    TileEntity tile = this.getWorld().getTileEntity(pos);
+                    if (tile == null) {
+                        continue;
+                    }
+                    if (tile instanceof IEnergyReceiver) {
+                        transferRFEnergyList.add(new TransferRFEnergy(tile, ((IEnergyReceiver) tile), facing));
+                    }
+                }
 
-                if (this.getWorld().getTileEntity(pos) == null) {
+            }
+            boolean refresh = false;
+            for (TransferRFEnergy rfEnergy : this.transferRFEnergyList) {
+                if (rfEnergy.getTile().isInvalid()) {
+                    refresh = true;
                     continue;
                 }
-                TileEntity tile = this.getWorld().getTileEntity(pos);
-
-                if (!(tile instanceof TileEntitySolarPanel)) {
-
+                extractEnergy(rfEnergy.getFacing(), rfEnergy.getSink().receiveEnergy(rfEnergy.getFacing().getOpposite(),
+                        extractEnergy(rfEnergy.getFacing(), (int) this.storage2, true), false
+                ), false);
+            }
+            if (refresh) {
+                transferRFEnergyList.clear();
+                for (EnumFacing facing : EnumFacing.VALUES) {
+                    BlockPos pos = new BlockPos(
+                            this.pos.getX() + facing.getFrontOffsetX(),
+                            this.pos.getY() + facing.getFrontOffsetY(),
+                            this.pos.getZ() + facing.getFrontOffsetZ()
+                    );
+                    TileEntity tile = this.getWorld().getTileEntity(pos);
+                    if (tile == null) {
+                        continue;
+                    }
                     if (tile instanceof IEnergyReceiver) {
-                        extractEnergy(facing, ((IEnergyReceiver) tile).receiveEnergy(facing.getOpposite(),
-                                extractEnergy(facing, (int) this.storage2, true), false
-                        ), false);
+                        transferRFEnergyList.add(new TransferRFEnergy(tile, ((IEnergyReceiver) tile), facing));
                     }
                 }
             }
@@ -352,7 +345,24 @@ public class TileEntitySintezator extends TileEntityInventory implements IEnergy
 
 
         this.gainFuel();
-        this.inputslotA.wirelessmodule();
+
+        boolean refresh = false;
+        try {
+            for (WirelessTransfer transfer : this.wirelessTransferList) {
+                if (transfer.getTile().isInvalid()) {
+                    refresh = true;
+                    continue;
+                }
+                double energy = Math.min(this.getOfferedEnergy(), transfer.getSink().getDemandedEnergy());
+                transfer.work(energy);
+                this.storage -= energy;
+            }
+        } catch (Exception ignored) {
+        }
+        if (refresh) {
+            this.wirelessTransferList.clear();
+            this.inputslot.wirelessmodule();
+        }
         if (this.generating > 0D) {
             if (!this.getmodulerf) {
                 if (((this.storage + this.generating)) <= (this.maxStorage)) {
@@ -430,8 +440,6 @@ public class TileEntitySintezator extends TileEntityInventory implements IEnergy
         ret.add("production");
         ret.add("machineTire");
         ret.add("solartype");
-        ret.add("inputslot");
-        ret.add("inputslotA");
         return ret;
     }
 

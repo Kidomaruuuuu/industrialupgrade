@@ -93,9 +93,6 @@ public class GuiPlasticCreator extends GuiIC2<ContainerPlasticCreator> {
 
     }
 
-    public String getName() {
-        return this.container.base.getInventoryName();
-    }
 
     public ResourceLocation getTexture() {
         return new ResourceLocation(Constants.TEXTURES, "textures/gui/GUIPlastic.png");

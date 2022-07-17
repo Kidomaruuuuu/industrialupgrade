@@ -5,27 +5,28 @@ import com.denfop.Constants;
 import com.denfop.api.IFluidModelProvider;
 import com.denfop.api.IModelRegister;
 import com.denfop.blocks.FluidName;
-import com.denfop.render.EntityRendererStreak;
-import com.denfop.render.EntityStreak;
-import com.denfop.render.EventStreakEffect;
-import com.denfop.render.IUModelLoader;
-import com.denfop.render.ModelCable;
-import com.denfop.render.ModelCoolPipes;
-import com.denfop.render.ModelPipes;
-import com.denfop.render.ModelQCable;
-import com.denfop.render.ModelSCable;
 import com.denfop.render.advoilrefiner.TileEntityAdvOilRefinerRender;
+import com.denfop.render.base.IUModelLoader;
 import com.denfop.render.oilquarry.TileEntityQuarryOilRender;
 import com.denfop.render.oilrefiner.TileEntityOilRefinerRender;
 import com.denfop.render.sintezator.TileEntitySintezatorRender;
+import com.denfop.render.streak.EntityRendererStreak;
+import com.denfop.render.streak.EntityStreak;
+import com.denfop.render.streak.EventStreakEffect;
 import com.denfop.render.tank.TileEntityTankRender;
 import com.denfop.render.tile.TileEntityAdminPanelRender;
+import com.denfop.render.transport.ModelCable;
+import com.denfop.render.transport.ModelCoolPipes;
+import com.denfop.render.transport.ModelExpCable;
+import com.denfop.render.transport.ModelPipes;
+import com.denfop.render.transport.ModelQCable;
+import com.denfop.render.transport.ModelSCable;
 import com.denfop.tiles.base.EnumMultiMachine;
 import com.denfop.tiles.base.TileEntityAdminSolarPanel;
-import com.denfop.tiles.base.TileEntityAdvOilRefiner;
 import com.denfop.tiles.base.TileEntityLiquedTank;
 import com.denfop.tiles.base.TileEntityQuarryVein;
 import com.denfop.tiles.base.TileEntitySintezator;
+import com.denfop.tiles.mechanism.TileEntityAdvOilRefiner;
 import com.denfop.tiles.mechanism.TileEntityOilRefiner;
 import ic2.core.IC2;
 import ic2.core.profile.ProfileManager;
@@ -72,6 +73,7 @@ public class ClientProxy extends CommonProxy {
                 }
             }
         }
+
         RenderingRegistry.registerEntityRenderingHandler(
                 EntityStreak.class,
                 renderManager -> new EntityRendererStreak(renderManager) {
@@ -79,12 +81,15 @@ public class ClientProxy extends CommonProxy {
 
                 }
         );
+
+
         IUModelLoader loader = new IUModelLoader();
         loader.register(new ResourceLocation(Constants.MOD_ID, "models/block/wiring/cable_iu"), new ModelCable());
         loader.register(new ResourceLocation(Constants.MOD_ID, "models/block/wiring/pipes_iu"), new ModelPipes());
         loader.register(new ResourceLocation(Constants.MOD_ID, "models/block/wiring/qcable"), new ModelQCable());
         loader.register(new ResourceLocation(Constants.MOD_ID, "models/block/wiring/scable"), new ModelSCable());
         loader.register(new ResourceLocation(Constants.MOD_ID, "models/block/wiring/cool_pipes_iu"), new ModelCoolPipes());
+        loader.register(new ResourceLocation(Constants.MOD_ID, "models/block/wiring/expcable"), new ModelExpCable());
 
         ModelLoaderRegistry.registerLoader(loader);
         ProfileManager.doTextureChanges();

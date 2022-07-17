@@ -35,9 +35,6 @@ public class GuiTank extends GuiIC2<ContainerTank> {
 
     }
 
-    public String getName() {
-        return this.container.base.getInventoryName();
-    }
 
     public ResourceLocation getTexture() {
         return new ResourceLocation(Constants.TEXTURES, "textures/gui/GuiTank.png");

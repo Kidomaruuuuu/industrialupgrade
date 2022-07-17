@@ -2,7 +2,7 @@ package com.denfop.render.convertersolidmatter;
 
 import com.denfop.Constants;
 import com.denfop.api.render.IModelCustom;
-import com.denfop.render.AdvancedModelLoader;
+import com.denfop.render.base.AdvancedModelLoader;
 import com.denfop.tiles.base.TileEntityConverterSolidMatter;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;

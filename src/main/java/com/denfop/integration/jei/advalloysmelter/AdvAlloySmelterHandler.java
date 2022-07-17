@@ -28,7 +28,7 @@ public class AdvAlloySmelterHandler {
         this.temperature = temperature;
     }
 
-    public static List<AdvAlloySmelterHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<AdvAlloySmelterHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

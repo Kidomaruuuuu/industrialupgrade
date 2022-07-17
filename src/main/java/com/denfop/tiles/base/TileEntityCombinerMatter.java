@@ -1,6 +1,7 @@
 package com.denfop.tiles.base;
 
 
+import com.denfop.api.recipe.InvSlotOutput;
 import com.denfop.componets.AdvEnergy;
 import com.denfop.container.ContainerCombinerMatter;
 import com.denfop.gui.GuiCombinerMatter;
@@ -10,7 +11,6 @@ import ic2.api.recipe.IRecipeInput;
 import ic2.api.recipe.MachineRecipeResult;
 import ic2.api.recipe.Recipes;
 import ic2.api.upgrade.IUpgradableBlock;
-import ic2.api.upgrade.IUpgradeItem;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
@@ -21,13 +21,10 @@ import ic2.core.block.comp.Redstone;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.block.invslot.InvSlotConsumableLiquid;
 import ic2.core.block.invslot.InvSlotConsumableLiquidByList;
-import ic2.core.block.invslot.InvSlotOutput;
 import ic2.core.block.invslot.InvSlotProcessable;
-import ic2.core.init.Localization;
 import ic2.core.ref.FluidName;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.Fluid;
@@ -109,11 +106,13 @@ public class TileEntityCombinerMatter extends TileEntityElectricLiquidTankInvent
 
     public void updateEntityServer() {
         super.updateEntityServer();
-        boolean needsInvUpdate = onUpdateUpgrade();
+        boolean needsInvUpdate = false;
 
         if (this.redstone.hasRedstoneInput() || this.energy.getEnergy() <= 0.0D) {
-            setState(0);
-            setActive(false);
+            if (this.getActive()) {
+                setState(0);
+                setActive(false);
+            }
         } else {
             if (this.scrap > 0) {
                 double bonus = Math.min(this.scrap, this.energy.getEnergy() - this.lastEnergy);
@@ -126,8 +125,9 @@ public class TileEntityCombinerMatter extends TileEntityElectricLiquidTankInvent
             } else {
                 this.setState(1);
             }
-
-            this.setActive(true);
+            if (!this.getActive()) {
+                this.setActive(true);
+            }
             if (this.scrap < 10000) {
                 MachineRecipeResult<IRecipeInput, Integer, ItemStack> recipe = this.amplifierSlot.process();
                 if (recipe != null) {
@@ -152,8 +152,8 @@ public class TileEntityCombinerMatter extends TileEntityElectricLiquidTankInvent
                 }
             }
 
-            if (needsInvUpdate && this.getWorld().provider.getWorldTime() % 5 == 0) {
-                markDirty();
+            if (needsInvUpdate && this.upgradeSlot.tickNoMark()) {
+                setUpgradestat();
             }
 
 
@@ -161,15 +161,6 @@ public class TileEntityCombinerMatter extends TileEntityElectricLiquidTankInvent
 
     }
 
-    public boolean onUpdateUpgrade() {
-        for (int i = 0; i < this.upgradeSlot.size(); i++) {
-            ItemStack stack = this.upgradeSlot.get(i);
-            if (!stack.getItem().equals(Items.AIR)) {
-                return ((IUpgradeItem) stack.getItem()).onTick(stack, this);
-            }
-        }
-        return false;
-    }
 
     public void onUnloaded() {
         if (IC2.platform.isRendering() && this.audioSource != null) {
@@ -203,10 +194,6 @@ public class TileEntityCombinerMatter extends TileEntityElectricLiquidTankInvent
         return new GuiCombinerMatter(new ContainerCombinerMatter(entityPlayer, this));
     }
 
-    @Override
-    public String getInventoryName() {
-        return Localization.translate("iu.blockCombMatter.name");
-    }
 
     public void onGuiClosed(EntityPlayer entityPlayer) {
     }
@@ -317,7 +304,6 @@ public class TileEntityCombinerMatter extends TileEntityElectricLiquidTankInvent
     }
 
     public void setUpgradestat() {
-        this.upgradeSlot.onChanged();
         this.energy.setSinkTier(applyModifier(this.upgradeSlot.extraTier));
     }
 

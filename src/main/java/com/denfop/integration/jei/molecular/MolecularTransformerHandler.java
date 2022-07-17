@@ -20,7 +20,7 @@ public class MolecularTransformerHandler {
         this.energy = energy;
     }
 
-    public static List<MolecularTransformerHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<MolecularTransformerHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

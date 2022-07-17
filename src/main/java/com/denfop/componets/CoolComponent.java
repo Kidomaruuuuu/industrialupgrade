@@ -1,12 +1,12 @@
 package com.denfop.componets;
 
-import com.denfop.api.cooling.ICoolAcceptor;
-import com.denfop.api.cooling.ICoolEmitter;
-import com.denfop.api.cooling.ICoolSink;
-import com.denfop.api.cooling.ICoolSource;
-import com.denfop.api.cooling.ICoolTile;
-import com.denfop.api.cooling.event.CoolTileLoadEvent;
-import com.denfop.api.cooling.event.CoolTileUnloadEvent;
+import com.denfop.api.cool.ICoolAcceptor;
+import com.denfop.api.cool.ICoolEmitter;
+import com.denfop.api.cool.ICoolSink;
+import com.denfop.api.cool.ICoolSource;
+import com.denfop.api.cool.ICoolTile;
+import com.denfop.api.cool.event.CoolTileLoadEvent;
+import com.denfop.api.cool.event.CoolTileUnloadEvent;
 import ic2.api.energy.EnergyNet;
 import ic2.core.IC2;
 import ic2.core.block.TileEntityBlock;
@@ -46,6 +46,7 @@ public class CoolComponent extends TileEntityComponent {
     public boolean receivingDisabled;
     public boolean sendingSidabled;
     public boolean upgrade = false;
+    public int meta = 0;
 
     public CoolComponent(TileEntityBlock parent, double capacity) {
         this(parent, capacity, Collections.emptySet(), Collections.emptySet(), 1);
@@ -101,12 +102,14 @@ public class CoolComponent extends TileEntityComponent {
     public void readFromNbt(NBTTagCompound nbt) {
         this.storage = nbt.getDouble("storage");
         this.upgrade = nbt.getBoolean("upgrade");
+        this.meta = nbt.getInteger("meta");
     }
 
     public NBTTagCompound writeToNbt() {
         NBTTagCompound ret = new NBTTagCompound();
         ret.setDouble("storage", this.storage);
         ret.setBoolean("upgrade", this.upgrade);
+        ret.setInteger("meta", this.meta);
         return ret;
     }
 

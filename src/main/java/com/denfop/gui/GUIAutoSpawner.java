@@ -42,7 +42,7 @@ public class GuiAutoSpawner extends GuiIC2<ContainerAutoSpawner> {
                 );
             }
         }
-        int exp = (int) (34 * this.container.base.exp.getFillRatio());
+        int exp = (int) (34 * this.container.base.exp.getEnergy() / this.container.base.exp.getCapacity());
         exp = Math.min(exp, 34);
         if (exp > 0) {
             drawTexturedModalRect(xoffset + 94, yoffset + 80, 216, 35, exp, 2);

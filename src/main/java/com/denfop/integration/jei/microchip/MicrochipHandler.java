@@ -27,7 +27,7 @@ public class MicrochipHandler {
         this.output = output;
     }
 
-    public static List<MicrochipHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<MicrochipHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

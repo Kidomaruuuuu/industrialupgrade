@@ -19,7 +19,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class TileEntityMagnetGenerator extends TileEntityElectricMachine {
 
     public int timer;
-    private boolean work;
 
     public TileEntityMagnetGenerator() {
         super(0, 14, 1);
@@ -58,9 +57,7 @@ public class TileEntityMagnetGenerator extends TileEntityElectricMachine {
         drop = super.adjustDrop(drop, wrench);
         if (wrench || this.teBlock.getDefaultDrop() == TeBlock.DefaultDrop.Self) {
             NBTTagCompound nbt = StackUtil.getOrCreateNbtData(drop);
-            if (nbt.getBoolean("work")) {
-                nbt.setInteger("timer", this.timer);
-            }
+            nbt.setInteger("timer", this.timer);
             nbt.setBoolean("work", true);
 
         }
@@ -79,11 +76,14 @@ public class TileEntityMagnetGenerator extends TileEntityElectricMachine {
             timer--;
         }
         this.energy.addEnergy(2);
-        setActive(true);
-        initiate(0);
-
+        if (!getActive()) {
+            setActive(true);
+            initiate(0);
+        }
         if (getWorld().provider.getWorldTime() % 60 == 0) {
-            initiate(2);
+            if (getActive()) {
+                initiate(2);
+            }
         }
     }
 

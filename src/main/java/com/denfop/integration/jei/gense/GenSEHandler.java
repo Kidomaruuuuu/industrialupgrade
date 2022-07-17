@@ -16,7 +16,7 @@ public class GenSEHandler {
         this.output = output;
     }
 
-    public static List<GenSEHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<GenSEHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

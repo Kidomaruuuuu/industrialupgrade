@@ -68,6 +68,7 @@ public class TileEntityAdvNuclearReactorElectric extends TileEntityBaseNuclearRe
         }
 
         if (!newSubTiles.equals(this.subTiles)) {
+            this.change = true;
             if (this.addedToEnergyNet) {
                 MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent(this));
             }
@@ -78,6 +79,7 @@ public class TileEntityAdvNuclearReactorElectric extends TileEntityBaseNuclearRe
                 MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent(this));
             }
         }
+        this.getReactorSize();
     }
 
 
@@ -123,20 +125,28 @@ public class TileEntityAdvNuclearReactorElectric extends TileEntityBaseNuclearRe
     }
 
     public short getReactorSize() {
-
-        short cols = (short) (this.sizeX - 6);
-
-        EnumFacing[] var2 = EnumFacing.values();
-
-
-        for (EnumFacing direction : var2) {
-            TileEntity target = this.getWorld().getTileEntity(pos.offset(direction));
-            if (target instanceof TileEntityAdvReactorChamberElectric) {
-                cols++;
-            }
+        if (world == null) {
+            return 10;
         }
+        if (this.change) {
+            short cols = (short) (this.sizeX - 6);
 
-        return cols;
+            EnumFacing[] var2 = EnumFacing.values();
+
+
+            for (EnumFacing direction : var2) {
+                TileEntity target = this.getWorld().getTileEntity(pos.offset(direction));
+                if (target instanceof TileEntityAdvReactorChamberElectric) {
+                    cols++;
+                }
+            }
+            this.size = cols;
+            this.change = false;
+            this.reactorSlot.update();
+            return cols;
+        } else {
+            return (short) this.size;
+        }
     }
 
 

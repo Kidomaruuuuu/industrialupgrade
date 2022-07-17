@@ -29,6 +29,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -53,6 +54,8 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.Nullable;
+import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -83,7 +86,7 @@ public class ItemKatana extends ItemTool implements IElectricItem, IUpgradeItem,
         this.transferLimit = 5000;
         this.tier = 4;
         this.name = name;
-        this.damage1 = 20;
+        this.damage1 = 13;
         setMaxDamage(27);
         setMaxStackSize(1);
         setNoRepair();
@@ -102,12 +105,38 @@ public class ItemKatana extends ItemTool implements IElectricItem, IUpgradeItem,
     }
 
     @SideOnly(Side.CLIENT)
+    @Override
+    public void addInformation(
+            final ItemStack stack,
+            @Nullable final World worldIn,
+            final List<String> tooltip,
+            final ITooltipFlag flagIn
+    ) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.changemode_key") + Localization.translate(
+                    "iu.changemode_rcm1"));
+        }
+        super.addInformation(stack, worldIn, tooltip, flagIn);
+    }
+
+    @SideOnly(Side.CLIENT)
     public static ModelResourceLocation getModelLocation1(String name, String extraName) {
         final String loc = Constants.MOD_ID +
                 ':' +
                 "energy_tools" + "/" + name + extraName;
 
         return new ModelResourceLocation(loc, null);
+    }
+
+    public int getItemEnchantability() {
+        return 0;
+    }
+
+    public boolean isBookEnchantable(@Nonnull ItemStack stack, @Nonnull ItemStack book) {
+        return false;
     }
 
     @Nonnull
@@ -175,9 +204,6 @@ public class ItemKatana extends ItemTool implements IElectricItem, IUpgradeItem,
         return true;
     }
 
-    public int getItemEnchantability() {
-        return 0;
-    }
 
     public boolean drainSaber(ItemStack itemStack, double amount) {
         int saberenergy = (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.SABERENERGY, itemStack) ?
@@ -192,9 +218,6 @@ public class ItemKatana extends ItemTool implements IElectricItem, IUpgradeItem,
         return this.maxCharge;
     }
 
-    public boolean isBookEnchantable(@Nonnull ItemStack stack, @Nonnull ItemStack book) {
-        return true;
-    }
 
     @Override
     public boolean canProvideEnergy(ItemStack itemStack) {
@@ -398,11 +421,6 @@ public class ItemKatana extends ItemTool implements IElectricItem, IUpgradeItem,
             ModelBakery.registerItemVariants(this, getModelLocation1(name, s));
         }
 
-    }
-
-
-    @Override
-    public void setUpdate(final boolean update) {
     }
 
 

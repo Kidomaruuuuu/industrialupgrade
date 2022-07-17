@@ -9,7 +9,9 @@ import ic2.api.item.ElectricItem;
 import ic2.api.network.INetworkClientTileEntityEventListener;
 import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
+import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -19,6 +21,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
+
+import java.util.List;
 
 public class TileEntityQuantumGenerator extends TileEntityInventory implements IHasGui, INetworkClientTileEntityEventListener {
 
@@ -56,6 +61,19 @@ public class TileEntityQuantumGenerator extends TileEntityInventory implements I
         nbttagcompound.setDouble("gen", this.gen);
         nbttagcompound.setInteger("upgrade", this.upgrade);
         return nbttagcompound;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
+        super.addInformation(stack, tooltip, advanced);
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.quantumgenerator.info"));
+            tooltip.add(Localization.translate("iu.quantumgenerator.info1"));
+        }
     }
 
     @Override

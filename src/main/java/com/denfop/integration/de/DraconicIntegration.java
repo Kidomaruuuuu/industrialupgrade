@@ -26,7 +26,7 @@ public class DraconicIntegration {
 
             chaosingot = new IUDEItem("chaosingot");
 
-            blockDESolarPanel = TeBlockRegistry.get(BlockDESolarPanel.IDENTITY).setCreativeTab(IUCore.SSPTab);
+            blockDESolarPanel = TeBlockRegistry.get(BlockDESolarPanel.IDENTITY).setCreativeTab(IUCore.IUTab);
 
         }
     }
@@ -53,13 +53,13 @@ public class DraconicIntegration {
                     new ItemStack(blockDESolarPanel, 1, 1), 'A', DEFeatures.chaoticCore, 'C', ChaosEnergyCore
             );
 
-            Recipes.advRecipes.addRecipe(new ItemStack(IUItem.UpgradePanelKit, 1, 14), "   ", "BAB", " B ", 'B',
+            Recipes.advRecipes.addRecipe(new ItemStack(IUItem.upgradepanelkit, 1, 14), "   ", "BAB", " B ", 'B',
                     new ItemStack(IUItem.blockpanel, 1), 'A', DEFeatures.wyvernCore
             );
-            Recipes.advRecipes.addRecipe(new ItemStack(IUItem.UpgradePanelKit, 1, 15), "A  ", "BAB", " BA", 'B',
+            Recipes.advRecipes.addRecipe(new ItemStack(IUItem.upgradepanelkit, 1, 15), "A  ", "BAB", " BA", 'B',
                     new ItemStack(blockDESolarPanel, 1, 0), 'A', DEFeatures.awakenedCore
             );
-            Recipes.advRecipes.addRecipe(new ItemStack(IUItem.UpgradePanelKit, 1, 16), "A C", "BAB", "CBA", 'B',
+            Recipes.advRecipes.addRecipe(new ItemStack(IUItem.upgradepanelkit, 1, 16), "A C", "BAB", "CBA", 'B',
                     new ItemStack(blockDESolarPanel, 1, 1), 'A', DEFeatures.chaoticCore, 'C', ChaosEnergyCore
             );
         }

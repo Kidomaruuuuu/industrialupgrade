@@ -101,7 +101,7 @@ public class AlloySmelterRecipeWrapper implements IRecipeWrapper {
                 .endVertex();
         bufferbuilder
                 .pos(x + width, y, 0)
-                .tex((float) (textureX + width) * 0.00390625F, (float) (textureY + 0) * 0.00390625F)
+                .tex((float) (textureX + width) * 0.00390625F, (float) (textureY) * 0.00390625F)
                 .endVertex();
         bufferbuilder.pos(x, y, 0).tex(
                 (float) (textureX) * 0.00390625F,

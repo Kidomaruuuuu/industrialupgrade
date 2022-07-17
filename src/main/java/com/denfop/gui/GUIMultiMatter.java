@@ -3,14 +3,26 @@ package com.denfop.gui;
 
 import com.denfop.Constants;
 import com.denfop.container.ContainerMultiMatter;
+import ic2.api.upgrade.IUpgradableBlock;
+import ic2.api.upgrade.IUpgradeItem;
+import ic2.api.upgrade.UpgradableProperty;
+import ic2.api.upgrade.UpgradeRegistry;
 import ic2.core.GuiIC2;
+import ic2.core.IC2;
 import ic2.core.gui.Area;
 import ic2.core.gui.TankGauge;
 import ic2.core.init.Localization;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @SideOnly(Side.CLIENT)
 public class GuiMultiMatter extends GuiIC2<ContainerMultiMatter> {
@@ -25,11 +37,52 @@ public class GuiMultiMatter extends GuiIC2<ContainerMultiMatter> {
         this.progressLabel = Localization.translate("ic2.Matter.gui.info.progress");
         this.amplifierLabel = Localization.translate("ic2.Matter.gui.info.amplifier");
         addElement(TankGauge.createNormal(this, 96, 22, container.base.fluidTank));
+        this.xSize = 200;
     }
 
+    private static List<ItemStack> getCompatibleUpgrades(IUpgradableBlock block) {
+        List<ItemStack> ret = new ArrayList<>();
+        Set<UpgradableProperty> properties = block.getUpgradableProperties();
+
+        for (final ItemStack stack : UpgradeRegistry.getUpgrades()) {
+            IUpgradeItem item = (IUpgradeItem) stack.getItem();
+            if (item.isSuitableFor(stack, properties)) {
+                ret.add(stack);
+            }
+        }
+
+        return ret;
+    }
+
+    protected void mouseClicked(int i, int j, int k) throws IOException {
+        super.mouseClicked(i, j, k);
+        int xMin = (this.width - this.xSize) / 2;
+        int yMin = (this.height - this.ySize) / 2;
+        int x = i - xMin;
+        int y = j - yMin;
+        if (x >= 182 && x <= 190 && y >= 6 && y <= 14) {
+            IC2.network.get(false).initiateClientTileEntityEvent(this.container.base, 0);
+        }
+    }
+
+    private void handleUpgradeTooltip(int mouseX, int mouseY) {
+
+        if (mouseX >= 0 && mouseX <= 12 && mouseY >= 0 && mouseY <= 12) {
+            List<String> text = new ArrayList<>();
+            text.add(Localization.translate("ic2.generic.text.upgrade"));
+
+            for (final ItemStack stack : getCompatibleUpgrades(this.container.base)) {
+                text.add(stack.getDisplayName());
+            }
+
+            this.drawTooltip(mouseX, mouseY, text);
+        }
+    }
 
     protected void drawForegroundLayer(int par1, int par2) {
-        super.drawForegroundLayer(par1, par2);
+
+        this.handleUpgradeTooltip(par1, par2);
+
         this.fontRenderer.drawString(this.progressLabel, 8, 22, 4210752);
         this.fontRenderer.drawString(this.container.base.getProgressAsString(), 18, 31, 4210752);
         if ((this.container.base).scrap > 0) {
@@ -41,6 +94,14 @@ public class GuiMultiMatter extends GuiIC2<ContainerMultiMatter> {
             String tooltip = Localization.translate("ic2.uumatter") + ": " + fluidstack.amount
                     + Localization.translate("ic2.generic.text.mb");
             new Area(this, 99, 25, 112 - 99, 73 - 25).withTooltip(tooltip).drawForeground(par1, par2);
+
+        }
+        new AdvArea(this, 182, 6, 190, 14).withTooltip(this.container.base.work ? Localization.translate("turn_off") :
+                Localization.translate("turn_on")).drawForeground(par1, par2);
+        this.mc.getTextureManager().bindTexture(this.getTexture());
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        if (this.container.base.work) {
+            this.drawTexturedModalRect(+181, +5, 203, 5, 11, 11);
 
         }
     }

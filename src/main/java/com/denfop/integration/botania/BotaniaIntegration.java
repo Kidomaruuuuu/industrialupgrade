@@ -4,7 +4,9 @@ import com.denfop.IUCore;
 import com.denfop.IUItem;
 import com.denfop.Ic2Items;
 import com.denfop.items.IUItemBase;
-import com.denfop.items.energy.ItemEnergyDrill;
+import com.denfop.items.energy.instruments.EnumTypeInstruments;
+import com.denfop.items.energy.instruments.EnumVarietyInstruments;
+import com.denfop.items.energy.instruments.ItemEnergyInstruments;
 import ic2.api.recipe.IRecipeInputFactory;
 import ic2.api.recipe.Recipes;
 import ic2.core.block.TeBlockRegistry;
@@ -38,7 +40,7 @@ public class BotaniaIntegration {
     public static Item teraDDrill;
 
     public static void init() {
-        blockBotSolarPanel = TeBlockRegistry.get(BlockBotSolarPanel.IDENTITY).setCreativeTab(IUCore.SSPTab);
+        blockBotSolarPanel = TeBlockRegistry.get(BlockBotSolarPanel.IDENTITY).setCreativeTab(IUCore.IUTab);
         manasteel_plate = new IUItemBase("manasteel_plate");
         manasteel_core = new IUItemBase("manasteel_core");
         elementium_plate = new IUItemBase("elementium_plate");
@@ -48,8 +50,7 @@ public class BotaniaIntegration {
         rune_sun = new IUItemBase("rune_sun");
         rune_night = new IUItemBase("rune_night");
         rune_energy = new IUItemBase("rune_energy");
-        teraDDrill = new ItemEnergyDrill(Item.ToolMaterial.DIAMOND, "teraDDrill", 500, 45000, 4, 50, 25, 160, 80);
-
+        teraDDrill = new ItemEnergyInstruments(EnumTypeInstruments.DRILL, EnumVarietyInstruments.QUANTUM, "teraDDrill");
     }
 
     public static void recipe() {
@@ -57,12 +58,12 @@ public class BotaniaIntegration {
 
         BotaniaAPI.registerRuneAltarRecipe(new ItemStack(rune_energy, 1, 0), 12000,
                 LibOreDict.RUNE[0], LibOreDict.RUNE[1], new ItemStack(IUItem.photoniy),
-                new ItemStack(IUItem.itemSSP, 1, 0), new ItemStack(IUItem.iuingot, 1, 17),
+                new ItemStack(IUItem.itemiu, 1, 0), new ItemStack(IUItem.iuingot, 1, 17),
                 new ItemStack(elementium_plate), new ItemStack(IUItem.compresscarbonultra)
         );
         BotaniaAPI.registerRuneAltarRecipe(new ItemStack(rune_sun, 1, 0), 12000,
                 LibOreDict.RUNE[4], LibOreDict.RUNE[3], new ItemStack(IUItem.photoniy_ingot),
-                new ItemStack(IUItem.itemSSP, 1, 0), new ItemStack(IUItem.iuingot, 1, 17),
+                new ItemStack(IUItem.itemiu, 1, 0), new ItemStack(IUItem.iuingot, 1, 17),
                 new ItemStack(elementium_plate), new ItemStack(IUItem.compresscarbon)
         );
         BotaniaAPI.registerRuneAltarRecipe(
@@ -79,7 +80,7 @@ public class BotaniaIntegration {
                 new ItemStack(Ic2Items.energiumDust.getItem(), 1, Ic2Items.energiumDust.getItemDamage()),
                 new ItemStack(Ic2Items.energiumDust.getItem(), 1, Ic2Items.energiumDust.getItemDamage()),
                 new ItemStack(Ic2Items.energiumDust.getItem(), 1, Ic2Items.energiumDust.getItemDamage()),
-                new ItemStack(IUItem.itemSSP, 1, 0),
+                new ItemStack(IUItem.itemiu, 1, 0),
                 new ItemStack(IUItem.iuingot, 1, 17),
                 new ItemStack(manasteel_plate),
                 new ItemStack(IUItem.coal_chunk1)
@@ -102,7 +103,7 @@ public class BotaniaIntegration {
                 terrasteel_plate, 'L', ModItems.terraPick
         );
         Recipes.advRecipes.addRecipe(new ItemStack(terrasteel_core),
-                "KLM", "DOD", "CHC", 'C', terrasteel_plate, 'D', new ItemStack(IUItem.itemSSP, 1, 1), 'O',
+                "KLM", "DOD", "CHC", 'C', terrasteel_plate, 'D', new ItemStack(IUItem.itemiu, 1, 1), 'O',
                 terrasteel_plate, 'L', Ic2Items.advancedAlloy, 'K', rune_night, 'M', rune_sun, 'H',
                 rune_energy
         );
@@ -152,13 +153,13 @@ public class BotaniaIntegration {
                 null, false, new ItemStack(ModItems.manaResource, 4, 4)
         );
         //
-        Recipes.advRecipes.addRecipe(new ItemStack(IUItem.UpgradePanelKit, 1, 17), "   ", "BAB", " B ", 'A',
+        Recipes.advRecipes.addRecipe(new ItemStack(IUItem.upgradepanelkit, 1, 17), "   ", "BAB", " B ", 'A',
                 manasteel_core, 'B', new ItemStack(IUItem.blockpanel, 1, 0)
         );
-        Recipes.advRecipes.addRecipe(new ItemStack(IUItem.UpgradePanelKit, 1, 18), "   ", "BAB", " B ", 'A',
+        Recipes.advRecipes.addRecipe(new ItemStack(IUItem.upgradepanelkit, 1, 18), "   ", "BAB", " B ", 'A',
                 elementium_core, 'B', new ItemStack(blockBotSolarPanel, 1, 0)
         );
-        Recipes.advRecipes.addRecipe(new ItemStack(IUItem.UpgradePanelKit, 1, 19), "   ", "BAB", " B ", 'A',
+        Recipes.advRecipes.addRecipe(new ItemStack(IUItem.upgradepanelkit, 1, 19), "   ", "BAB", " B ", 'A',
                 terrasteel_core, 'B', new ItemStack(blockBotSolarPanel, 1, 1)
         );
 

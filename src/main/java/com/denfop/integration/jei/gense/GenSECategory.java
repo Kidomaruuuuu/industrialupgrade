@@ -68,10 +68,9 @@ public class GenSECategory extends Gui implements IRecipeCategory<GenSEWrapper> 
             final GenSEWrapper recipes,
             @Nonnull final IIngredients ingredients
     ) {
-        IGuiItemStackGroup isg = layout.getItemStacks(); // Группа ItemStack, которая нужна для рендера.
-
-        isg.init(0, false, 65, 31); // Инициализируем слот 1.  true/false - это обозначение того, является ли слот *ВХОДНЫМ*,
-        isg.set(0, recipes.getOutput()); // Добавляем в слот 1 выходной предмет.
+        IGuiItemStackGroup isg = layout.getItemStacks();
+        isg.init(0, false, 65, 31);
+        isg.set(0, recipes.getOutput());
     }
 
     protected ResourceLocation getTexture() {

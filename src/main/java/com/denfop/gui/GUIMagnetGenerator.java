@@ -65,10 +65,6 @@ public class GuiMagnetGenerator extends GuiIC2<ContainerMagnetGenerator> {
     }
 
 
-    public String getName() {
-        return container.base.getInventoryName();
-    }
-
     public ResourceLocation getTexture() {
         return new ResourceLocation(Constants.MOD_ID, "textures/gui/guimagnetgen.png");
     }

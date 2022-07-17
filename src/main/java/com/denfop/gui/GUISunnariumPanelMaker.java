@@ -60,9 +60,6 @@ public class GuiSunnariumPanelMaker extends GuiIC2<ContainerDoubleElectricMachin
 
     }
 
-    public String getName() {
-        return this.container.base.getInventoryName();
-    }
 
     public ResourceLocation getTexture() {
         return new ResourceLocation(Constants.TEXTURES, "textures/gui/GuiSunnariumPanelMaker.png");

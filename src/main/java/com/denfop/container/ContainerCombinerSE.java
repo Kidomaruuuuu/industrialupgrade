@@ -28,6 +28,7 @@ public class ContainerCombinerSE extends ContainerFullInv<TileEntityCombinerSEGe
 
         }
     }
+
     public List<String> getNetworkedFields() {
         List<String> ret = super.getNetworkedFields();
         ret.add("sunenergy");

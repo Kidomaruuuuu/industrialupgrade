@@ -18,7 +18,7 @@ public class ScrapHandler {
         this.output = output;
     }
 
-    public static List<ScrapHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<ScrapHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

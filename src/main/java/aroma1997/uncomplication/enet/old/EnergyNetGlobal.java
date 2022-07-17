@@ -1,6 +1,7 @@
 package aroma1997.uncomplication.enet.old;
 
 
+import aroma1997.uncomplication.enet.SunCoef;
 import com.denfop.Config;
 import com.denfop.api.IAdvEnergyNet;
 import ic2.api.energy.IEnergyNetEventReceiver;
@@ -11,14 +12,20 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.EventBus;
+import net.minecraftforge.fml.common.eventhandler.IEventListener;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 import java.io.PrintStream;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class EnergyNetGlobal implements IAdvEnergyNet {
 
-    private static Map<World, EnergyNetLocal> worldToEnergyNetMap;
+    private static Map<Integer, EnergyNetLocal> worldToEnergyNetMap;
 
     static {
         EnergyNetGlobal.worldToEnergyNetMap = new WeakHashMap<>();
@@ -28,10 +35,11 @@ public class EnergyNetGlobal implements IAdvEnergyNet {
         if (world == null) {
             return null;
         }
-        if (!EnergyNetGlobal.worldToEnergyNetMap.containsKey(world)) {
-            EnergyNetGlobal.worldToEnergyNetMap.put(world, new EnergyNetLocal(world));
+        final int id = world.provider.getDimension();
+        if (!worldToEnergyNetMap.containsKey(id)) {
+           worldToEnergyNetMap.put(id, new EnergyNetLocal(world));
         }
-        return EnergyNetGlobal.worldToEnergyNetMap.get(world);
+        return worldToEnergyNetMap.get(id);
     }
 
 
@@ -43,13 +51,13 @@ public class EnergyNetGlobal implements IAdvEnergyNet {
     }
 
     public static EnergyNetGlobal initialize() {
-        new EventHandler();
         MinecraftForge.EVENT_BUS.unregister(ic2.core.energy.grid.EventHandler.class);
+        new EventHandler();
         return new EnergyNetGlobal();
     }
 
     public static void onWorldUnload(final World world) {
-        final EnergyNetLocal local = EnergyNetGlobal.worldToEnergyNetMap.remove(world);
+        final EnergyNetLocal local = EnergyNetGlobal.worldToEnergyNetMap.remove(world.provider.getDimension());
         if (local != null) {
             local.onUnload();
         }
@@ -90,20 +98,17 @@ public class EnergyNetGlobal implements IAdvEnergyNet {
 
     @Override
     public <T extends TileEntity & IEnergyTile> void addTile(final T t) {
-        final EnergyNetLocal local = getForWorld(this.getWorld(t));
-        local.addTile(t);
+
     }
 
     @Override
     public <T extends ILocatable & IEnergyTile> void addTile(final T t) {
-        final EnergyNetLocal local = getForWorld(this.getWorld(t));
-        local.addTile(t);
+
     }
 
     @Override
     public void removeTile(final IEnergyTile iEnergyTile) {
-        final EnergyNetLocal local = getForWorld(this.getWorld(iEnergyTile));
-        local.removeTile(iEnergyTile);
+
     }
 
     @Override
@@ -122,8 +127,9 @@ public class EnergyNetGlobal implements IAdvEnergyNet {
     @Override
     public BlockPos getPos(final IEnergyTile iEnergyTile) {
         final EnergyNetLocal local = getForWorld(this.getWorld(iEnergyTile));
-        if(local != null)
-          return   local.getPos(iEnergyTile);
+        if (local != null) {
+            return local.getPos(iEnergyTile);
+        }
         return null;
     }
 
@@ -163,6 +169,11 @@ public class EnergyNetGlobal implements IAdvEnergyNet {
     @Override
     public double getRFFromEU(final int amount) {
         return amount * Config.coefficientrf;
+    }
+
+    @Override
+    public SunCoef getSunCoefficient(final World world) {
+        return  getForWorld(world).getSuncoef();
     }
 
     public synchronized void registerEventReceiver(IEnergyNetEventReceiver receiver) {

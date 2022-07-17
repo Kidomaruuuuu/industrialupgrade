@@ -86,20 +86,16 @@ public class PaintingCategory extends Gui implements IRecipeCategory<PaintingWra
             final PaintingWrapper recipes,
             @Nonnull final IIngredients ingredients
     ) {
-        IGuiItemStackGroup isg = layout.getItemStacks(); // Группа ItemStack, которая нужна для рендера.
-        isg.init(0, true, 10, 30); // Инициализируем слот 0. true/false - это обозначение того, является ли слот *ВХОДНЫМ*, true
-        // - да, false - нет. Остальные 2 числа - координаты. X/Y.
-        isg.set(0, recipes.getInput()); // Добавляем в слот 0 входной предмет.
-        isg.init(1, true, 32, 30); // Инициализируем слот 0. true/false - это обозначение того, является ли слот *ВХОДНЫМ*, true
-        // - да, false - нет. Остальные 2 числа - координаты. X/Y.
-        isg.set(1, recipes.getInput1()); // Добавляем в слот 0 входной предмет.
-
-        isg.init(2, false, 102, 30); // Инициализируем слот 1.  true/false - это обозначение того, является ли слот *ВХОДНЫМ*,
-        // true - да, false - нет. Остальные 2 числа - координаты. X/Y.
+        IGuiItemStackGroup isg = layout.getItemStacks();
+        isg.init(0, true, 10, 30);
+        isg.set(0, recipes.getInput());
+        isg.init(1, true, 32, 30);
+        isg.set(1, recipes.getInput1());
+        isg.init(2, false, 102, 30);
         final ItemStack item = recipes.getOutput();
         final NBTTagCompound nbt = ModUtils.nbt(item);
         nbt.setString("mode", recipes.nbt.getString("mode"));
-        isg.set(2, item); // Добавляем в слот 1 выходной предмет.
+        isg.set(2, item);
     }
 
     protected ResourceLocation getTexture() {

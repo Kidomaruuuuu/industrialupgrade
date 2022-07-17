@@ -9,7 +9,7 @@ import net.minecraft.util.math.RayTraceResult;
 public class TileEntityAdvTank extends TileEntityLiquedTank {
 
     public TileEntityAdvTank() {
-        super("BlockAdvTank.name", 30, "advtank");
+        super(160, "advtank");
     }
 
     @Override

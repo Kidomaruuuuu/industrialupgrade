@@ -76,8 +76,8 @@ public final class Config {
     public static int toriyRodHeat;
     public static float toriyPower;
     public static boolean registerDraconicPanels;
-    public static float effPower;
-    public static float bigHolePower;
+    public static int effPower;
+    public static int bigHolePower;
     public static int spectralsaberactive;
     public static int spectralsabernotactive;
     public static int Storagequantumsuit;
@@ -108,8 +108,8 @@ public final class Config {
     public static double energy;
     public static int ult_enegry;
     public static int ult_storage;
-    public static float lowPower;
-    public static float ultraLowPower;
+    public static int lowPower;
+    public static int ultraLowPower;
     public static int ultdrillmaxCharge;
     public static int ultdrilltier;
     public static int energyPerOperation;
@@ -117,22 +117,15 @@ public final class Config {
     public static int energyPerultraLowPowerOperation;
     public static int energyPerbigHolePowerOperation;
     public static int ultdrilltransferLimit;
-    public static boolean enableefficiency;
-    public static int efficiencylevel;
     public static double advGenDay;
     public static boolean AvaritiaLoaded;
     public static boolean BotaniaLoaded;
     public static boolean Draconic;
     public static boolean Botania;
     public static boolean Avaritia;
-    public static int efficiencylevel1;
-    public static boolean enablesilkTouch;
-    public static boolean enablefortune;
-    public static int fortunelevel;
     public static boolean enableexlposion;
     public static boolean enableIC2EasyMode;
     public static boolean EnableToriyOre;
-    public static boolean damagecable;
     public static boolean newsystem;
     public static int armor_maxcharge;
     public static int armor_transferlimit;
@@ -352,7 +345,6 @@ public final class Config {
     public static boolean TopazOre;
     public static boolean SapphireOre;
     public static int maxVein;
-    public static int cost_aspect;
     public static int nano_transfer;
     public static int nano_energyPerOperation;
     public static int nano_energyPerbigHolePowerOperation;
@@ -408,7 +400,7 @@ public final class Config {
     public static boolean SheeliteeOre;
     public static boolean ProjectE;
     public static boolean cableEasyMode;
-    public static boolean coolingsystem;
+    public static boolean coolingsystem = true;
     public static int tickupdateenergysystem;
     public static int ticktransferenergy;
 
@@ -419,7 +411,6 @@ public final class Config {
         final Configuration config = new Configuration(configFile);
         try {
             config.load();
-            coolingsystem = config.get("Experiment 3.0", "cooling system", true).getBoolean(true);
             experiment = config.get("Experiment 3.0", "Enable", false).getBoolean(false);
             tickupdateenergysystem = config.get("general", "Tick update energy system", 20).getInt(20);
             ticktransferenergy = config.get("general", "Tick transfer energy", 1).getInt(1);
@@ -535,9 +526,8 @@ public final class Config {
             PerMFSUOutput = config.get("Configuration Energy storages", "Perfectoutput", 242144).getDouble(242144);
             tierPerMFSU = config.get("Configuration Energy storages", "Perfecttier", 7).getDouble(7);
             expstorage = config.get("Basic Mechanisms", "exp storage", 500).getInt(500);
-            enerycost = config.get("Quantum Query", "energy consume in QE (1 QE = 16 EU)", 3000).getInt(3000);
+            enerycost = config.get("Quantum Quarry", "energy consume in QE (1 QE = 16 EU)", 5000).getInt(5000);
             coefficientrf = config.get("general", "coefficient rf", 4).getInt(4);
-            cost_aspect = config.get("general", "Aspect cost for energy", 2000).getInt(2000);
             if (coefficientrf < 1) {
                 coefficientrf = 4;
             }
@@ -610,12 +600,7 @@ public final class Config {
                     .getInt(500);
             energyPerultraLowPowerOperation1 = config.get("UltimateDrill", "energyPerUltraBigHolesOperation (7x7)", 700).getInt(
                     700);
-            enableefficiency = config.get("UltimateDrill", "Enable Efficiency tool mode 0", true).getBoolean(true);
-            if (efficiencylevel > 1 && efficiencylevel < 15) {
-                efficiencylevel = config.get("UltimateDrill", "Level efficiency(tool mode 0)", 10).getInt(10);
-            } else {
-                efficiencylevel = 10;
-            }
+
             maxVein = config.get("general", "Maximum amount of ore in a vein", 30000).getInt(30000);
             enableIC2EasyMode = config
                     .get("Transformer mode", "unchecking the tier", false)
@@ -628,19 +613,6 @@ public final class Config {
                     "Enable explosion from mechanisms is on (if enable transformer mode) ",
                     true
             ).getBoolean(true);
-            enableefficiency = config.get("UltimateDrill", "Enable Efficiency tool mode 1", true).getBoolean(true);
-            if (efficiencylevel1 > 1 && efficiencylevel1 < 15) {
-                efficiencylevel1 = config.get("UltimateDrill", "Level efficiency(tool mode 1)", 10).getInt(10);
-            } else {
-                efficiencylevel1 = 10;
-            }
-            enablesilkTouch = config.get("UltimateDrill", "Enable silk Touch tool mode 2", true).getBoolean(true);
-            enablefortune = config.get("UltimateDrill", "Enable fortune tool mode 3", true).getBoolean(true);
-            if (fortunelevel > 1 && fortunelevel < 10) {
-                fortunelevel = config.get("UltimateDrill", "Level fortune(tool mode 3)", 5).getInt(5);
-            } else {
-                fortunelevel = 5;
-            }
 
             spectralsaberactive1 = config.get("Quantum Saber", "QuantumSaber Damage Active", 40).getInt(40);
             spectralsabernotactive1 = config.get("Quantum Saber", "QuantumSaber Damage Not Active", 8).getInt(8);
@@ -714,7 +686,7 @@ public final class Config {
             adminpanelGenDay = config.get("Configuration Solar Panels", "DiffractionPanelGenDay", 81920).getDouble(81920);
             AdminpanelStorage = config.get("Configuration Solar Panels", "DiffractionPanelStorage", 1500000000D).getDouble(
                     1500000000D);
-            AdminpanelOutput = config.get("Configuration Solar Panels", "DiffractionPanelOutput", 327680).getDouble(327680);
+            AdminpanelOutput = config.get("Configuration Solar Panels", "DiffractionPanelOutput", 163840).getDouble(163840);
             photonicpanelGenDay = config.get("Configuration Solar Panels", "PhotonicPanelGenDay", 327680).getDouble(327680);
             photonicpanelOutput = config.get("Configuration Solar Panels", "PhotonicPanelOutput", 655360).getDouble(655360);
             photonicpanelStorage = config.get("Configuration Solar Panels", "PhotonicPanelStorage", 5000000000D).getDouble(
@@ -845,7 +817,6 @@ public final class Config {
             }
 
             SkeletonType = config.get("spawner", "Enable spawn Wither Skeleton", true).getBoolean(true);
-            blacklist = config.get("Energy Instruments", "blacklist ", true).getBoolean(true);
 
             MikhailOre = config.get("spawn ore", "Enable spawn MikhailOre", true).getBoolean(true);
             AluminiumOre = config.get("spawn ore", "Enable spawn AluminiumOre", true).getBoolean(true);
@@ -903,15 +874,15 @@ public final class Config {
             per_jetpack_transfer = config.get("Configuration jetpacks", "per_jetpack_transfer energy", 1000).getInt(1000);
             per_jetpack_tier = config.get("Configuration jetpacks", "per_jetpack_tier", 4).getInt(4);
 
-            adv_lappack_maxenergy = config.get("Configuration lappacks", "adv_lappack_maxenergy", 10000000).getInt(10000000);
+            adv_lappack_maxenergy = config.get("Configuration lappacks", "adv_lappack_maxenergy", 25000000).getInt(25000000);
             adv_lappack_transfer = config.get("Configuration lappacks", "adv_lappack_transfer energy", 50000).getInt(50000);
             adv_lappack_tier = config.get("Configuration lappacks", "adv_lappack_tier", 3).getInt(3);
 
-            imp_lappack_maxenergy = config.get("Configuration lappacks", "imp_lappack_maxenergy", 20000000).getInt(20000000);
+            imp_lappack_maxenergy = config.get("Configuration lappacks", "imp_lappack_maxenergy", 50000000).getInt(50000000);
             imp_lappack_transfer = config.get("Configuration lappacks", "imp_lappack_transfer energy", 100000).getInt(100000);
             imp_lappack_tier = config.get("Configuration lappacks", "imp_lappack_tier", 4).getInt(4);
 
-            per_lappack_maxenergy = config.get("Configuration lappacks", "per_lappack_maxenergy", 50000000).getInt(50000000);
+            per_lappack_maxenergy = config.get("Configuration lappacks", "per_lappack_maxenergy", 100000000).getInt(100000000);
             per_lappack_transfer = config.get("Configuration lappacks", "per_lappack_transfer energy", 500000).getInt(500000);
             per_lappack_tier = config.get("Configuration lappacks", "per_lappack_tier", 5).getInt(5);
 

@@ -8,6 +8,8 @@ import ic2.core.util.StackUtil;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -15,6 +17,7 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 public class HandHeldLeadBox extends HandHeldInventory {
 
@@ -30,6 +33,22 @@ public class HandHeldLeadBox extends HandHeldInventory {
 
     public void save() {
         super.save();
+    }
+
+    public void saveAndThrow(ItemStack stack) {
+        NBTTagList contentList = new NBTTagList();
+
+        for (int i = 0; i < this.inventory.length; ++i) {
+            if (!StackUtil.isEmpty(this.inventory[i])) {
+                NBTTagCompound nbt = new NBTTagCompound();
+                nbt.setByte("Slot", (byte) i);
+                this.inventory[i].writeToNBT(nbt);
+                contentList.appendTag(nbt);
+            }
+        }
+
+        StackUtil.getOrCreateNbtData(stack).setTag("Items", contentList);
+        this.clear();
     }
 
     public ContainerBase<HandHeldLeadBox> getGuiContainer(EntityPlayer player) {
@@ -68,7 +87,7 @@ public class HandHeldLeadBox extends HandHeldInventory {
         return this.add(stacks, false);
     }
 
-    public int add(ItemStack stack) {
+    public boolean add(ItemStack stack) {
         if (stack == null) {
             throw new NullPointerException("null ItemStack");
         } else {
@@ -84,7 +103,7 @@ public class HandHeldLeadBox extends HandHeldInventory {
         if (stack == null) {
             throw new NullPointerException("null ItemStack");
         } else {
-            return this.add(Collections.singletonList(stack), true) == 0;
+            return this.add(Collections.singletonList(stack), true);
         }
     }
 
@@ -114,6 +133,45 @@ public class HandHeldLeadBox extends HandHeldInventory {
 
     public int getStackSizeLimit() {
         return 64;
+    }
+
+    private boolean add(List<ItemStack> stacks, boolean simulate) {
+        if (stacks != null && !stacks.isEmpty()) {
+
+            for (ItemStack stack : stacks) {
+                for (int i = 0; i < this.inventory.length; i++) {
+                    if (this.get(i) == null || this.get(i).isEmpty()) {
+                        if (!simulate) {
+                            this.put(i, stack.copy());
+
+                        }
+                        return true;
+                    } else {
+                        if (this.get(i).isItemEqual(stack)) {
+                            if (this.get(i).getCount() + stack.getCount() <= stack.getMaxStackSize()) {
+                                if (stack.getTagCompound() == null && this.get(i).getTagCompound() == null) {
+                                    if (!simulate) {
+                                        this.get(i).grow(stack.getCount());
+                                    }
+                                    return true;
+                                } else {
+                                    if (stack.getTagCompound() != null &&
+                                            stack.getTagCompound().equals(this.get(i).getTagCompound())) {
+                                        if (!simulate) {
+                                            this.get(i).grow(stack.getCount());
+
+                                        }
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+        return true;
     }
 
     private int add(Collection<ItemStack> stacks, boolean simulate) {

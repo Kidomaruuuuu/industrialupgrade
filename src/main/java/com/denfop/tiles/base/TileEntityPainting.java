@@ -13,7 +13,6 @@ import ic2.api.item.ElectricItem;
 import ic2.api.item.IElectricItem;
 import ic2.api.recipe.IRecipeInputFactory;
 import ic2.api.upgrade.UpgradableProperty;
-import ic2.core.init.Localization;
 import ic2.core.util.StackUtil;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.enchantment.Enchantment;
@@ -33,7 +32,7 @@ import java.util.Set;
 public class TileEntityPainting extends TileEntityDoubleElectricMachine {
 
     public TileEntityPainting() {
-        super(1, 300, 1, Localization.translate("iu.painting.name"), EnumDoubleElectricMachine.PAINTING);
+        super(1, 300, 1, EnumDoubleElectricMachine.PAINTING);
     }
 
     public static void init() {
@@ -41,14 +40,14 @@ public class TileEntityPainting extends TileEntityDoubleElectricMachine {
         addpainting(new ItemStack(IUItem.quantumdrill, 1, OreDictionary.WILDCARD_VALUE));
         addpainting(new ItemStack(IUItem.spectraldrill, 1, OreDictionary.WILDCARD_VALUE));
 
-        addpainting(new ItemStack(IUItem.quantumHelmet, 1, OreDictionary.WILDCARD_VALUE));
-        addpainting(new ItemStack(IUItem.quantumLeggings, 1, OreDictionary.WILDCARD_VALUE));
-        addpainting(new ItemStack(IUItem.quantumBodyarmor, 1, OreDictionary.WILDCARD_VALUE));
-        addpainting(new ItemStack(IUItem.quantumBoots, 1, OreDictionary.WILDCARD_VALUE));
-        addpainting(new ItemStack(IUItem.NanoBodyarmor, 1, OreDictionary.WILDCARD_VALUE));
-        addpainting(new ItemStack(IUItem.NanoBoots, 1, OreDictionary.WILDCARD_VALUE));
-        addpainting(new ItemStack(IUItem.NanoHelmet, 1, OreDictionary.WILDCARD_VALUE));
-        addpainting(new ItemStack(IUItem.NanoLeggings, 1, OreDictionary.WILDCARD_VALUE));
+        addpainting(new ItemStack(IUItem.spectral_helmet, 1, OreDictionary.WILDCARD_VALUE));
+        addpainting(new ItemStack(IUItem.spectral_leggings, 1, OreDictionary.WILDCARD_VALUE));
+        addpainting(new ItemStack(IUItem.spectral_chestplate, 1, OreDictionary.WILDCARD_VALUE));
+        addpainting(new ItemStack(IUItem.spectral_boots, 1, OreDictionary.WILDCARD_VALUE));
+        addpainting(new ItemStack(IUItem.adv_nano_chestplate, 1, OreDictionary.WILDCARD_VALUE));
+        addpainting(new ItemStack(IUItem.adv_nano_boots, 1, OreDictionary.WILDCARD_VALUE));
+        addpainting(new ItemStack(IUItem.adv_nano_helmet, 1, OreDictionary.WILDCARD_VALUE));
+        addpainting(new ItemStack(IUItem.adv_nano_leggings, 1, OreDictionary.WILDCARD_VALUE));
 
         addpainting(new ItemStack(IUItem.advancedSolarHelmet, 1, OreDictionary.WILDCARD_VALUE));
         addpainting(new ItemStack(IUItem.hybridSolarHelmet, 1, OreDictionary.WILDCARD_VALUE));
@@ -215,7 +214,8 @@ public class TileEntityPainting extends TileEntityDoubleElectricMachine {
         NBTTagCompound nbt = ModUtils.nbt(stack);
         String mode = output.getRecipe().output.metadata.getString("mode");
         nbt.setString("mode", mode);
-        ElectricItem.manager.charge(stack, newCharge, Integer.MAX_VALUE, true, false);
+        ElectricItem.manager.use(stack, 1, null);
+        ElectricItem.manager.charge(stack, 1, Integer.MAX_VALUE, true, false);
         EnchantmentHelper.setEnchantments(enchantmentMap, stack);
         stack.setItemDamage(damage);
 

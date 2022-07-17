@@ -4,6 +4,7 @@ import ic2.api.reactor.IReactor;
 import ic2.api.reactor.IReactorComponent;
 import ic2.core.IC2Potion;
 import ic2.core.item.armor.ItemArmorHazmat;
+import ic2.core.item.reactor.ItemReactorUranium;
 import ic2.core.item.type.NuclearResourceType;
 import ic2.core.ref.ItemName;
 import net.minecraft.entity.Entity;
@@ -64,62 +65,30 @@ public class ItemReactor extends AbstractDamageableReactorComponent {
         if (reactor.produceEnergy()) {
             int basePulses = 1 + this.numberOfCells / 2;
 
-            for (int iteration = 0; iteration < this.numberOfCells; ++iteration) {
+            for(int iteration = 0; iteration < this.numberOfCells; ++iteration) {
                 int pulses = basePulses;
                 int heat;
                 if (!heatRun) {
-                    for (heat = 0; heat < pulses; ++heat) {
-                        this.acceptUraniumPulse(stack, reactor, stack, x, y, x, y, false);
+                    for(heat = 0; heat < pulses; ++heat) {
+                        this.acceptUraniumPulse(stack, reactor, stack, x, y, x, y, heatRun);
                     }
 
-                    int var10000 = pulses + checkPulseable(reactor, x - 1, y, stack, x, y, false) + checkPulseable(
-                            reactor,
-                            x + 1,
-                            y,
-                            stack,
-                            x,
-                            y,
-                            false
-                    ) + checkPulseable(reactor, x, y - 1, stack, x, y, false) + checkPulseable(
-                            reactor,
-                            x,
-                            y + 1,
-                            stack,
-                            x,
-                            y,
-                            false
-                    );
+                    int var10000 = pulses + checkPulseable(reactor, x - 1, y, stack, x, y, heatRun) + checkPulseable(reactor, x + 1, y, stack, x, y, heatRun) + checkPulseable(reactor, x, y - 1, stack, x, y, heatRun) + checkPulseable(reactor, x, y + 1, stack, x, y, heatRun);
                 } else {
-                    pulses = basePulses + checkPulseable(reactor, x - 1, y, stack, x, y, true) + checkPulseable(
-                            reactor,
-                            x + 1,
-                            y,
-                            stack,
-                            x,
-                            y,
-                            true
-                    ) + checkPulseable(reactor, x, y - 1, stack, x, y, true) + checkPulseable(
-                            reactor,
-                            x,
-                            y + 1,
-                            stack,
-                            x,
-                            y,
-                            true
-                    );
+                    pulses = basePulses + checkPulseable(reactor, x - 1, y, stack, x, y, heatRun) + checkPulseable(reactor, x + 1, y, stack, x, y, heatRun) + checkPulseable(reactor, x, y - 1, stack, x, y, heatRun) + checkPulseable(reactor, x, y + 1, stack, x, y, heatRun);
                     heat = triangularNumber(pulses) * 4;
                     heat = this.getFinalHeat(stack, reactor, x, y, heat);
-                    Queue<ItemReactor.ItemStackCoord> heatAcceptors = new ArrayDeque<>();
+                    Queue<ItemStackCoord> heatAcceptors = new ArrayDeque<>();
                     this.checkHeatAcceptor(reactor, x - 1, y, heatAcceptors);
                     this.checkHeatAcceptor(reactor, x + 1, y, heatAcceptors);
                     this.checkHeatAcceptor(reactor, x, y - 1, heatAcceptors);
                     this.checkHeatAcceptor(reactor, x, y + 1, heatAcceptors);
 
-                    while (!heatAcceptors.isEmpty() && heat > 0) {
+                    while(!heatAcceptors.isEmpty() && heat > 0) {
                         int dheat = heat / heatAcceptors.size();
                         heat -= dheat;
-                        ItemReactor.ItemStackCoord acceptor = heatAcceptors.remove();
-                        IReactorComponent acceptorComp = (IReactorComponent) acceptor.stack.getItem();
+                        ItemStackCoord acceptor = heatAcceptors.remove();
+                        IReactorComponent acceptorComp = (IReactorComponent)acceptor.stack.getItem();
                         dheat = acceptorComp.alterHeat(acceptor.stack, reactor, acceptor.x, acceptor.y, dheat);
                         heat += dheat;
                     }
@@ -133,7 +102,7 @@ public class ItemReactor extends AbstractDamageableReactorComponent {
             if (!heatRun && this.getCustomDamage(stack) >= this.getMaxCustomDamage(stack) - 1) {
                 reactor.setItemAt(x, y, this.getDepletedStack(stack, reactor));
             } else if (!heatRun) {
-                this.applyCustomDamage(stack, 1, null);
+                this.applyCustomDamage(stack, 1, (EntityLivingBase)null);
             }
 
         }

@@ -20,7 +20,7 @@ public class CuttingHandler {
         this.output = output;
     }
 
-    public static List<CuttingHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<CuttingHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

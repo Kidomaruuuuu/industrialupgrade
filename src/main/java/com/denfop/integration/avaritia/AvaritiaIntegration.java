@@ -17,7 +17,7 @@ public class AvaritiaIntegration {
     public static Item infinitycore;
 
     public static void init() {
-        blockAvSolarPanel = TeBlockRegistry.get(BlockAvaritiaSolarPanel.IDENTITY).setCreativeTab(IUCore.SSPTab);
+        blockAvSolarPanel = TeBlockRegistry.get(BlockAvaritiaSolarPanel.IDENTITY).setCreativeTab(IUCore.IUTab);
         neutroncore = new IUDEItem("neutroncore");
         infinitycore = new IUDEItem("infinitycore");
 
@@ -39,10 +39,10 @@ public class AvaritiaIntegration {
         );
 
 
-        Recipes.advRecipes.addRecipe(new ItemStack(IUItem.UpgradePanelKit, 1, 20), "   ", "BAB", " B ", 'B',
+        Recipes.advRecipes.addRecipe(new ItemStack(IUItem.upgradepanelkit, 1, 20), "   ", "BAB", " B ", 'B',
                 new ItemStack(IUItem.blockpanel, 1, 8), 'A', neutroncore
         );
-        Recipes.advRecipes.addRecipe(new ItemStack(IUItem.UpgradePanelKit, 1, 21),
+        Recipes.advRecipes.addRecipe(new ItemStack(IUItem.upgradepanelkit, 1, 21),
                 "   ", "BAB", " B ", 'B', new ItemStack(blockAvSolarPanel, 1, 0), 'A', infinitycore
         );
 

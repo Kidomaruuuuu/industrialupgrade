@@ -27,15 +27,15 @@ public class InvSlotReactor extends InvSlot {
         final List<ReactorsItem> list = tile.getReactorsItems();
         list.clear();
         int size = this.tile.getReactorSize();
-        for (int pass = 0; pass < 2; ++pass) {
-            for (int y = 0; y < this.tile.sizeY; ++y) {
-                for (int x = 0; x < size; ++x) {
-                    ItemStack stack = this.get(x, y);
-                    if (!stack.isEmpty() && stack.getItem() instanceof IReactorComponent) {
-                        list.add(new ReactorsItem(stack, x, y, this.tile));
-                    }
+
+        for (int y = 0; y < this.tile.sizeY; ++y) {
+            for (int x = 0; x < size; ++x) {
+                ItemStack stack = this.get(x, y);
+                if (!stack.isEmpty() && stack.getItem() instanceof IReactorComponent) {
+                    list.add(new ReactorsItem(stack, x, y, this.tile));
                 }
             }
+
         }
     }
 
@@ -61,16 +61,16 @@ public class InvSlotReactor extends InvSlot {
         final List<ReactorsItem> list = tile.getReactorsItems();
         list.clear();
         int size = this.tile.getReactorSize();
-        for (int pass = 0; pass < 2; ++pass) {
-            for (int y = 0; y < this.tile.sizeY; ++y) {
-                for (int x = 0; x < size; ++x) {
-                    ItemStack stack = this.get(x, y);
-                    if (!stack.isEmpty() && stack.getItem() instanceof IReactorComponent) {
-                        list.add(new ReactorsItem(stack, x, y, this.tile));
-                    }
+
+        for (int y = 0; y < this.tile.sizeY; ++y) {
+            for (int x = 0; x < size; ++x) {
+                ItemStack stack = this.get(x, y);
+                if (!stack.isEmpty() && stack.getItem() instanceof IReactorComponent) {
+                    list.add(new ReactorsItem(stack, x, y, this.tile));
                 }
             }
         }
+
 
     }
 

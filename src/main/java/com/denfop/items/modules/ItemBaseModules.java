@@ -29,7 +29,7 @@ public class ItemBaseModules extends ItemMulti<ItemBaseModules.CraftingTypes> im
 
     public ItemBaseModules() {
         super(null, CraftingTypes.class);
-        this.setCreativeTab(IUCore.tabssp1);
+        this.setCreativeTab(IUCore.ModuleTab);
         BlocksItems.registerItem((Item) this, IUCore.getIdentifier(NAME)).setUnlocalizedName(NAME);
         IUCore.proxy.addIModelRegister(this);
     }

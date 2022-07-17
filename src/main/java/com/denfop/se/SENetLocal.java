@@ -1,6 +1,5 @@
 package com.denfop.se;
 
-import com.denfop.api.qe.IQEConductor;
 import com.denfop.api.se.ISEAcceptor;
 import com.denfop.api.se.ISEConductor;
 import com.denfop.api.se.ISEEmitter;
@@ -9,7 +8,6 @@ import com.denfop.api.se.ISESource;
 import com.denfop.api.se.ISETile;
 import ic2.api.info.ILocatable;
 import ic2.core.IC2;
-import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -32,28 +30,36 @@ public class SENetLocal {
     }
 
     private final World world;
-    private final SEPathMap SESourceToSEPathMap;
+    private final SEPathMap seSourceToSEPathMap;
     private final Map<ISETile, BlockPos> chunkCoordinatesMap;
-    private final Map<ISETile, TileEntity> SETileTileEntityMap;
+    private final Map<ISETile, TileEntity> seTileTileEntityMap;
+
     private final Map<BlockPos, ISETile> chunkCoordinatesISETileMap;
     private final List<ISESource> sources;
     private final WaitingList waitingList;
+    private int tick;
 
-    public SENetLocal(final World world) {
-        this.SESourceToSEPathMap = new SEPathMap();
+    SENetLocal(final World world) {
+        this.seSourceToSEPathMap = new SEPathMap();
         this.sources = new ArrayList<>();
         this.waitingList = new WaitingList();
         this.world = world;
         this.chunkCoordinatesISETileMap = new HashMap<>();
         this.chunkCoordinatesMap = new HashMap<>();
-        this.SETileTileEntityMap = new HashMap<>();
+        this.seTileTileEntityMap = new HashMap<>();
+        this.tick = 0;
     }
 
     public void addTile(ISETile tile1) {
 
+
         this.addTileEntity(getTileFromISE(tile1).getPos(), tile1);
 
 
+    }
+
+    public BlockPos getPos(final ISETile tile) {
+        return this.chunkCoordinatesMap.get(tile);
     }
 
     public void addTileEntity(final BlockPos coords, final ISETile tile) {
@@ -62,18 +68,17 @@ public class SENetLocal {
         }
 
         TileEntity te = getTileFromISE(tile);
-        this.SETileTileEntityMap.put(tile, te);
+        this.seTileTileEntityMap.put(tile, te);
         this.chunkCoordinatesMap.put(tile, coords);
         this.chunkCoordinatesISETileMap.put(coords, tile);
-        this.update(coords.getX(), coords.getY(), coords.getZ());
+        this.update(coords);
         if (tile instanceof ISEAcceptor) {
-            this.waitingList.onTileEntityAdded(this.getValidReceivers(tile, true), tile);
+            this.waitingList.onTileEntityAdded(this.getValidReceivers(tile, true), (ISEAcceptor) tile);
         }
         if (tile instanceof ISESource) {
             this.sources.add((ISESource) tile);
         }
     }
-
 
     public void removeTile(ISETile tile1) {
 
@@ -81,67 +86,83 @@ public class SENetLocal {
 
     }
 
-    public void removeTileEntity(ISETile tile) {
-        if (!this.SETileTileEntityMap.containsKey(tile)) {
+    public void removeTileEntity(BlockPos coord, ISETile tile, ISETile tile1) {
+        if (!this.chunkCoordinatesISETileMap.containsKey(coord)) {
             return;
         }
-        final BlockPos coord = this.chunkCoordinatesMap.get(tile);
-        if(coord == null)
-            return;
-        this.chunkCoordinatesMap.remove(tile);
-        this.SETileTileEntityMap.remove(tile, this.SETileTileEntityMap.get(tile));
-        this.chunkCoordinatesISETileMap.remove(coord, tile);
-        this.update(coord.getX(), coord.getY(), coord.getZ());
+        this.chunkCoordinatesMap.remove(tile, coord);
+
+        this.chunkCoordinatesISETileMap.remove(coord);
+        this.seTileTileEntityMap.remove(tile1, this.seTileTileEntityMap.get(tile1));
+        this.seTileTileEntityMap.remove(tile, this.seTileTileEntityMap.get(tile));
+        this.update(coord);
         if (tile instanceof ISEAcceptor) {
-            this.SESourceToSEPathMap.removeAll(this.SESourceToSEPathMap.getSources((ISEAcceptor) tile));
-            this.waitingList.onTileEntityRemoved(tile);
+            this.seSourceToSEPathMap.removeAll(this.seSourceToSEPathMap.getSources((ISEAcceptor) tile));
+            this.waitingList.onTileEntityRemoved((ISEAcceptor) tile);
         }
         if (tile instanceof ISESource) {
             this.sources.remove((ISESource) tile);
-            this.SESourceToSEPathMap.remove((ISESource) tile);
+            this.seSourceToSEPathMap.remove((ISESource) tile);
+        }
+    }
+
+    public void removeTileEntity(ISETile tile) {
+        if (!this.seTileTileEntityMap.containsKey(tile)) {
+            return;
+        }
+        final BlockPos coord = this.chunkCoordinatesMap.get(tile);
+        this.chunkCoordinatesMap.remove(tile);
+        this.seTileTileEntityMap.remove(tile, this.seTileTileEntityMap.get(tile));
+        this.chunkCoordinatesISETileMap.remove(coord, tile);
+        this.update(coord);
+        if (tile instanceof ISEAcceptor) {
+            this.seSourceToSEPathMap.removeAll(this.seSourceToSEPathMap.getSources((ISEAcceptor) tile));
+            this.waitingList.onTileEntityRemoved((ISEAcceptor) tile);
+        }
+        if (tile instanceof ISESource) {
+            this.sources.remove((ISESource) tile);
+            this.seSourceToSEPathMap.remove((ISESource) tile);
         }
     }
 
     public TileEntity getTileFromMap(ISETile tile) {
-        return this.SETileTileEntityMap.get(tile);
+        return this.seTileTileEntityMap.get(tile);
     }
 
-    public double emitSEFrom(final ISESource SESource, double amount) {
-        List<SEPath> SEPaths = this.SESourceToSEPathMap.get(SESource);
-        if (SEPaths == null) {
-            this.SESourceToSEPathMap.put(SESource, this.discover(SESource));
-            SEPaths = this.SESourceToSEPathMap.get(SESource);
+    public double emitSEFrom(final ISESource seSource, double amount) {
+        List<SEPath> sePaths = this.seSourceToSEPathMap.get(seSource);
+        if (sePaths == null) {
+            sePaths = this.discover(seSource);
+            this.seSourceToSEPathMap.put(seSource, sePaths);
         }
         if (amount > 0) {
-            for (final SEPath SEPath : SEPaths) {
+            for (final SEPath sePath : sePaths) {
                 if (amount <= 0) {
                     break;
                 }
-                final ISESink SESink = SEPath.target;
-                if (SESink.getDemandedSE() <= 0.0) {
+                final ISESink seSink = sePath.target;
+                double demandedSE = seSink.getDemandedSE();
+                if (demandedSE <= 0.0) {
                     continue;
                 }
-                double SEConsumed = 0;
-                double SEProvided = Math.floor(Math.round(amount));
-                double adding = Math.min(SEProvided, SESink.getDemandedSE());
+                double seProvided = Math.floor(Math.round(amount));
+                double adding = Math.min(seProvided, demandedSE);
                 if (adding <= 0.0D) {
                     continue;
                 }
-                double SEReturned = SESink.injectSE(SEPath.targetDirection, adding, 0);
-                if (SEReturned >= SEProvided) {
-                    SEReturned = SEProvided;
-                }
-                SEConsumed += adding;
-                SEConsumed -= SEReturned;
+                seSink.injectSE(sePath.targetDirection, adding, 0);
+                sePath.totalSEConducted = (long) adding;
 
-                amount -= SEConsumed;
+                amount -= adding;
                 amount = Math.max(0, amount);
+
 
             }
         }
 
         return amount;
     }
+
 
     public TileEntity getTileFromISE(ISETile tile) {
         if (tile instanceof TileEntity) {
@@ -155,85 +176,79 @@ public class SENetLocal {
     }
 
     private List<SEPath> discover(final ISESource emitter) {
-        final Map<ISETile, SEBlockLink> reachedTileEntities = new HashMap<>();
-        final LinkedList<ISETile> tileEntitiesToCheck = new LinkedList<>();
+        final Map<ISEConductor, EnumFacing> reachedTileEntities = new HashMap<>();
+        final List<ISETile> tileEntitiesToCheck = new ArrayList<>();
+        final List<SEPath> sePaths = new ArrayList<>();
 
         tileEntitiesToCheck.add(emitter);
 
-
         while (!tileEntitiesToCheck.isEmpty()) {
-            final ISETile currentTileEntity = tileEntitiesToCheck.remove();
+            final ISETile currentTileEntity = tileEntitiesToCheck.remove(0);
             final List<SETarget> validReceivers = this.getValidReceivers(currentTileEntity, false);
             for (final SETarget validReceiver : validReceivers) {
                 if (validReceiver.tileEntity != emitter) {
+                    if (validReceiver.tileEntity instanceof ISESink) {
+                        sePaths.add(new SEPath((ISESink) validReceiver.tileEntity, validReceiver.direction));
+                        continue;
+                    }
+                    if (reachedTileEntities.containsKey((ISEConductor) validReceiver.tileEntity)) {
+                        continue;
+                    }
 
-                    if (reachedTileEntities.containsKey(validReceiver.tileEntity)) {
-                        continue;
-                    }
-                    reachedTileEntities.put(validReceiver.tileEntity, new SEBlockLink(validReceiver.direction));
-                    if (!(validReceiver.tileEntity instanceof ISEConductor)) {
-                        continue;
-                    }
-                    tileEntitiesToCheck.remove(validReceiver.tileEntity);
+                    reachedTileEntities.put((ISEConductor) validReceiver.tileEntity, validReceiver.direction);
                     tileEntitiesToCheck.add(validReceiver.tileEntity);
                 }
             }
 
 
         }
-        final List<SEPath> SEPaths = new LinkedList<>();
-        for (final Map.Entry<ISETile, SEBlockLink> entry : reachedTileEntities.entrySet()) {
-            ISETile tileEntity = entry.getKey();
-            if ((tileEntity instanceof ISESink)) {
-                SEBlockLink SEBlockLink = entry.getValue();
-                final SEPath SEPath = new SEPath((ISESink) tileEntity, SEBlockLink.direction);
-                if (emitter != null) {
-                    while (true) {
-                        BlockPos te = this.chunkCoordinatesMap.get(tileEntity);
-                        if (SEBlockLink != null) {
-                            tileEntity = this.getTileEntity(te.offset(SEBlockLink.direction));
-                        }
-                        if (tileEntity == emitter) {
-                            break;
-                        }
-                        if (!(tileEntity instanceof ISEConductor)) {
-                            break;
-                        }
-                        final ISEConductor SEConductor = (ISEConductor) tileEntity;
-                        SEPath.conductors.add(SEConductor);
-                        SEBlockLink = reachedTileEntities.get(tileEntity);
-                        if (SEBlockLink != null) {
-                            continue;
-                        }
-                        IC2.platform.displayError("An SE network pathfinding entry is corrupted.\nThis could happen due to " +
-                                "incorrect Minecraft behavior or a bug.\n\n(Technical information: SEBlockLink, tile " +
-                                "entities below)\nE: " + emitter + " (" + te.getX() + "," + te.getY() + "," + te
-
-                                .getZ() + ")\n" + "C: " + tileEntity + " (" + te.getX() + "," + te
-
-                                .getY() + "," + te
-
-                                .getZ() + ")\n" + "R: " + SEPath.target + " (" + this.SETileTileEntityMap
-                                .get(SEPath.target)
-                                .getPos()
-                                .getX() + "," + getTileFromMap(SEPath.target).getPos().getY() + "," + getTileFromISE(
-                                SEPath.target).getPos().getZ() + ")");
+        for (SEPath sePath : sePaths) {
+            ISETile tileEntity = sePath.target;
+            EnumFacing seBlockLink = sePath.targetDirection;
+            if (emitter != null) {
+                while (tileEntity != emitter) {
+                    BlockPos te = this.chunkCoordinatesMap.get(tileEntity);
+                    if (seBlockLink != null && te != null) {
+                        tileEntity = this.getTileEntity(te.offset(seBlockLink));
                     }
+                    if (!(tileEntity instanceof ISEConductor)) {
+                        break;
+                    }
+                    final ISEConductor seConductor = (ISEConductor) tileEntity;
+                    sePath.conductors.add(seConductor);
+
+                    seBlockLink = reachedTileEntities.get(tileEntity);
+                    if (seBlockLink != null) {
+                        continue;
+                    }
+                    assert te != null;
+                    IC2.platform.displayError("An se network pathfinding entry is corrupted.\nThis could happen due to " +
+                            "incorrect Minecraft behavior or a bug.\n\n(Technical information: seBlockLink, tile " +
+                            "entities below)\nE: " + emitter + " (" + te.getX() + "," + te.getY() + "," + te
+
+                            .getZ() + ")\n" + "C: " + tileEntity + " (" + te.getX() + "," + te
+
+                            .getY() + "," + te
+
+                            .getZ() + ")\n" + "R: " + sePath.target + " (" + this.seTileTileEntityMap
+                            .get(sePath.target)
+                            .getPos()
+                            .getX() + "," + getTileFromMap(sePath.target).getPos().getY() + "," + getTileFromISE(
+                            sePath.target).getPos().getZ() + ")");
                 }
-                SEPaths.add(SEPath);
             }
         }
-        return SEPaths;
+        return sePaths;
     }
 
     public ISETile getNeighbor(final ISETile tile, final EnumFacing dir) {
         if (tile == null) {
             return null;
         }
-        if (!this.SETileTileEntityMap.containsKey(tile)) {
+        if (!this.seTileTileEntityMap.containsKey(tile)) {
             return null;
         }
-        return this.getTileEntity(this.SETileTileEntityMap.get(tile).getPos().offset(dir));
+        return this.getTileEntity(this.seTileTileEntityMap.get(tile).getPos().offset(dir));
     }
 
     private List<SETarget> getValidReceivers(final ISETile emitter, final boolean reverse) {
@@ -278,21 +293,17 @@ public class SENetLocal {
         workList.add(par1);
         while (workList.size() > 0) {
             final ISETile tile = workList.remove(0);
-            final TileEntity te = this.SETileTileEntityMap.get(tile);
-            if(te == null)
-                continue;
-            if (!te.isInvalid()) {
-                final List<SETarget> targets = this.getValidReceivers(tile, true);
-                for (SETarget SETarget : targets) {
-                    final ISETile target = SETarget.tileEntity;
-                    if (target != par1) {
-                        if (!reached.contains(target)) {
-                            reached.add(target);
-                            if (target instanceof ISESource) {
-                                result.add((ISESource) target);
-                            } else if (target instanceof ISEConductor) {
-                                workList.add(target);
-                            }
+
+            final List<SETarget> targets = this.getValidReceivers(tile, true);
+            for (SETarget seTarget : targets) {
+                final ISETile target = seTarget.tileEntity;
+                if (target != par1) {
+                    if (!reached.contains(target)) {
+                        reached.add(target);
+                        if (target instanceof ISESource) {
+                            result.add((ISESource) target);
+                        } else if (target instanceof ISEConductor) {
+                            workList.add(target);
                         }
                     }
                 }
@@ -301,10 +312,6 @@ public class SENetLocal {
         return result;
     }
 
-    public void onTickStart() {
-
-
-    }
 
     public void onTickEnd() {
         if (this.world.provider.getWorldTime() % 20 == 0) {
@@ -313,34 +320,29 @@ public class SENetLocal {
                 for (final ISETile tile : tiles) {
                     final List<ISESource> sources = this.discoverFirstPathOrSources(tile);
                     if (sources.size() > 0) {
-                        this.SESourceToSEPathMap.removeAll(sources);
+                        this.seSourceToSEPathMap.removeAll(sources);
                     }
                 }
                 this.waitingList.clear();
             }
         }
-        if (this.world.provider.getWorldTime() % 2 == 0) {
-            for (ISESource entry : this.sources) {
-                if (entry != null) {
-                    double offer = entry.getOfferedSE();
-                    if (offer > 0) {
-                        for (double packetAmount = 1, i = 0; i < packetAmount; ++i) {
-                            offer = entry.getOfferedSE();
-                            if (offer < 1) {
-                                break;
-                            }
-                            final double removed = offer - this.emitSEFrom(entry, offer);
-                            if (removed <= 0) {
-                                break;
-                            }
-
-                            entry.drawSE(removed);
+        for (ISESource entry : this.sources) {
+            if (entry != null) {
+                final double offered = entry.getOfferedSE();
+                if (offered > 0) {
+                    for (double packetAmount = 1, i = 0; i < packetAmount; ++i) {
+                        final double removed = offered - this.emitSEFrom(entry, offered);
+                        if (removed <= 0) {
+                            break;
                         }
-                    }
 
+                        entry.drawSE(removed);
+                    }
                 }
+
             }
         }
+        this.tick++;
     }
 
     public ISETile getTileEntity(BlockPos pos) {
@@ -349,27 +351,27 @@ public class SENetLocal {
     }
 
 
-    void update(final int x, final int y, final int z) {
+    void update(BlockPos pos) {
         for (final EnumFacing dir : EnumFacing.values()) {
-            if (this.world.isChunkGeneratedAt(x + dir.getFrontOffsetX() >> 4, z + dir.getFrontOffsetZ() >> 4)) {
-                BlockPos pos = new BlockPos(x, y,
-                        z
-                ).offset(dir);
-                if(this.chunkCoordinatesISETileMap.containsKey(pos))
-                    if(this.chunkCoordinatesISETileMap.get(pos) instanceof ISEConductor)
-                        this.world.neighborChanged(pos, Blocks.AIR, pos);
-
+            BlockPos pos1 = pos
+                    .offset(dir);
+            final ISETile tile = this.chunkCoordinatesISETileMap.get(pos1);
+            if (tile != null) {
+                if (tile instanceof ISEConductor) {
+                    ((ISEConductor) tile).update_render();
+                }
             }
+
         }
     }
 
     public void onUnload() {
-        this.SESourceToSEPathMap.clear();
+        this.seSourceToSEPathMap.clear();
         this.sources.clear();
         this.waitingList.clear();
         this.chunkCoordinatesISETileMap.clear();
         this.chunkCoordinatesMap.clear();
-        this.SETileTileEntityMap.clear();
+        this.seTileTileEntityMap.clear();
     }
 
     static class SETarget {
@@ -384,29 +386,22 @@ public class SENetLocal {
 
     }
 
-    static class SEBlockLink {
-
-        final EnumFacing direction;
-
-        SEBlockLink(final EnumFacing direction) {
-            this.direction = direction;
-        }
-
-    }
-
     static class SEPath {
 
-        final Set<ISEConductor> conductors;
+        final List<ISEConductor> conductors;
         final ISESink target;
         final EnumFacing targetDirection;
+        long totalSEConducted;
 
         SEPath(ISESink sink, EnumFacing facing) {
             this.target = sink;
-            this.conductors = new HashSet<>();
+            this.conductors = new ArrayList<>();
+            this.totalSEConducted = 0L;
             this.targetDirection = facing;
         }
 
     }
+
 
     static class SEPathMap {
 
@@ -435,6 +430,9 @@ public class SENetLocal {
         }
 
         public void removeAll(final List<ISESource> par1) {
+            if (par1 == null) {
+                return;
+            }
             for (ISESource iSESource : par1) {
                 this.remove(iSESource);
             }
@@ -457,18 +455,20 @@ public class SENetLocal {
             return source;
         }
 
+
         public void clear() {
             this.senderPath.clear();
         }
 
     }
 
+
     static class PathLogic {
 
-        final List<ISETile> tiles;
+        final Set<ISETile> tiles;
 
         PathLogic() {
-            this.tiles = new ArrayList<>();
+            this.tiles = new HashSet<>();
         }
 
         public boolean contains(final ISETile par1) {
@@ -491,7 +491,7 @@ public class SENetLocal {
             if (this.tiles.isEmpty()) {
                 return null;
             }
-            return this.tiles.get(0);
+            return this.tiles.iterator().next();
         }
 
     }
@@ -504,7 +504,7 @@ public class SENetLocal {
             this.paths = new ArrayList<>();
         }
 
-        public void onTileEntityAdded(final List<SETarget> around, final ISETile tile) {
+        public void onTileEntityAdded(final List<SETarget> around, final ISEAcceptor tile) {
             if (around.isEmpty() || this.paths.isEmpty()) {
                 this.createNewPath(tile);
                 return;
@@ -540,7 +540,6 @@ public class SENetLocal {
                             newLogic.add(toMove);
                         }
                     }
-                    logic2.clear();
                 }
                 this.paths.add(newLogic);
             }
@@ -549,13 +548,14 @@ public class SENetLocal {
             }
         }
 
-        public void onTileEntityRemoved(final ISETile par1) {
+        public void onTileEntityRemoved(final ISEAcceptor par1) {
             if (this.paths.isEmpty()) {
                 return;
             }
-            final List<ISETile> toRecalculate = new ArrayList<>();
-            for (int i = 0; i < this.paths.size(); ++i) {
-                final PathLogic logic = this.paths.get(i);
+
+            List<ISETile> toRecalculate = new ArrayList<>();
+            for (int i = 0; i < this.paths.size(); i++) {
+                PathLogic logic = this.paths.get(i);
                 if (logic.contains(par1)) {
                     logic.remove(par1);
                     toRecalculate.addAll(logic.tiles);
@@ -563,7 +563,7 @@ public class SENetLocal {
                 }
             }
             for (final ISETile tile : toRecalculate) {
-                this.onTileEntityAdded(SENetLocal.this.getValidReceivers(tile, true), tile);
+                this.onTileEntityAdded(SENetLocal.this.getValidReceivers(tile, true), (ISEAcceptor) tile);
             }
         }
 

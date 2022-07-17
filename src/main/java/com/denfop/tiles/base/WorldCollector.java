@@ -1,6 +1,5 @@
 package com.denfop.tiles.base;
 
-import com.denfop.Config;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.api.recipe.MachineRecipe;
@@ -19,23 +18,24 @@ public class WorldCollector extends TileEntityElectricMachine implements IUpdate
     private final int defaultOperationLength;
     private final int defaultEnergyStorage;
     private final int defaultTier;
+    MachineRecipe machineRecipe;
     private int energyConsume;
     private int operationLength;
-    MachineRecipe machineRecipe;
     private int operationsPerTick;
 
     public WorldCollector(EnumTypeCollector enumTypeCollector) {
         super(5000, 1, 1);
         this.enumTypeCollector = enumTypeCollector;
-        this.inputSlot = new InvSlotRecipes(this, enumTypeCollector.name().toLowerCase()+"collector", this);
+        this.inputSlot = new InvSlotRecipes(this, enumTypeCollector.name().toLowerCase() + "collector", this);
         this.machineRecipe = null;
         this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
-        this.defaultEnergyConsume = this.energyConsume = (int) (40);
+        this.defaultEnergyConsume = this.energyConsume = 40;
         this.defaultOperationLength = this.operationLength = 800;
         this.operationsPerTick = 1;
         this.defaultTier = 1;
         this.defaultEnergyStorage = 5000;
     }
+
     protected void onLoaded() {
         super.onLoaded();
         if (IC2.platform.isSimulating()) {
@@ -45,8 +45,8 @@ public class WorldCollector extends TileEntityElectricMachine implements IUpdate
         }
 
     }
+
     public void setOverclockRates() {
-        this.upgradeSlot.onChanged();
         this.operationsPerTick = this.upgradeSlot.getOperationsPerTick(this.defaultOperationLength);
         this.operationLength = this.upgradeSlot.getOperationLength(this.defaultOperationLength);
         this.energyConsume = this.upgradeSlot.getEnergyDemand(this.defaultEnergyConsume);
@@ -60,6 +60,7 @@ public class WorldCollector extends TileEntityElectricMachine implements IUpdate
 
 
     }
+
     @Override
     public ContainerBase<?> getGuiContainer(final EntityPlayer entityPlayer) {
         return null;

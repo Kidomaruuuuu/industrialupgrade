@@ -1,6 +1,6 @@
 package com.denfop.container;
 
-import com.denfop.tiles.base.TileEntityBaseQuantumQuarry;
+import com.denfop.tiles.mechanism.quarry.TileEntityBaseQuantumQuarry;
 import ic2.core.ContainerFullInv;
 import ic2.core.slot.SlotInvSlot;
 import net.minecraft.entity.player.EntityPlayer;

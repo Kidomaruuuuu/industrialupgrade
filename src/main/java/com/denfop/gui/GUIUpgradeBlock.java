@@ -110,9 +110,6 @@ public class GuiUpgradeBlock extends GuiIC2<ContainerDoubleElectricMachine> {
         }
     }
 
-    public String getName() {
-        return this.container.base.getInventoryName();
-    }
 
     public ResourceLocation getTexture() {
         return new ResourceLocation(Constants.TEXTURES, "textures/gui/GuiUpgradeBlock.png");

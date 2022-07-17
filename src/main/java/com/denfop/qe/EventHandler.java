@@ -18,7 +18,9 @@ public class EventHandler {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onEnergyTileLoad(final QETileLoadEvent event) {
-
+        if (event.getWorld().isRemote) {
+            return;
+        }
         final QENetLocal local = QENetGlobal.getForWorld(event.getWorld());
 
         if (local != null) {
@@ -28,6 +30,9 @@ public class EventHandler {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onEnergyTileUnload(final QETileUnloadEvent event) {
+        if (event.getWorld().isRemote) {
+            return;
+        }
         final QENetLocal local = QENetGlobal.getForWorld(event.getWorld());
         if (local != null) {
             local.removeTile(event.tile);
@@ -36,16 +41,18 @@ public class EventHandler {
 
     @SubscribeEvent
     public void tick(final TickEvent.WorldTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) {
-            QENetGlobal.onTickStart(event.world);
-        } else if (event.phase == TickEvent.Phase.END) {
+        if (event.phase == TickEvent.Phase.END) {
             QENetGlobal.onTickEnd(event.world);
         }
     }
 
     @SubscribeEvent
     public void onWorldUnload(final WorldEvent.Unload event) {
+        if (event.getWorld().isRemote) {
+            return;
+        }
         QENetGlobal.onWorldUnload(event.getWorld());
+
     }
 
 }

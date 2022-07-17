@@ -3,16 +3,23 @@ package com.denfop.items;
 import com.denfop.Constants;
 import com.denfop.IUCore;
 import com.denfop.api.IModelRegister;
+import com.denfop.utils.ModUtils;
 import ic2.core.block.state.IIdProvider;
 import ic2.core.init.BlocksItems;
 import ic2.core.item.ItemMulti;
 import ic2.core.ref.ItemName;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import java.util.List;
 import java.util.Locale;
 
 public class ItemPaints extends ItemMulti<ItemPaints.Types> implements IModelRegister {
@@ -24,6 +31,18 @@ public class ItemPaints extends ItemMulti<ItemPaints.Types> implements IModelReg
         this.setCreativeTab(IUCore.ItemTab);
         BlocksItems.registerItem((Item) this, IUCore.getIdentifier(NAME)).setUnlocalizedName(NAME);
         IUCore.proxy.addIModelRegister(this);
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void addInformation(
+            @Nonnull final ItemStack stack,
+            @Nullable final World worldIn,
+            @Nonnull final List<String> tooltip,
+            @Nonnull final ITooltipFlag flagIn
+    ) {
+        tooltip.add(ModUtils.mode(stack.getItemDamage()));
+        super.addInformation(stack, worldIn, tooltip, flagIn);
     }
 
     @Override

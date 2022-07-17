@@ -1,39 +1,36 @@
 package com.denfop.tiles.base;
 
 import com.denfop.IUCore;
-import com.denfop.api.ITemperature;
-import com.denfop.api.heat.IHeatSink;
-import com.denfop.api.heat.event.HeatTileLoadEvent;
-import com.denfop.api.heat.event.HeatTileUnloadEvent;
 import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.audio.AudioSource;
+import com.denfop.componets.HeatComponent;
 import com.denfop.container.ContainerBaseGenerationChipMachine;
-import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.upgrade.IUpgradableBlock;
-import ic2.api.upgrade.IUpgradeItem;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
-import ic2.core.IHasGui;
 import ic2.core.block.invslot.InvSlotUpgrade;
+import ic2.core.init.Localization;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
 import java.util.List;
 
 public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectricMachine
-        implements IHasGui, IHeatSink, INetworkTileEntityEventListener, IUpgradableBlock, ITemperature {
+        implements IUpgradableBlock {
 
-    public final short maxtemperature;
+
     public final int defaultEnergyConsume;
     public final int defaultOperationLength;
     public final int defaultTier;
     public final int defaultEnergyStorage;
     public final InvSlotUpgrade upgradeSlot;
-    public boolean needTemperature;
-    public short temperature;
+    public final HeatComponent heat;
     public int energyConsume;
     public int operationLength;
     public int operationsPerTick;
@@ -44,7 +41,6 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
     public MachineRecipe output;
     protected short progress;
     protected double guiProgress;
-    private ITemperature source;
 
     public TileEntityBaseGenerationMicrochip(int energyPerTick, int length, int outputSlots) {
         this(energyPerTick, length, outputSlots, 1);
@@ -58,11 +54,9 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
         this.defaultTier = aDefaultTier;
         this.defaultEnergyStorage = energyPerTick * length;
         this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
-        this.temperature = 0;
-        this.maxtemperature = 5000;
-        this.needTemperature = false;
         this.output = null;
-        this.source = null;
+        this.heat = this.addComponent(HeatComponent
+                .asBasicSink(this, 5000));
     }
 
     public static int applyModifier(int base, int extra, double multiplier) {
@@ -70,26 +64,15 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
         return (ret > 2.147483647E9D) ? Integer.MAX_VALUE : (int) ret;
     }
 
-    @Override
-    public ITemperature getSource() {
-        return this.source;
-    }
-
-    @Override
-    public void setSource(final ITemperature source) {
-        this.source = source;
-    }
 
     public void readFromNBT(NBTTagCompound nbttagcompound) {
         super.readFromNBT(nbttagcompound);
         this.progress = nbttagcompound.getShort("progress");
-        this.temperature = nbttagcompound.getShort("temperature");
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound) {
         super.writeToNBT(nbttagcompound);
         nbttagcompound.setShort("progress", this.progress);
-        nbttagcompound.setShort("temperature", this.temperature);
 
         return nbttagcompound;
     }
@@ -100,7 +83,6 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
 
     public void onLoaded() {
         super.onLoaded();
-        MinecraftForge.EVENT_BUS.post(new HeatTileLoadEvent(this));
         if (IC2.platform.isSimulating()) {
             setOverclockRates();
         }
@@ -110,7 +92,6 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
     }
 
     public void onUnloaded() {
-        MinecraftForge.EVENT_BUS.post(new HeatTileUnloadEvent(this));
         super.onUnloaded();
         if (IC2.platform.isRendering() && this.audioSource != null) {
             IUCore.audioManager.removeSources(this);
@@ -125,24 +106,34 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
         }
     }
 
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.heatmachine.info"));
+        }
+        super.addInformation(stack, tooltip, advanced);
+    }
+
     public void updateEntityServer() {
         super.updateEntityServer();
-        boolean needsInvUpdate = false;
         MachineRecipe output = this.output;
         if (output != null && this.outputSlot.canAdd(output.getRecipe().output.items) && this.energy.canUseEnergy(energyConsume) && output.getRecipe().output.metadata != null) {
-            if (output.getRecipe().output.metadata.getInteger("temperature") > this.temperature) {
-                needTemperature = true;
-            }
+
             if (output.getRecipe().output.metadata.getShort("temperature") == 0 || output.getRecipe().output.metadata.getInteger(
-                    "temperature") > this.temperature) {
+                    "temperature") > this.heat.getEnergy()) {
                 return;
             }
-            if (needTemperature) {
-                needTemperature = false;
+            if (!this.getActive()) {
+                setActive(true);
             }
-            setActive(true);
             if (this.progress == 0) {
-                IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
+                if (this.operationLength > this.defaultOperationLength * 0.1) {
+                    IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
+                }
             }
             this.progress = (short) (this.progress + 1);
             this.energy.useEnergy(energyConsume);
@@ -151,33 +142,36 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
             if (this.progress >= this.operationLength) {
                 this.guiProgress = 0;
                 operate(output);
-                needsInvUpdate = true;
                 this.progress = 0;
-                IC2.network.get(true).initiateTileEntityEvent(this, 2, true);
+                if (this.operationLength > this.defaultOperationLength * 0.1 || (this.getType() != valuesAudio[2 % valuesAudio.length])) {
+                    IC2.network.get(true).initiateTileEntityEvent(this, 2, true);
+                }
             }
         } else {
             if (this.progress != 0 && getActive()) {
-                IC2.network.get(true).initiateTileEntityEvent(this, 1, true);
+                if (this.operationLength > this.defaultOperationLength * 0.1 || (this.getType() != valuesAudio[1 % valuesAudio.length])) {
+                    IC2.network.get(true).initiateTileEntityEvent(this, 1, true);
+                }
             }
             if (output == null) {
                 this.progress = 0;
             }
-            setActive(false);
+            if (this.getActive()) {
+                setActive(false);
+            }
+            if (this.heat.getEnergy() > 1) {
+                this.heat.useEnergy(1);
+            }
 
         }
-        if((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark())
+        if ((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark()) {
             setOverclockRates();
-        if (needsInvUpdate) {
-            super.markDirty();
         }
-        if (this.temperature > 0) {
-            this.temperature--;
-        }
+
 
     }
 
     public void setOverclockRates() {
-        this.upgradeSlot.onChanged();
         double previousProgress = (double) this.progress / (double) this.operationLength;
         double stackOpLen = (this.defaultOperationLength + this.upgradeSlot.extraProcessTime) * 64.0D
                 * this.upgradeSlot.processTimeMultiplier;
@@ -201,12 +195,6 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
     public void operate(MachineRecipe output) {
         for (int i = 0; i < this.operationsPerTick; i++) {
             List<ItemStack> processResult = output.getRecipe().output.items;
-            for (int j = 0; j < this.upgradeSlot.size(); j++) {
-                ItemStack stack = this.upgradeSlot.get(j);
-                if (stack != null && stack.getItem() instanceof IUpgradeItem) {
-                    ((IUpgradeItem) stack.getItem()).onProcessEnd(stack, this, processResult);
-                }
-            }
             operateOnce(processResult);
             if (!this.inputSlotA.continue_process(this.output) || !this.outputSlot.canAdd(output.getRecipe().output.items)) {
                 getOutput();

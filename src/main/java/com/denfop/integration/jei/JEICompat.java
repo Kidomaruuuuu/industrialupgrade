@@ -6,6 +6,7 @@ import com.denfop.blocks.mechanism.BlockBaseMachine;
 import com.denfop.blocks.mechanism.BlockBaseMachine1;
 import com.denfop.blocks.mechanism.BlockBaseMachine2;
 import com.denfop.blocks.mechanism.BlockBaseMachine3;
+import com.denfop.blocks.mechanism.BlockBlastFurnace;
 import com.denfop.blocks.mechanism.BlockConverterMatter;
 import com.denfop.blocks.mechanism.BlockDoubleMolecularTransfomer;
 import com.denfop.blocks.mechanism.BlockMolecular;
@@ -13,8 +14,11 @@ import com.denfop.blocks.mechanism.BlockMoreMachine;
 import com.denfop.blocks.mechanism.BlockMoreMachine1;
 import com.denfop.blocks.mechanism.BlockMoreMachine2;
 import com.denfop.blocks.mechanism.BlockMoreMachine3;
+import com.denfop.blocks.mechanism.BlockPetrolQuarry;
 import com.denfop.blocks.mechanism.BlockRefiner;
+import com.denfop.blocks.mechanism.BlockSimpleMachine;
 import com.denfop.blocks.mechanism.BlockSolarEnergy;
+import com.denfop.blocks.mechanism.BlockSolidMatter;
 import com.denfop.blocks.mechanism.BlockSunnariumMaker;
 import com.denfop.blocks.mechanism.BlockSunnariumPanelMaker;
 import com.denfop.blocks.mechanism.BlockUpgradeBlock;
@@ -25,6 +29,7 @@ import com.denfop.gui.GuiConverterSolidMatter;
 import com.denfop.gui.GuiDoubleMolecularTransformer;
 import com.denfop.gui.GuiElectrolyzer;
 import com.denfop.gui.GuiEnriched;
+import com.denfop.gui.GuiFisher;
 import com.denfop.gui.GuiGenStone;
 import com.denfop.gui.GuiGenerationMicrochip;
 import com.denfop.gui.GuiHandlerHeavyOre;
@@ -45,9 +50,21 @@ import com.denfop.integration.jei.advalloysmelter.AdvAlloySmelterRecipeWrapper;
 import com.denfop.integration.jei.advrefiner.AdvRefinerCategory;
 import com.denfop.integration.jei.advrefiner.AdvRefinerHandler;
 import com.denfop.integration.jei.advrefiner.AdvRefinerRecipeWrapper;
+import com.denfop.integration.jei.aircollector.AirColCategory;
+import com.denfop.integration.jei.aircollector.AirColHandler;
+import com.denfop.integration.jei.aircollector.AirColRecipeWrapper;
 import com.denfop.integration.jei.alloysmelter.AlloySmelterCategory;
 import com.denfop.integration.jei.alloysmelter.AlloySmelterHandler;
 import com.denfop.integration.jei.alloysmelter.AlloySmelterRecipeWrapper;
+import com.denfop.integration.jei.antiupgradeblock.AntiUpgradeBlockCategory;
+import com.denfop.integration.jei.antiupgradeblock.AntiUpgradeBlockHandler;
+import com.denfop.integration.jei.antiupgradeblock.AntiUpgradeBlockWrapper;
+import com.denfop.integration.jei.bf.BlastFCategory;
+import com.denfop.integration.jei.bf.BlastFHandler;
+import com.denfop.integration.jei.bf.BlastFWrapper;
+import com.denfop.integration.jei.blastfurnace.BFCategory;
+import com.denfop.integration.jei.blastfurnace.BFHandler;
+import com.denfop.integration.jei.blastfurnace.BFWrapper;
 import com.denfop.integration.jei.combmac.CombMacCategory;
 import com.denfop.integration.jei.combmac.CombMacHandler;
 import com.denfop.integration.jei.combmac.CombMacRecipeWrapper;
@@ -72,12 +89,21 @@ import com.denfop.integration.jei.extruder.ExtruderWrapper;
 import com.denfop.integration.jei.farmer.FarmerCategory;
 import com.denfop.integration.jei.farmer.FarmerHandler;
 import com.denfop.integration.jei.farmer.FarmerRecipeWrapper;
+import com.denfop.integration.jei.fishmachine.FishMCategory;
+import com.denfop.integration.jei.fishmachine.FishMHandler;
+import com.denfop.integration.jei.fishmachine.FishMWrapper;
 import com.denfop.integration.jei.fquarry.FQuarryCategory;
 import com.denfop.integration.jei.fquarry.FQuarryHandler;
 import com.denfop.integration.jei.fquarry.FQuarryWrapper;
+import com.denfop.integration.jei.gendiesel.GenDieselCategory;
+import com.denfop.integration.jei.gendiesel.GenDieselHandler;
+import com.denfop.integration.jei.gendiesel.GenDieselWrapper;
 import com.denfop.integration.jei.genhelium.GenHeliumCategory;
 import com.denfop.integration.jei.genhelium.GenHeliumHandler;
 import com.denfop.integration.jei.genhelium.GenHeliumWrapper;
+import com.denfop.integration.jei.genhydrogen.GenHydCategory;
+import com.denfop.integration.jei.genhydrogen.GenHydHandler;
+import com.denfop.integration.jei.genhydrogen.GenHydWrapper;
 import com.denfop.integration.jei.genlava.GenLavaCategory;
 import com.denfop.integration.jei.genlava.GenLavaHandler;
 import com.denfop.integration.jei.genlava.GenLavaWrapper;
@@ -87,6 +113,9 @@ import com.denfop.integration.jei.genneutronium.GenNeuWrapper;
 import com.denfop.integration.jei.genobs.GenObsCategory;
 import com.denfop.integration.jei.genobs.GenObsHandler;
 import com.denfop.integration.jei.genobs.GenObsWrapper;
+import com.denfop.integration.jei.genpetrol.GenPetrolCategory;
+import com.denfop.integration.jei.genpetrol.GenPetrolHandler;
+import com.denfop.integration.jei.genpetrol.GenPetrolWrapper;
 import com.denfop.integration.jei.gense.GenSECategory;
 import com.denfop.integration.jei.gense.GenSEHandler;
 import com.denfop.integration.jei.gense.GenSEWrapper;
@@ -102,9 +131,17 @@ import com.denfop.integration.jei.handlerho.HandlerHORecipeWrapper;
 import com.denfop.integration.jei.microchip.MicrochipCategory;
 import com.denfop.integration.jei.microchip.MicrochipHandler;
 import com.denfop.integration.jei.microchip.MicrochipRecipeWrapper;
+import com.denfop.integration.jei.modularator.ModulatorCategory;
+import com.denfop.integration.jei.modularator.ModulatorCategory1;
+import com.denfop.integration.jei.modularator.ModulatorHandler;
+import com.denfop.integration.jei.modularator.ModulatorWrapper;
+import com.denfop.integration.jei.modularator.ModulatorWrapper1;
 import com.denfop.integration.jei.molecular.MolecularTransformerCategory;
 import com.denfop.integration.jei.molecular.MolecularTransformerHandler;
 import com.denfop.integration.jei.molecular.MolecularTransformerRecipeWrapper;
+import com.denfop.integration.jei.oilpump.OilPumpCategory;
+import com.denfop.integration.jei.oilpump.OilPumpHandler;
+import com.denfop.integration.jei.oilpump.OilPumpWrapper;
 import com.denfop.integration.jei.painting.PaintingCategory;
 import com.denfop.integration.jei.painting.PaintingHandler;
 import com.denfop.integration.jei.painting.PaintingWrapper;
@@ -114,9 +151,15 @@ import com.denfop.integration.jei.plasticcratorplate.PlasticCreatorPlateWrapper;
 import com.denfop.integration.jei.plasticcreator.PlasticCreatorCategory;
 import com.denfop.integration.jei.plasticcreator.PlasticCreatorHandler;
 import com.denfop.integration.jei.plasticcreator.PlasticCreatorWrapper;
+import com.denfop.integration.jei.privatizer.PrivatizerCategory;
+import com.denfop.integration.jei.privatizer.PrivatizerHandler;
+import com.denfop.integration.jei.privatizer.PrivatizerWrapper;
 import com.denfop.integration.jei.quarry.QuarryCategory;
 import com.denfop.integration.jei.quarry.QuarryHandler;
 import com.denfop.integration.jei.quarry.QuarryWrapper;
+import com.denfop.integration.jei.quarry_comb.CMQuarryCategory;
+import com.denfop.integration.jei.quarry_comb.CMQuarryWrapper;
+import com.denfop.integration.jei.quarry_comb.СMQuarryHandler;
 import com.denfop.integration.jei.quarry_mac.MQuarryCategory;
 import com.denfop.integration.jei.quarry_mac.MQuarryHandler;
 import com.denfop.integration.jei.quarry_mac.MQuarryWrapper;
@@ -129,6 +172,9 @@ import com.denfop.integration.jei.rolling.RollingWrapper;
 import com.denfop.integration.jei.scrap.ScrapCategory;
 import com.denfop.integration.jei.scrap.ScrapHandler;
 import com.denfop.integration.jei.scrap.ScrapRecipeWrapper;
+import com.denfop.integration.jei.solidmatters.MatterCategory;
+import com.denfop.integration.jei.solidmatters.MatterHandler;
+import com.denfop.integration.jei.solidmatters.MatterWrapper;
 import com.denfop.integration.jei.sunnarium.SunnariumCategory;
 import com.denfop.integration.jei.sunnarium.SunnariumHandler;
 import com.denfop.integration.jei.sunnarium.SunnariumWrapper;
@@ -138,9 +184,15 @@ import com.denfop.integration.jei.sunnariumpanel.SannariumPanelWrapper;
 import com.denfop.integration.jei.synthesis.SynthesisCategory;
 import com.denfop.integration.jei.synthesis.SynthesisHandler;
 import com.denfop.integration.jei.synthesis.SynthesisWrapper;
+import com.denfop.integration.jei.tuner.TunerCategory;
+import com.denfop.integration.jei.tuner.TunerHandler;
+import com.denfop.integration.jei.tuner.TunerWrapper;
 import com.denfop.integration.jei.upgradeblock.UpgradeBlockCategory;
 import com.denfop.integration.jei.upgradeblock.UpgradeBlockHandler;
 import com.denfop.integration.jei.upgradeblock.UpgradeBlockWrapper;
+import com.denfop.integration.jei.vein.VeinCategory;
+import com.denfop.integration.jei.vein.VeinHandler;
+import com.denfop.integration.jei.vein.VeinWrapper;
 import com.denfop.integration.jei.watergenerator.GenWaterCategory;
 import com.denfop.integration.jei.watergenerator.GenWaterHandler;
 import com.denfop.integration.jei.watergenerator.GenWaterWrapper;
@@ -173,12 +225,24 @@ public final class JEICompat implements IModPlugin {
         registry.addRecipeCategories(new SynthesisCategory(registry.getJeiHelpers().getGuiHelper()));
         registry.addRecipeCategories(new SannariumPanelCategory(registry.getJeiHelpers().getGuiHelper()));
         registry.addRecipeCategories(new SunnariumCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new BFCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new BlastFCategory(registry.getJeiHelpers().getGuiHelper()));
+
 
         registry.addRecipeCategories(new PlasticCreatorCategory(registry.getJeiHelpers().getGuiHelper()));
         registry.addRecipeCategories(new PlasticCreatorPlateCategory(registry.getJeiHelpers().getGuiHelper()));
         registry.addRecipeCategories(new UpgradeBlockCategory(registry.getJeiHelpers().getGuiHelper()));
         registry.addRecipeCategories(new PaintingCategory(registry.getJeiHelpers().getGuiHelper()));
         registry.addRecipeCategories(new GenStoneCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new ModulatorCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new ModulatorCategory1(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new PrivatizerCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new TunerCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new MatterCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new AntiUpgradeBlockCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new VeinCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new OilPumpCategory(registry.getJeiHelpers().getGuiHelper()));
+
 
         registry.addRecipeCategories(new GenStarCategory(registry.getJeiHelpers().getGuiHelper()));
         registry.addRecipeCategories(new HandlerHOCategory(registry.getJeiHelpers().getGuiHelper()));
@@ -187,7 +251,12 @@ public final class JEICompat implements IModPlugin {
         registry.addRecipeCategories(new GenWaterCategory(registry.getJeiHelpers().getGuiHelper()));
         registry.addRecipeCategories(new GenHeliumCategory(registry.getJeiHelpers().getGuiHelper()));
         registry.addRecipeCategories(new GenNeuCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new GenPetrolCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new GenDieselCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new GenHydCategory(registry.getJeiHelpers().getGuiHelper()));
+
         registry.addRecipeCategories(new GenObsCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new FishMCategory(registry.getJeiHelpers().getGuiHelper()));
 
         registry.addRecipeCategories(new RefinerCategory(registry.getJeiHelpers().getGuiHelper()));
         registry.addRecipeCategories(new AdvRefinerCategory(registry.getJeiHelpers().getGuiHelper()));
@@ -202,6 +271,8 @@ public final class JEICompat implements IModPlugin {
         registry.addRecipeCategories(new CuttingCategory(registry.getJeiHelpers().getGuiHelper()));
         registry.addRecipeCategories(new RollingCategory(registry.getJeiHelpers().getGuiHelper()));
         registry.addRecipeCategories(new MQuarryCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new AirColCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new CMQuarryCategory(registry.getJeiHelpers().getGuiHelper()));
 
 
     }
@@ -290,6 +361,24 @@ public final class JEICompat implements IModPlugin {
         registry.addRecipeCatalyst(
                 new ItemStack(IUItem.machines, 1, 6),
                 new MicrochipCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.addRecipeClickArea(
+                GuiFisher.class, 41, 45, 15, 13,
+                BlockBaseMachine2.fisher.getName()
+        );
+        registry.addRecipes(
+                FishMHandler.getRecipes(),
+                new FishMCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes(
+                FishMHandler.class, FishMWrapper::new,
+                BlockBaseMachine2.fisher.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.basemachine1, 1, 1),
+                new FishMCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
         );
 
         registry.addRecipeClickArea(
@@ -394,6 +483,20 @@ public final class JEICompat implements IModPlugin {
                 new PlasticCreatorPlateCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
         );
 
+        registry.addRecipes(
+                BlastFHandler.getRecipes(),
+                new  BlastFCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes( BlastFHandler.class,  BlastFWrapper::new,
+                BlockBlastFurnace.blast_furnace_main.getName()+"1"
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.blastfurnace, 1, 0),
+                new  BlastFCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+
         registry.addRecipeClickArea(GuiUpgradeBlock.class, 81, 33, 27, 18,
                 BlockUpgradeBlock.upgrade_block.getName()
         );
@@ -426,7 +529,152 @@ public final class JEICompat implements IModPlugin {
                 new ItemStack(IUItem.basemachine1, 1, 3),
                 new PaintingCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
         );
+        registry.addRecipes(
+                ModulatorHandler.getRecipes(),
+                new ModulatorCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
 
+        registry.handleRecipes(ModulatorHandler.class, ModulatorWrapper::new,
+                BlockBaseMachine.modulator.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.machines, 1, 9),
+                new ModulatorCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.addRecipes(
+                OilPumpHandler.getRecipes(),
+                new OilPumpCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes(
+                OilPumpHandler.class, OilPumpWrapper::new,
+                BlockPetrolQuarry.petrol_quarry.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.oilgetter, 1),
+                new OilPumpCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.addRecipes(
+                AntiUpgradeBlockHandler.getRecipes(),
+                new AntiUpgradeBlockCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes(AntiUpgradeBlockHandler.class, AntiUpgradeBlockWrapper::new,
+                BlockBaseMachine3.antiupgradeblock.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.basemachine2, 1, 8),
+                new AntiUpgradeBlockCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.addRecipes(
+                VeinHandler.getRecipes(),
+                new VeinCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes(VeinHandler.class, VeinWrapper::new,
+                new ItemStack(IUItem.oilquarry).getUnlocalizedName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.oilquarry),
+                new VeinCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.addRecipes(
+                PrivatizerHandler.getRecipes(),
+                new PrivatizerCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes(PrivatizerHandler.class, PrivatizerWrapper::new,
+                BlockBaseMachine3.privatizer.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.basemachine2, 1, 2),
+                new PrivatizerCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.addRecipes(
+                TunerHandler.getRecipes(),
+                new TunerCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes(TunerHandler.class, TunerWrapper::new,
+                BlockBaseMachine3.tuner.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.basemachine2, 1, 3),
+                new TunerCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.addRecipes(
+                MatterHandler.getRecipes(),
+                new MatterCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes(MatterHandler.class, MatterWrapper::new,
+                BlockSolidMatter.solidmatter.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.solidmatter, 1, 0),
+                new MatterCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.solidmatter, 1, 1),
+                new MatterCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.solidmatter, 1, 2),
+                new MatterCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.solidmatter, 1, 3),
+                new MatterCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.solidmatter, 1, 4),
+                new MatterCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.solidmatter, 1, 5),
+                new MatterCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.solidmatter, 1, 6),
+                new MatterCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.solidmatter, 1, 7),
+                new MatterCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+        registry.addRecipes(
+                ModulatorHandler.getRecipes(),
+                new ModulatorCategory1(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes(ModulatorHandler.class, ModulatorWrapper1::new,
+                BlockBaseMachine.modulator.getName() + "1"
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.machines, 1, 9),
+                new ModulatorCategory1(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+        //
+        registry.addRecipes(
+                BFHandler.getRecipes(),
+                new BFCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes(
+                BFHandler.class, BFWrapper::new,
+                BlockBlastFurnace.blast_furnace_main.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.blastfurnace, 1, 0),
+                new BFCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+        //
         registry.addRecipeClickArea(GuiGenStone.class, 64, 28, 16, 16,
                 BlockBaseMachine.gen_stone.getName()
         );
@@ -531,6 +779,19 @@ public final class JEICompat implements IModPlugin {
         registry.addRecipeCatalyst(
                 new ItemStack(IUItem.basemachine1, 1, 14),
                 new GenHeliumCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.addRecipes(
+                GenHydHandler.getRecipes(),
+                new GenHydCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes(GenHydHandler.class, GenHydWrapper::new,
+                BlockBaseMachine2.gen_hyd.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.basemachine1, 1, 9),
+                new GenHydCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
         );
 
         registry.addRecipes(
@@ -712,15 +973,25 @@ public final class JEICompat implements IModPlugin {
                 new GenSECategory(registry.getJeiHelpers().getGuiHelper()).getUid()
         );
         registry.addRecipeCatalyst(
-                new ItemStack(IUItem.ImpblockSE, 1, 0),
+                new ItemStack(IUItem.imp_se_generator, 1, 0),
                 new GenSECategory(registry.getJeiHelpers().getGuiHelper()).getUid()
         );
         registry.addRecipeCatalyst(
-                new ItemStack(IUItem.AdvblockSE, 1, 0),
+                new ItemStack(IUItem.adv_se_generator, 1, 0),
                 new GenSECategory(registry.getJeiHelpers().getGuiHelper()).getUid()
         );
+        registry.addRecipes(
+                AirColHandler.getRecipes(),
+                new AirColCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
 
-
+        registry.handleRecipes(AirColHandler.class, AirColRecipeWrapper::new,
+                BlockBaseMachine3.aircollector.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.basemachine2, 1, 11),
+                new AirColCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
         registry.addRecipeClickArea(GuiConverterSolidMatter.class, 78, 50, 111 - 78, 17,
                 BlockConverterMatter.converter_matter.getName()
         );
@@ -736,7 +1007,6 @@ public final class JEICompat implements IModPlugin {
                 new ItemStack(IUItem.convertersolidmatter, 1, 0),
                 new ConverterCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
         );
-//
         registry.addRecipes(
                 FQuarryHandler.getRecipes(),
                 new FQuarryCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
@@ -761,7 +1031,6 @@ public final class JEICompat implements IModPlugin {
                 new ItemStack(IUItem.machines, 1, 15),
                 new FQuarryCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
         );
-//
         registry.addRecipes(
                 MQuarryHandler.getRecipes(),
                 new MQuarryCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
@@ -786,8 +1055,30 @@ public final class JEICompat implements IModPlugin {
                 new ItemStack(IUItem.machines, 1, 15),
                 new MQuarryCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
         );
-//
+        registry.addRecipes(
+                СMQuarryHandler.getRecipes(),
+                new CMQuarryCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
 
+        registry.handleRecipes(СMQuarryHandler.class, CMQuarryWrapper::new,
+                BlockBaseMachine.quantum_quarry.getName() + "4"
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.machines, 1, 8),
+                new CMQuarryCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.machines, 1, 13),
+                new CMQuarryCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.machines, 1, 14),
+                new CMQuarryCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.machines, 1, 15),
+                new CMQuarryCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
         registry.addRecipes(
                 ExtruderHandler.getRecipes(),
                 new ExtruderCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
@@ -812,8 +1103,6 @@ public final class JEICompat implements IModPlugin {
                 new ItemStack(IUItem.machines_base2, 1, 7),
                 new ExtruderCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
         );
-
-
         registry.addRecipes(
                 CuttingHandler.getRecipes(),
                 new CuttingCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
@@ -838,8 +1127,6 @@ public final class JEICompat implements IModPlugin {
                 new ItemStack(IUItem.machines_base2, 1, 11),
                 new CuttingCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
         );
-
-
         registry.addRecipes(
                 RollingHandler.getRecipes(),
                 new RollingCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
@@ -864,7 +1151,6 @@ public final class JEICompat implements IModPlugin {
                 new ItemStack(IUItem.machines_base2, 1, 3),
                 new RollingCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
         );
-
         this.addMachineRecipes(registry, new DynamicCategory<>(TeBlock.macerator, Recipes.macerator,
                 registry.getJeiHelpers().getGuiHelper()
         ), BlockMoreMachine.double_macerator);
@@ -876,7 +1162,9 @@ public final class JEICompat implements IModPlugin {
         this.addMachineRecipes(registry, new DynamicCategory<>(TeBlock.macerator, Recipes.macerator,
                 registry.getJeiHelpers().getGuiHelper()
         ), BlockMoreMachine.quad_macerator);
-
+        this.addMachineRecipes(registry, new DynamicCategory<>(TeBlock.macerator, Recipes.macerator,
+                registry.getJeiHelpers().getGuiHelper()
+        ), BlockSimpleMachine.macerator_iu);
         this.addMachineRecipes(registry, new DynamicCategory<>(TeBlock.extractor, Recipes.extractor,
                 registry.getJeiHelpers().getGuiHelper()
         ), BlockMoreMachine.double_extractor);
@@ -888,21 +1176,25 @@ public final class JEICompat implements IModPlugin {
         this.addMachineRecipes(registry, new DynamicCategory<>(TeBlock.extractor, Recipes.extractor,
                 registry.getJeiHelpers().getGuiHelper()
         ), BlockMoreMachine.quad_extractor);
+        this.addMachineRecipes(registry, new DynamicCategory<>(TeBlock.extractor, Recipes.extractor,
+                registry.getJeiHelpers().getGuiHelper()
+        ), BlockSimpleMachine.extractor_iu);
         this.addMachineRecipes(registry, new DynamicCategory<>(TeBlock.compressor, Recipes.compressor,
                 registry.getJeiHelpers().getGuiHelper()
         ), BlockMoreMachine.double_commpressor);
-
         this.addMachineRecipes(registry, new DynamicCategory<>(TeBlock.compressor, Recipes.compressor,
                 registry.getJeiHelpers().getGuiHelper()
         ), BlockMoreMachine.triple_commpressor);
-
+        this.addMachineRecipes(registry, new DynamicCategory<>(TeBlock.compressor, Recipes.compressor,
+                registry.getJeiHelpers().getGuiHelper()
+        ), BlockSimpleMachine.compressor_iu);
         this.addMachineRecipes(registry, new DynamicCategory<>(TeBlock.compressor, Recipes.compressor,
                 registry.getJeiHelpers().getGuiHelper()
         ), BlockMoreMachine.quad_commpressor);
         registry.addRecipeCatalyst(getBlockStack(BlockMoreMachine.double_furnace), "minecraft.smelting");
         registry.addRecipeCatalyst(getBlockStack(BlockMoreMachine.triple_furnace), "minecraft.smelting");
         registry.addRecipeCatalyst(getBlockStack(BlockMoreMachine.quad_furnace), "minecraft.smelting");
-
+        registry.addRecipeCatalyst(getBlockStack(BlockSimpleMachine.furnace_iu), "minecraft.smelting");
         this.addMachineRecipes(registry, new MetalFormerCategory(Recipes.metalformerExtruding, 0,
                 registry.getJeiHelpers().getGuiHelper()
         ), BlockMoreMachine.double_metalformer);
@@ -919,6 +1211,9 @@ public final class JEICompat implements IModPlugin {
         this.addMachineRecipes(registry, new MetalFormerCategory(Recipes.metalformerExtruding, 0,
                 registry.getJeiHelpers().getGuiHelper()
         ), BlockMoreMachine.triple_metalformer);
+        this.addMachineRecipes(registry, new MetalFormerCategory(Recipes.metalformerExtruding, 0,
+                registry.getJeiHelpers().getGuiHelper()
+        ), BlockSimpleMachine.metalformer_iu);
         this.addMachineRecipes(
                 registry,
                 new MetalFormerCategory(Recipes.metalformerRolling, 1, registry.getJeiHelpers().getGuiHelper()),
@@ -942,7 +1237,6 @@ public final class JEICompat implements IModPlugin {
                 new MetalFormerCategory(Recipes.metalformerCutting, 2, registry.getJeiHelpers().getGuiHelper()),
                 BlockMoreMachine.quad_metalformer
         );
-
         final IGuiHelper guiHelper = registry.getJeiHelpers().getGuiHelper();
         this.addMachineRecipes(registry, new RecyclerCategory(guiHelper), BlockMoreMachine1.double_recycler);
         this.addMachineRecipes(registry, new RecyclerCategory(guiHelper), BlockMoreMachine1.triple_recycler);
@@ -950,6 +1244,34 @@ public final class JEICompat implements IModPlugin {
         this.addMachineRecipes(registry, new RecyclerCategory(guiHelper), BlockMoreMachine1.double_comb_recycler);
         this.addMachineRecipes(registry, new RecyclerCategory(guiHelper), BlockMoreMachine1.triple_comb_recycler);
         this.addMachineRecipes(registry, new RecyclerCategory(guiHelper), BlockMoreMachine1.quad_comb_recycler);
+        this.addMachineRecipes(registry, new RecyclerCategory(guiHelper), BlockSimpleMachine.recycler_iu);
+
+        registry.addRecipes(
+                GenPetrolHandler.getRecipes(),
+                new GenPetrolCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes(
+                GenPetrolHandler.class, GenPetrolWrapper::new,
+                BlockBaseMachine2.gen_pet.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.basemachine1, 1, 5),
+                new GenPetrolCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+        registry.addRecipes(
+                GenDieselHandler.getRecipes(),
+                new GenDieselCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes(
+                GenDieselHandler.class, GenDieselWrapper::new,
+                BlockBaseMachine2.gen_disel.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.basemachine1, 1, 4),
+                new GenDieselCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
     }
 
     public ItemStack getBlockStack(ITeBlock block) {

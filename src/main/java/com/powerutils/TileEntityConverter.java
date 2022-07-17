@@ -5,28 +5,27 @@ import cofh.redstoneflux.api.IEnergyProvider;
 import cofh.redstoneflux.api.IEnergyReceiver;
 import com.denfop.Config;
 import com.denfop.componets.AdvEnergy;
-import com.denfop.tiles.panels.entity.TileEntitySolarPanel;
+import com.denfop.tiles.panels.entity.TransferRFEnergy;
 import ic2.api.energy.EnergyNet;
 import ic2.api.energy.NodeStats;
 import ic2.api.network.INetworkClientTileEntityEventListener;
 import ic2.api.tile.IEnergyStorage;
-import ic2.api.tile.IWrenchable;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlotUpgrade;
+import ic2.core.init.Localization;
 import ic2.core.util.Util;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -35,7 +34,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-public class TileEntityConverter extends TileEntityInventory implements IHasGui, IWrenchable,
+public class TileEntityConverter extends TileEntityInventory implements IHasGui,
         INetworkClientTileEntityEventListener, IEnergyHandler, IEnergyReceiver,
         IEnergyStorage, IEnergyProvider, IUpgradableBlock {
 
@@ -50,10 +49,11 @@ public class TileEntityConverter extends TileEntityInventory implements IHasGui,
     public boolean rf;
     public double differenceenergy = 0;
     public double perenergy = 0;
-    public double perenergy1 = 0;
     public double differenceenergy1 = 0;
     public int tier;
     public List<EntityPlayer> list = new ArrayList<>();
+    List<TransferRFEnergy> transferRFEnergyList = new ArrayList<>();
+    private long tick;
 
     public TileEntityConverter() {
         this.energy2 = 0.0D;
@@ -70,6 +70,20 @@ public class TileEntityConverter extends TileEntityInventory implements IHasGui,
         this.defaultEnergyStorage = 40000;
         this.defaultEnergyRFStorage = 400000;
         this.tier = 5;
+        this.tick = 0;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
+        if (this.hasComponent(AdvEnergy.class)) {
+            AdvEnergy energy = this.getComponent(AdvEnergy.class);
+            if (!energy.getSourceDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSourceTier()));
+            } else if (!energy.getSinkDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSinkTier()));
+            }
+        }
+
     }
 
     protected void onLoaded() {
@@ -80,14 +94,8 @@ public class TileEntityConverter extends TileEntityInventory implements IHasGui,
 
     }
 
-    @Override
-    public void openInventory(final EntityPlayer player) {
-        super.openInventory(player);
-
-    }
 
     public void setOverclockRates() {
-        this.upgradeSlot.onChanged();
         int tier = this.upgradeSlot.getTier(5);
         this.energy.setSinkTier(tier);
         this.energy.setSourceTier(tier);
@@ -98,6 +106,7 @@ public class TileEntityConverter extends TileEntityInventory implements IHasGui,
         this.tier = tier;
         this.capacity = this.energy.capacity;
     }
+
 
     public void markDirty() {
         super.markDirty();
@@ -122,7 +131,13 @@ public class TileEntityConverter extends TileEntityInventory implements IHasGui,
         );
         if (!paramBoolean) {
             this.energy2 += i;
-            this.differenceenergy1 = i;
+            this.differenceenergy1 += i;
+            if (this.tick != this.getWorld().getWorldTime()) {
+                this.tick = this.getWorld().getWorldTime();
+                this.perenergy = i;
+            } else {
+                this.perenergy += i;
+            }
         }
         return i;
     }
@@ -140,7 +155,9 @@ public class TileEntityConverter extends TileEntityInventory implements IHasGui,
         this.energy.setSendingEnabled(this.shouldEmitEnergy());
         this.differenceenergy = 0;
         this.differenceenergy1 = 0;
-
+        if (this.tick != this.getWorld().getWorldTime()) {
+            this.perenergy = 0;
+        }
         if (this.rf) {
             if (energy.getEnergy() > 0 && energy2 < maxStorage2) {
                 double add = Math.min(maxStorage2 - energy2, energy.getEnergy() * Config.coefficientrf);
@@ -156,46 +173,67 @@ public class TileEntityConverter extends TileEntityInventory implements IHasGui,
 
         }
         if (!this.list.isEmpty()) {
+            NodeStats stats = EnergyNet.instance.getNodeStats(this.energy.getDelegate());
             if (this.rf) {
-                NodeStats stats = EnergyNet.instance.getNodeStats(this.energy.getDelegate());
                 if (stats != null) {
                     this.differenceenergy1 = stats.getEnergyIn();
                 }
-                this.differenceenergy = this.energy2 - this.perenergy;
-                this.perenergy = this.energy2;
 
             } else {
-                this.perenergy1 = this.energy.getEnergy();
-                NodeStats stats = EnergyNet.instance.getNodeStats(this.energy.getDelegate());
                 if (stats != null) {
                     this.differenceenergy = stats.getEnergyOut();
                 }
 
             }
         }
-        if(this.energy2 > 0)
-        if (this.rf) {
-            for (EnumFacing facing : EnumFacing.VALUES) {
-                BlockPos pos = new BlockPos(
-                        this.pos.getX() + facing.getFrontOffsetX(),
-                        this.pos.getY() + facing.getFrontOffsetY(),
-                        this.pos.getZ() + facing.getFrontOffsetZ()
-                );
-
-                if (this.getWorld().getTileEntity(pos) == null) {
-                    continue;
-                }
-                TileEntity tile = this.getWorld().getTileEntity(pos);
-
-                if (!(tile instanceof TileEntitySolarPanel)) {
-
-                    if (tile instanceof IEnergyReceiver) {
-                        extractEnergy(facing, ((IEnergyReceiver) tile).receiveEnergy(facing.getOpposite(),
-                                extractEnergy(facing, (int) this.energy2, true), false
-                        ), false);
+        if (this.energy2 > 0) {
+            if (this.rf) {
+                if (this.getWorld().getWorldTime() % 60 == 0) {
+                    transferRFEnergyList.clear();
+                    for (EnumFacing facing : EnumFacing.VALUES) {
+                        BlockPos pos = new BlockPos(
+                                this.pos.getX() + facing.getFrontOffsetX(),
+                                this.pos.getY() + facing.getFrontOffsetY(),
+                                this.pos.getZ() + facing.getFrontOffsetZ()
+                        );
+                        TileEntity tile = this.getWorld().getTileEntity(pos);
+                        if (tile == null) {
+                            continue;
+                        }
+                        if (tile instanceof IEnergyReceiver) {
+                            transferRFEnergyList.add(new TransferRFEnergy(tile, ((IEnergyReceiver) tile), facing));
+                        }
                     }
                 }
             }
+            boolean refresh = false;
+            for (TransferRFEnergy rfEnergy : this.transferRFEnergyList) {
+                if (rfEnergy.getTile().isInvalid()) {
+                    refresh = true;
+                    continue;
+                }
+                extractEnergy(rfEnergy.getFacing(), rfEnergy.getSink().receiveEnergy(rfEnergy.getFacing().getOpposite(),
+                        extractEnergy(rfEnergy.getFacing(), (int) this.energy2, true), false
+                ), false);
+            }
+            if (refresh) {
+                transferRFEnergyList.clear();
+                for (EnumFacing facing : EnumFacing.VALUES) {
+                    BlockPos pos = new BlockPos(
+                            this.pos.getX() + facing.getFrontOffsetX(),
+                            this.pos.getY() + facing.getFrontOffsetY(),
+                            this.pos.getZ() + facing.getFrontOffsetZ()
+                    );
+                    TileEntity tile = this.getWorld().getTileEntity(pos);
+                    if (tile == null) {
+                        continue;
+                    }
+                    if (tile instanceof IEnergyReceiver) {
+                        transferRFEnergyList.add(new TransferRFEnergy(tile, ((IEnergyReceiver) tile), facing));
+                    }
+                }
+            }
+
         }
         final boolean needsInvUpdate = this.upgradeSlot.tickNoMark();
         if (needsInvUpdate) {
@@ -214,7 +252,7 @@ public class TileEntityConverter extends TileEntityInventory implements IHasGui,
         int i = (int) Math.min(this.energy2, paramInt);
         if (!paramBoolean) {
             this.energy2 -= i;
-            this.differenceenergy = i;
+            this.differenceenergy += i;
         }
         return i;
     }
@@ -231,38 +269,6 @@ public class TileEntityConverter extends TileEntityInventory implements IHasGui,
         return (int) this.maxStorage2;
     }
 
-    @Override
-    public EnumFacing getFacing(World world, BlockPos blockPos) {
-        return this.getFacing();
-    }
-
-    @Override
-    public boolean setFacing(World world, BlockPos blockPos, EnumFacing enumFacing, EntityPlayer entityPlayer) {
-        if (!this.canSetFacingWrench(enumFacing, entityPlayer)) {
-            return false;
-        } else {
-            this.setFacing(enumFacing);
-            return true;
-        }
-    }
-
-    @Override
-    public boolean wrenchCanRemove(World world, BlockPos blockPos, EntityPlayer entityPlayer) {
-        return true;
-    }
-
-    @Override
-    public List<ItemStack> getWrenchDrops(
-            final World world,
-            final BlockPos blockPos,
-            final IBlockState iBlockState,
-            final TileEntity tileEntity,
-            final EntityPlayer entityPlayer,
-            final int i
-    ) {
-        List<ItemStack> list = new ArrayList<>();
-        return list;
-    }
 
     public void readFromNBT(NBTTagCompound nbttagcompound) {
         super.readFromNBT(nbttagcompound);

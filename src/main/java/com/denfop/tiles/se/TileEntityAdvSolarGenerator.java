@@ -23,7 +23,7 @@ public class TileEntityAdvSolarGenerator extends TileEntitySolarGeneratorEnergy 
 
     @Override
     protected ItemStack getPickBlock(final EntityPlayer player, final RayTraceResult target) {
-        return new ItemStack(IUItem.AdvblockSE);
+        return new ItemStack(IUItem.adv_se_generator);
     }
 
     protected List<AxisAlignedBB> getAabbs(boolean forCollision) {

@@ -22,7 +22,7 @@ public class GenLavaHandler {
         this.input2 = input2;
     }
 
-    public static List<GenLavaHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<GenLavaHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

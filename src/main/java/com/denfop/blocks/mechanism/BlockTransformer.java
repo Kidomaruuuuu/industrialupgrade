@@ -3,6 +3,10 @@ package com.denfop.blocks.mechanism;
 import com.denfop.Constants;
 import com.denfop.IUCore;
 import com.denfop.tiles.transformer.TileEntityHEEVTransformer;
+import com.denfop.tiles.transformer.TileEntityTransformerEV;
+import com.denfop.tiles.transformer.TileEntityTransformerHV;
+import com.denfop.tiles.transformer.TileEntityTransformerLV;
+import com.denfop.tiles.transformer.TileEntityTransformerMV;
 import com.denfop.tiles.transformer.TileEntityUEVTransformer;
 import com.denfop.tiles.transformer.TileEntityUHEVTransformer;
 import com.denfop.tiles.transformer.TileEntityUHVTransformer;
@@ -32,6 +36,10 @@ public enum BlockTransformer implements ITeBlock {
     umev(TileEntityUMEVTransformer.class, 4),
     uhev(TileEntityUHEVTransformer.class, 5),
     heev(TileEntityHEEVTransformer.class, 6),
+    lv(TileEntityTransformerLV.class, 7),
+    mv(TileEntityTransformerMV.class, 8),
+    hv(TileEntityTransformerHV.class, 9),
+    ev(TileEntityTransformerEV.class, 10),
     ;
 
 

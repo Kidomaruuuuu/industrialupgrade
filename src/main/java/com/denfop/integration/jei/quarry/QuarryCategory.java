@@ -76,14 +76,11 @@ public class QuarryCategory extends Gui implements IRecipeCategory<QuarryWrapper
             final QuarryWrapper recipes,
             @Nonnull final IIngredients ingredients
     ) {
-        IGuiItemStackGroup isg = layout.getItemStacks(); // Группа ItemStack, которая нужна для рендера.
-        isg.init(0, true, 4, 11); // Инициализируем слот 0. true/false - это обозначение того, является ли слот *ВХОДНЫМ*, true
-        // - да, false - нет. Остальные 2 числа - координаты. X/Y.
-        isg.set(0, new ItemStack(IUItem.analyzermodule)); // Добавляем в слот 0 входной предмет.
-
-        isg.init(1, false, 26, 2); // Инициализируем слот 1.  true/false - это обозначение того, является ли слот *ВХОДНЫМ*,
-        // true - да, false - нет. Остальные 2 числа - координаты. X/Y.
-        isg.set(1, recipes.getOutput()); // Добавляем в слот 1 выходной предмет.
+        IGuiItemStackGroup isg = layout.getItemStacks();
+        isg.init(0, true, 4, 11);
+        isg.set(0, new ItemStack(IUItem.analyzermodule));
+        isg.init(1, false, 26, 2);
+        isg.set(1, recipes.getOutput());
     }
 
     protected ResourceLocation getTexture() {

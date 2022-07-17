@@ -2,22 +2,19 @@ package com.denfop.tiles.base;
 
 import com.denfop.IUCore;
 import com.denfop.api.recipe.IUpdateTick;
+import com.denfop.api.recipe.InvSlotOutput;
 import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.audio.AudioSource;
 import com.denfop.container.ContainerPlasticCreator;
 import com.denfop.gui.GuiPlasticCreator;
 import com.denfop.invslot.InvSlotUpgrade;
-import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.upgrade.IUpgradableBlock;
-import ic2.api.upgrade.IUpgradeItem;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
-import ic2.core.IHasGui;
 import ic2.core.block.comp.Fluids;
 import ic2.core.block.invslot.InvSlotConsumableLiquidByList;
-import ic2.core.block.invslot.InvSlotOutput;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -34,7 +31,7 @@ import java.util.List;
 import java.util.Set;
 
 public class TileEntityBasePlasticCreator extends TileEntityElectricLiquidTankInventory
-        implements IHasGui, INetworkTileEntityEventListener, IUpdateTick, IUpgradableBlock, IFluidHandler {
+        implements IUpdateTick, IUpgradableBlock, IFluidHandler {
 
     public final InvSlotConsumableLiquidByList fluidSlot;
     public final int defaultEnergyConsume;
@@ -60,7 +57,7 @@ public class TileEntityBasePlasticCreator extends TileEntityElectricLiquidTankIn
         this.defaultOperationLength = this.operationLength = length;
         this.defaultTier = aDefaultTier;
         this.defaultEnergyStorage = energyPerTick * length;
-        this.outputSlot1 = new InvSlotOutput(this, "output", 1);
+        this.outputSlot1 = new InvSlotOutput(this, "output1", 1);
         this.fluidSlot = new InvSlotConsumableLiquidByList(this, "fluidSlot", 1, FluidRegistry.WATER);
         this.upgradeSlot = new com.denfop.invslot.InvSlotUpgrade(this, "upgrade", 4);
         this.output = null;
@@ -109,12 +106,10 @@ public class TileEntityBasePlasticCreator extends TileEntityElectricLiquidTankIn
         super.markDirty();
         if (IC2.platform.isSimulating()) {
             setOverclockRates();
-            this.getOutput();
         }
     }
 
     public void setOverclockRates() {
-        this.upgradeSlot.onChanged();
         double previousProgress = (double) this.progress / (double) this.operationLength;
         double stackOpLen = (this.defaultOperationLength + this.upgradeSlot.extraProcessTime) * 64.0D
                 * this.upgradeSlot.processTimeMultiplier;
@@ -140,12 +135,12 @@ public class TileEntityBasePlasticCreator extends TileEntityElectricLiquidTankIn
         for (int i = 0; i < this.operationsPerTick; i++) {
             List<ItemStack> processResult = output.getRecipe().output.items;
             operateOnce(processResult);
-            if (!this.inputSlotA.continue_process(this.output)  || !this.outputSlot.canAdd(output.getRecipe().output.items)) {
+            if (!this.inputSlotA.continue_process(this.output) || !this.outputSlot.canAdd(output.getRecipe().output.items)) {
                 getOutput();
                 break;
             }
 
-            if (this.output == null ) {
+            if (this.output == null) {
                 break;
             }
         }
@@ -160,24 +155,30 @@ public class TileEntityBasePlasticCreator extends TileEntityElectricLiquidTankIn
 
     public void updateEntityServer() {
         super.updateEntityServer();
-        boolean needsInvUpdate = false;
         MutableObject<ItemStack> output1 = new MutableObject<>();
         if (this.fluidSlot.transferToTank(
                 this.fluidTank,
                 output1,
                 true
         ) && (output1.getValue() == null || this.outputSlot1.canAdd(output1.getValue()))) {
-            needsInvUpdate = this.fluidSlot.transferToTank(this.fluidTank, output1, false);
-            if (needsInvUpdate) {
-                this.output = this.getOutput();
-            }
+            this.fluidSlot.transferToTank(this.fluidTank, output1, false);
             if (output1.getValue() != null) {
                 this.outputSlot1.add(output1.getValue());
             }
         }
+
         if (this.output != null && this.energy.canUseEnergy(energyConsume) && !this.inputSlotA.isEmpty() && this.outputSlot.canAdd(
-                this.output.getRecipe().getOutput().items)) {
-            setActive(true);
+                this.output.getRecipe().getOutput().items) && this.fluidTank.getFluid() != null && this.fluidTank
+                .getFluid()
+                .getFluid()
+                .equals(this
+                        .getRecipeOutput()
+                        .getRecipe().input
+                        .getFluid()
+                        .getFluid()) && this.fluidTank.getFluidAmount() >= 1000) {
+            if (!this.getActive()) {
+                setActive(true);
+            }
             if (this.progress == 0) {
                 IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
             }
@@ -189,7 +190,6 @@ public class TileEntityBasePlasticCreator extends TileEntityElectricLiquidTankIn
             if (this.progress >= this.operationLength) {
                 this.guiProgress = 0;
                 operate(this.output);
-                needsInvUpdate = true;
                 this.progress = 0;
                 IC2.network.get(true).initiateTileEntityEvent(this, 2, true);
             }
@@ -200,13 +200,14 @@ public class TileEntityBasePlasticCreator extends TileEntityElectricLiquidTankIn
             if (this.output == null) {
                 this.progress = 0;
             }
-            setActive(false);
+            if (this.getActive()) {
+                setActive(false);
+            }
         }
-        if((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark())
+        if ((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark()) {
             setOverclockRates();
-        if (needsInvUpdate) {
-            super.markDirty();
         }
+
     }
 
     public ContainerBase<? extends TileEntityBasePlasticCreator> getGuiContainer(EntityPlayer entityPlayer) {

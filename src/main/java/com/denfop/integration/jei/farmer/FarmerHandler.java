@@ -18,7 +18,7 @@ public class FarmerHandler {
         this.output = output;
     }
 
-    public static List<FarmerHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<FarmerHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

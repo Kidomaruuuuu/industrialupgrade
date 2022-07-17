@@ -2,18 +2,14 @@ package com.denfop.blocks.mechanism;
 
 import com.denfop.Constants;
 import com.denfop.IUCore;
-import com.denfop.tiles.base.TileEntityAirCollector;
 import com.denfop.tiles.base.TileEntityAntiMagnet;
 import com.denfop.tiles.base.TileEntityAntiUpgradeBlock;
 import com.denfop.tiles.base.TileEntityAutoSpawner;
 import com.denfop.tiles.base.TileEntityCombinerSEGenerators;
-import com.denfop.tiles.base.TileEntityCooling;
 import com.denfop.tiles.base.TileEntityRadiationPurifier;
-import com.denfop.tiles.base.TileEntityWaterGenerator;
+import com.denfop.tiles.mechanism.TileEntityAnalyzerChest;
 import com.denfop.tiles.mechanism.TileEntityCreatorSchedules;
-import com.denfop.tiles.mechanism.TileEntityElectricHeat;
 import com.denfop.tiles.mechanism.TileEntityEnderAssembler;
-import com.denfop.tiles.mechanism.TileEntityFluidHeat;
 import com.denfop.tiles.mechanism.TileEntityGasCombiner;
 import com.denfop.tiles.mechanism.TileEntityKineticGeneratorAssembler;
 import com.denfop.tiles.mechanism.TileEntityPrivatizer;
@@ -28,6 +24,11 @@ import com.denfop.tiles.mechanism.TileEntityRotorMofifier;
 import com.denfop.tiles.mechanism.TileEntitySatelliteAssembler;
 import com.denfop.tiles.mechanism.TileEntitySoilAnalyzer;
 import com.denfop.tiles.mechanism.TileEntityTunerWireless;
+import com.denfop.tiles.mechanism.cooling.TileEntityCooling;
+import com.denfop.tiles.mechanism.generator.things.fluid.TileEntityAirCollector;
+import com.denfop.tiles.mechanism.generator.things.fluid.TileEntityWaterGenerator;
+import com.denfop.tiles.mechanism.heat.TileEntityElectricHeat;
+import com.denfop.tiles.mechanism.heat.TileEntityFluidHeat;
 import ic2.api.item.ITeBlockSpecialItem;
 import ic2.core.block.ITeBlock;
 import ic2.core.block.TileEntityBlock;
@@ -72,6 +73,7 @@ public enum BlockBaseMachine3 implements ITeBlock, ITeBlockSpecialItem {
     research_table(TileEntityResearchTable.class, 24),
     creator_schedules(TileEntityCreatorSchedules.class, 25),
     gas_combiner(TileEntityGasCombiner.class, 26),
+    analyzer_chest(TileEntityAnalyzerChest.class, 27),
     ;
 
 

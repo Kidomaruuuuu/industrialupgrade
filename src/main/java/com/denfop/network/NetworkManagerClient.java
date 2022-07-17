@@ -45,13 +45,9 @@ public class NetworkManagerClient extends NetworkManager {
     }
 
     private static void processConsolePacket(GrowingBuffer buffer) {
-        String messages = buffer.readString();
+        buffer.readString();
         PrintStream console = new PrintStream(new FileOutputStream(FileDescriptor.out));
-        String[] var3 = messages.split("[\\r\\n]+");
 
-        for (String line : var3) {
-            console.println(line);
-        }
 
         console.flush();
     }

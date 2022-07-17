@@ -22,7 +22,7 @@ public class GenWaterHandler {
         this.input2 = input2;
     }
 
-    public static List<GenWaterHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<GenWaterHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

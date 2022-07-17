@@ -1,11 +1,11 @@
 package com.denfop.tiles.mechanism;
 
+import com.denfop.api.recipe.InvSlotOutput;
 import com.denfop.container.ContainerPump;
 import com.denfop.gui.GuiPump;
 import com.denfop.invslot.InvSlotUpgrade;
 import com.denfop.tiles.base.TileEntityElectricLiquidTankInventory;
 import ic2.api.upgrade.IUpgradableBlock;
-import ic2.api.upgrade.IUpgradeItem;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
@@ -16,7 +16,6 @@ import ic2.core.block.invslot.InvSlot.Access;
 import ic2.core.block.invslot.InvSlot.InvSide;
 import ic2.core.block.invslot.InvSlotConsumableLiquid;
 import ic2.core.block.invslot.InvSlotConsumableLiquid.OpType;
-import ic2.core.block.invslot.InvSlotOutput;
 import ic2.core.init.Localization;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
@@ -92,7 +91,6 @@ public class TileEntityPump extends TileEntityElectricLiquidTankInventory implem
             } else {
                 if (this.canoperate()) {
                     this.progress = 0;
-                    this.operate(false);
                 }
             }
         }
@@ -110,10 +108,8 @@ public class TileEntityPump extends TileEntityElectricLiquidTankInventory implem
         }
 
 
-
         this.guiProgress = (float) this.progress / (float) this.operationLength;
         this.upgradeSlot.tickNoMark();
-
 
 
     }
@@ -123,7 +119,7 @@ public class TileEntityPump extends TileEntityElectricLiquidTankInventory implem
     }
 
     public boolean canoperate() {
-        return this.operate(true);
+        return this.operate(false);
     }
 
     public boolean operate(boolean sim) {
@@ -217,7 +213,6 @@ public class TileEntityPump extends TileEntityElectricLiquidTankInventory implem
     }
 
     public void setUpgradestat() {
-        this.upgradeSlot.onChanged();
         double previousProgress = (double) this.progress / (double) this.operationLength;
         double stackOpLen = ((double) this.defaultOperationLength + (double) this.upgradeSlot.extraProcessTime) * 64.0D * this.upgradeSlot.processTimeMultiplier;
         this.operationsPerTick = (int) Math.min(Math.ceil(64.0D / stackOpLen), 2.147483647E9D);

@@ -1,12 +1,13 @@
 package com.denfop.tiles.base;
 
 import com.denfop.Constants;
+import com.denfop.api.recipe.InvSlotOutput;
 import com.denfop.container.ContainerTank;
 import com.denfop.gui.GuiTank;
+import com.denfop.invslot.InvSlotConsumableLiquid;
 import com.denfop.invslot.InvSlotConsumableLiquidByList;
 import com.denfop.invslot.InvSlotUpgrade;
 import ic2.api.upgrade.IUpgradableBlock;
-import ic2.api.upgrade.IUpgradeItem;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
@@ -14,10 +15,12 @@ import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
 import ic2.core.block.comp.Fluids;
 import ic2.core.block.invslot.InvSlot;
-import ic2.core.block.invslot.InvSlotConsumableLiquid;
-import ic2.core.block.invslot.InvSlotOutput;
 import ic2.core.init.Localization;
+import ic2.core.ref.TeBlock;
+import ic2.core.util.StackUtil;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -42,12 +45,12 @@ public class TileEntityLiquedTank extends TileEntityInventory implements IHasGui
     public final InvSlotConsumableLiquidByList containerslot;
     public final InvSlotConsumableLiquidByList containerslot1;
     public final ResourceLocation texture;
-    public final String name;
     public final Fluids fluids;
     public final FluidTank fluidTank;
     public final InvSlotOutput outputSlot;
+    private int old_amount;
 
-    public TileEntityLiquedTank(String name, int tanksize, String texturename) {
+    public TileEntityLiquedTank(int tanksize, String texturename) {
 
 
         this.containerslot = new InvSlotConsumableLiquidByList(this,
@@ -61,7 +64,6 @@ public class TileEntityLiquedTank extends TileEntityInventory implements IHasGui
                 Constants.TEXTURES,
                 "textures/models/" + texturename + ".png"
         );
-        this.name = name;
         this.fluids = this.addComponent(new Fluids(this));
         this.fluidTank = this.fluids.addTank("fluidTank", tanksize * 1000);
         this.outputSlot = new InvSlotOutput(this, "output", 1);
@@ -86,6 +88,42 @@ public class TileEntityLiquedTank extends TileEntityInventory implements IHasGui
 
     }
 
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
+        if (stack.hasTagCompound() && stack.getTagCompound().hasKey("fluid")) {
+            FluidStack fluidStack = FluidStack.loadFluidStackFromNBT((NBTTagCompound) stack.getTagCompound().getTag("fluid"));
+
+            tooltip.add(Localization.translate("iu.fluid.info") + fluidStack.getLocalizedName());
+            tooltip.add(Localization.translate("iu.fluid.info1") + fluidStack.amount / 1000 + " B");
+
+        }
+        super.addInformation(stack, tooltip, advanced);
+    }
+
+    @Override
+    public void onPlaced(final ItemStack stack, final EntityLivingBase placer, final EnumFacing facing) {
+        super.onPlaced(stack, placer, facing);
+        if (stack.hasTagCompound() && stack.getTagCompound().hasKey("fluid")) {
+            FluidStack fluidStack = FluidStack.loadFluidStackFromNBT((NBTTagCompound) stack.getTagCompound().getTag("fluid"));
+            if (fluidStack != null) {
+                this.fluidTank.fill(fluidStack, true);
+            }
+            this.old_amount = this.fluidTank.getFluidAmount();
+            IC2.network.get(true).updateTileEntityField(this, "fluidTank");
+        }
+    }
+
+    protected ItemStack adjustDrop(ItemStack drop, boolean wrench) {
+        drop = super.adjustDrop(drop, wrench);
+        if (wrench || this.teBlock.getDefaultDrop() == TeBlock.DefaultDrop.Self) {
+            NBTTagCompound nbt = StackUtil.getOrCreateNbtData(drop);
+            if (this.fluidTank.getFluidAmount() > 0) {
+                nbt.setTag("fluid", this.fluidTank.getFluid().writeToNBT(new NBTTagCompound()));
+            }
+        }
+        return drop;
+    }
 
     public double gaugeLiquidScaled(double i) {
         return this.getFluidTank().getFluidAmount() <= 0
@@ -112,29 +150,25 @@ public class TileEntityLiquedTank extends TileEntityInventory implements IHasGui
     }
 
     public boolean needsFluid() {
-        return this.getFluidTank().getFluidAmount() <= this.getFluidTank().getCapacity();
+        return this.getFluidTank().getFluidAmount() < this.getFluidTank().getCapacity();
     }
 
 
     public void updateEntityServer() {
         super.updateEntityServer();
         boolean needsInvUpdate = false;
-        if (this.getFluidTank().getFluidAmount() == 0) {
-            return;
-        }
-
-        if (this.world.provider.getWorldTime() % 10 == 0) {
-            IC2.network.get(true).updateTileEntityField(this, "fluidTank");
-        }
-
-        for (int i = 0; i < this.upgradeSlot.size(); i++) {
-            ItemStack stack = this.upgradeSlot.get(i);
-            if (stack != null && stack.getItem() instanceof IUpgradeItem) {
-                if (((IUpgradeItem) stack.getItem()).onTick(stack, this)) {
-                    needsInvUpdate = true;
-                }
+        if (this.world.provider.getWorldTime() % 20 == 0) {
+            boolean need = false;
+            if (this.fluidTank.getFluidAmount() != this.old_amount) {
+                this.old_amount = this.fluidTank.getFluidAmount();
+                need = true;
+            }
+            if (need) {
+                IC2.network.get(true).updateTileEntityField(this, "fluidTank");
             }
         }
+
+
         MutableObject<ItemStack> output = new MutableObject<>();
         if (this.containerslot.transferFromTank(this.fluidTank, output, true)
                 && (output.getValue() == null || this.outputSlot.canAdd(output.getValue()))) {
@@ -156,8 +190,8 @@ public class TileEntityLiquedTank extends TileEntityInventory implements IHasGui
                 }
             }
         }
-        if (needsInvUpdate) {
-            markDirty();
+        if (this.upgradeSlot.tickNoMark() && needsInvUpdate ) {
+            this.setUpgradestat();
         }
 
     }
@@ -176,9 +210,6 @@ public class TileEntityLiquedTank extends TileEntityInventory implements IHasGui
         return this.fluidTank;
     }
 
-    public String getInventoryName() {
-        return Localization.translate(this.name);
-    }
 
     public ContainerBase<TileEntityLiquedTank> getGuiContainer(EntityPlayer entityPlayer) {
         return new ContainerTank(entityPlayer, this);
@@ -223,7 +254,6 @@ public class TileEntityLiquedTank extends TileEntityInventory implements IHasGui
     }
 
     public void setUpgradestat() {
-        this.upgradeSlot.onChanged();
     }
 
 

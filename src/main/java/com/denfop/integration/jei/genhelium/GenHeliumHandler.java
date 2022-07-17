@@ -22,7 +22,7 @@ public class GenHeliumHandler {
         this.input2 = input2;
     }
 
-    public static List<GenHeliumHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<GenHeliumHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

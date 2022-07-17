@@ -1,11 +1,13 @@
 package com.denfop.api.recipe;
 
-import ic2.api.recipe.IRecipeInput;
 import net.minecraft.item.ItemStack;
+
+import java.util.List;
 
 public interface IRecipeInputStack {
 
-    IRecipeInput getItemStack();
+    List<ItemStack> getItemStack();
 
     boolean matched(ItemStack stack);
+
 }

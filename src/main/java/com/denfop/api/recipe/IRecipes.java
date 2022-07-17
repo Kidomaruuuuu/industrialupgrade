@@ -5,7 +5,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidTank;
 
 import java.util.List;
-import java.util.Map;
 
 public interface IRecipes {
 
@@ -41,6 +40,7 @@ public interface IRecipes {
 
     BaseMachineRecipe getRecipeOutputFromInstruments(String name, boolean adjustInput, ItemStack... stacks);
 
+    boolean needContinue(final MachineRecipe recipe, final InvSlotRecipes slot, final FluidTank tank);
 
     BaseMachineRecipe getRecipeOutput(
             final IBaseRecipe recipe,
@@ -54,6 +54,16 @@ public interface IRecipes {
             List<BaseMachineRecipe> recipes,
             boolean adjustInput,
             List<ItemStack> stacks
+    );
+
+    BaseMachineRecipe getRecipeConsume(
+            final IBaseRecipe recipe, MachineRecipe recipes,
+            final boolean adjustInput, final List<ItemStack> stacks
+    );
+
+    MachineRecipe getMachineRecipeConsume(
+            final IBaseRecipe recipe, MachineRecipe recipes,
+            final boolean adjustInput, final List<ItemStack> stacks
     );
 
     BaseMachineRecipe getRecipeMultiOutput(
@@ -77,5 +87,21 @@ public interface IRecipes {
     BaseMachineRecipe getRecipeOutputFluid(String name, boolean consume, List<ItemStack> list, FluidTank tank);
 
     MachineRecipe getRecipeOutputMachineFluid(String name, boolean consume, List<ItemStack> list, FluidTank tank);
+
+    BaseMachineRecipe getRecipeOutputFluid(
+            IBaseRecipe recipe,
+            MachineRecipe recipeOutput,
+            boolean consume,
+            List<ItemStack> list,
+            FluidTank tank
+    );
+
+    MachineRecipe getRecipeOutputMachineFluid(
+            IBaseRecipe recipe,
+            List<BaseMachineRecipe> recipe_list,
+            boolean b,
+            List<ItemStack> list,
+            FluidTank tank
+    );
 
 }

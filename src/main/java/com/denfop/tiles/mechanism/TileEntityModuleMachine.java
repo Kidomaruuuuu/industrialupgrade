@@ -7,34 +7,39 @@ import com.denfop.invslot.InvSlotModule;
 import com.denfop.tiles.base.TileEntityElectricMachine;
 import com.denfop.utils.ModUtils;
 import ic2.api.network.INetworkClientTileEntityEventListener;
-import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
-import ic2.core.IHasGui;
-import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.oredict.OreDictionary;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TileEntityModuleMachine extends TileEntityElectricMachine
-        implements IHasGui, INetworkTileEntityEventListener, INetworkClientTileEntityEventListener {
+        implements INetworkClientTileEntityEventListener {
 
 
     public final InvSlotModule inputslot;
     public final InvSlotModule inputslotA;
+    public List<String> listItems = new ArrayList<>();
 
     public TileEntityModuleMachine() {
         super(0, 10, 0);
 
 
-        this.inputslot = new InvSlotModule(this, "input", 0, 18);
+        this.inputslot = new InvSlotModule(this, "input", 0, 27);
         this.inputslotA = new InvSlotModule(this, "input2", 1, 1);
     }
 
+    @Override
+    protected void onLoaded() {
+        super.onLoaded();
+        this.inputslot.update();
+    }
 
     public boolean isItemValidForSlot(final int i, final ItemStack itemstack) {
         return true;
@@ -101,49 +106,22 @@ public class TileEntityModuleMachine extends TileEntityElectricMachine
     public void onGuiClosed(EntityPlayer arg0) {
     }
 
-    @Override
-    public String getInventoryName() {
-        return Localization.translate("iu.blockModuleMachine.name");
-    }
-
 
     @Override
     public void onNetworkEvent(EntityPlayer player, int event) {
         if (!this.inputslotA.isEmpty()) {
             initiate(1);
+            this.inputslotA.get(0).setTagCompound(new NBTTagCompound());
             for (int i = 0; i < this.inputslot.size(); i++) {
-                if (this.inputslot.get(i) != null && !this.inputslot.get(i).getItem().equals(Items.AIR)) {
-
-
-                    int id = OreDictionary.getOreIDs(this.inputslot.get(i))[0];
-                    String ore = OreDictionary.getOreName(id);
-
-                    boolean existore = false;
-                    for (int j = 0; j < this.inputslot.size(); j++) {
-                        if (this.inputslot.get(i) != null) {
-                            String l = "number_" + j;
-                            String temp = ModUtils.NBTGetString(inputslotA.get(), l);
-                            if (temp.contains(ore)) {
-                                existore = true;
-                                break;
-                            }
-
-                        }
-                    }
-                    if (!existore) {
-
-                        String l = "number_" + i;
-
-                        ModUtils.NBTSetString(inputslotA.get(), l, ore);
-                    }
-
-
-                } else {
-                    String l = "number_" + i;
-                    ModUtils.NBTSetString(inputslotA.get(), l, "");
+                String l = "number_" + i;
+                if (i < this.listItems.size()) {
+                    ModUtils.NBTSetString(inputslotA.get(), l, this.listItems.get(i));
                 }
 
             }
+            final NBTTagCompound nbt = this.inputslotA.get(0).getTagCompound();
+            nbt.setInteger("size", this.listItems.size());
+
         }
 
 

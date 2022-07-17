@@ -20,6 +20,16 @@ public enum EnumUpgrades {
             EnumInfoUpgradeModules.DIG_DEPTH,
             EnumInfoUpgradeModules.SMELTER
     ),
+    PURIFIER(
+            EnumInfoUpgradeModules.PURIFIER,
+            EnumInfoUpgradeModules.ENERGY
+    ),
+    GRAVITOOL(
+            EnumInfoUpgradeModules.PURIFIER,
+            EnumInfoUpgradeModules.LATEX,
+            EnumInfoUpgradeModules.WRENCH,
+            EnumInfoUpgradeModules.ENERGY
+    ),
     SOLAR_HELMET(
             EnumInfoUpgradeModules.GENDAY,
             EnumInfoUpgradeModules.GENNIGHT,
@@ -78,6 +88,27 @@ public enum EnumUpgrades {
             EnumInfoUpgradeModules.BOWENERGY,
             EnumInfoUpgradeModules.BOWDAMAGE,
             EnumInfoUpgradeModules.BLINDNESS
+    ),
+    BAGS(EnumInfoUpgradeModules.BAGS, EnumInfoUpgradeModules.ENERGY),
+    MAGNET(EnumInfoUpgradeModules.SIZE, EnumInfoUpgradeModules.ENERGY),
+    LAPPACK(
+            EnumInfoUpgradeModules.LAPPACK_ENERGY,
+            EnumInfoUpgradeModules.PROTECTION,
+            EnumInfoUpgradeModules.FIRE_PROTECTION,
+            EnumInfoUpgradeModules.FLYSPEED,
+            EnumInfoUpgradeModules.RESISTANCE,
+            EnumInfoUpgradeModules.INVISIBILITY,
+            EnumInfoUpgradeModules.THORNS,
+            EnumInfoUpgradeModules.PROTECTION_ARROW
+    ),
+    JETPACK(
+            EnumInfoUpgradeModules.FLY,
+            EnumInfoUpgradeModules.FIRE_PROTECTION,
+            EnumInfoUpgradeModules.FLYSPEED,
+            EnumInfoUpgradeModules.RESISTANCE,
+            EnumInfoUpgradeModules.INVISIBILITY,
+            EnumInfoUpgradeModules.THORNS,
+            EnumInfoUpgradeModules.PROTECTION_ARROW
     ),
     ;
     public List<EnumInfoUpgradeModules> list;

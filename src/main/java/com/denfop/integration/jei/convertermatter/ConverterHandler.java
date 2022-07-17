@@ -17,7 +17,7 @@ public class ConverterHandler {
         this.output = output;
     }
 
-    public static List<ConverterHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<ConverterHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

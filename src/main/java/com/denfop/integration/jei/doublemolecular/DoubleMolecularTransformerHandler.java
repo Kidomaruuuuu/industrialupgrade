@@ -21,7 +21,7 @@ public class DoubleMolecularTransformerHandler {
         this.energy = energy;
     }
 
-    public static List<DoubleMolecularTransformerHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<DoubleMolecularTransformerHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

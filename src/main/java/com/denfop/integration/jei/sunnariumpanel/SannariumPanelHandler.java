@@ -19,7 +19,7 @@ public class SannariumPanelHandler {
         this.output = output;
     }
 
-    public static List<SannariumPanelHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<SannariumPanelHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

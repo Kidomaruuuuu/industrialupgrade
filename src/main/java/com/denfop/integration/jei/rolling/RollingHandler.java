@@ -20,7 +20,7 @@ public class RollingHandler {
         this.output = output;
     }
 
-    public static List<RollingHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<RollingHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

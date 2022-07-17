@@ -1,5 +1,6 @@
 package com.denfop.tiles.base;
 
+import com.denfop.api.energy.ITransformer;
 import com.denfop.componets.AdvEnergy;
 import com.denfop.container.ContainerTransformer;
 import com.denfop.gui.GuiTransformer;
@@ -23,7 +24,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 public abstract class TileEntityTransformer extends TileEntityInventory implements IHasGui,
-        INetworkClientTileEntityEventListener {
+        INetworkClientTileEntityEventListener, ITransformer {
 
     private static final TileEntityTransformer.Mode defaultMode;
 
@@ -55,6 +56,14 @@ public abstract class TileEntityTransformer extends TileEntityInventory implemen
 
     public String getType() {
         switch (this.energy.getSourceTier()) {
+            case 1:
+                return "LV";
+            case 2:
+                return "MV";
+            case 3:
+                return "HV";
+            case 4:
+                return "EV";
             case 5:
                 return "UMV";
             case 6:
@@ -138,30 +147,26 @@ public abstract class TileEntityTransformer extends TileEntityInventory implemen
                 throw new RuntimeException("invalid mode: " + this.configuredMode);
         }
 
-        if (newMode != TileEntityTransformer.Mode.stepup && newMode != TileEntityTransformer.Mode.stepdown) {
-            throw new RuntimeException("invalid mode: " + newMode);
-        } else {
-            this.energy.setEnabled(true);
-            if (force || this.transformMode != newMode) {
-                this.transformMode = newMode;
-                this.setActive(this.isStepUp());
-                if (this.isStepUp()) {
-                    this.energy.setSourceTier(this.defaultTier + 1);
-                    this.energy.setSinkTier(this.defaultTier);
-                    this.energy.setPacketOutput(1);
-                    this.energy.setDirections(EnumSet.complementOf(EnumSet.of(this.getFacing())), EnumSet.of(this.getFacing()));
-                } else {
-                    this.energy.setSourceTier(this.defaultTier);
-                    this.energy.setSinkTier(this.defaultTier + 1);
-                    this.energy.setPacketOutput(4);
-                    this.energy.setDirections(EnumSet.of(this.getFacing()), EnumSet.complementOf(EnumSet.of(this.getFacing())));
-                }
-
-                this.outputFlow = EnergyNet.instance.getPowerFromTier(this.energy.getSourceTier());
-                this.inputFlow = EnergyNet.instance.getPowerFromTier(this.energy.getSinkTier());
+        this.energy.setEnabled(true);
+        if (force || this.transformMode != newMode) {
+            this.transformMode = newMode;
+            this.setActive(this.isStepUp());
+            if (this.isStepUp()) {
+                this.energy.setSourceTier(this.defaultTier + 1);
+                this.energy.setSinkTier(this.defaultTier);
+                this.energy.setPacketOutput(1);
+                this.energy.setDirections(EnumSet.complementOf(EnumSet.of(this.getFacing())), EnumSet.of(this.getFacing()));
+            } else {
+                this.energy.setSourceTier(this.defaultTier);
+                this.energy.setSinkTier(this.defaultTier + 1);
+                this.energy.setPacketOutput(4);
+                this.energy.setDirections(EnumSet.of(this.getFacing()), EnumSet.complementOf(EnumSet.of(this.getFacing())));
             }
 
+            this.outputFlow = EnergyNet.instance.getPowerFromTier(this.energy.getSourceTier());
+            this.inputFlow = EnergyNet.instance.getPowerFromTier(this.energy.getSinkTier());
         }
+
     }
 
     public void setFacing(EnumFacing facing) {

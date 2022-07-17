@@ -1,12 +1,19 @@
 package com.simplequarries;
 
+import com.denfop.IUItem;
 import com.denfop.gui.AdvArea;
 import com.denfop.utils.ModUtils;
 import ic2.core.GuiIC2;
 import ic2.core.IC2;
 import ic2.core.init.Localization;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,6 +69,9 @@ public class GuiBaseQuarry extends GuiIC2<ContainerBaseQuarry> {
         if (x >= 146 && x <= 160 && y >= 5 && y <= 23) {
             IC2.network.get(false).initiateClientTileEntityEvent(this.container.base, 4);
         }
+        if (x >= 189 && x <= 206 && y >= 83 && y <= 100) {
+            IC2.network.get(false).initiateClientTileEntityEvent(this.container.base, 5);
+        }
     }
 
     private List<String> getStringList() {
@@ -76,12 +86,29 @@ public class GuiBaseQuarry extends GuiIC2<ContainerBaseQuarry> {
     @Override
     protected void drawForegroundLayer(final int mouseX, final int mouseY) {
         handleUpgradeTooltip(mouseX, mouseY);
-        this.fontRenderer.drawString(TextFormatting.GREEN + "" + this.container.base.min_y, 187
+        this.fontRenderer.drawString(TextFormatting.GREEN + "" + this.container.base.min_y, 190
                 , 12, ModUtils.convertRGBcolorToInt(217, 217, 217));
-        this.fontRenderer.drawString(TextFormatting.GREEN + "" + this.container.base.max_y, 187
+        this.fontRenderer.drawString(TextFormatting.GREEN + "" + this.container.base.max_y, 190
                 , 48, ModUtils.convertRGBcolorToInt(217, 217, 217));
         new AdvArea(this, 172, 27, 175, 75)
-                .withTooltip(ModUtils.getString(this.container.base.exp.getEnergy()) + "/" + ModUtils.getString(this.container.base.exp.getCapacity()))
+                .withTooltip("EXP: " + ModUtils.getString(this.container.base.exp.getEnergy()) + "/" + ModUtils.getString(this.container.base.exp.getCapacity()))
+                .drawForeground(mouseX
+                        , mouseY);
+        new AdvArea(this, 163, 27, 167, 75)
+                .withTooltip("QE: " + ModUtils.getString(this.container.base.energy1.getEnergy()) + "/" + ModUtils.getString(this
+                        .container.base.energy1.getCapacity()))
+                .drawForeground(mouseX
+                        , mouseY);
+        String tooltip =
+                ModUtils.getString(this.container.base
+                        .cold
+                        .getEnergy()) + "°C" + "/" + ModUtils.getString(this.container.base.cold.getCapacity()) + "°C";
+        new AdvArea(this, 140, 62, 144, 76)
+                .withTooltip(tooltip)
+                .drawForeground(mouseX
+                        , mouseY);
+        new AdvArea(this, 189, 83, 206, 100)
+                .withTooltip(Localization.translate("button.rf"))
                 .drawForeground(mouseX
                         , mouseY);
         new AdvArea(this, 146, 5, 160, 23).withTooltip(Localization.translate("sq.add_experience")).drawForeground(mouseX
@@ -101,18 +128,32 @@ public class GuiBaseQuarry extends GuiIC2<ContainerBaseQuarry> {
         int h = (this.width - this.xSize) / 2;
         int k = (this.height - this.ySize) / 2;
         this.mc.getTextureManager().bindTexture(getTexture());
-        drawTexturedModalRect(h, k, 0, 0, this.xSize, 83);
-        drawTexturedModalRect(h, k + 83, 0, 83, 176, this.ySize - 83);
+        drawTexturedModalRect(h, k, 0, 0, this.xSize, 112);
+        drawTexturedModalRect(h, k + 112, 0, 112, 176, this.ySize - 112);
 
         this.mc.getTextureManager().bindTexture(getTexture());
         int chargeLevel = (int) (48.0F * this.container.base.energy.getEnergy()
                 / this.container.base.energy.getCapacity());
         int exp = (int) (48.0F * this.container.base.exp.getEnergy()
                 / this.container.base.exp.getCapacity());
+        int chargeLevel1 = (int) (48.0F * this.container.base.energy1.getEnergy()
+                / this.container.base.energy1.getCapacity());
+        int heat = (int) (14.0F * this.container.base.cold.getFillRatio());
+        if (heat >= 0) {
+            drawTexturedModalRect(
+                    h + 140, k + 62 + 14 - heat, 194, 167 + 14 - heat, 4,
+                    heat
+            );
 
+        }
         if (exp > 0) {
             drawTexturedModalRect(h + 172, k + 28 + 48 - exp, 194,
                     119 + 48 - exp, 12, exp
+            );
+        }
+        if (chargeLevel1 > 0) {
+            drawTexturedModalRect(h + 164, k + 28 + 48 - chargeLevel1, 200,
+                    119 + 48 - chargeLevel1, 12, chargeLevel1
             );
         }
         if (chargeLevel > 0) {
@@ -127,7 +168,28 @@ public class GuiBaseQuarry extends GuiIC2<ContainerBaseQuarry> {
             );
             y1 += 18;
         }
+        RenderHelper.enableGUIStandardItemLighting();
+        GL11.glPushMatrix();
+        GL11.glColor4f(0.1F, 1, 0.1F, 1);
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+        GlStateManager.disableLighting();
+        GlStateManager.enableDepth();
+        this.zLevel = 100.0F;
+        mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        ItemStack stack;
+        stack = new ItemStack(IUItem.heavyore, 1, 8);
+        itemRender.renderItemAndEffectIntoGUI(
+                stack,
+                h + 190,
+                k + 84
+        );
+        GL11.glEnable(GL11.GL_LIGHTING);
+        GlStateManager.enableLighting();
 
+        RenderHelper.enableStandardItemLighting();
+        GL11.glColor4f(0.1F, 1, 0.1F, 1);
+        GL11.glPopMatrix();
 
     }
 

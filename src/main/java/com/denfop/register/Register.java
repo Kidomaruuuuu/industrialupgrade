@@ -21,10 +21,13 @@ import com.denfop.blocks.mechanism.BlockBaseMachine;
 import com.denfop.blocks.mechanism.BlockBaseMachine1;
 import com.denfop.blocks.mechanism.BlockBaseMachine2;
 import com.denfop.blocks.mechanism.BlockBaseMachine3;
+import com.denfop.blocks.mechanism.BlockBlastFurnace;
 import com.denfop.blocks.mechanism.BlockCable;
+import com.denfop.blocks.mechanism.BlockChargepadStorage;
 import com.denfop.blocks.mechanism.BlockCombinerSolid;
 import com.denfop.blocks.mechanism.BlockConverterMatter;
 import com.denfop.blocks.mechanism.BlockDoubleMolecularTransfomer;
+import com.denfop.blocks.mechanism.BlockEnergyStorage;
 import com.denfop.blocks.mechanism.BlockImpChamber;
 import com.denfop.blocks.mechanism.BlockImpSolarEnergy;
 import com.denfop.blocks.mechanism.BlockMolecular;
@@ -36,14 +39,12 @@ import com.denfop.blocks.mechanism.BlockPerChamber;
 import com.denfop.blocks.mechanism.BlockPetrolQuarry;
 import com.denfop.blocks.mechanism.BlockSimpleMachine;
 import com.denfop.blocks.mechanism.BlockSolarEnergy;
+import com.denfop.blocks.mechanism.BlockSolarPanels;
 import com.denfop.blocks.mechanism.BlockSolidMatter;
 import com.denfop.blocks.mechanism.BlockSunnariumMaker;
 import com.denfop.blocks.mechanism.BlockSunnariumPanelMaker;
 import com.denfop.blocks.mechanism.BlockTransformer;
 import com.denfop.blocks.mechanism.BlockUpgradeBlock;
-import com.denfop.blocks.mechanism.IUChargepadStorage;
-import com.denfop.blocks.mechanism.IUStorage;
-import com.denfop.blocks.mechanism.SSPBlock;
 import com.denfop.integration.botania.BotaniaIntegration;
 import com.denfop.integration.exnihilo.ExNihiloIntegration;
 import com.denfop.integration.exnihilo.blocks.DustBlocks;
@@ -57,24 +58,15 @@ import com.denfop.items.IUItemBase;
 import com.denfop.items.ItemAdvancedWindRotor;
 import com.denfop.items.ItemBaseCircuit;
 import com.denfop.items.ItemBlueprint;
-import com.denfop.items.ItemCable;
 import com.denfop.items.ItemCell;
 import com.denfop.items.ItemChemistry;
-import com.denfop.items.ItemCoolPipes;
-import com.denfop.items.ItemCoolingUpgrade;
 import com.denfop.items.ItemCore;
 import com.denfop.items.ItemCoreWind;
 import com.denfop.items.ItemExcitedNucleus;
 import com.denfop.items.ItemLens;
 import com.denfop.items.ItemPaints;
 import com.denfop.items.ItemPhotoniumGlass;
-import com.denfop.items.ItemPipes;
-import com.denfop.items.ItemQCable;
-import com.denfop.items.ItemSCable;
 import com.denfop.items.ItemSolidMatter;
-import com.denfop.items.ItemUpgradeKit;
-import com.denfop.items.ItemUpgradeMachinesKit;
-import com.denfop.items.ItemUpgradePanelKit;
 import com.denfop.items.ItemWindRod;
 import com.denfop.items.ItemsTemplates;
 import com.denfop.items.armour.BaseArmor;
@@ -87,19 +79,17 @@ import com.denfop.items.armour.ItemSolarPanelHelmet;
 import com.denfop.items.bags.ItemEnergyBags;
 import com.denfop.items.bags.ItemLeadBox;
 import com.denfop.items.book.ItemBook;
-import com.denfop.items.energy.ItemAdvancedMultiTool;
 import com.denfop.items.energy.ItemBattery;
-import com.denfop.items.energy.ItemEnergyAxe;
 import com.denfop.items.energy.ItemEnergyBow;
-import com.denfop.items.energy.ItemEnergyDrill;
-import com.denfop.items.energy.ItemEnergyPickaxe;
-import com.denfop.items.energy.ItemEnergyShovel;
 import com.denfop.items.energy.ItemGraviTool;
 import com.denfop.items.energy.ItemKatana;
 import com.denfop.items.energy.ItemMagnet;
 import com.denfop.items.energy.ItemPurifier;
 import com.denfop.items.energy.ItemQuantumSaber;
 import com.denfop.items.energy.ItemSpectralSaber;
+import com.denfop.items.energy.instruments.EnumTypeInstruments;
+import com.denfop.items.energy.instruments.EnumVarietyInstruments;
+import com.denfop.items.energy.instruments.ItemEnergyInstruments;
 import com.denfop.items.machines.ItemsAdminPanel;
 import com.denfop.items.machines.ItemsAdvRefiner;
 import com.denfop.items.machines.ItemsQuarryVein;
@@ -108,6 +98,7 @@ import com.denfop.items.machines.ItemsSintezator;
 import com.denfop.items.machines.ItemsTank;
 import com.denfop.items.modules.ItemAdditionModule;
 import com.denfop.items.modules.ItemBaseModules;
+import com.denfop.items.modules.ItemCoolingUpgrade;
 import com.denfop.items.modules.ItemEntityModule;
 import com.denfop.items.modules.ItemModuleType;
 import com.denfop.items.modules.ItemModuleTypePanel;
@@ -144,10 +135,18 @@ import com.denfop.items.resource.alloys.ItemAlloysNugget;
 import com.denfop.items.resource.alloys.ItemAlloysPlate;
 import com.denfop.items.resource.itemSunnarium;
 import com.denfop.items.resource.preciousresources.ItemPreciousGem;
+import com.denfop.items.transport.ItemCable;
+import com.denfop.items.transport.ItemCoolPipes;
+import com.denfop.items.transport.ItemExpCable;
+import com.denfop.items.transport.ItemPipes;
+import com.denfop.items.transport.ItemQCable;
+import com.denfop.items.transport.ItemSCable;
+import com.denfop.items.upgradekit.ItemUpgradeKit;
+import com.denfop.items.upgradekit.ItemUpgradeMachinesKit;
+import com.denfop.items.upgradekit.ItemUpgradePanelKit;
 import ic2.core.block.TeBlockRegistry;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -192,11 +191,11 @@ public class Register {
                 "ic2", "textures/items/rotor/carbon_rotor_model.png"));
         IUItem.blueprint = new ItemBlueprint();
         IUItem.neutroniumingot = new IUItemBase("neutroniumingot");
-        IUItem.upgrade_speed_creation = (IUItemBase) new IUItemBase("upgrade_speed_creation").setCreativeTab(IUCore.tabssp1);
+        IUItem.upgrade_speed_creation = (IUItemBase) new IUItemBase("upgrade_speed_creation").setCreativeTab(IUCore.ModuleTab);
         IUItem.core = new ItemCore();
         UpgradeSystem.system.addModification();
         IUItem.corewind = new ItemCoreWind();
-        IUItem.autoheater = new IUItemBase("autoheater");
+        IUItem.autoheater = (IUItemBase) new IUItemBase("autoheater").setCreativeTab(IUCore.ModuleTab);
         IUItem.coolupgrade = new ItemCoolingUpgrade();
         IUItem.upgrademodule = new ItemUpgradeModule();
         IUItem.module9 = new ItemQuarryModule();
@@ -204,61 +203,65 @@ public class Register {
         IUItem.windrod = new ItemWindRod();
         IUItem.qcable = new ItemQCable();
         IUItem.scable = new ItemSCable();
-        IUItem.simplemachine = TeBlockRegistry.get(BlockSimpleMachine.IDENTITY).setCreativeTab(IUCore.SSPTab);
-        IUItem.blockpanel = TeBlockRegistry.get(SSPBlock.IDENTITY).setCreativeTab(IUCore.SSPTab);
-        IUItem.electricblock = TeBlockRegistry.get(IUStorage.IDENTITY).setCreativeTab(IUCore.SSPTab);
-        IUItem.Chargepadelectricblock = TeBlockRegistry.get(IUChargepadStorage.IDENTITY).setCreativeTab(IUCore.SSPTab);
-        IUItem.solidmatter = TeBlockRegistry.get(BlockSolidMatter.IDENTITY).setCreativeTab(IUCore.SSPTab);
-        IUItem.machines = TeBlockRegistry.get(BlockBaseMachine.IDENTITY).setCreativeTab(IUCore.SSPTab);
+        IUItem.expcable = new ItemExpCable();
+        IUItem.simplemachine = TeBlockRegistry.get(BlockSimpleMachine.IDENTITY).setCreativeTab(IUCore.IUTab);
+        IUItem.blockpanel = TeBlockRegistry.get(BlockSolarPanels.IDENTITY).setCreativeTab(IUCore.IUTab);
+        IUItem.electricblock = TeBlockRegistry.get(BlockEnergyStorage.IDENTITY).setCreativeTab(IUCore.IUTab);
+        IUItem.chargepadelectricblock = TeBlockRegistry.get(BlockChargepadStorage.IDENTITY).setCreativeTab(IUCore.IUTab);
+        IUItem.solidmatter = TeBlockRegistry.get(BlockSolidMatter.IDENTITY).setCreativeTab(IUCore.IUTab);
+        IUItem.machines = TeBlockRegistry.get(BlockBaseMachine.IDENTITY).setCreativeTab(IUCore.IUTab);
         IUItem.advBatChargeCrystal = new ItemBattery("itemadvbatchargecrystal", Config.Storagequantumsuit, 32368D, 5, true);
         IUItem.itemBatChargeCrystal = new ItemBattery("itembatchargecrystal", Config.Storagequantumsuit * 4, 129472D, 6, true);
-        IUItem.blockSE = TeBlockRegistry.get(BlockSolarEnergy.IDENTITY).setCreativeTab(IUCore.SSPTab);
+        IUItem.blockSE = TeBlockRegistry.get(BlockSolarEnergy.IDENTITY).setCreativeTab(IUCore.IUTab);
+        IUItem.blastfurnace = TeBlockRegistry.get(BlockBlastFurnace.IDENTITY).setCreativeTab(IUCore.IUTab);
+
         IUItem.UpgradeKit = new ItemUpgradeKit();
-        IUItem.AdvblockSE = TeBlockRegistry.get(BlockAdvSolarEnergy.IDENTITY).setCreativeTab(IUCore.SSPTab);
-        IUItem.ImpblockSE = TeBlockRegistry.get(BlockImpSolarEnergy.IDENTITY).setCreativeTab(IUCore.SSPTab);
-        IUItem.blockmolecular = TeBlockRegistry.get(BlockMolecular.IDENTITY).setCreativeTab(IUCore.SSPTab);
-        IUItem.basemachine = TeBlockRegistry.get(BlockBaseMachine1.IDENTITY).setCreativeTab(IUCore.SSPTab);
-        IUItem.basemachine1 = TeBlockRegistry.get(BlockBaseMachine2.IDENTITY).setCreativeTab(IUCore.SSPTab);
-        IUItem.basemachine2 = TeBlockRegistry.get(BlockBaseMachine3.IDENTITY).setCreativeTab(IUCore.SSPTab);
+        IUItem.adv_se_generator = TeBlockRegistry.get(BlockAdvSolarEnergy.IDENTITY).setCreativeTab(IUCore.IUTab);
+        IUItem.imp_se_generator = TeBlockRegistry.get(BlockImpSolarEnergy.IDENTITY).setCreativeTab(IUCore.IUTab);
+        IUItem.blockmolecular = TeBlockRegistry.get(BlockMolecular.IDENTITY).setCreativeTab(IUCore.IUTab);
+        IUItem.basemachine = TeBlockRegistry.get(BlockBaseMachine1.IDENTITY).setCreativeTab(IUCore.IUTab);
+        IUItem.basemachine1 = TeBlockRegistry.get(BlockBaseMachine2.IDENTITY).setCreativeTab(IUCore.IUTab);
+        IUItem.basemachine2 = TeBlockRegistry.get(BlockBaseMachine3.IDENTITY).setCreativeTab(IUCore.IUTab);
         IUItem.blocksintezator = new ItemsSintezator();
-        IUItem.sunnariummaker = TeBlockRegistry.get(BlockSunnariumMaker.IDENTITY).setCreativeTab(IUCore.SSPTab); //
-        IUItem.sunnariumpanelmaker = TeBlockRegistry.get(BlockSunnariumPanelMaker.IDENTITY).setCreativeTab(IUCore.SSPTab); //
+        IUItem.sunnariummaker = TeBlockRegistry.get(BlockSunnariumMaker.IDENTITY).setCreativeTab(IUCore.IUTab); //
+        IUItem.sunnariumpanelmaker = TeBlockRegistry.get(BlockSunnariumPanelMaker.IDENTITY).setCreativeTab(IUCore.IUTab); //
         IUItem.oilrefiner = new ItemsRefiner();
         IUItem.oiladvrefiner = new ItemsAdvRefiner();
-        IUItem.upgradeblock = TeBlockRegistry.get(BlockUpgradeBlock.IDENTITY).setCreativeTab(IUCore.SSPTab); // BlockUpgradeBlock
+        IUItem.upgradeblock = TeBlockRegistry.get(BlockUpgradeBlock.IDENTITY).setCreativeTab(IUCore.IUTab); // BlockUpgradeBlock
         IUItem.module = new com.denfop.items.ItemUpgradeModule();
-        IUItem.advchamberblock = TeBlockRegistry.get(BlockAdvChamber.IDENTITY).setCreativeTab(IUCore.SSPTab);
-        IUItem.impchamberblock = TeBlockRegistry.get(BlockImpChamber.IDENTITY).setCreativeTab(IUCore.SSPTab);
-        IUItem.perchamberblock = TeBlockRegistry.get(BlockPerChamber.IDENTITY).setCreativeTab(IUCore.SSPTab);
-        IUItem.tranformer = TeBlockRegistry.get(BlockTransformer.IDENTITY).setCreativeTab(IUCore.SSPTab);
+        IUItem.advchamberblock = TeBlockRegistry.get(BlockAdvChamber.IDENTITY).setCreativeTab(IUCore.IUTab);
+        IUItem.impchamberblock = TeBlockRegistry.get(BlockImpChamber.IDENTITY).setCreativeTab(IUCore.IUTab);
+        IUItem.perchamberblock = TeBlockRegistry.get(BlockPerChamber.IDENTITY).setCreativeTab(IUCore.IUTab);
+        IUItem.tranformer = TeBlockRegistry.get(BlockTransformer.IDENTITY).setCreativeTab(IUCore.IUTab);
         IUItem.GraviTool = new ItemGraviTool("GraviTool");
-        IUItem.blockdoublemolecular = TeBlockRegistry.get(BlockDoubleMolecularTransfomer.IDENTITY).setCreativeTab(IUCore.SSPTab);
+        IUItem.blockdoublemolecular = TeBlockRegistry.get(BlockDoubleMolecularTransfomer.IDENTITY).setCreativeTab(IUCore.IUTab);
         IUItem.blockadmin = new ItemsAdminPanel();
-        IUItem.cableblock = TeBlockRegistry.get(BlockCable.IDENTITY).setCreativeTab(IUCore.SSPTab);
+        IUItem.cableblock = TeBlockRegistry.get(BlockCable.IDENTITY).setCreativeTab(IUCore.IUTab);
         IUItem.oilquarry = new ItemsQuarryVein();
         IUItem.cable = new ItemCable();
         IUItem.pipes = new ItemPipes();
         IUItem.convertersolidmatter = TeBlockRegistry
                 .get(BlockConverterMatter.IDENTITY)
-                .setCreativeTab(IUCore.SSPTab); // BlockConverterMatter
-        IUItem.oilgetter = TeBlockRegistry.get(BlockPetrolQuarry.IDENTITY).setCreativeTab(IUCore.SSPTab); // BlockPetrolQuarry
-        IUItem.combinersolidmatter = TeBlockRegistry.get(BlockCombinerSolid.IDENTITY).setCreativeTab(IUCore.SSPTab);
+                .setCreativeTab(IUCore.IUTab); // BlockConverterMatter
+        IUItem.oilgetter = TeBlockRegistry.get(BlockPetrolQuarry.IDENTITY).setCreativeTab(IUCore.IUTab); // BlockPetrolQuarry
+        IUItem.combinersolidmatter = TeBlockRegistry.get(BlockCombinerSolid.IDENTITY).setCreativeTab(IUCore.IUTab);
 
-        IUItem.machines_base = TeBlockRegistry.get(BlockMoreMachine.IDENTITY).setCreativeTab(IUCore.SSPTab);
-        IUItem.machines_base1 = TeBlockRegistry.get(BlockMoreMachine1.IDENTITY).setCreativeTab(IUCore.SSPTab);
-        IUItem.machines_base2 = TeBlockRegistry.get(BlockMoreMachine2.IDENTITY).setCreativeTab(IUCore.SSPTab);
-        IUItem.machines_base3 = TeBlockRegistry.get(BlockMoreMachine3.IDENTITY).setCreativeTab(IUCore.SSPTab);
+        IUItem.machines_base = TeBlockRegistry.get(BlockMoreMachine.IDENTITY).setCreativeTab(IUCore.IUTab);
+        IUItem.machines_base1 = TeBlockRegistry.get(BlockMoreMachine1.IDENTITY).setCreativeTab(IUCore.IUTab);
+        IUItem.machines_base2 = TeBlockRegistry.get(BlockMoreMachine2.IDENTITY).setCreativeTab(IUCore.IUTab);
+        IUItem.machines_base3 = TeBlockRegistry.get(BlockMoreMachine3.IDENTITY).setCreativeTab(IUCore.IUTab);
 
         IUItem.tank = new ItemsTank();
 
         if (Config.BotaniaLoaded) {
-            ItemStack[] stack4 = {BotaniaIntegration.reactorDepletedterastrellSimple, BotaniaIntegration.reactorDepletedterastrellDual, BotaniaIntegration.reactorDepletedterastrellQuad};
             BotaniaIntegration.reactorDepletedterastrellSimple = new ItemStack(
                     new ItemDepletedRod("reactorDepletedterastrellSimple"));
             BotaniaIntegration.reactorDepletedterastrellDual = new ItemStack(
                     new ItemDepletedRod("reactorDepletedterastrellDual"));
             BotaniaIntegration.reactorDepletedterastrellQuad = new ItemStack(
                     new ItemDepletedRod("reactorDepletedterastrellQuad"));
+            ItemStack[] stack4 = {BotaniaIntegration.reactorDepletedterastrellSimple, BotaniaIntegration.reactorDepletedterastrellDual, BotaniaIntegration.reactorDepletedterastrellQuad};
+
             BotaniaIntegration.reactorterastrellSimple = new ItemStack(new ItemBaseRod("reactorterastrellSimple", 1,
                     Config.TerrasteelRodCells, Config.TerrasteelRodHeat, Config.TerrasteelPower, stack4
             ));
@@ -297,25 +300,28 @@ public class Register {
         IUItem.hazmatchest = new ItemArmorAdvHazmat("hazmatchest", EntityEquipmentSlot.CHEST);
         IUItem.hazmatleggins = new ItemArmorAdvHazmat("hazmatleggins", EntityEquipmentSlot.LEGS);
         IUItem.hazmatboosts = new ItemArmorAdvHazmat("hazmatboosts", EntityEquipmentSlot.FEET);
-        IUItem.NanoHelmet = new ItemArmorImprovemedNano(
+        IUItem.adv_nano_helmet = new ItemArmorImprovemedNano(
                 "itemArmorNanoHelmet",
                 EntityEquipmentSlot.HEAD,
                 (float) Config.NanoHelmet,
                 (float) Config.NanoTransfer,
                 Config.Nanotier
         );
-        IUItem.NanoBodyarmor = new ItemArmorImprovemedNano("itemArmorNanoChestplate", EntityEquipmentSlot.CHEST,
+        IUItem.adv_nano_chestplate = new ItemArmorImprovemedNano("itemArmorNanoChestplate", EntityEquipmentSlot.CHEST,
                 (float) Config.NanoBodyarmor, Config.NanoTransfer, Config.Nanotier
         );
-        IUItem.NanoLeggings = new ItemArmorImprovemedNano(
+        IUItem.adv_nano_leggings = new ItemArmorImprovemedNano(
                 "itemArmorNanoLegs",
                 EntityEquipmentSlot.LEGS,
                 (float) Config.NanoLeggings,
                 (float) Config.NanoTransfer,
                 Config.Nanotier
         );
-        IUItem.NanoBoots = new ItemArmorImprovemedNano("itemArmorNanoBoots", EntityEquipmentSlot.FEET, (float) Config.NanoBoots,
-                (float) Config.NanoTransfer, Config.Nanotier
+        IUItem.adv_nano_boots = new ItemArmorImprovemedNano("itemArmorNanoBoots",
+                EntityEquipmentSlot.FEET,
+                (float) Config.NanoBoots,
+                (float) Config.NanoTransfer,
+                Config.Nanotier
         );
         IUItem.bags = new ItemEnergyBags("iu_bags", 27, 50000, 500);
         IUItem.adv_bags = new ItemEnergyBags("adv_iu_bags", 45, 75000, 750);
@@ -350,16 +356,16 @@ public class Register {
         ));
 
         IUItem.barionrotor = new ItemStack(new ItemAdvancedWindRotor("barionrotor", Config.Radius5,
-                Config.durability4 * 4, Config.efficiency4 * 2, Config.minWindStrength5, Config.maxWindStrength5,
+                Config.durability4 * 4, Config.efficiency4 + 4, Config.minWindStrength5, Config.maxWindStrength5,
                 new ResourceLocation(Constants.MOD_ID, "textures/items/carbon_rotor_model_7.png")
         ));
 
         IUItem.adronrotor = new ItemStack(new ItemAdvancedWindRotor("adronrotor", Config.Radius5,
-                Config.durability4 * 16, Config.efficiency4 * 4, Config.minWindStrength5, Config.maxWindStrength5,
+                Config.durability4 * 16, Config.efficiency4 + 8, Config.minWindStrength5, Config.maxWindStrength5,
                 new ResourceLocation(Constants.MOD_ID, "textures/items/carbon_rotor_model_8.png")
         ));
         IUItem.ultramarinerotor = new ItemStack(new ItemAdvancedWindRotor("ultramarinerotor", Config.Radius5,
-                Config.durability4 * 64, Config.efficiency4 * 8, Config.minWindStrength5, Config.maxWindStrength5,
+                Config.durability4 * 64, Config.efficiency4 + 16, Config.minWindStrength5, Config.maxWindStrength5,
                 new ResourceLocation(Constants.MOD_ID, "textures/items/carbon_rotor_model_9.png")
         ));
 
@@ -581,7 +587,8 @@ public class Register {
         IUItem.module5 = new ItemModuleType();
         IUItem.module6 = new ItemModuleTypePanel();
 
-
+        IUItem.spectral_box = new IUItemBase("spectral_box");
+        IUItem.adv_spectral_box = new IUItemBase("adv_spectral_box");
         IUItem.Helium = new IUItemBase("helium");
         IUItem.coal_chunk1 = new IUItemBase("coal_chunk");
         IUItem.compresscarbon = new IUItemBase("compresscarbon");
@@ -590,7 +597,7 @@ public class Register {
         IUItem.photoniy_ingot = new IUItemBase("photoniy_ingot");
         IUItem.compressIridiumplate = new IUItemBase("quantumitems2");
         IUItem.advQuantumtool = new IUItemBase("quantumitems3");
-        IUItem.expmodule = new IUItemBase("expmodule").setCreativeTab(IUCore.tabssp1);
+        IUItem.expmodule = new IUItemBase("expmodule").setCreativeTab(IUCore.ModuleTab);
         IUItem.doublecompressIridiumplate = new IUItemBase("quantumitems4");
         IUItem.nanoBox = new IUItemBase("nanobox");
         IUItem.module_schedule = new IUItemBase("module_schedule");
@@ -598,14 +605,14 @@ public class Register {
         IUItem.advnanobox = new IUItemBase("quantumitems7");
         IUItem.neutronium = new IUItemBase("neutronium");
         IUItem.plast = new IUItemBase("plast");
-        IUItem.module_stack = new IUItemBase("module_stack").setCreativeTab(IUCore.tabssp1);
-        IUItem.module_quickly = new IUItemBase("module_quickly").setCreativeTab(IUCore.tabssp1);
-        IUItem.module_storage = new IUItemBase("module_storage").setCreativeTab(IUCore.tabssp1);
+        IUItem.module_stack = new IUItemBase("module_stack").setCreativeTab(IUCore.ModuleTab);
+        IUItem.module_quickly = new IUItemBase("module_quickly").setCreativeTab(IUCore.ModuleTab);
+        IUItem.module_storage = new IUItemBase("module_storage").setCreativeTab(IUCore.ModuleTab);
         IUItem.plastic_plate = new IUItemBase("plastic_plate");
 
         IUItem.doublescrapBox = new IUItemBase("doublescrapbox");
-        IUItem.quarrymodule = new IUItemBase("quarrymodule").setCreativeTab(IUCore.tabssp1);
-        IUItem.analyzermodule = new IUItemBase("analyzermodule").setCreativeTab(IUCore.tabssp1);
+        IUItem.quarrymodule = new IUItemBase("quarrymodule").setCreativeTab(IUCore.ModuleTab);
+        IUItem.analyzermodule = new IUItemBase("analyzermodule").setCreativeTab(IUCore.ModuleTab);
 
 
         IUItem.radiationresources = new RadiationResources();
@@ -635,10 +642,10 @@ public class Register {
         IUItem.impheatswitch = new ItemReactorHeatSwitch("impheatswitch", 5000, 60, 70);
         IUItem.reactorCoolantmax = new ItemStack(new ItemReactorHeatStorage("reactorcoolantmax", 240000));
         IUItem.reactorCoolanttwelve = new ItemStack(new ItemReactorHeatStorage("reactorcoolanttwelve", 120000));
-        IUItem.UpgradePanelKit = new ItemUpgradePanelKit();
+        IUItem.upgradepanelkit = new ItemUpgradePanelKit();
         IUItem.magnet = new ItemMagnet("magnet", 100000, 5000, 4, 7);
         IUItem.impmagnet = new ItemMagnet("impmagnet", 200000, 7500, 5, 11);
-        IUItem.Purifier = new ItemPurifier("purifier", 100000, 1000, 3);
+        IUItem.purifier = new ItemPurifier("purifier", 100000, 1000, 3);
         IUItem.entitymodules = new ItemEntityModule();
         IUItem.cell_all = new ItemCell();
         IUItem.cell_all.setUseHandler(CellType.empty, ItemCell.emptyCellFill);
@@ -663,126 +670,37 @@ public class Register {
         IUItem.radiationore = new BlocksRadiationOre();
         IUItem.oilblock = new BlockOil();
         IUItem.toriyore = new BlockThoriumOre();
-        IUItem.itemSSP = new ItemIUCrafring();
-        IUItem.nanopickaxe = new ItemEnergyPickaxe(
-                Item.ToolMaterial.DIAMOND,
-                "nanopickaxe",
-                1,
-                1,
-                Config.nano_transfer,
-                Config.nano_maxEnergy,
-                2,
-                30,
-                15,
-                Config.nano_energyPerOperation,
-                Config.nano_energyPerbigHolePowerOperation
+        IUItem.itemiu = new ItemIUCrafring();
+        IUItem.nanopickaxe = new ItemEnergyInstruments(EnumTypeInstruments.PICKAXE, EnumVarietyInstruments.NANO, "nanopickaxe");
+        IUItem.nanoshovel = new ItemEnergyInstruments(EnumTypeInstruments.SHOVEL, EnumVarietyInstruments.NANO, "nanoshovel");
+        IUItem.nanoaxe = new ItemEnergyInstruments(EnumTypeInstruments.AXE, EnumVarietyInstruments.NANO, "nanoaxe");
+        IUItem.quantumpickaxe = new ItemEnergyInstruments(
+                EnumTypeInstruments.PICKAXE,
+                EnumVarietyInstruments.QUANTUM,
+                "quantumpickaxe"
         );
-        IUItem.nanoshovel = new ItemEnergyShovel(
-                Item.ToolMaterial.DIAMOND,
-                "nanoshovel",
-                1,
-                1,
-                Config.nano_transfer,
-                Config.nano_maxEnergy,
-                2,
-                30,
-                15,
-                Config.nano_energyPerOperation,
-                Config.nano_energyPerbigHolePowerOperation
+        IUItem.quantumshovel = new ItemEnergyInstruments(
+                EnumTypeInstruments.SHOVEL,
+                EnumVarietyInstruments.QUANTUM,
+                "quantumshovel"
         );
-        IUItem.nanoaxe = new ItemEnergyAxe(
-                Item.ToolMaterial.DIAMOND,
-                "nanoaxe",
-                1,
-                1,
-                Config.nano_transfer,
-                Config.nano_maxEnergy,
-                2,
-                30,
-                15,
-                Config.nano_energyPerOperation,
-                Config.nano_energyPerbigHolePowerOperation
+        IUItem.quantumaxe = new ItemEnergyInstruments(EnumTypeInstruments.AXE, EnumVarietyInstruments.QUANTUM, "quantumaxe");
+        IUItem.spectralpickaxe = new ItemEnergyInstruments(
+                EnumTypeInstruments.PICKAXE,
+                EnumVarietyInstruments.SPECTRAL,
+                "spectralpickaxe"
         );
-        IUItem.quantumpickaxe = new ItemEnergyPickaxe(
-                Item.ToolMaterial.DIAMOND,
-                "quantumpickaxe",
-                3,
-                2,
-                Config.quantum_transfer,
-                Config.quantum_maxEnergy,
-                3,
-                40,
-                20,
-                Config.quantum_energyPerOperation,
-                Config.quantum_energyPerbigHolePowerOperation
+        IUItem.perfect_drill = new ItemEnergyInstruments(
+                EnumTypeInstruments.PERFECT_DRILL,
+                EnumVarietyInstruments.PERFECT_DRILL,
+                "ultDDrill"
         );
-        IUItem.quantumshovel = new ItemEnergyShovel(
-                Item.ToolMaterial.DIAMOND,
-                "quantumshovel",
-                3,
-                2,
-                Config.quantum_transfer,
-                Config.quantum_maxEnergy,
-                3,
-                40,
-                20,
-                Config.quantum_energyPerOperation,
-                Config.quantum_energyPerbigHolePowerOperation
+        IUItem.spectralshovel = new ItemEnergyInstruments(
+                EnumTypeInstruments.SHOVEL,
+                EnumVarietyInstruments.SPECTRAL,
+                "spectralshovel"
         );
-        IUItem.quantumaxe = new ItemEnergyAxe(
-                Item.ToolMaterial.DIAMOND,
-                "quantumaxe",
-                3,
-                2,
-                Config.quantum_transfer,
-                Config.quantum_maxEnergy,
-                3,
-                40,
-                20,
-                Config.quantum_energyPerOperation,
-                Config.quantum_energyPerbigHolePowerOperation
-        );
-        IUItem.spectralpickaxe = new ItemEnergyPickaxe(
-                Item.ToolMaterial.DIAMOND,
-                "spectralpickaxe",
-                5,
-                3,
-                Config.spectral_transfer,
-                Config.spectral_maxEnergy,
-                4,
-                60,
-                30,
-                Config.spectral_energyPerOperation,
-                Config.spectral_energyPerbigHolePowerOperation
-        );
-        IUItem.ultDDrill = new ItemAdvancedMultiTool(Item.ToolMaterial.DIAMOND, "ultDDrill");
-
-        IUItem.spectralshovel = new ItemEnergyShovel(
-                Item.ToolMaterial.DIAMOND,
-                "spectralshovel",
-                5,
-                3,
-                Config.spectral_transfer,
-                Config.spectral_maxEnergy,
-                4,
-                60,
-                30,
-                Config.spectral_energyPerOperation,
-                Config.spectral_energyPerbigHolePowerOperation
-        );
-        IUItem.spectralaxe = new ItemEnergyAxe(
-                Item.ToolMaterial.DIAMOND,
-                "spectralaxe",
-                5,
-                3,
-                Config.spectral_transfer,
-                Config.spectral_maxEnergy,
-                4,
-                60,
-                30,
-                Config.spectral_energyPerOperation,
-                Config.spectral_energyPerbigHolePowerOperation
-        );
+        IUItem.spectralaxe = new ItemEnergyInstruments(EnumTypeInstruments.AXE, EnumVarietyInstruments.SPECTRAL, "spectralaxe");
         IUItem.nano_bow = new ItemEnergyBow(
                 "nano_bow",
                 0,
@@ -813,56 +731,34 @@ public class Register {
         IUItem.quantumSaber = new ItemQuantumSaber("itemNanoSaber1", Config.maxCharge1, Config.transferLimit1,
                 Config.tier1, Config.spectralsaberactive1, Config.spectralsabernotactive1
         );
-        IUItem.quantumHelmet = new ItemArmorImprovemedQuantum(
+        IUItem.spectral_helmet = new ItemArmorImprovemedQuantum(
                 "itemArmorQuantumHelmet",
                 EntityEquipmentSlot.HEAD,
                 Config.armor_maxcharge,
                 Config.armor_transferlimit,
                 Config.tier
         );
-        IUItem.quantumBodyarmor = new ItemArmorImprovemedQuantum("itemArmorQuantumChestplate", EntityEquipmentSlot.CHEST,
+        IUItem.spectral_chestplate = new ItemArmorImprovemedQuantum("itemArmorQuantumChestplate", EntityEquipmentSlot.CHEST,
                 Config.armor_maxcharge_body, Config.armor_transferlimit, Config.tier
         );
-        IUItem.quantumLeggings = new ItemArmorImprovemedQuantum("itemArmorQuantumLegs", EntityEquipmentSlot.LEGS,
+        IUItem.spectral_leggings = new ItemArmorImprovemedQuantum("itemArmorQuantumLegs", EntityEquipmentSlot.LEGS,
                 Config.armor_maxcharge,
                 Config.armor_transferlimit, Config.tier
         );
-        IUItem.quantumBoots = new ItemArmorImprovemedQuantum("itemArmorQuantumBoots", EntityEquipmentSlot.FEET,
+        IUItem.spectral_boots = new ItemArmorImprovemedQuantum("itemArmorQuantumBoots", EntityEquipmentSlot.FEET,
                 Config.armor_maxcharge,
                 Config.armor_transferlimit, Config.tier
         );
-        IUItem.nanodrill = new ItemEnergyDrill(
-                Item.ToolMaterial.DIAMOND,
-                "nanodrill",
-                Config.nano_transfer,
-                Config.nano_maxEnergy,
-                2,
-                30,
-                15,
-                Config.nano_energyPerOperation,
-                Config.nano_energyPerbigHolePowerOperation
+        IUItem.nanodrill = new ItemEnergyInstruments(EnumTypeInstruments.DRILL, EnumVarietyInstruments.NANO, "nanodrill");
+        IUItem.quantumdrill = new ItemEnergyInstruments(
+                EnumTypeInstruments.DRILL,
+                EnumVarietyInstruments.QUANTUM,
+                "quantumdrill"
         );
-        IUItem.quantumdrill = new ItemEnergyDrill(
-                Item.ToolMaterial.DIAMOND,
-                "quantumdrill",
-                Config.quantum_transfer,
-                Config.quantum_maxEnergy,
-                3,
-                40,
-                25,
-                Config.quantum_energyPerOperation,
-                Config.quantum_energyPerbigHolePowerOperation
-        );
-        IUItem.spectraldrill = new ItemEnergyDrill(
-                Item.ToolMaterial.DIAMOND,
-                "spectraldrill",
-                Config.spectral_transfer,
-                Config.spectral_maxEnergy,
-                4,
-                60,
-                30,
-                Config.spectral_energyPerOperation,
-                Config.spectral_energyPerbigHolePowerOperation
+        IUItem.spectraldrill = new ItemEnergyInstruments(
+                EnumTypeInstruments.DRILL,
+                EnumVarietyInstruments.SPECTRAL,
+                "spectraldrill"
         );
         IUItem.advjetpack = new ItemAdvJetpack(
                 "advjetpack",
@@ -928,7 +824,7 @@ public class Register {
         IUItem.machinekit = new ItemUpgradeMachinesKit();
         IUItem.circuitSpectral = new ItemStack(IUItem.basecircuit, 1, 11);
         IUItem.cirsuitQuantum = new ItemStack(IUItem.basecircuit, 1, 10);
-        IUItem.QuantumItems9 = new ItemStack(IUItem.basecircuit, 1, 9);
+        IUItem.circuitNano = new ItemStack(IUItem.basecircuit, 1, 9);
         IUItem.module8 = new ItemStack(IUItem.module7, 1, 10);
         IUItem.module1 = new ItemStack(IUItem.basemodules, 1, 0);
         IUItem.module2 = new ItemStack(IUItem.basemodules, 1, 3);

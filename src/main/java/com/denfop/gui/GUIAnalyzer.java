@@ -103,21 +103,21 @@ public class GuiAnalyzer extends GuiIC2<ContainerAnalyzer> {
                 10, 80 + 8 + 8 + 8 - 2, ModUtils.convertRGBcolorToInt(217, 217, 217)
         );
         this.fontRenderer.drawString(TextFormatting.GREEN + Localization.translate("cost.name") +
-                        TextFormatting.WHITE + ModUtils.getString(this.container.base.sum * this.container.base.inputslot.getenergycost()) + " EU",
+                        TextFormatting.WHITE + ModUtils.getString(this.container.base.sum * this.container.base.consume) + " EU",
                 10, 80 + 8 + 8 + 8 + 8 - 2, ModUtils.convertRGBcolorToInt(217, 217, 217)
         );
         this.fontRenderer.drawString(TextFormatting.GREEN + Localization.translate("cost.name1") +
-                        TextFormatting.WHITE + ModUtils.getString1(this.container.base.inputslot.getenergycost()) + "EU",
+                        TextFormatting.WHITE + ModUtils.getString1(this.container.base.consume) + "EU",
                 10, 80 + 8 + 8 + 8 + 8 + 8 - 2, ModUtils.convertRGBcolorToInt(217, 217, 217)
         );
 
         new AdvArea(this, 101, 159, 139, 170)
                 .withTooltip(Localization.translate("gui.MolecularTransformer.progress") + ": " + ModUtils.getString(this.container.base.getProgress() * 100) + "%")
-                .drawForeground(xOffset, yOffset);
+                .drawForeground(par1, par2);
         new AdvArea(this, 148, 159, 186, 170)
                 .withTooltip("EU: " + ModUtils.getString(this.container.base.energy.getEnergy()) + "/" + ModUtils.getString(
                         this.container.base.energy.getCapacity()))
-                .drawForeground(xOffset, yOffset);
+                .drawForeground(par1, par2);
 
         if (!(this.container.base.inputslotA.isEmpty())) {
             if (!(this.container.base.listore.isEmpty())) {
@@ -129,16 +129,17 @@ public class GuiAnalyzer extends GuiIC2<ContainerAnalyzer> {
 
                     String tooltip1 =
                             TextFormatting.GREEN + Localization.translate("chance.ore") + TextFormatting.WHITE + (this.container.base.listnumberore.get(
-                                    index) - 1) + ".";
+                                    index) - 1);
                     double number = this.container.base.listnumberore.get(index) - 1;
                     double sum = this.container.base.sum;
                     double m = (number / sum) * 100;
                     String tooltip2 = TextFormatting.GREEN + Localization.translate("chance.ore1") + TextFormatting.WHITE + ModUtils.getString1(
-                            m) + "%" + ".";
+                            m) + "%";
 
                     String tooltip = TextFormatting.GREEN + Localization.translate("name.ore") + TextFormatting.WHITE + stack.getDisplayName();
                     String tooltip3 = TextFormatting.GREEN + Localization.translate("middleheight") + TextFormatting.WHITE + ModUtils.getString1(
-                            this.container.base.middleheightores.get(index)) + ".";
+                            index < this.container.base.middleheightores.size() ?
+                                    this.container.base.middleheightores.get(index) : 0);
                     String tooltip4 = TextFormatting.GREEN + Localization.translate("cost.name") + TextFormatting.WHITE + ModUtils.getString(
                             this.container.base.listnumberore.get(index) * this.container.base.inputslot.getenergycost()) + "EU";
 
@@ -165,7 +166,8 @@ public class GuiAnalyzer extends GuiIC2<ContainerAnalyzer> {
 
             String tooltip = TextFormatting.GREEN + Localization.translate("name.ore") + TextFormatting.WHITE + stack.getDisplayName();
             String tooltip3 = TextFormatting.GREEN + Localization.translate("middleheight") + TextFormatting.WHITE + ModUtils.getString1(
-                    this.container.base.middleheightores.get(i2)) + ".";
+                    i2 < this.container.base.middleheightores.size() ? this.container.base.middleheightores.get(i2) : 0) +
+                    ".";
             String tooltip4 = TextFormatting.GREEN + Localization.translate("cost.name") + TextFormatting.WHITE + ModUtils.getString(
                     this.container.base.listnumberore.get(i2) * this.container.base.inputslot.getenergycost()) + "EU";
 

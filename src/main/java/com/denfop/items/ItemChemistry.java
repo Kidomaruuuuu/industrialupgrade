@@ -33,7 +33,7 @@ public class ItemChemistry extends ItemIC2 implements ICustomDamageItem, IModelR
         this.setMaxStackSize(1);
         setUnlocalizedName(name);
         this.name = name;
-        setMaxDamage(1000);
+        setMaxDamage(20000);
         this.path = "chemistry";
         BlocksItems.registerItem((Item) this, IUCore.getIdentifier(name)).setUnlocalizedName(name);
         IUCore.proxy.addIModelRegister(this);

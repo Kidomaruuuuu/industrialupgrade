@@ -1,10 +1,18 @@
 package com.denfop.tiles.base;
 
+import com.denfop.componets.AdvEnergy;
 import ic2.core.block.TileEntityInventory;
 import ic2.core.block.comp.Fluids;
+import ic2.core.init.Localization;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.List;
 
 public abstract class TileEntityLiquidTankInventory extends TileEntityInventory {
 
@@ -13,6 +21,19 @@ public abstract class TileEntityLiquidTankInventory extends TileEntityInventory 
     public TileEntityLiquidTankInventory(int tanksize) {
         Fluids fluids = this.addComponent(new Fluids(this));
         this.fluidTank = fluids.addTank("fluidTank", tanksize * 1000);
+
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
+        if (this.hasComponent(AdvEnergy.class)) {
+            AdvEnergy energy = this.getComponent(AdvEnergy.class);
+            if (!energy.getSourceDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSourceTier()));
+            } else if (!energy.getSinkDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSinkTier()));
+            }
+        }
 
     }
 

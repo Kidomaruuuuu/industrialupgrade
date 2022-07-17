@@ -38,7 +38,7 @@ public class ItemsAdminPanel extends ItemMulti<ItemsAdminPanel.Types> implements
 
     public ItemsAdminPanel() {
         super(null, Types.class);
-        this.setCreativeTab(IUCore.SSPTab);
+        this.setCreativeTab(IUCore.IUTab);
         BlocksItems.registerItem((Item) this, IUCore.getIdentifier(NAME)).setUnlocalizedName(NAME);
         IUCore.proxy.addIModelRegister(this);
     }

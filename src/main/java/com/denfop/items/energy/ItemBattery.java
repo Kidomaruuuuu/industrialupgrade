@@ -12,6 +12,7 @@ import ic2.core.util.StackUtil;
 import ic2.core.util.Util;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,8 +26,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.Nullable;
+import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 public class ItemBattery extends BaseElectricItem implements IModelRegister {
 
@@ -49,6 +53,42 @@ public class ItemBattery extends BaseElectricItem implements IModelRegister {
                 "battery" + "/" + name + extraName;
 
         return new ModelResourceLocation(loc, null);
+    }
+
+    @Override
+    public void addInformation(
+            final ItemStack stack,
+            @Nullable final World worldIn,
+            final List<String> tooltip,
+            final ITooltipFlag flagIn
+    ) {
+        if (this.wirelessCharge) {
+            int mode = ModUtils.NBTGetInteger(stack, "mode");
+            if (mode > 4 || mode < 0) {
+                mode = 0;
+            }
+
+            tooltip.add(
+                    TextFormatting.GREEN + Localization.translate("message.text.mode") + ": "
+                            + Localization.translate("message.battery.mode." + mode)
+            );
+            if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                tooltip.add(Localization.translate("press.lshift"));
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                tooltip.add(Localization.translate("iu.changemode_key") + Localization.translate(
+                        "iu.changemode_rcm1"));
+            }
+        }
+        super.addInformation(stack, worldIn, tooltip, flagIn);
+    }
+
+    public int getItemEnchantability() {
+        return 0;
+    }
+
+    public boolean isBookEnchantable(@Nonnull ItemStack stack, @Nonnull ItemStack book) {
+        return false;
     }
 
     @Override

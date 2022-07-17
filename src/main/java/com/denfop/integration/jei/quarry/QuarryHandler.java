@@ -16,7 +16,7 @@ public class QuarryHandler {
         this.output = output;
     }
 
-    public static List<QuarryHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<QuarryHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

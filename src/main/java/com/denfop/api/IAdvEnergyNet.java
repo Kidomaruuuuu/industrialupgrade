@@ -1,6 +1,8 @@
 package com.denfop.api;
 
+import aroma1997.uncomplication.enet.SunCoef;
 import ic2.api.energy.IEnergyNet;
+import net.minecraft.world.World;
 
 public interface IAdvEnergyNet extends IEnergyNet {
 
@@ -12,5 +14,6 @@ public interface IAdvEnergyNet extends IEnergyNet {
 
     double getRFFromEU(int amount);
 
+    SunCoef getSunCoefficient(World world);
 
 }

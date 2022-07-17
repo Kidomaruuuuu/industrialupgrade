@@ -20,5 +20,7 @@ public interface IQEConductor extends IQEAcceptor, IQEEmitter {
 
     void removeConductor();
 
+    void update_render();
+
 }
 

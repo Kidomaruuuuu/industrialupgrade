@@ -15,7 +15,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class TileEntityElectrolyzer extends TileEntityBaseLiquedMachine {
+public class TileEntityElectrolyzer extends TileEntityBaseLiquedMachine implements IManufacturerBlock {
 
     public final InvSlotElectrolyzer cathodeslot;
     public final InvSlotElectrolyzer anodeslot;
@@ -84,7 +84,7 @@ public class TileEntityElectrolyzer extends TileEntityBaseLiquedMachine {
 
 
         if (this.cathodeslot.isEmpty() || this.anodeslot.isEmpty()) {
-            if(this.getActive()) {
+            if (this.getActive()) {
                 this.setActive(false);
                 initiate(2);
             }
@@ -116,7 +116,7 @@ public class TileEntityElectrolyzer extends TileEntityBaseLiquedMachine {
                 drains = drain ? drains + 2 * cap : drains;
                 drains = drain1 ? drains + cap1 : drains;
                 this.getFluidTank(0).drain(drains, true);
-                if(!this.getActive()) {
+                if (!this.getActive()) {
                     this.setActive(true);
                     initiate(0);
                 }
@@ -148,6 +148,22 @@ public class TileEntityElectrolyzer extends TileEntityBaseLiquedMachine {
         }
 
 
+    }
+
+
+    @Override
+    public int getLevel() {
+        return this.level;
+    }
+
+    @Override
+    public void setLevel(final int level) {
+        this.level = level;
+    }
+
+    @Override
+    public void removeLevel(final int level) {
+        this.level -= level;
     }
 
 

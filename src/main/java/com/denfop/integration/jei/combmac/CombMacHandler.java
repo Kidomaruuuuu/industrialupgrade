@@ -19,7 +19,7 @@ public class CombMacHandler {
         this.output.setCount(3);
     }
 
-    public static List<CombMacHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<CombMacHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

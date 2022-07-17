@@ -6,17 +6,16 @@ import com.denfop.container.ContainerMagnet;
 import com.denfop.gui.GuiMagnet;
 import com.denfop.tiles.base.TileEntityAntiMagnet;
 import com.denfop.tiles.base.TileEntityElectricMachine;
-import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.core.ContainerBase;
 import ic2.core.ExplosionIC2;
 import ic2.core.IC2;
-import ic2.core.IHasGui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -25,8 +24,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-public class TileEntityMagnet extends TileEntityElectricMachine
-        implements IHasGui, INetworkTileEntityEventListener {
+public class TileEntityMagnet extends TileEntityElectricMachine {
 
     public final int energyconsume;
     public boolean work;
@@ -52,18 +50,15 @@ public class TileEntityMagnet extends TileEntityElectricMachine
             for (int x = this.pos.getX() - 10; x <= this.pos.getX() + 10; x++) {
                 for (int y = this.pos.getY() - 10; y <= this.pos.getY() + 10; y++) {
                     for (int z = this.pos.getZ() - 10; z <= this.pos.getZ() + 10; z++) {
-                        if (getWorld().getTileEntity(new BlockPos(x, y, z)) != null && !(new BlockPos(
+                        final TileEntity tileEntity = getWorld().getTileEntity(new BlockPos(x, y, z));
+
+                        if (tileEntity != null && !(new BlockPos(
                                 x,
                                 y,
                                 z
                         ).equals(this.pos))) {
-                            if (getWorld().getTileEntity(new BlockPos(x, y, z)) instanceof TileEntityAntiMagnet) {
-                                TileEntityAntiMagnet tile = (TileEntityAntiMagnet) getWorld().getTileEntity(new BlockPos(
-                                        x,
-                                        y,
-                                        z
-                                ));
-                                assert tile != null;
+                            if (tileEntity instanceof TileEntityAntiMagnet) {
+                                TileEntityAntiMagnet tile = (TileEntityAntiMagnet) tileEntity;
                                 if (!tile.player.equals(this.player)) {
                                     this.work = false;
                                 }
@@ -217,10 +212,5 @@ public class TileEntityMagnet extends TileEntityElectricMachine
     public void onGuiClosed(EntityPlayer arg0) {
     }
 
-    @Override
-    public String getInventoryName() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
 }

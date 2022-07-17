@@ -2,12 +2,15 @@ package com.denfop.invslot;
 
 import cofh.redstoneflux.api.IEnergyContainerItem;
 import com.denfop.IUItem;
+import com.denfop.api.energy.IAdvEnergySink;
 import com.denfop.componets.AdvEnergy;
 import com.denfop.items.modules.EnumModule;
 import com.denfop.items.modules.ItemAdditionModule;
 import com.denfop.items.modules.ItemBaseModules;
 import com.denfop.tiles.base.TileEntityElectricBlock;
+import com.denfop.tiles.panels.entity.WirelessTransfer;
 import com.denfop.utils.ModUtils;
+import ic2.api.energy.tile.IEnergySink;
 import ic2.api.item.ElectricItem;
 import ic2.api.item.IElectricItem;
 import ic2.core.block.TileEntityBlock;
@@ -47,6 +50,7 @@ public class InvSlotElectricBlock extends InvSlot {
             tile.movementchargeitemrf = this.getstats().get(3);
 
             tile.rf = this.getstats().get(4);
+
         }
         for (int i = 0; i < this.size(); i++) {
             if (!this.get(i).isEmpty() && this.get(i).getItem() instanceof ItemAdditionModule && this
@@ -55,6 +59,8 @@ public class InvSlotElectricBlock extends InvSlot {
                 tile.wireless = true;
             }
         }
+
+
     }
 
     public boolean accepts(ItemStack itemStack) {
@@ -117,16 +123,16 @@ public class InvSlotElectricBlock extends InvSlot {
     public List<Boolean> getstats() {
         List<Boolean> list = new ArrayList<>();
         List<Boolean> list1 = new ArrayList<>();
-
+        if (this.isEmpty()) {
+            list1.add(false);
+            list1.add(false);
+            list1.add(false);
+            list1.add(false);
+            list1.add(false);
+            return list1;
+        }
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) == null) {
-                list.add(false);
-                list.add(false);
-                list.add(false);
-                list.add(false);
-                list.add(false);
-                continue;
-            }
+
 
             ItemStack stack = this.get(i);
             if (stack.getItemDamage() == 5) {
@@ -185,6 +191,14 @@ public class InvSlotElectricBlock extends InvSlot {
         return false;
     }
 
+    @Override
+    public void put(final int index, final ItemStack content) {
+        super.put(index, content);
+        if (this.type == 3) {
+            wirelessmodule();
+        }
+    }
+
     public void wirelessmodule() {
         TileEntityElectricBlock tile = (TileEntityElectricBlock) base;
 
@@ -208,13 +222,16 @@ public class InvSlotElectricBlock extends InvSlot {
 
                     assert tile1 != null;
                     if (tile1.getComponent(Energy.class) != null) {
+
                         final Energy energy = tile1.getComponent(Energy.class);
-                        tile.energy.useEnergy(energy.addEnergy(Math.min(tile.energy.getEnergy(),
-                                energy.getCapacity() - energy.getEnergy())));
-                    }else  if (tile1.getComponent(AdvEnergy.class) != null) {
+                        if (energy.getDelegate() instanceof IEnergySink) {
+                            tile.wirelessTransferList.add(new WirelessTransfer(tile1, (IEnergySink) energy.getDelegate()));
+                        }
+                    } else if (tile1.getComponent(AdvEnergy.class) != null) {
                         final AdvEnergy energy = tile1.getComponent(AdvEnergy.class);
-                        tile.energy.useEnergy(energy.addEnergy(Math.min(tile.energy.getEnergy(),
-                                energy.getCapacity() - energy.getEnergy())));
+                        if (energy.getDelegate() instanceof IAdvEnergySink) {
+                            tile.wirelessTransferList.add(new WirelessTransfer(tile1, (IEnergySink) energy.getDelegate()));
+                        }
                     }
 
                 }

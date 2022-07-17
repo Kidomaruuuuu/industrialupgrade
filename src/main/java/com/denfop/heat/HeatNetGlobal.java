@@ -40,12 +40,6 @@ public class HeatNetGlobal implements IHeatNet {
         return HeatNetGlobal.worldToEnergyNetMap.get(world);
     }
 
-    public static void onTickStart(final World world) {
-        final HeatNetLocal energyNet = getForWorld(world);
-        if (energyNet != null) {
-            energyNet.onTickStart();
-        }
-    }
 
     public static void onTickEnd(final World world) {
         final HeatNetLocal energyNet = getForWorld(world);
@@ -56,8 +50,9 @@ public class HeatNetGlobal implements IHeatNet {
 
     @Override
     public IHeatTile getTile(final World var1, final BlockPos var2) {
-        if (var1.getTileEntity(var2) instanceof IHeatTile) {
-            return (IHeatTile) var1.getTileEntity(var2);
+        final HeatNetLocal local = getForWorld(var1);
+        if (local != null) {
+            return local.getTileEntity(var2);
         }
         return null;
     }
@@ -75,7 +70,7 @@ public class HeatNetGlobal implements IHeatNet {
 
     @Override
     public void removeTile(final IHeatTile var1) {
-        final HeatNetLocal local = getForWorld(var1.getWorldTile());
+        final HeatNetLocal local = getForWorld(((TileEntity) var1).getWorld());
         local.removeTile(var1);
     }
 

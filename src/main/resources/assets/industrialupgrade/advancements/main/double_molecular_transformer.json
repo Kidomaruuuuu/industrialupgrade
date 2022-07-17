@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "industrialupgrade:double_molecular"
+      "item": "industrialupgrade:double_transformer"
     },
     "title": {
       "translate": "achievement.double_molecular_transformer"
@@ -17,7 +17,7 @@
       "conditions": {
         "items": [
           {
-            "item": "industrialupgrade:double_molecular"
+            "item": "industrialupgrade:double_transformer"
           }
         ]
       }

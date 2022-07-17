@@ -7,12 +7,9 @@ import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.audio.AudioSource;
 import com.denfop.container.ContainerBaseWitherMaker;
 import com.denfop.invslot.InvSlotUpgrade;
-import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.upgrade.IUpgradableBlock;
-import ic2.api.upgrade.IUpgradeItem;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
-import ic2.core.IHasGui;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -24,7 +21,7 @@ import java.util.List;
 import java.util.Random;
 
 public abstract class TileEntityBaseWitherMaker extends TileEntityElectricMachine
-        implements IHasGui, INetworkTileEntityEventListener, IUpgradableBlock, IUpdateTick {
+        implements IUpgradableBlock, IUpdateTick {
 
     public final int defaultEnergyConsume;
     public final int defaultOperationLength;
@@ -115,7 +112,9 @@ public abstract class TileEntityBaseWitherMaker extends TileEntityElectricMachin
                             .get(i)
                             .getItem() == Items.SKULL && this.inputSlotA.get(i).getItemDamage() == 1) {
                         for (int j = 0; j < 3; j++) {
-                            if (this.inputSlotA.get(j).isEmpty()) {
+                            if (this.inputSlotA.get(j).isEmpty() && !this.inputSlotA.get(i).isEmpty() && this.inputSlotA
+                                    .get(i)
+                                    .getCount() > 1) {
                                 this.inputSlotA.consume(i, 1);
                                 ItemStack stack = new ItemStack(Items.SKULL, 1, 1);
                                 this.inputSlotA.put(j, stack);
@@ -143,7 +142,9 @@ public abstract class TileEntityBaseWitherMaker extends TileEntityElectricMachin
             }
         }
         if (output != null && this.outputSlot.canAdd(output.getRecipe().output.items) && this.energy.canUseEnergy(energyConsume)) {
-            setActive(true);
+            if (!this.getActive()) {
+                setActive(true);
+            }
             if (this.progress == 0) {
                 IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
             }
@@ -169,17 +170,16 @@ public abstract class TileEntityBaseWitherMaker extends TileEntityElectricMachin
             if (output == null) {
                 this.progress = 0;
             }
-            setActive(false);
+            if (this.getActive()) {
+                setActive(false);
+            }
         }
-        if((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark())
+        if ((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark()) {
             setOverclockRates();
-        if (needsInvUpdate) {
-            super.markDirty();
         }
     }
 
     public void setOverclockRates() {
-        this.upgradeSlot.onChanged();
         double previousProgress = (double) this.progress / (double) this.operationLength;
         double stackOpLen = (this.defaultOperationLength + this.upgradeSlot.extraProcessTime) * 64.0D
                 * this.upgradeSlot.processTimeMultiplier;

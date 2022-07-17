@@ -34,6 +34,7 @@ public class GuiNuclearReactor extends GuiIC2<ContainerBaseNuclearReactor> {
         this.ySize = 243;
         this.xSize = 256;
     }
+
     protected void mouseClicked(int i, int j, int k) throws IOException {
         super.mouseClicked(i, j, k);
         int xMin = (this.width - this.xSize) / 2;
@@ -44,6 +45,7 @@ public class GuiNuclearReactor extends GuiIC2<ContainerBaseNuclearReactor> {
             IC2.network.get(false).initiateClientTileEntityEvent(this.container.base, 0);
         }
     }
+
     public void drawForegroundLayer(int par1, int par2) {
         super.drawForegroundLayer(par1, par2);
 
@@ -60,7 +62,7 @@ public class GuiNuclearReactor extends GuiIC2<ContainerBaseNuclearReactor> {
                 Math.round(((GuiNuclearReactor.this.container).base).getOfferedEnergy())
         )), 5752026, false, 4, 0, false, true).drawForeground(par1, par2)
         ;
-        new AdvArea(this,216,39,229,51).withTooltip(this.container.base.work ? Localization.translate("turn_off") :
+        new AdvArea(this, 216, 39, 229, 51).withTooltip(this.container.base.work ? Localization.translate("turn_off") :
                 Localization.translate("turn_on")).drawForeground(par1, par2);
     }
 
@@ -100,9 +102,9 @@ public class GuiNuclearReactor extends GuiIC2<ContainerBaseNuclearReactor> {
         ;
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.mc.getTextureManager().bindTexture(this.background);
-        this.drawTexturedModalRect(xOffset+209, yOffset+27, 209, 27, 40, 61-27);
-        if(this.container.base.work){
-            this.drawTexturedModalRect(xOffset+215, yOffset+38, 224, 70, 239-224, 84-70);
+        this.drawTexturedModalRect(xOffset + 209, yOffset + 27, 209, 27, 40, 61 - 27);
+        if (this.container.base.work) {
+            this.drawTexturedModalRect(xOffset + 215, yOffset + 38, 224, 70, 239 - 224, 84 - 70);
 
         }
 

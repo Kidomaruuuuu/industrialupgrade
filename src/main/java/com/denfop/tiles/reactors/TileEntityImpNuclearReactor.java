@@ -10,7 +10,6 @@ import ic2.core.init.MainConfig;
 import ic2.core.util.ConfigUtil;
 import ic2.core.util.LogCategory;
 import ic2.core.util.Util;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -55,6 +54,7 @@ public class TileEntityImpNuclearReactor extends TileEntityBaseNuclearReactorEle
         return newSubTiles;
     }
 
+
     @Override
     void getSubs() {
         World world = this.getWorld();
@@ -69,6 +69,7 @@ public class TileEntityImpNuclearReactor extends TileEntityBaseNuclearReactorEle
         }
 
         if (!newSubTiles.equals(this.subTiles)) {
+            this.change = true;
             if (this.addedToEnergyNet) {
                 MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent(this));
             }
@@ -79,6 +80,7 @@ public class TileEntityImpNuclearReactor extends TileEntityBaseNuclearReactorEle
                 MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent(this));
             }
         }
+        this.getReactorSize();
     }
 
 
@@ -124,23 +126,29 @@ public class TileEntityImpNuclearReactor extends TileEntityBaseNuclearReactorEle
     }
 
     public short getReactorSize() {
-
-        short cols = (short) (this.sizeX - 6);
-
-        EnumFacing[] var2 = EnumFacing.values();
-
-
-        for (EnumFacing direction : var2) {
-            TileEntity target = this.getWorld().getTileEntity(pos.offset(direction));
-            if (target instanceof TileEntityImpReactorChamberElectric) {
-                cols++;
-            }
+        if (world == null) {
+            return 11;
         }
+        if (this.change) {
+            short cols = (short) (this.sizeX - 6);
 
-        return cols;
+            EnumFacing[] var2 = EnumFacing.values();
+
+
+            for (EnumFacing direction : var2) {
+                TileEntity target = this.getWorld().getTileEntity(pos.offset(direction));
+                if (target instanceof TileEntityImpReactorChamberElectric) {
+                    cols++;
+                }
+            }
+            this.size = cols;
+            this.change = false;
+            this.reactorSlot.update();
+            return cols;
+        } else {
+            return (short) this.size;
+        }
     }
-
-
 
 
 }

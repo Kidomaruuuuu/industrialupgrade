@@ -1,19 +1,29 @@
 package com.denfop.tiles.base;
 
+import cofh.redstoneflux.api.IEnergyContainerItem;
+import com.denfop.Config;
 import com.denfop.IUCore;
+import com.denfop.IUItem;
+import com.denfop.Ic2Items;
 import com.denfop.container.ContainerFisher;
 import com.denfop.gui.GuiFisher;
 import com.denfop.invslot.InvSlotFisher;
-import ic2.api.network.INetworkTileEntityEventListener;
+import com.denfop.utils.ModUtils;
+import ic2.api.item.ElectricItem;
+import ic2.api.item.IElectricItem;
+import ic2.api.upgrade.IUpgradableBlock;
+import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
-import ic2.core.IHasGui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityFishHook;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Enchantments;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.storage.loot.LootContext;
@@ -22,12 +32,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.lang.reflect.Field;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class TileEntityFisher extends TileEntityElectricMachine
-        implements IHasGui, INetworkTileEntityEventListener {
+        implements IUpgradableBlock, IManufacturerBlock {
 
     private static Field _Random_seed = null;
 
@@ -47,6 +59,7 @@ public class TileEntityFisher extends TileEntityElectricMachine
     protected Random _rand = null;
     protected float _next = (float) (Double.NaN);
     private boolean checkwater;
+    private int level = 1;
 
     public TileEntityFisher() {
         super(1E4, 14, 9);
@@ -54,6 +67,21 @@ public class TileEntityFisher extends TileEntityElectricMachine
         this.energyconsume = 100;
         this.checkwater = false;
         this.inputslot = new InvSlotFisher(this);
+    }
+
+    @Override
+    public int getLevel() {
+        return this.level;
+    }
+
+    @Override
+    public void setLevel(final int level) {
+        this.level = level;
+    }
+
+    @Override
+    public void removeLevel(final int level) {
+        this.level -= level;
     }
 
     private boolean checkwater() {
@@ -73,6 +101,12 @@ public class TileEntityFisher extends TileEntityElectricMachine
         return true;
     }
 
+    @Override
+    protected void onLoaded() {
+        super.onLoaded();
+        checkwater = checkwater();
+    }
+
     public void updateEntityServer() {
 
         super.updateEntityServer();
@@ -86,24 +120,39 @@ public class TileEntityFisher extends TileEntityElectricMachine
             checkwater = checkwater();
         }
         if (checkwater && !this.inputslot.isEmpty()) {
+            if ((this.inputslot.get().getItem() instanceof IElectricItem)) {
+                boolean need = ElectricItem.manager.canUse(this.inputslot.get(), 100);
+                if (!need) {
+                    return;
+                }
+            } else if ((this.inputslot.get().getItem() instanceof IEnergyContainerItem)) {
+                IEnergyContainerItem item = (IEnergyContainerItem) this.inputslot.get().getItem();
+                int energy = item.getEnergyStored(this.inputslot.get());
+                if (energy < 100 * Config.coefficientrf) {
+                    return;
+                }
+            }
             if (progress < 100) {
                 if (this.energy.getEnergy() >= this.energyconsume) {
-                    progress++;
-
-                    initiate(0);
-                    this.setActive(true);
+                    progress += this.level;
+                    if (!this.getActive()) {
+                        initiate(0);
+                        this.setActive(true);
+                    }
                 } else {
-                    initiate(2);
-                    this.setActive(false);
+                    if (this.getActive()) {
+                        initiate(2);
+                        this.setActive(false);
+                    }
                 }
             }
         } else {
-            initiate(2);
-            this.setActive(false);
+            if (this.getActive()) {
+                initiate(2);
+                this.setActive(false);
+            }
         }
-        if (getWorld().provider.getWorldTime() % 60 == 0) {
-            initiate(2);
-        }
+
         if (checkwater && progress >= 100) {
             if (!this.inputslot.isEmpty()) {
                 ItemStack stack = this.inputslot.get();
@@ -130,20 +179,81 @@ public class TileEntityFisher extends TileEntityElectricMachine
                                 .generateLootForPools(this._rand, lootcontext$builder.build());
 
                 for (ItemStack var1 : var3) {
-                    if (this.outputSlot.canAdd(var1)) {
-                        this.energy.useEnergy(this.energyconsume * 10);
-                        outputSlot.add(var1);
+                    if (this.outputSlot.add(var1)) {
+                        this.energy.useEnergy(this.energyconsume);
                     }
                     this._next = this._rand.nextFloat();
                     progress = 0;
-                    this.inputslot.get().setItemDamage(this.inputslot.get().getItemDamage() + 1);
-                    if (this.inputslot.get().getItemDamage() >= this.inputslot.get().getMaxDamage()) {
+                }
+                int damage = stack.getMaxDamage() - stack.getItemDamage();
+                int m = EnchantmentHelper.getEnchantmentLevel(Enchantments.UNBREAKING, stack);
+                if (!((stack.getItem() instanceof IElectricItem) || (stack.getItem() instanceof IEnergyContainerItem))) {
+                    if (this.inputslot.get().getItemDamage() > -1) {
+
+                        Random rand = this.getWorld().rand;
+                        if (rand.nextInt(1 + m) == 0 && damage > -1) {
+                            this.inputslot.get().setItemDamage(this.inputslot.get().getItemDamage() + 1);
+                        }
+
+
+                    }
+
+                    if (this.inputslot.get().getItemDamage() >= this.inputslot.get().getMaxDamage() && damage > -1) {
                         this.inputslot.consume(1);
+                    }
+                } else {
+                    Random rand = this.getWorld().rand;
+                    if ((stack.getItem() instanceof IElectricItem)) {
+                        if (rand.nextInt(1 + m) == 0) {
+                            ElectricItem.manager.use(stack, 100, null);
+                        }
+                    } else {
+                        IEnergyContainerItem item = (IEnergyContainerItem) stack.getItem();
+                        if (rand.nextInt(1 + m) == 0) {
+                            item.extractEnergy(stack, 100 * Config.coefficientrf, false);
+                        }
                     }
                 }
             }
         }
+        if (getActive()) {
+            if (this.world.getWorldTime() % 20 == 0 && !this.outputSlot.isEmpty()) {
+                ItemStack stack3 = Ic2Items.ejectorUpgrade;
+                ModUtils.tick(stack3, this.outputSlot, this);
+            }
+        }
+    }
 
+    protected List<ItemStack> getWrenchDrops(EntityPlayer player, int fortune) {
+        List<ItemStack> ret = super.getWrenchDrops(player, fortune);
+        if (this.level != 0) {
+            ret.add(new ItemStack(IUItem.upgrade_speed_creation, this.level));
+            this.level = 0;
+        }
+        return ret;
+    }
+
+    @Override
+    protected boolean onActivated(
+            final EntityPlayer player,
+            final EnumHand hand,
+            final EnumFacing side,
+            final float hitX,
+            final float hitY,
+            final float hitZ
+    ) {
+        if (level < 10) {
+            ItemStack stack = player.getHeldItem(hand);
+            if (!stack.getItem().equals(IUItem.upgrade_speed_creation)) {
+                return super.onActivated(player, hand, side, hitX, hitY, hitZ);
+            } else {
+                stack.shrink(1);
+                this.level++;
+                return false;
+            }
+        } else {
+            return super.onActivated(player, hand, side, hitX, hitY, hitZ);
+        }
     }
 
     public void readFromNBT(NBTTagCompound nbttagcompound) {
@@ -156,12 +266,13 @@ public class TileEntityFisher extends TileEntityElectricMachine
         if (nbttagcompound.hasKey("next")) {
             this._next = nbttagcompound.getFloat("next");
         }
+        this.level = nbttagcompound.getInteger("level");
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound) {
         super.writeToNBT(nbttagcompound);
         nbttagcompound.setFloat("next", this._next);
-
+        nbttagcompound.setInteger("level", this.level);
         nbttagcompound.setInteger("progress", this.progress);
         if (_Random_seed != null) {
             try {
@@ -215,6 +326,23 @@ public class TileEntityFisher extends TileEntityElectricMachine
 
 
         }
+    }
+
+    @Override
+    public double getEnergy() {
+        return 0;
+    }
+
+    @Override
+    public boolean useEnergy(final double v) {
+        return false;
+    }
+
+    @Override
+    public Set<UpgradableProperty> getUpgradableProperties() {
+        return EnumSet.of(
+                UpgradableProperty.ItemProducing
+        );
     }
 
 }

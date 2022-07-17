@@ -54,6 +54,8 @@ public class ContainerBaseQuarry extends ContainerFullInv<TileEntityBaseQuarry> 
         ret.add("energyconsume");
         ret.add("energy");
         ret.add("blockpos");
+        ret.add("energy1");
+        ret.add("cold");
         ret.add("min_y");
         ret.add("max_y");
         ret.add("exp");

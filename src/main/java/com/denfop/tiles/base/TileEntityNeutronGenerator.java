@@ -1,10 +1,14 @@
 package com.denfop.tiles.base;
 
 import com.denfop.Config;
+import com.denfop.api.recipe.InvSlotOutput;
 import com.denfop.blocks.FluidName;
 import com.denfop.container.ContainerNeutronGenerator;
 import com.denfop.gui.GuiNeutronGenerator;
+import com.denfop.invslot.InvSlotConsumableLiquid;
+import com.denfop.invslot.InvSlotConsumableLiquidByList;
 import com.denfop.invslot.InvSlotUpgrade;
+import ic2.api.network.INetworkClientTileEntityEventListener;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
@@ -14,10 +18,6 @@ import ic2.core.audio.AudioSource;
 import ic2.core.block.comp.Fluids;
 import ic2.core.block.invslot.InvSlot.Access;
 import ic2.core.block.invslot.InvSlot.InvSide;
-import ic2.core.block.invslot.InvSlotConsumableLiquid;
-import ic2.core.block.invslot.InvSlotConsumableLiquid.OpType;
-import ic2.core.block.invslot.InvSlotConsumableLiquidByList;
-import ic2.core.block.invslot.InvSlotOutput;
 import ic2.core.init.MainConfig;
 import ic2.core.network.GuiSynced;
 import ic2.core.profile.NotClassic;
@@ -34,7 +34,8 @@ import java.util.EnumSet;
 import java.util.Set;
 
 @NotClassic
-public class TileEntityNeutronGenerator extends TileEntityElectricMachine implements IHasGui, IUpgradableBlock {
+public class TileEntityNeutronGenerator extends TileEntityElectricMachine implements IHasGui, IUpgradableBlock,
+        INetworkClientTileEntityEventListener {
 
     private static final int DEFAULT_TIER = ConfigUtil.getInt(MainConfig.get(), "balance/matterFabricatorTier");
     public final InvSlotUpgrade upgradeSlot;
@@ -44,7 +45,7 @@ public class TileEntityNeutronGenerator extends TileEntityElectricMachine implem
     public final FluidTank fluidTank;
     protected final Fluids fluids;
     private final float energycost;
-    private double lastEnergy;
+    public boolean work = true;
     private AudioSource audioSource;
 
     public TileEntityNeutronGenerator() {
@@ -52,7 +53,13 @@ public class TileEntityNeutronGenerator extends TileEntityElectricMachine implem
 
         this.energycost = (float) Config.energy;
         this.outputSlot = new InvSlotOutput(this, "output", 1);
-        this.containerslot = new InvSlotConsumableLiquidByList(this, "container", Access.I, 1, InvSide.TOP, OpType.Fill,
+        this.containerslot = new InvSlotConsumableLiquidByList(
+                this,
+                "container",
+                Access.I,
+                1,
+                InvSide.TOP,
+                InvSlotConsumableLiquid.OpType.Fill,
                 FluidName.fluidNeutron.getInstance()
         );
         this.upgradeSlot = new com.denfop.invslot.InvSlotUpgrade(this, "upgrade", 4);
@@ -68,16 +75,6 @@ public class TileEntityNeutronGenerator extends TileEntityElectricMachine implem
         return ret > 2.147483647E9D ? 2147483647 : (int) ret;
     }
 
-    public void readFromNBT(NBTTagCompound nbt) {
-        super.readFromNBT(nbt);
-        this.lastEnergy = nbt.getDouble("lastEnergy");
-    }
-
-    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-        super.writeToNBT(nbt);
-        nbt.setDouble("lastEnergy", this.lastEnergy);
-        return nbt;
-    }
 
     protected void onLoaded() {
         super.onLoaded();
@@ -96,29 +93,41 @@ public class TileEntityNeutronGenerator extends TileEntityElectricMachine implem
         super.onUnloaded();
     }
 
+    public void readFromNBT(NBTTagCompound nbt) {
+        super.readFromNBT(nbt);
+        this.work = nbt.getBoolean("work");
+    }
+
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
+        super.writeToNBT(nbt);
+        nbt.setBoolean("work", this.work);
+        return nbt;
+    }
+
     protected void updateEntityServer() {
         super.updateEntityServer();
 
-        boolean needsInvUpdate;
-        needsInvUpdate = this.upgradeSlot.tickNoMark();
-        if (!(this.energy.getEnergy() <= 0.0D)) {
+        boolean needsInvUpdate = false;
+        if (this.work && !(this.energy.getEnergy() <= 0.0D)) {
 
-
-            this.setActive(true);
+            if (!this.getActive()) {
+                this.setActive(true);
+            }
 
             if (this.energy.getEnergy() >= this.energycost) {
                 needsInvUpdate = this.attemptGeneration();
             }
+            if (!this.containerslot.isEmpty()) {
+                this.containerslot.processFromTank(this.fluidTank, this.outputSlot);
+            }
 
-            needsInvUpdate |= this.containerslot.processFromTank(this.fluidTank, this.outputSlot);
-            this.lastEnergy = this.energy.getEnergy();
-            if (needsInvUpdate) {
-                this.markDirty();
-                this.setActive(true);
+            if (needsInvUpdate && this.upgradeSlot.tickNoMark()) {
+                setUpgradestat();
             }
         } else {
-
-            this.setActive(false);
+            if (this.getActive()) {
+                this.setActive(false);
+            }
         }
 
     }
@@ -168,7 +177,6 @@ public class TileEntityNeutronGenerator extends TileEntityElectricMachine implem
     }
 
     public void setUpgradestat() {
-        this.upgradeSlot.onChanged();
         this.energy.setSinkTier(applyModifier(this.upgradeSlot.extraTier));
     }
 
@@ -190,5 +198,10 @@ public class TileEntityNeutronGenerator extends TileEntityElectricMachine implem
         );
     }
 
+
+    @Override
+    public void onNetworkEvent(final EntityPlayer entityPlayer, final int i) {
+        this.work = !this.work;
+    }
 
 }

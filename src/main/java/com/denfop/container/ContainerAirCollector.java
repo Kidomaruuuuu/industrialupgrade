@@ -1,6 +1,6 @@
 package com.denfop.container;
 
-import com.denfop.tiles.base.TileEntityAirCollector;
+import com.denfop.tiles.mechanism.generator.things.fluid.TileEntityAirCollector;
 import ic2.core.ContainerFullInv;
 import ic2.core.slot.SlotInvSlot;
 import net.minecraft.entity.player.EntityPlayer;

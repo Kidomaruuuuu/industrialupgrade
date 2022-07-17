@@ -19,9 +19,9 @@ import java.util.List;
 public class MainController extends TileEntityInventory implements IMainController {
 
     private final EnumLevelCollider enumLevelCollider;
+    private final boolean work;
     AdvEnergy advEnergy;
     List<Protons> protonsList;
-    private final boolean work;
     private IExtractBlock extractBlock;
     private IOverclockingBlock OverclockingBlock;
     private IPurifierBlock PurifierBlock;

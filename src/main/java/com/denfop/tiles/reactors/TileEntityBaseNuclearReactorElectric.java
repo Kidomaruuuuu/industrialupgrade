@@ -3,11 +3,8 @@ package com.denfop.tiles.reactors;
 import com.denfop.Config;
 import com.denfop.api.reactors.IAdvReactor;
 import com.denfop.container.ContainerBaseNuclearReactor;
-import com.denfop.damagesource.IUDamageSource;
 import com.denfop.gui.GuiNuclearReactor;
 import com.denfop.invslot.InvSlotReactor;
-import com.denfop.items.armour.ItemArmorAdvHazmat;
-import com.denfop.tiles.base.TileEntityRadiationPurifier;
 import ic2.api.energy.EnergyNet;
 import ic2.api.energy.event.EnergyTileLoadEvent;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
@@ -23,10 +20,7 @@ import ic2.core.IHasGui;
 import ic2.core.audio.AudioSource;
 import ic2.core.audio.PositionSpec;
 import ic2.core.block.TileEntityInventory;
-import ic2.core.block.comp.Redstone;
 import ic2.core.gui.dynamic.IGuiValueProvider;
-import ic2.core.init.MainConfig;
-import ic2.core.util.ConfigUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -69,17 +63,21 @@ public abstract class TileEntityBaseNuclearReactorElectric extends TileEntityInv
     public AudioSource audioSourceGeiger;
     public boolean addedToEnergyNet = false;
     public List<ReactorsItem> reactorsItemList = new ArrayList<>();
+    public boolean change = true;
+    public int size;
     protected float lastOutput = 0.0F;
     protected List<IEnergyTile> subTiles = new ArrayList<>();
+    protected float coef1 = 1;
 
     public TileEntityBaseNuclearReactorElectric(int sizeX, int sizeY, String background, double coef) {
-        this.updateTicker = 0;
+        this.updateTicker = IC2.random.nextInt(this.getTickRate());
         this.reactorSlot = new InvSlotReactor(this, "reactor", sizeX * sizeY);
         this.getblock = false;
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.background = background;
         this.coef = coef;
+        this.size = sizeX;
     }
 
     public static void showHeatEffects(World world, BlockPos pos, int heat) {
@@ -142,6 +140,7 @@ public abstract class TileEntityBaseNuclearReactorElectric extends TileEntityInv
                 MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent(this));
             }
             this.addedToEnergyNet = true;
+            this.setActive(this.work);
         }
         this.reactorSlot.update();
     }
@@ -171,8 +170,7 @@ public abstract class TileEntityBaseNuclearReactorElectric extends TileEntityInv
         this.output = (float) nbttagcompound.getDouble("output");
         this.getblock = nbttagcompound.getBoolean("getblock");
         this.work = nbttagcompound.getBoolean("work");
-        if(this.world != null)
-        this.setActive(this.work);
+
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound) {
@@ -190,7 +188,7 @@ public abstract class TileEntityBaseNuclearReactorElectric extends TileEntityInv
 
 
     public double getOfferedEnergy() {
-        return this.getReactorEnergyOutput() * 5.0F * ConfigUtil.getFloat(MainConfig.get(), "balance/energy/generator/nuclear");
+        return this.getReactorEnergyOutput() * 5.0F * coef1;
     }
 
 
@@ -228,51 +226,8 @@ public abstract class TileEntityBaseNuclearReactorElectric extends TileEntityInv
     public void updateEntityServer() {
         super.updateEntityServer();
 
-        if (this.getActive()) {
-            if (this.getWorld().provider.getWorldTime() % 200 == 0) {
-                for (int x = this.pos.getX() - 1; x <= this.pos.getX() + 1; x++) {
-                    for (int z = this.pos.getZ() - 1; z <= this.pos.getZ() + 1; z++) {
-                        for (int y = this.pos.getY() - 1; y <= this.pos.getY() + 1; y++) {
-                            if (getWorld().getTileEntity(new BlockPos(x, y, z)) instanceof TileEntityRadiationPurifier) {
-                                TileEntityRadiationPurifier tile = (TileEntityRadiationPurifier) getWorld().getTileEntity(new BlockPos(
-                                        x,
-                                        y,
-                                        z
-                                ));
-                                assert tile != null;
-                                if (tile.getActive()) {
-                                    getblock = true;
-                                    return;
-                                } else {
-                                    getblock = false;
-                                }
-                            } else {
-                                getblock = false;
-
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        if (this.getActive()) {
-            if (!getblock) {
-                int radius = 5;
-                AxisAlignedBB axisalignedbb = new AxisAlignedBB(this.pos.getX() - radius, this.pos.getY() - radius,
-                        this.pos.getZ() - radius,
-                        this.pos.getX() + radius, this.pos.getY() + radius, this.pos.getZ() + radius
-                );
-                List<EntityPlayer> list = getWorld().getEntitiesWithinAABB(EntityPlayer.class, axisalignedbb);
-                for (EntityPlayer player : list) {
-                    if (!ItemArmorAdvHazmat.hasCompleteHazmat(player)) {
-                        player.attackEntityFrom(IUDamageSource.radiation, 1.0F);
-                    }
-                }
-            }
-        }
         if (this.updateTicker++ % this.getTickRate() == 0) {
-            if (!this.getWorld().isAreaLoaded(this.pos, 8)) {
+            if (!this.getWorld().isAreaLoaded(this.pos, 4)) {
                 this.output = 0.0F;
             } else {
 
@@ -286,13 +241,15 @@ public abstract class TileEntityBaseNuclearReactorElectric extends TileEntityInv
                 if (this.calculateHeatEffects()) {
                     return;
                 }
+                boolean work = this.receiveredstone();
+                if (this.getActive() != work) {
+                    this.setActive(work);
+                }
 
-                this.setActive(this.receiveredstone());
-                this.markDirty();
             }
 
-            IC2.network.get(true).updateTileEntityField(this, "output");
         }
+
     }
 
 
@@ -402,14 +359,16 @@ public abstract class TileEntityBaseNuclearReactorElectric extends TileEntityInv
 
 
     public void processChambers() {
-        for (ReactorsItem reactorsItem : this.getReactorsItems()) {
-            reactorsItem.update();
+        try {
+            for (ReactorsItem reactorsItem : this.getReactorsItems()) {
+                reactorsItem.update();
+            }
+        } catch (Exception ignored) {
         }
-
     }
 
     public boolean produceEnergy() {
-        return this.receiveredstone() && ConfigUtil.getFloat(MainConfig.get(), "balance/energy/generator/generator") > 0.0F;
+        return this.receiveredstone();
     }
 
     public boolean receiveredstone() {

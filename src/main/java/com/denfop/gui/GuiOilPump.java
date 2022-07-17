@@ -27,19 +27,32 @@ public class GuiOilPump extends GuiIC2<ContainerOilPump> {
         TankGauge.createNormal(this, 96, 22, container.base.fluidTank).drawForeground(par1, par2);
 
         String tooltip;
-        if (this.container.base.find) {
+        if (this.container.base.find && this.container.base.count > 0 & this.container.base.maxcount > 0) {
 
 
             tooltip =
                     Localization.translate("iu.fluidneft") + ": " + this.container.base
-                            .getVein()
-                            .getCol() + "/" + this.container.base.getVein().getMaxCol()
+                            .count + "/" + this.container.base.maxcount
                             + Localization.translate("ic2.generic.text.mb");
         } else {
             tooltip = Localization.translate("iu.notfindoil");
 
         }
         new AdvArea(this, 43, 39, 52, 53).withTooltip(tooltip).drawForeground(par1, par2);
+
+        int temp = 0;
+        if (this.container.base.find && this.container.base.maxcount > 0) {
+
+            temp = 14 * this.container.base
+                    .count / this.container.base.maxcount;
+
+        }
+        temp = Math.min(14, temp);
+        this.mc.getTextureManager().bindTexture(getTexture());
+        if (temp > 0) {
+            drawTexturedModalRect(43, +39 + 14 - temp, 177, 130 - temp, 10, temp);
+
+        }
     }
 
     protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
@@ -48,18 +61,6 @@ public class GuiOilPump extends GuiIC2<ContainerOilPump> {
         int yOffset = (this.height - this.ySize) / 2;
         TankGauge.createNormal(this, 96, 22, container.base.fluidTank).drawBackground(xOffset, yOffset);
 
-        int temp = 0;
-        if (this.container.base.find) {
-            if (this.container.base.getVein().getMaxCol() > 0) {
-                temp = 14 * this.container.base.count / this.container.base.getVein().getMaxCol();
-            }
-        }
-        temp = Math.min(14, temp);
-        this.mc.getTextureManager().bindTexture(getTexture());
-        if (temp > 0) {
-            drawTexturedModalRect(xOffset + 43, yOffset + 39 + 14 - temp, 177, 130 - temp, 10, temp);
-
-        }
     }
 
 

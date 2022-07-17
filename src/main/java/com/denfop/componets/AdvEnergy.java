@@ -1,5 +1,6 @@
 package com.denfop.componets;
 
+import com.denfop.api.energy.IAdvDual;
 import com.denfop.api.energy.IAdvEnergySink;
 import com.denfop.api.energy.IAdvEnergySource;
 import ic2.api.energy.EnergyNet;
@@ -47,8 +48,11 @@ public class AdvEnergy extends TileEntityComponent {
     public boolean loaded;
     public boolean receivingDisabled;
     public boolean sendingSidabled;
+    public double tick1;
     protected double pastEnergy;
     protected double perenergy;
+    protected double pastEnergy1;
+    protected double perenergy1;
 
     public AdvEnergy(TileEntityBlock parent, double capacity) {
         this(parent, capacity, Collections.emptySet(), Collections.emptySet(), 1);
@@ -233,18 +237,6 @@ public class AdvEnergy extends TileEntityComponent {
 
     public void onWorldTick() {
 
-        for (final InvSlot slot : this.managedSlots) {
-            if (slot instanceof IChargingSlot) {
-                if (this.storage > 0.0D) {
-                    this.storage -= ((IChargingSlot) slot).charge(this.storage);
-                }
-            } else if (slot instanceof IDischargingSlot) {
-                double space = this.capacity - this.storage;
-                if (space > 0.0D) {
-                    this.storage += ((IDischargingSlot) slot).discharge(space, false);
-                }
-            }
-        }
 
     }
 
@@ -254,6 +246,11 @@ public class AdvEnergy extends TileEntityComponent {
 
     public void setCapacity(double capacity) {
         this.capacity = capacity;
+        this.storage = Math.min(this.capacity, this.storage);
+    }
+
+    public void addCapacity(double capacity) {
+        this.capacity += capacity;
     }
 
     public double getEnergy() {
@@ -275,7 +272,7 @@ public class AdvEnergy extends TileEntityComponent {
     public double addEnergy(double amount) {
         amount = Math.min(this.capacity - this.storage, amount);
         this.storage += amount;
-        this.storage = Math.min(this.storage,this.capacity);
+        this.storage = Math.min(this.storage, this.capacity);
         return amount;
     }
 
@@ -397,11 +394,9 @@ public class AdvEnergy extends TileEntityComponent {
     }
 
     private double getSourceEnergy() {
-        if (this.fullEnergy) {
-            return this.storage >= EnergyNet.instance.getPowerFromTier(this.sourceTier) ? this.storage : 0.0D;
-        } else {
-            return this.storage;
-        }
+
+        return Math.min(this.storage, EnergyNet.instance.getPowerFromTier(this.sourceTier));
+
     }
 
     private int getPacketCount() {
@@ -418,7 +413,7 @@ public class AdvEnergy extends TileEntityComponent {
 
     }
 
-    private class EnergyNetDelegateDual extends AdvEnergy.EnergyNetDelegate implements IAdvEnergySink, IAdvEnergySource {
+    private class EnergyNetDelegateDual extends AdvEnergy.EnergyNetDelegate implements IAdvDual {
 
 
         private EnergyNetDelegateDual() {
@@ -434,13 +429,13 @@ public class AdvEnergy extends TileEntityComponent {
         }
 
         public double getDemandedEnergy() {
-            return !AdvEnergy.this.receivingDisabled && !AdvEnergy.this.sinkDirections.isEmpty() && AdvEnergy.this.storage < AdvEnergy.this.capacity
+            return !AdvEnergy.this.receivingDisabled && AdvEnergy.this.storage < AdvEnergy.this.capacity
                     ? AdvEnergy.this.capacity - AdvEnergy.this.storage
                     : 0.0D;
         }
 
         public double getOfferedEnergy() {
-            return !AdvEnergy.this.sendingSidabled && !AdvEnergy.this.sourceDirections.isEmpty()
+            return !AdvEnergy.this.sendingSidabled
                     ? AdvEnergy.this.getSourceEnergy()
                     : 0.0D;
         }
@@ -503,7 +498,39 @@ public class AdvEnergy extends TileEntityComponent {
 
         @Override
         public boolean isSink() {
-            return AdvEnergy.this.sendingSidabled;
+            return !AdvEnergy.this.receivingDisabled;
+        }
+
+
+        @Override
+        public double getPerEnergy1() {
+            return AdvEnergy.this.perenergy1;
+        }
+
+        @Override
+        public double getPastEnergy1() {
+            return AdvEnergy.this.pastEnergy1;
+        }
+
+        @Override
+        public void setPastEnergy1(final double pastEnergy) {
+            AdvEnergy.this.pastEnergy1 = pastEnergy;
+        }
+
+        @Override
+        public void addPerEnergy1(final double setEnergy) {
+            AdvEnergy.this.perenergy1 += setEnergy;
+        }
+
+
+        @Override
+        public void addTick1(final double tick) {
+            AdvEnergy.this.tick1 = tick;
+        }
+
+        @Override
+        public double getTick1() {
+            return AdvEnergy.this.tick1;
         }
 
     }
@@ -523,7 +550,6 @@ public class AdvEnergy extends TileEntityComponent {
         }
 
         public double getDemandedEnergy() {
-            assert !AdvEnergy.this.sinkDirections.isEmpty();
 
             return !AdvEnergy.this.receivingDisabled
                     ? AdvEnergy.this.capacity - AdvEnergy.this.storage
@@ -590,7 +616,6 @@ public class AdvEnergy extends TileEntityComponent {
         }
 
         public double getOfferedEnergy() {
-            assert !AdvEnergy.this.sourceDirections.isEmpty();
 
             return !AdvEnergy.this.sendingSidabled ? AdvEnergy.this.getSourceEnergy() : 0.0D;
         }

@@ -116,7 +116,20 @@ public class UpgradeItemInform {
                 return TextFormatting.DARK_RED + Localization.translate("iu.hungry");
             case GENERATOR:
                 return TextFormatting.DARK_AQUA + Localization.translate("iu.generator");
-
+            case FLY:
+                return TextFormatting.DARK_PURPLE + Localization.translate("iu.fly_mode");
+            case SIZE:
+                return TextFormatting.AQUA + Localization.translate("iu.size_mode") + this.number;
+            case BAGS:
+                return TextFormatting.GOLD + Localization.translate("iu.bags_mode");
+            case LAPPACK_ENERGY:
+                return TextFormatting.LIGHT_PURPLE + Localization.translate("iu.lappack_mode") + 0.005 * this.number + "%";
+            case PURIFIER:
+                return TextFormatting.GRAY + Localization.translate("iu.purifier_mode");
+            case LATEX:
+                return TextFormatting.GOLD + Localization.translate("iu.latex_mode");
+            case WRENCH:
+                return TextFormatting.YELLOW + Localization.translate("iu.wrench_mode");
 
         }
         return "";

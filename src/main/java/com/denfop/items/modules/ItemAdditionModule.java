@@ -5,6 +5,7 @@ import com.denfop.IUCore;
 import com.denfop.api.IModelRegister;
 import com.denfop.componets.AdvEnergy;
 import com.denfop.tiles.base.TileEntityElectricBlock;
+import com.denfop.tiles.mechanism.TileEntityAnalyzerChest;
 import com.denfop.utils.ModUtils;
 import ic2.core.block.TileEntityBlock;
 import ic2.core.block.comp.Energy;
@@ -40,7 +41,7 @@ public class ItemAdditionModule extends ItemMulti<ItemAdditionModule.CraftingTyp
 
     public ItemAdditionModule() {
         super(null, CraftingTypes.class);
-        this.setCreativeTab(IUCore.tabssp1);
+        this.setCreativeTab(IUCore.ModuleTab);
         BlocksItems.registerItem((Item) this, IUCore.getIdentifier(NAME)).setUnlocalizedName(NAME);
         IUCore.proxy.addIModelRegister(this);
     }
@@ -94,7 +95,7 @@ public class ItemAdditionModule extends ItemMulti<ItemAdditionModule.CraftingTyp
                             Localization.translate(Objects.requireNonNull(tile.getDisplayName()).getFormattedText())
                     );
                     return EnumActionResult.SUCCESS;
-                }else  if (tile.getComponent(AdvEnergy.class) != null) {
+                } else if (tile.getComponent(AdvEnergy.class) != null) {
                     NBTTagCompound nbttagcompound = ModUtils.nbt(player.getHeldItem(hand));
                     boolean charge = nbttagcompound.getBoolean("change");
                     if (tile instanceof TileEntityElectricBlock && charge) {
@@ -104,6 +105,20 @@ public class ItemAdditionModule extends ItemMulti<ItemAdditionModule.CraftingTyp
                     nbttagcompound.setInteger("Ycoord", tile.getPos().getY());
                     nbttagcompound.setInteger("Zcoord", tile.getPos().getZ());
                     nbttagcompound.setInteger("tier", tile.getComponent(AdvEnergy.class).getSinkTier());
+                    nbttagcompound.setInteger("World1", tile.getWorld().provider.getDimension());
+                    nbttagcompound.setString("World", tile.getWorld().provider.getDimensionType().getName());
+                    nbttagcompound.setString(
+                            "Name",
+                            Localization.translate(Objects.requireNonNull(tile.getDisplayName()).getFormattedText())
+                    );
+                    return EnumActionResult.SUCCESS;
+                } else if (tile instanceof TileEntityAnalyzerChest) {
+                    NBTTagCompound nbttagcompound = ModUtils.nbt(player.getHeldItem(hand));
+
+                    nbttagcompound.setInteger("Xcoord", tile.getPos().getX());
+                    nbttagcompound.setInteger("Ycoord", tile.getPos().getY());
+                    nbttagcompound.setInteger("Zcoord", tile.getPos().getZ());
+                    nbttagcompound.setInteger("tier", 0);
                     nbttagcompound.setInteger("World1", tile.getWorld().provider.getDimension());
                     nbttagcompound.setString("World", tile.getWorld().provider.getDimensionType().getName());
                     nbttagcompound.setString(

@@ -18,7 +18,6 @@ import com.denfop.items.modules.ItemAdditionModule;
 import ic2.api.energy.EnergyNet;
 import ic2.api.energy.tile.IEnergySink;
 import ic2.api.network.INetworkClientTileEntityEventListener;
-import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.recipe.IRecipeInputFactory;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
@@ -38,7 +37,6 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
@@ -46,7 +44,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TileEntityDoubleMolecular extends TileEntityElectricMachine implements INetworkTileEntityEventListener,
+public class TileEntityDoubleMolecular extends TileEntityElectricMachine implements
         IEnergyReceiver, INetworkClientTileEntityEventListener, IUpdateTick {
 
     public boolean need;
@@ -63,6 +61,7 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
     public double differenceenergy;
     protected double progress;
     protected double guiProgress;
+    protected int size_recipe = 0;
 
     public TileEntityDoubleMolecular() {
         super(0, 14, 1);
@@ -235,7 +234,48 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
                 new ItemStack(IUItem.upgrademodule, 1, 16),
                 2500000
         );
-
+        addrecipe(
+                new ItemStack(IUItem.module_schedule, 1),
+                new ItemStack(IUItem.core, 1, 4),
+                new ItemStack(IUItem.upgrademodule, 1, 40),
+                3500000
+        );
+        addrecipe(
+                new ItemStack(IUItem.module_schedule, 1),
+                new ItemStack(IUItem.core, 1, 7),
+                new ItemStack(IUItem.upgrademodule, 1, 41),
+                15000000
+        );
+        addrecipe(
+                new ItemStack(IUItem.module_schedule, 1),
+                new ItemStack(IUItem.core, 1, 3),
+                new ItemStack(IUItem.upgrademodule, 1, 42),
+                3000000
+        );
+        addrecipe(
+                new ItemStack(IUItem.module_schedule, 1),
+                new ItemStack(IUItem.upgrademodule, 1, 25),
+                new ItemStack(IUItem.upgrademodule, 1, 43),
+                10000000
+        );
+        addrecipe(
+                new ItemStack(IUItem.module_schedule, 1),
+                new ItemStack(IUItem.purifier, 1, OreDictionary.WILDCARD_VALUE),
+                new ItemStack(IUItem.upgrademodule, 1, 44),
+                2500000
+        );
+        addrecipe(
+                new ItemStack(IUItem.module_schedule, 1),
+                new ItemStack(Ic2Items.electricTreetap.getItem(), 1, OreDictionary.WILDCARD_VALUE),
+                new ItemStack(IUItem.upgrademodule, 1, 45),
+                2500000
+        );
+        addrecipe(
+                new ItemStack(IUItem.module_schedule, 1),
+                new ItemStack(Ic2Items.electricWrench.getItem(), 1, OreDictionary.WILDCARD_VALUE),
+                new ItemStack(IUItem.upgrademodule, 1, 46),
+                15000000
+        );
         addrecipe(IUItem.module1, IUItem.module1, IUItem.genmodule, 7500000);
         addrecipe(
                 IUItem.genmodule,
@@ -423,9 +463,13 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
         ));
     }
 
-    @Override
-    protected ItemStack getPickBlock(final EntityPlayer player, final RayTraceResult target) {
-        return new ItemStack(IUItem.blockdoublemolecular);
+    protected List<ItemStack> getWrenchDrops(EntityPlayer player, int fortune) {
+        List<ItemStack> ret = super.getWrenchDrops(player, fortune);
+        if (this.rf) {
+            ret.add(new ItemStack(IUItem.module7, 1, 4));
+            this.rf = false;
+        }
+        return ret;
     }
 
     @Override
@@ -535,10 +579,10 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
         }
         if (event == 1) {
             this.queue = !this.queue;
-            this.setOverclockRates();
             if (this.need) {
                 this.queue = false;
             }
+            this.setOverclockRates();
         }
 
     }
@@ -612,11 +656,12 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
                 size = (int) Math.floor((float) this.inputSlot.get(0).stackSize / size);
                 size2 = (int) Math.floor((float) this.inputSlot.get(1).stackSize / size2);
                 size = Math.min(size, size2);
-                int size1 = this.outputSlot.get() != null
+                int size1 = !this.outputSlot.isEmpty()
                         ? (64 - this.outputSlot.get().stackSize) / output1.stackSize
                         : 64 / output1.stackSize;
                 size = Math.min(size1, size);
                 size = Math.min(output1.getMaxStackSize(), size);
+                this.size_recipe = size;
                 this.energy.setCapacity(output.getRecipe().output.metadata.getDouble("energy") * size);
             } else {
                 this.energy.setCapacity(0);
@@ -639,6 +684,7 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
                 if (!this.getActive()) {
                     IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
                     setActive(true);
+                    setOverclockRates();
                 }
 
 
@@ -667,6 +713,7 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
                 if (!this.getActive()) {
                     IC2.network.get(true).initiateTileEntityEvent(this, 2, true);
                     setActive(true);
+                    setOverclockRates();
                 }
                 this.differenceenergy = this.energy.getEnergy() - this.perenergy;
                 this.perenergy = this.energy.getEnergy();
@@ -694,11 +741,14 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
                 size = (int) Math.floor((float) this.inputSlot.get(0).stackSize / size);
                 size2 = (int) Math.floor((float) this.inputSlot.get(1).stackSize / size2);
                 size = Math.min(size, size2);
-                int size1 = !this.outputSlot.get().isEmpty()
+                int size1 = !this.outputSlot.isEmpty()
                         ? (64 - this.outputSlot.get().stackSize) / output1.stackSize
                         : 64 / output1.stackSize;
                 size = Math.min(size1, size);
                 size = Math.min(output1.getMaxStackSize(), size);
+                if (size != this.size_recipe) {
+                    this.setOverclockRates();
+                }
                 this.progress = this.energy.getEnergy();
                 double k = this.progress;
                 double p = (k / (output.getRecipe().output.metadata.getDouble("energy") * size));
@@ -737,7 +787,7 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
     }
 
     public double getProgress() {
-        return Math.min(this.energy.getFillRatio(), 1);
+        return Math.min(this.guiProgress, 1);
     }
 
 

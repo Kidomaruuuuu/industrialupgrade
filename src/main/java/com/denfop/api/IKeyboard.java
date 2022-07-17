@@ -1,19 +1,17 @@
-//
-// Decompiled by Procyon v0.5.36
-//
-
 package com.denfop.api;
 
 import net.minecraft.entity.player.EntityPlayer;
 
 public interface IKeyboard {
 
-    boolean isChangeKeyDown(final EntityPlayer p0);
+    boolean isChangeKeyDown(final EntityPlayer player);
 
-    boolean isVerticalMode(final EntityPlayer p0);
+    boolean isVerticalMode(final EntityPlayer player);
 
-    boolean isFlyModeKeyDown(final EntityPlayer p0);
+    boolean isFlyModeKeyDown(final EntityPlayer player);
 
-    boolean isBlackListModeKeyDown(final EntityPlayer p0);
+    boolean isBlackListModeKeyDown(final EntityPlayer player);
+
+    boolean isBlackListModeViewKeyDown(final EntityPlayer player);
 
 }

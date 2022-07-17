@@ -10,23 +10,29 @@ import com.denfop.api.upgrade.IUpgradeItem;
 import com.denfop.api.upgrade.UpgradeItemInform;
 import com.denfop.api.upgrade.UpgradeSystem;
 import com.denfop.blocks.BlockIUFluid;
+import com.denfop.container.ContainerBags;
 import com.denfop.items.EnumInfoUpgradeModules;
+import com.denfop.items.armour.ItemAdvJetpack;
+import com.denfop.items.bags.ItemEnergyBags;
 import com.denfop.items.modules.EnumBaseType;
 import com.denfop.items.modules.EnumModule;
 import com.denfop.items.modules.ItemBaseModules;
 import com.denfop.items.modules.ItemEntityModule;
 import com.denfop.utils.CapturedMobUtils;
+import com.denfop.utils.ListInformationUtils;
 import com.denfop.utils.ModUtils;
 import ic2.core.init.Localization;
 import ic2.core.util.Util;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -53,6 +59,29 @@ public class IUEventHandler {
 
     }
 
+    @SubscribeEvent
+    public void bag_pickup(EntityItemPickupEvent event) {
+        EntityPlayer player = event.getEntityPlayer();
+        if (!(player.openContainer instanceof ContainerBags)) {
+            InventoryPlayer inventory = player.inventory;
+
+            for (int i = 0; i < inventory.mainInventory.size(); ++i) {
+                ItemStack stack = inventory.mainInventory.get(i);
+                if (stack.getItem() instanceof ItemEnergyBags) {
+                    if (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.BAGS, stack)) {
+                        ItemEnergyBags bags = (ItemEnergyBags) stack.getItem();
+                        if (!(event.getItem().getItem().getItem() instanceof ItemEnergyBags)) {
+                            if (bags.canInsert(player, stack, event.getItem().getItem())) {
+                                bags.insert(player, stack, event.getItem().getItem());
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+    }
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
@@ -66,6 +95,42 @@ public class IUEventHandler {
         event.setDensity((float) Util.map(Math.abs(fluid.getDensity()), 20000.0D, 2.0D));
     }
 
+    public void setFly(EntityPlayer player, boolean fly, ItemStack stack) {
+        player.capabilities.isFlying = fly;
+        player.capabilities.allowFlying = fly;
+        player.getEntityData().setBoolean("isFlyActive", fly);
+        if (player.getEntityWorld().isRemote && !fly) {
+            player.capabilities.setFlySpeed((float) 0.05);
+            player.fallDistance = 0;
+        } else {
+            boolean edit = player.getEntityData().getBoolean("edit_fly");
+            if(!edit) {
+                int flyspeed = (UpgradeSystem.system.hasModules(
+                        EnumInfoUpgradeModules.FLYSPEED,
+                        stack
+                ) ?
+                        UpgradeSystem.system.getModules(
+                                EnumInfoUpgradeModules.FLYSPEED,
+                                stack
+                        ).number : 0);
+
+                if (player.getEntityWorld().isRemote) {
+                    player.capabilities.setFlySpeed((float) ((float) 0.1 + 0.05 * flyspeed));
+                }
+            }else{
+                if (player.getEntityWorld().isRemote) {
+                    player.capabilities.setFlySpeed(player.getEntityData().getFloat("fly_speed"));
+                }
+            }
+        }
+    }
+
+    public boolean canFly(ItemStack stack) {
+        return stack
+                .getItem() == IUItem.spectral_chestplate || stack
+                .getItem() == IUItem.adv_nano_chestplate || (stack
+                .getItem() instanceof ItemAdvJetpack && UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.FLY, stack));
+    }
 
     @SubscribeEvent
     public void FlyUpdate(LivingEvent.LivingUpdateEvent event) {
@@ -74,97 +139,53 @@ public class IUEventHandler {
             return;
         }
         EntityPlayer player = (EntityPlayer) event.getEntityLiving();
-
+        NBTTagCompound nbtData = player.getEntityData();
         if (!player.capabilities.isCreativeMode) {
 
-            NBTTagCompound nbtData = player.getEntityData();
-            if (!player.capabilities.isCreativeMode) {
-                if (!player.inventory.armorInventory.get(2).isEmpty()) {
-                    if (player.inventory.armorInventory
-                            .get(2)
-                            .getItem() == IUItem.quantumBodyarmor || player.inventory.armorInventory
-                            .get(2)
-                            .getItem() == IUItem.NanoBodyarmor || player.inventory.armorInventory
-                            .get(2)
-                            .getItem() == IUItem.perjetpack) {
-                        NBTTagCompound nbtData1 = ModUtils.nbt(player.inventory.armorInventory.get(2));
-                        boolean jetpack = nbtData1.getBoolean("jetpack");
-                        if (!jetpack) {
-                            if (nbtData.getBoolean("isFlyActive")) {
-                                player.capabilities.isFlying = false;
-                                player.capabilities.allowFlying = false;
-                                nbtData1.setBoolean("isFlyActive", false);
-                                nbtData.setBoolean("isFlyActive", false);
-                                if (player.getEntityWorld().isRemote) {
-                                    player.capabilities.setFlySpeed((float) 0.05);
-                                }
+            if (!player.inventory.armorInventory.get(2).isEmpty()) {
+                if (canFly(player.inventory.armorInventory.get(2))) {
+                    NBTTagCompound nbtData1 = ModUtils.nbt(player.inventory.armorInventory.get(2));
+                    boolean jetpack = nbtData1.getBoolean("jetpack");
+                    if (!jetpack) {
+                        if (nbtData.getBoolean("isFlyActive")) {
+                            nbtData.setBoolean("hasFly", true);
+                            setFly(player, false, player.inventory.armorInventory
+                                    .get(2));
+                        }
+                    } else {
+                        if (!player.onGround) {
+                            if (nbtData1.getBoolean("canFly")) {
+                                setFly(player, true, player.inventory.armorInventory
+                                        .get(2));
+                                nbtData1.setBoolean("canFly", false);
+                                nbtData.setBoolean("canjump", false);
                             }
                         } else {
-                            if (!player.onGround) {
-                                player.capabilities.isFlying = true;
-                                player.capabilities.allowFlying = true;
-                                nbtData.setBoolean("isFlyActive", true);
-                                nbtData1.setBoolean("isFlyActive", true);
-                                int flyspeed = (UpgradeSystem.system.hasModules(
-                                        EnumInfoUpgradeModules.FLYSPEED,
-                                        player.inventory.armorInventory
-                                                .get(2)
-                                ) ?
-                                        UpgradeSystem.system.getModules(
-                                                EnumInfoUpgradeModules.FLYSPEED,
-                                                player.inventory.armorInventory
-                                                        .get(2)
-                                        ).number : 0);
-
-                                if (player.getEntityWorld().isRemote) {
-                                    player.capabilities.setFlySpeed((float) ((float) 0.1 + 0.05 * flyspeed));
-                                }
-                            } else {
-                                player.capabilities.isFlying = false;
-                                player.capabilities.allowFlying = false;
-                                if (player.getEntityWorld().isRemote) {
-                                    player.capabilities.setFlySpeed((float) 0.05);
-                                }
-                            }
-                        }
-                    } else if (player.inventory.armorInventory
-                            .get(2)
-                            .getItem() != IUItem.quantumBodyarmor && player.inventory.armorInventory
-                            .get(2)
-                            .getItem() != IUItem.NanoBodyarmor && player.inventory.armorInventory
-                            .get(2)
-                            .getItem() != IUItem.perjetpack
-                            && !player.inventory.armorInventory.get(2).isEmpty()) {
-                        if (nbtData.getBoolean("isFlyActive")) {
-                            player.capabilities.isFlying = false;
-                            player.capabilities.allowFlying = false;
-                            nbtData.setBoolean("isFlyActive", false);
-                            if (player.getEntityWorld().isRemote) {
-                                player.capabilities.setFlySpeed((float) 0.05);
+                            if (nbtData.getBoolean("isFlyActive")) {
+                                setFly(player, false, player.inventory.armorInventory
+                                        .get(2));
                             }
                         }
                     }
-                } else {
+                } else if (!player.inventory.armorInventory.get(2).isEmpty()) {
                     if (nbtData.getBoolean("isFlyActive")) {
-                        player.capabilities.isFlying = false;
-                        player.capabilities.allowFlying = false;
-                        nbtData.setBoolean("isFlyActive", false);
-                        if (player.getEntityWorld().isRemote) {
-                            player.capabilities.setFlySpeed((float) 0.05);
-                        }
+                        setFly(player, false, player.inventory.armorInventory
+                                .get(2));
                     }
                 }
             } else {
                 if (nbtData.getBoolean("isFlyActive")) {
-                    player.capabilities.isFlying = false;
-                    player.capabilities.allowFlying = false;
-                    nbtData.setBoolean("isFlyActive", false);
-                    if (player.getEntityWorld().isRemote) {
-                        player.capabilities.setFlySpeed((float) 0.05);
-                    }
+                    setFly(player, false, player.inventory.armorInventory
+                            .get(2));
                 }
             }
+        } else {
+            if (nbtData.getBoolean("isFlyActive")) {
+                setFly(player, false, player.inventory.armorInventory
+                        .get(2));
+            }
         }
+
 
     }
 
@@ -174,10 +195,35 @@ public class IUEventHandler {
     public void addInformItem(ItemTooltipEvent event) {
         ItemStack stack = event.getItemStack();
         Item item = stack.getItem();
+        if (!(event.getEntityLiving() instanceof EntityPlayer)) {
+            return;
+        }
+
         if (item instanceof IItemSoon) {
             event.getToolTip().add(((IItemSoon) item).getDescription());
         }
+        if (item.equals(IUItem.leadbox)) {
+            event.getToolTip().add(Localization.translate("iu.radiationbox"));
+        }
 
+
+        if (item.equals(IUItem.tank)) {
+            switch (stack.getItemDamage()) {
+                case 1:
+                    event.getToolTip().add(Localization.translate("iu.storage_fluid") + 160 + " B");
+                    break;
+                case 2:
+                    event.getToolTip().add(Localization.translate("iu.storage_fluid") + 480 + " B");
+                    break;
+                case 3:
+                    event.getToolTip().add(Localization.translate("iu.storage_fluid") + 2560 + " B");
+                    break;
+                case 0:
+                    event.getToolTip().add(Localization.translate("iu.storage_fluid") + 40 + " B");
+                    break;
+
+            }
+        }
         if (item.equals(IUItem.upgrade_speed_creation) || item.equals(IUItem.autoheater) || item.equals(IUItem.coolupgrade) || item.equals(
                 IUItem.module_quickly) || item.equals(
                 IUItem.module_stack) || item.equals(IUItem.module_storage) || (item.equals(
@@ -189,6 +235,41 @@ public class IUEventHandler {
             if (capturedMobUtils != null) {
                 Entity entity = Objects.requireNonNull(capturedMobUtils).getEntity(event.getEntity().getEntityWorld(), true);
                 event.getToolTip().add(Objects.requireNonNull(entity).getName());
+            }
+        }
+        if (item.equals(
+                IUItem.module_quickly) || item.equals(
+                IUItem.module_stack) || item.equals(IUItem.module_storage) || item.equals(IUItem.coolupgrade)) {
+            event.getToolTip().add(Localization.translate("using_kit"));
+            if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                event.getToolTip().add(ListInformationUtils.mechanism_info.get(ListInformationUtils.index));
+            } else {
+                for (String name : ListInformationUtils.mechanism_info) {
+                    event.getToolTip().add(name);
+                }
+            }
+
+        }
+        if (item.equals(IUItem.autoheater)) {
+            event.getToolTip().add(Localization.translate("using_kit"));
+
+            if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                event.getToolTip().add(ListInformationUtils.mechanism_info2.get(ListInformationUtils.index2));
+            } else {
+                for (String name : ListInformationUtils.mechanism_info2) {
+                    event.getToolTip().add(name);
+                }
+            }
+        }
+        if (item.equals(
+                IUItem.upgrade_speed_creation)) {
+            event.getToolTip().add(Localization.translate("using_kit"));
+            if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                event.getToolTip().add(ListInformationUtils.mechanism_info1.get(ListInformationUtils.index1));
+            } else {
+                for (String name : ListInformationUtils.mechanism_info1) {
+                    event.getToolTip().add(name);
+                }
             }
         }
         if (stack.getItem().equals(IUItem.analyzermodule)) {

@@ -20,7 +20,7 @@ public class ExtruderHandler {
         this.output = output;
     }
 
-    public static List<ExtruderHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<ExtruderHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

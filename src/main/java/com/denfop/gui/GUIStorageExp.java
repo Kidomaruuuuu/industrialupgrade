@@ -62,7 +62,7 @@ public class GuiStorageExp extends GuiIC2<ContainerStorageExp> {
         String name = Localization.translate(this.container.base.getName());
         this.drawXCenteredString(this.xSize / 2, 6, name, 4210752, false);
         int chargeLevel = (int) (47.0F * Math.min(this.container.base.energy.getEnergy()
-                / this.container.base.energy.getCapacity(), 1));
+                / Math.min(this.container.base.energy.getCapacity(), 2000000000), 1));
         int chargeLevel1 = 0;
         if (this.container.base.energy.getCapacity() > 2000000000) {
             chargeLevel1 = (int) (47.0F * Math.min(Math.max(this.container.base.energy.getEnergy() - 2000000000, 0)
@@ -70,6 +70,8 @@ public class GuiStorageExp extends GuiIC2<ContainerStorageExp> {
         }
         chargeLevel = Math.min(chargeLevel, 47);
         chargeLevel1 = Math.min(chargeLevel1, 47);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        this.mc.getTextureManager().bindTexture(getTexture());
         if (chargeLevel > 0) {
             drawTexturedModalRect(xoffset + 153, yoffset + 26 + 47 - chargeLevel, 180,
                     51 - chargeLevel, 12, chargeLevel

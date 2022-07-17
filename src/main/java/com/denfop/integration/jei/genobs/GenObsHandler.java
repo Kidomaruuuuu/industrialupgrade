@@ -27,7 +27,7 @@ public class GenObsHandler {
         this.output = output;
     }
 
-    public static List<GenObsHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<GenObsHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

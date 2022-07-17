@@ -12,10 +12,10 @@ import java.util.Random;
 public class Radiation {
 
     private final ChunkPos pos;
+    private final Random rand = new Random();
     private int radiation;
     private EnumLevelRadiation level;
     private EnumCoefficient coef;
-    private final Random rand = new Random();
 
     public Radiation(ChunkPos pos) {
         this.radiation = 2;

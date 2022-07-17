@@ -4,7 +4,6 @@ import ic2.api.energy.tile.IEnergyAcceptor;
 import ic2.api.energy.tile.IEnergyEmitter;
 import ic2.api.reactor.IReactorChamber;
 import ic2.core.block.TileEntityBlock;
-import ic2.core.block.comp.Redstone;
 import ic2.core.util.StackUtil;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
@@ -36,7 +35,7 @@ public class TileEntityPerReactorChamberElectric extends TileEntityBlock impleme
 
     protected void onLoaded() {
         super.onLoaded();
-         this.onNeighborChange(this.getBlockType().getBlockState().getBlock(), this.getPos());
+        this.onNeighborChange(this.getBlockType().getBlockState().getBlock(), this.getPos());
 
     }
 
@@ -50,8 +49,6 @@ public class TileEntityPerReactorChamberElectric extends TileEntityBlock impleme
         super.updateEntityServer();
 
     }
-
-
 
 
     @SideOnly(Side.CLIENT)
@@ -89,6 +86,8 @@ public class TileEntityPerReactorChamberElectric extends TileEntityBlock impleme
         this.updateReactor();
         if (this.reactor == null) {
             this.destoryChamber(true);
+        } else {
+            this.reactor.change = true;
         }
     }
 
@@ -104,6 +103,11 @@ public class TileEntityPerReactorChamberElectric extends TileEntityBlock impleme
 
     @Override
     protected void onUnloaded() {
+        if (this.reactor != null) {
+            if (!this.reactor.isInvalid()) {
+                this.reactor.getSubs();
+            }
+        }
         super.onUnloaded();
     }
 

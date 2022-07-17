@@ -1,6 +1,6 @@
 package com.denfop.container;
 
-import com.denfop.tiles.base.TileEntityCooling;
+import com.denfop.tiles.mechanism.cooling.TileEntityCooling;
 import ic2.core.ContainerFullInv;
 import net.minecraft.entity.player.EntityPlayer;
 

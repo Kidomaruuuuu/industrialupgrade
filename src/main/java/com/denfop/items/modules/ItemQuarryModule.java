@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
@@ -31,7 +32,7 @@ public class ItemQuarryModule extends ItemMulti<ItemQuarryModule.CraftingTypes> 
 
     public ItemQuarryModule() {
         super(null, CraftingTypes.class);
-        this.setCreativeTab(IUCore.tabssp1);
+        this.setCreativeTab(IUCore.ModuleTab);
         BlocksItems.registerItem((Item) this, IUCore.getIdentifier(NAME)).setUnlocalizedName(NAME);
         IUCore.proxy.addIModelRegister(this);
     }
@@ -75,37 +76,24 @@ public class ItemQuarryModule extends ItemMulti<ItemQuarryModule.CraftingTypes> 
                 break;
             case 12:
                 info.add(Localization.translate("iu.blacklist"));
-
-                for (int i = 0; i < 18; i++) {
+                NBTTagCompound nbt = ModUtils.nbt(itemStack);
+                int size = nbt.getInteger("size");
+                for (int i = 0; i < size; i++) {
                     String l = "number_" + i;
-
                     String ore = ModUtils.NBTGetString(itemStack, l);
-                    if (ore.startsWith("ore") || ore.startsWith("gem") || ore.startsWith("ingot") || ore.startsWith("dust") || ore.startsWith(
-                            "shard")) {
-
-                        ItemStack stack = OreDictionary.getOres(ore).get(0);
-                        info.add(stack.getDisplayName());
-
-                    }
-
-
+                    ItemStack stack = OreDictionary.getOres(ore).get(0);
+                    info.add(stack.getDisplayName());
                 }
                 break;
             case 13:
                 info.add(Localization.translate("iu.whitelist"));
-                for (int i = 0; i < 18; i++) {
+                nbt = ModUtils.nbt(itemStack);
+                size = nbt.getInteger("size");
+                for (int i = 0; i < size; i++) {
                     String l = "number_" + i;
-
                     String ore = ModUtils.NBTGetString(itemStack, l);
-                    if (ore.startsWith("ore") || ore.startsWith("gem") || ore.startsWith("ingot") || ore.startsWith("dust") || ore.startsWith(
-                            "shard")) {
-
-                        ItemStack stack = OreDictionary.getOres(ore).get(0);
-                        info.add(stack.getDisplayName());
-
-                    }
-
-
+                    ItemStack stack = OreDictionary.getOres(ore).get(0);
+                    info.add(stack.getDisplayName());
                 }
 
                 break;

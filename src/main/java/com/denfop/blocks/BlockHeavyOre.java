@@ -75,6 +75,7 @@ public class BlockHeavyOre extends BlockCore implements IModelRegister {
         return getDefaultState().withProperty(VARIANT, Type.values()[meta]);
     }
 
+    @Nonnull
     @Override
     public IBlockState getStateFromMeta(final int meta) {
         return getDefaultState().withProperty(VARIANT, Type.values()[meta]);

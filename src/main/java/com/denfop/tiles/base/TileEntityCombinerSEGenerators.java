@@ -1,20 +1,20 @@
 package com.denfop.tiles.base;
 
 import com.denfop.IUItem;
+import com.denfop.api.recipe.InvSlotOutput;
 import com.denfop.componets.SEComponent;
 import com.denfop.container.ContainerCombinerSE;
 import com.denfop.gui.GuiCombinerSE;
 import com.denfop.invslot.InvSlotCombinerSEG;
 import com.denfop.invslot.InvSlotGenCombinerSunarrium;
 import com.denfop.invslot.InvSlotUpgrade;
-import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
-import ic2.core.block.invslot.InvSlotOutput;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -29,7 +29,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-public class TileEntityCombinerSEGenerators extends TileEntityInventory implements IHasGui, INetworkTileEntityEventListener,
+public class TileEntityCombinerSEGenerators extends TileEntityInventory implements IHasGui,
         IUpgradableBlock {
 
 
@@ -42,6 +42,9 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
     public int count;
     public List<Double> lst;
     public int coef = 0;
+    private boolean noSunWorld;
+    private boolean skyIsVisible;
+    private boolean sunIsUp;
 
     public TileEntityCombinerSEGenerators() {
         this.inputSlot = new InvSlotCombinerSEG(this);
@@ -99,23 +102,20 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
         super.onLoaded();
         this.inputSlot.update();
         this.lst = this.input.coefday();
+        this.noSunWorld = this.world.provider.isNether();
+        updateVisibility();
     }
 
-
-    public boolean onUpdateUpgrade() {
-        for (int i = 0; i < this.upgradeSlot.size(); i++) {
-            ItemStack stack = this.upgradeSlot.get(i);
-            if (!stack.isEmpty()) {
-                return true;
-            }
-        }
-
-        return false;
+    public void updateVisibility() {
+        this.skyIsVisible = this.world.canBlockSeeSky(this.pos.up()) &&
+                (this.world.getBlockState(this.pos.up()).getMaterial().getMaterialMapColor() ==
+                        MapColor.AIR) && !this.noSunWorld;
+        this.sunIsUp = this.world.isDaytime();
     }
 
     public void energy(long tick) {
         double k = 0;
-        if (this.getWorld().provider.isDaytime()) {
+        if (this.sunIsUp) {
             if (tick <= 1000L) {
                 k = 5;
             }
@@ -135,7 +135,7 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
             this.sunenergy.addEnergy(k * this.coef * (1 + lst.get(0)));
         }
 
-        if (lst.get(2) > 0 && !this.getWorld().provider.isDaytime()) {
+        if (lst.get(2) > 0 && !this.sunIsUp) {
             double tick1 = tick - 12000;
             if (tick1 <= 1000L) {
                 k = 5;
@@ -161,19 +161,19 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
 
     protected void updateEntityServer() {
         super.updateEntityServer();
-        boolean update = onUpdateUpgrade();
-        long tick = this.getWorld().provider.getWorldTime() % 24000L;
-        energy(tick);
-        while (this.outputSlot.canAdd(itemstack) && this.sunenergy.getEnergy() >= 2500) {
-            this.outputSlot.add(itemstack);
-            this.sunenergy.addEnergy(-2500);
+        if (this.world.provider.getWorldTime() % 80 == 0) {
+            updateVisibility();
         }
-
-        if(this.upgradeSlot.tickNoMark())
+        long tick = this.getWorld().provider.getWorldTime() % 24000L;
+        if (this.skyIsVisible) {
+            energy(tick);
+            while (this.sunenergy.getEnergy() >= 2500 && this.outputSlot.add(itemstack)) {
+                this.sunenergy.addEnergy(-2500);
+            }
+        }
+        if (this.upgradeSlot.tickNoMark()) {
             setOverclockRates();
-
-
-
+        }
     }
 
     protected void onUnloaded() {
@@ -190,7 +190,6 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
     }
 
     public void setOverclockRates() {
-        this.upgradeSlot.onChanged();
 
     }
 
@@ -236,10 +235,5 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
         return null;
     }
 
-
-    @Override
-    public void onNetworkEvent(final int i) {
-
-    }
 
 }

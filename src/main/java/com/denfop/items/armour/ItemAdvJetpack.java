@@ -2,9 +2,13 @@ package com.denfop.items.armour;
 
 import com.denfop.Constants;
 import com.denfop.IUCore;
-import com.denfop.IUItem;
 import com.denfop.Ic2Items;
 import com.denfop.api.IModelRegister;
+import com.denfop.api.upgrade.EnumUpgrades;
+import com.denfop.api.upgrade.IUpgradeItem;
+import com.denfop.api.upgrade.UpgradeSystem;
+import com.denfop.api.upgrade.event.EventItemLoad;
+import com.denfop.items.EnumInfoUpgradeModules;
 import com.denfop.utils.KeyboardClient;
 import com.denfop.utils.ModUtils;
 import ic2.api.item.ElectricItem;
@@ -27,15 +31,18 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.MobEffects;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.ISpecialArmor;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jetbrains.annotations.Nullable;
@@ -46,7 +53,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ItemAdvJetpack extends ItemArmorElectric implements IElectricItem, IModelRegister, ISpecialArmor, IMetalArmor,
-        IItemHudInfo {
+        IItemHudInfo, IUpgradeItem {
 
     protected static AudioSource audioSource;
     private static boolean lastJetpackUsed = false;
@@ -71,6 +78,8 @@ public class ItemAdvJetpack extends ItemArmorElectric implements IElectricItem, 
 
         BlocksItems.registerItem((Item) this, IUCore.getIdentifier(name)).setUnlocalizedName(name);
         IUCore.proxy.addIModelRegister(this);
+        UpgradeSystem.system.addRecipe(this, EnumUpgrades.JETPACK.list);
+
     }
 
     @SideOnly(Side.CLIENT)
@@ -83,6 +92,22 @@ public class ItemAdvJetpack extends ItemArmorElectric implements IElectricItem, 
     }
 
     @Override
+    public void onUpdate(
+            final ItemStack stack,
+            final World worldIn,
+            final Entity entityIn,
+            final int itemSlot,
+            final boolean isSelected
+    ) {
+        NBTTagCompound nbt = ModUtils.nbt(stack);
+
+        if (!UpgradeSystem.system.hasInMap(stack)) {
+            nbt.setBoolean("hasID", false);
+            MinecraftForge.EVENT_BUS.post(new EventItemLoad(worldIn, this, stack));
+        }
+    }
+
+    @Override
     public void addInformation(
             @Nonnull final ItemStack stack,
             @Nullable final World p_77624_2_,
@@ -91,8 +116,13 @@ public class ItemAdvJetpack extends ItemArmorElectric implements IElectricItem, 
     ) {
         super.addInformation(stack, p_77624_2_, tooltip, p_77624_4_);
         NBTTagCompound nbtData = ModUtils.nbt(stack);
-        if (stack.getItem() == IUItem.perjetpack) {
+        if (UpgradeSystem.system.hasModules(
+                EnumInfoUpgradeModules.FLY,
+                stack
+        )) {
             tooltip.add(Localization.translate("iu.fly") + " " + ModUtils.Boolean(nbtData.getBoolean("jetpack")));
+            tooltip.add(Localization.translate("iu.fly_need"));
+
             if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
                 tooltip.add(Localization.translate("press.lshift"));
             }
@@ -318,10 +348,22 @@ public class ItemAdvJetpack extends ItemArmorElectric implements IElectricItem, 
                 }
             }
             boolean jetpack;
-            if (!player.onGround) {
-                if (nbtData.getBoolean("jetpack")) {
-                    if (ElectricItem.manager.canUse(itemStack, 10)) {
-                        ElectricItem.manager.use(itemStack, 10, null);
+            if (nbtData.getBoolean("jetpack")) {
+                player.fallDistance = 0;
+
+                if (nbtData.getBoolean("jump") && !nbtData.getBoolean("canFly") && !player.capabilities.allowFlying && IC2.keyboard.isJumpKeyDown(
+                        player) && !nbtData.getBoolean(
+                        "isFlyActive") && toggleTimer == 0) {
+                    toggleTimer = 10;
+                    nbtData.setBoolean("canFly", true);
+                }
+                nbtData.setBoolean("jump", !player.onGround);
+
+                if (!player.onGround) {
+                    if (ElectricItem.manager.canUse(itemStack, 25)) {
+                        ElectricItem.manager.use(itemStack, 25, null);
+                    } else {
+                        nbtData.setBoolean("jetpack", false);
                     }
                 }
             }
@@ -329,21 +371,19 @@ public class ItemAdvJetpack extends ItemArmorElectric implements IElectricItem, 
             if ((IC2.keyboard.isJumpKeyDown(player) || hoverMode) && !jetpack) {
                 jetpackUsed = this.useJetpack(player, hoverMode);
             }
-            if (IUCore.keyboard.isFlyModeKeyDown(player) && toggleTimer == 0 && itemStack.getItem().equals(IUItem.perjetpack)) {
+            if (IUCore.keyboard.isFlyModeKeyDown(player) && toggleTimer == 0 && UpgradeSystem.system.hasModules(
+                    EnumInfoUpgradeModules.FLY,
+                    itemStack
+            )) {
                 toggleTimer = 10;
                 jetpack = !jetpack;
                 if (IC2.platform.isSimulating()) {
 
                     nbtData.setBoolean("jetpack", jetpack);
                     if (jetpack) {
-                        IC2.platform.messagePlayer(player, "Creative jetpack enabled.");
-                        player.capabilities.isFlying = true;
-
-                        player.capabilities.allowFlying = true;
-                        player.fallDistance = 0.0F;
-                        player.distanceWalkedModified = 0.0F;
+                        IC2.platform.messagePlayer(player, Localization.translate("iu.flymode_armor.info"));
                     } else {
-                        IC2.platform.messagePlayer(player, "Creative jetpack disabled.");
+                        IC2.platform.messagePlayer(player,  Localization.translate("iu.flymode_armor.info1"));
 
                     }
                 }
@@ -382,7 +422,19 @@ public class ItemAdvJetpack extends ItemArmorElectric implements IElectricItem, 
                     audioSource.updatePosition();
                 }
             }
+            boolean fireResistance = UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.FIRE_PROTECTION, itemStack);
+            if (fireResistance) {
+                player.addPotionEffect(new PotionEffect(MobEffects.FIRE_RESISTANCE, 300));
+            }
+            int resistance = (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.RESISTANCE, itemStack) ?
+                    UpgradeSystem.system.getModules(EnumInfoUpgradeModules.RESISTANCE, itemStack).number : 0);
 
+            if (resistance != 0) {
+                player.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 300, resistance));
+            }
+            if (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.INVISIBILITY, itemStack)) {
+                player.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 300));
+            }
             if (jetpackUsed) {
                 player.inventoryContainer.detectAndSendChanges();
             }

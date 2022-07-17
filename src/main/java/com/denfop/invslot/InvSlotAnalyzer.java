@@ -4,7 +4,7 @@ import com.denfop.IUItem;
 import com.denfop.items.modules.ItemAdditionModule;
 import com.denfop.items.modules.ItemQuarryModule;
 import com.denfop.tiles.base.TileEntityAnalyzer;
-import com.denfop.tiles.base.TileEntityBaseQuantumQuarry;
+import com.denfop.tiles.mechanism.quarry.TileEntityBaseQuantumQuarry;
 import com.denfop.utils.ModUtils;
 import ic2.core.block.invslot.InvSlot;
 import net.minecraft.item.ItemStack;
@@ -32,9 +32,9 @@ public class InvSlotAnalyzer extends InvSlot {
         if (this.type == 0) {
             this.tile.blacklist = this.getblacklist();
             this.tile.whitelist = this.getwhitelist();
-            this.tile.quarry = this.quarry();
             this.tile.size = this.getChunksize();
             this.tile.lucky = this.lucky();
+            this.tile.consume = this.getenergycost();
             this.tile.update_chunk();
         }
     }
@@ -45,9 +45,9 @@ public class InvSlotAnalyzer extends InvSlot {
         if (this.type == 0) {
             this.tile.blacklist = this.getblacklist();
             this.tile.whitelist = this.getwhitelist();
-            this.tile.quarry = this.quarry();
             this.tile.size = this.getChunksize();
             this.tile.lucky = this.lucky();
+            this.tile.consume = this.getenergycost();
         }
     }
 
@@ -92,7 +92,7 @@ public class InvSlotAnalyzer extends InvSlot {
 
     public boolean quarry() {
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null) {
+            if (!this.get(i).isEmpty()) {
                 if (this.get(i).getItem().equals(IUItem.quarrymodule)) {
                     return true;
                 }
@@ -104,7 +104,7 @@ public class InvSlotAnalyzer extends InvSlot {
     public int lucky() {
 
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null) {
+            if (!this.get(i).isEmpty()) {
                 if (this.get(i).getItem() instanceof ItemQuarryModule && this.get(i).getItemDamage() >= 6 && this
                         .get(i)
                         .getItemDamage() < 9) {
@@ -117,7 +117,7 @@ public class InvSlotAnalyzer extends InvSlot {
 
     public boolean getFurnaceModule() {
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null && this.get(i).getItem() instanceof ItemQuarryModule && this.get(i).getItemDamage() == 0) {
+            if (!this.get(i).isEmpty() && this.get(i).getItem() instanceof ItemQuarryModule && this.get(i).getItemDamage() == 0) {
                 return true;
             }
         }
@@ -128,15 +128,13 @@ public class InvSlotAnalyzer extends InvSlot {
         List<String> list = new ArrayList<>();
         for (int i = 0; i < this.size(); i++) {
 
-            if (get(i) != null && get(i).getItemDamage() == 12) {
-                for (int j = 0; j < 9; j++) {
+            if (!this.get(i).isEmpty() && get(i).getItemDamage() == 12) {
+                final NBTTagCompound nbt = ModUtils.nbt(this.get(i));
+                int size = nbt.getInteger("size");
+                for (int j = 0; j < size; j++) {
                     String l = "number_" + j;
                     String temp = ModUtils.NBTGetString(get(i), l);
-                    if (temp.startsWith("ore") || temp.startsWith("gem") || temp.startsWith("dust") || temp.startsWith("shard")) {
-                        list.add(temp);
-                    }
-
-
+                    list.add(temp);
                 }
             }
 
@@ -147,14 +145,13 @@ public class InvSlotAnalyzer extends InvSlot {
     public List<String> getwhitelist() {
         List<String> list = new ArrayList<>();
         for (int i = 0; i < this.size(); i++) {
-            if (get(i) != null && get(i).getItemDamage() == 13) {
-                for (int j = 0; j < 9; j++) {
+            if (!this.get(i).isEmpty() && get(i).getItemDamage() == 13) {
+                final NBTTagCompound nbt = ModUtils.nbt(this.get(i));
+                int size = nbt.getInteger("size");
+                for (int j = 0; j < size; j++) {
                     String l = "number_" + j;
                     String temp = ModUtils.NBTGetString(get(i), l);
-                    if (temp.startsWith("ore") || temp.startsWith("gem") || temp.startsWith("dust") || temp.startsWith("shard")) {
-                        list.add(temp);
-
-                    }
+                    list.add(temp);
 
                 }
                 break;
@@ -180,7 +177,7 @@ public class InvSlotAnalyzer extends InvSlot {
     public int getChunksize() {
         int size = 0;
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null && this.get(i).getItem() instanceof ItemQuarryModule && this
+            if (!this.get(i).isEmpty() && this.get(i).getItem() instanceof ItemQuarryModule && this
                     .get(i)
                     .getItemDamage() > 8 && this
                     .get(i)
@@ -195,7 +192,9 @@ public class InvSlotAnalyzer extends InvSlot {
 
     public boolean getwirelessmodule() {
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null && this.get(i).getItem() instanceof ItemAdditionModule && this.get(i).getItemDamage() == 10) {
+            if (!this.get(i).isEmpty() && this.get(i).getItem() instanceof ItemAdditionModule && this
+                    .get(i)
+                    .getItemDamage() == 10) {
                 return true;
             }
         }
@@ -205,7 +204,9 @@ public class InvSlotAnalyzer extends InvSlot {
     public List<Integer> wirelessmodule() {
         List<Integer> list = new ArrayList<>();
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null && this.get(i).getItem() instanceof ItemAdditionModule && this.get(i).getItemDamage() == 10) {
+            if (!this.get(i).isEmpty() && this.get(i).getItem() instanceof ItemAdditionModule && this
+                    .get(i)
+                    .getItemDamage() == 10) {
                 int x;
                 int y;
                 int z;
@@ -230,7 +231,7 @@ public class InvSlotAnalyzer extends InvSlot {
         double energy = target1.energyconsume;
         double proccent;
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null) {
+            if (!this.get(i).isEmpty()) {
                 if (this.get(i).getItem() instanceof ItemQuarryModule && this.get(i).getItemDamage() > 0 && this
                         .get(i)
                         .getItemDamage() < 6) {
@@ -250,10 +251,10 @@ public class InvSlotAnalyzer extends InvSlot {
     }
 
     public double getenergycost() {
-        double energy = 25000;
+        double energy = 1000;
         double proccent;
         for (int i = 0; i < this.size(); i++) {
-            if (this.get(i) != null) {
+            if (!this.get(i).isEmpty()) {
                 if (this.get(i).getItem() instanceof ItemQuarryModule && this.get(i).getItemDamage() > 0 && this
                         .get(i)
                         .getItemDamage() < 6) {

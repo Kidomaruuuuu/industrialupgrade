@@ -72,9 +72,6 @@ public class GuiCombinerMatter extends GuiIC2<ContainerCombinerMatter> {
 
     }
 
-    public String getName() {
-        return this.container.base.getInventoryName();
-    }
 
     public ResourceLocation getTexture() {
 

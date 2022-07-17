@@ -2,8 +2,8 @@ package com.denfop.render.advoilrefiner;
 
 import com.denfop.Constants;
 import com.denfop.api.render.IModelCustom;
-import com.denfop.render.AdvancedModelLoader;
-import com.denfop.tiles.base.TileEntityAdvOilRefiner;
+import com.denfop.render.base.AdvancedModelLoader;
+import com.denfop.tiles.mechanism.TileEntityAdvOilRefiner;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;

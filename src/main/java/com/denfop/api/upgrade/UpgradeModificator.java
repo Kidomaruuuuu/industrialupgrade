@@ -17,7 +17,6 @@ public class UpgradeModificator {
     }
 
     public boolean matches(String type) {
-        System.out.println(this.type.equals(type));
         return this.type.equals(type);
     }
 

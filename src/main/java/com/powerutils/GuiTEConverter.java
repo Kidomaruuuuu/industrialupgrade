@@ -86,7 +86,7 @@ public class GuiTEConverter extends GuiIC2<ContainerTEConverter> {
                     40,
                     13487565
             );
-            this.fontRenderer.drawString("IN: " + ModUtils.getString(this.tileentity.differenceenergy1) + " TE/t", 9, 50,
+            this.fontRenderer.drawString("IN: " + ModUtils.getString(this.tileentity.perenergy) + " TE/t", 9, 50,
                     13487565
             );
             this.fontRenderer.drawString("OUT: " + ModUtils.getString(this.tileentity.differenceenergy) + " EU/t", 9, 60,

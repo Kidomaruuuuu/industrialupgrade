@@ -28,7 +28,7 @@ public class TabCore extends CreativeTabs {
             case 3:
                 return new ItemStack(IUItem.toriyore);
             case 4:
-                return new ItemStack(IUItem.quantumHelmet);
+                return new ItemStack(IUItem.spectral_helmet);
             case 5:
                 return new ItemStack(IUItem.block);
             case 6:

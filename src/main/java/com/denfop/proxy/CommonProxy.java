@@ -8,7 +8,6 @@ import com.denfop.api.IModelRegister;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
-import com.denfop.api.recipe.RecipeInputStack;
 import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.api.research.BaseResearchSystem;
 import com.denfop.api.research.ResearchSystem;
@@ -24,11 +23,15 @@ import com.denfop.blocks.mechanism.BlockBaseMachine;
 import com.denfop.blocks.mechanism.BlockBaseMachine1;
 import com.denfop.blocks.mechanism.BlockBaseMachine2;
 import com.denfop.blocks.mechanism.BlockBaseMachine3;
+import com.denfop.blocks.mechanism.BlockBlastFurnace;
 import com.denfop.blocks.mechanism.BlockCable;
+import com.denfop.blocks.mechanism.BlockChargepadStorage;
 import com.denfop.blocks.mechanism.BlockCombinerSolid;
 import com.denfop.blocks.mechanism.BlockConverterMatter;
 import com.denfop.blocks.mechanism.BlockCoolPipes;
 import com.denfop.blocks.mechanism.BlockDoubleMolecularTransfomer;
+import com.denfop.blocks.mechanism.BlockEnergyStorage;
+import com.denfop.blocks.mechanism.BlockExpCable;
 import com.denfop.blocks.mechanism.BlockImpChamber;
 import com.denfop.blocks.mechanism.BlockImpSolarEnergy;
 import com.denfop.blocks.mechanism.BlockMolecular;
@@ -46,22 +49,22 @@ import com.denfop.blocks.mechanism.BlockSCable;
 import com.denfop.blocks.mechanism.BlockSimpleMachine;
 import com.denfop.blocks.mechanism.BlockSintezator;
 import com.denfop.blocks.mechanism.BlockSolarEnergy;
+import com.denfop.blocks.mechanism.BlockSolarPanels;
 import com.denfop.blocks.mechanism.BlockSolidMatter;
 import com.denfop.blocks.mechanism.BlockSunnariumMaker;
 import com.denfop.blocks.mechanism.BlockSunnariumPanelMaker;
 import com.denfop.blocks.mechanism.BlockTank;
 import com.denfop.blocks.mechanism.BlockTransformer;
 import com.denfop.blocks.mechanism.BlockUpgradeBlock;
-import com.denfop.blocks.mechanism.IUChargepadStorage;
-import com.denfop.blocks.mechanism.IUStorage;
-import com.denfop.blocks.mechanism.SSPBlock;
 import com.denfop.componets.AdvEnergy;
 import com.denfop.componets.CoolComponent;
 import com.denfop.componets.EXPComponent;
+import com.denfop.componets.HeatComponent;
 import com.denfop.componets.QEComponent;
 import com.denfop.componets.SEComponent;
 import com.denfop.events.EventUpdate;
 import com.denfop.events.IUEventHandler;
+import com.denfop.integration.ae.AEIntegration;
 import com.denfop.integration.avaritia.AvaritiaIntegration;
 import com.denfop.integration.avaritia.BlockAvaritiaSolarPanel;
 import com.denfop.integration.botania.BlockBotSolarPanel;
@@ -75,8 +78,8 @@ import com.denfop.integration.projecte.ProjectEIntegration;
 import com.denfop.integration.thaumcraft.BlockThaumSolarPanel;
 import com.denfop.integration.thaumcraft.ThaumcraftIntegration;
 import com.denfop.items.CellType;
-import com.denfop.items.ItemUpgradePanelKit;
 import com.denfop.items.book.core.CoreBook;
+import com.denfop.items.upgradekit.ItemUpgradePanelKit;
 import com.denfop.recipemanager.ObsidianRecipeManager;
 import com.denfop.recipes.BasicRecipe;
 import com.denfop.recipes.CannerRecipe;
@@ -95,26 +98,26 @@ import com.denfop.tiles.base.TileEntityObsidianGenerator;
 import com.denfop.tiles.base.TileEntityPainting;
 import com.denfop.tiles.base.TileEntitySunnariumMaker;
 import com.denfop.tiles.base.TileEntityUpgradeBlock;
-import com.denfop.tiles.mechanism.EnumUpgradesMultiMachine;
-import com.denfop.tiles.mechanism.TileEntityAdvAlloySmelter;
-import com.denfop.tiles.mechanism.TileEntityAlloySmelter;
-import com.denfop.tiles.mechanism.TileEntityAssamplerScrap;
-import com.denfop.tiles.mechanism.TileEntityCombMacerator;
-import com.denfop.tiles.mechanism.TileEntityEnrichment;
-import com.denfop.tiles.mechanism.TileEntityFermer;
 import com.denfop.tiles.mechanism.TileEntityGenerationMicrochip;
 import com.denfop.tiles.mechanism.TileEntityGenerationStone;
 import com.denfop.tiles.mechanism.TileEntityHandlerHeavyOre;
 import com.denfop.tiles.mechanism.TileEntityPlasticCreator;
 import com.denfop.tiles.mechanism.TileEntityPlasticPlateCreator;
 import com.denfop.tiles.mechanism.TileEntitySunnariumPanelMaker;
-import com.denfop.tiles.mechanism.TileEntitySynthesis;
 import com.denfop.tiles.mechanism.TileEntityWitherMaker;
+import com.denfop.tiles.mechanism.dual.TileEntityEnrichment;
+import com.denfop.tiles.mechanism.dual.TileEntitySynthesis;
+import com.denfop.tiles.mechanism.dual.heat.TileEntityAlloySmelter;
+import com.denfop.tiles.mechanism.multimechanism.simple.TileEntityAssamplerScrap;
+import com.denfop.tiles.mechanism.multimechanism.simple.TileEntityCombMacerator;
+import com.denfop.tiles.mechanism.multimechanism.simple.TileEntityFermer;
+import com.denfop.tiles.mechanism.triple.heat.TileEntityAdvAlloySmelter;
 import com.denfop.tiles.panels.entity.EnumSolarPanels;
 import com.denfop.utils.CraftManagerUtils;
+import com.denfop.utils.ElectricItemManager;
 import com.denfop.utils.ListInformationUtils;
-import com.denfop.utils.TemperatureMechanismUtils;
 import com.denfop.world.WorldGenOres;
+import ic2.api.item.ElectricItem;
 import ic2.api.recipe.IBasicMachineRecipeManager;
 import ic2.api.recipe.IRecipeInput;
 import ic2.api.recipe.IRecipeInputFactory;
@@ -122,7 +125,6 @@ import ic2.api.recipe.MachineRecipe;
 import ic2.core.IC2;
 import ic2.core.block.comp.Components;
 import ic2.core.block.machine.tileentity.TileEntityMatter;
-import ic2.core.util.StackUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -153,20 +155,21 @@ public class CommonProxy implements IGuiHandler {
     }
 
     public void preInit(FMLPreInitializationEvent event) {
+        ElectricItem.rawManager = new ElectricItemManager();
         final BlocksItems init = new BlocksItems();
         init.init();
         Register.init();
-        SSPBlock.buildDummies();
-        IUStorage.buildDummies();
+        BlockSolarPanels.buildDummies();
+        BlockEnergyStorage.buildDummies();
         BlockMoreMachine.buildDummies();
         BlockMoreMachine1.buildDummies();
         BlockMoreMachine2.buildDummies();
         BlockMoreMachine3.buildDummies();
-        IUChargepadStorage.buildDummies();
+        BlockChargepadStorage.buildDummies();
         BlockBaseMachine.buildDummies();
         BlockSolidMatter.buildDummies();
         BlockCombinerSolid.buildDummies();
-
+        BlockBlastFurnace.buildDummies();
         BlockSolarEnergy.buildDummies();
         BlockAdvSolarEnergy.buildDummies();
         BlockImpSolarEnergy.buildDummies();
@@ -190,6 +193,7 @@ public class CommonProxy implements IGuiHandler {
         BlockAdminPanel.buildDummies();
         BlockCable.buildDummies();
         BlockSCable.buildDummies();
+        BlockExpCable.buildDummies();
         BlockQCable.buildDummies();
         BlockPipes.buildDummies();
         BlockTank.buildDummies();
@@ -233,7 +237,6 @@ public class CommonProxy implements IGuiHandler {
         EnumSolarPanels.registerTile();
         ItemUpgradePanelKit.EnumSolarPanelsKit.registerkit();
         IUItem.register_mineral();
-        Recipes.mechanism = new TemperatureMechanismUtils();
         TileEntityAssamplerScrap.init();
         TileEntityHandlerHeavyOre.init();
         TileEntityFermer.init();
@@ -282,6 +285,7 @@ public class CommonProxy implements IGuiHandler {
         if (Loader.isModLoaded("projecte") && Config.ProjectE) {
             ProjectEIntegration.init();
         }
+
         CoreBook.init();
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.mfeUnit));
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.mfsukit));
@@ -290,6 +294,27 @@ public class CommonProxy implements IGuiHandler {
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.cesuUnit));
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.advancedCircuit));
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.advancedCircuit));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.electronicCircuit));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.electronicCircuit));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.lvTransformer));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.mvTransformer));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.hvTransformer));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.evTransformer));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.ChargepadbatBox));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.ChargepadcesuUnit));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.ChargepadmfeUnit));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.ChargepadmfsUnit));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe( Ic2Items.transformerUpgrade));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe( Ic2Items.teslaCoil));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe( Ic2Items.replicator));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe( Ic2Items.blastfurnace ));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe( Ic2Items.jetpack ));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe( Ic2Items.advminer ));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe( Ic2Items.inductionFurnace ));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe( Ic2Items.electrolyzer ));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe( Ic2Items.advminer ));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe( Ic2Items.miner ));
+
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.metalformer));
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.macerator));
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.extractor));
@@ -297,6 +322,12 @@ public class CommonProxy implements IGuiHandler {
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.recycler));
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.massFabricator));
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.compressor));
+
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.tank));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.tank1));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.tank2));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.tank3));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.iridiumDrill));
 
 
         if (Components.getId(AdvEnergy.class) == null) {
@@ -314,7 +345,11 @@ public class CommonProxy implements IGuiHandler {
         if (Components.getId(EXPComponent.class) == null) {
             Components.register(EXPComponent.class, "EXPComponent");
         }
-        EnumUpgradesMultiMachine.register();
+        if (Components.getId(HeatComponent.class) == null) {
+            Components.register(HeatComponent.class, "HeatComponent");
+        }
+
+
         if (Loader.isModLoaded("mets")) {
             METSIntegration.init();
         }
@@ -331,6 +366,9 @@ public class CommonProxy implements IGuiHandler {
         if (Config.AvaritiaLoaded && Config.Avaritia) {
             AvaritiaIntegration.recipe();
         }
+        if (Loader.isModLoaded("appliedenergistics2")) {
+            AEIntegration.init();
+        }
         CompressorRecipe.recipe();
         CannerRecipe.recipe();
         FurnaceRecipes.recipe();
@@ -346,7 +384,18 @@ public class CommonProxy implements IGuiHandler {
         writeRecipe(ic2.api.recipe.Recipes.metalformerRolling, "rolling");
         writeRecipe(ic2.api.recipe.Recipes.recycler, "recycler");
         writeRecipe();
-
+        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
+        for (int i = 0; i < 8; i++) {
+            Recipes.recipes.addRecipe(
+                    "matter",
+                    new BaseMachineRecipe(
+                            new Input(
+                                    input.forStack(new ItemStack(IUItem.matter, 1, i))
+                            ),
+                            new RecipeOutput(null, new ItemStack(IUItem.matter, 1, i))
+                    )
+            );
+        }
     }
 
     private void writeRecipe() {
@@ -363,7 +412,7 @@ public class CommonProxy implements IGuiHandler {
                 continue;
             }
             NBTTagCompound nbt = new NBTTagCompound();
-            nbt.setFloat("experience", recipes.getSmeltingExperience(output) * (float) StackUtil.getSize(output));
+            nbt.setFloat("experience", recipes.getSmeltingExperience(output));
             Recipes.recipes.addRecipe(
                     "furnace",
                     new BaseMachineRecipe(
@@ -373,7 +422,7 @@ public class CommonProxy implements IGuiHandler {
                             new RecipeOutput(nbt, output)
                     )
             );
-            Recipes.recipes.getMap_recipe_managers_itemStack("furnace").add(new RecipeInputStack(input));
+            // Recipes.recipes.getMap_recipe_managers_itemStack("furnace").add(new RecipeInputStack(input));
         }
     }
 

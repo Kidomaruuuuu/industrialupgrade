@@ -11,6 +11,7 @@ import com.denfop.tiles.tank.TileEntityTank;
 import ic2.core.block.BlockTileEntity;
 import ic2.core.block.state.IIdProvider;
 import ic2.core.init.BlocksItems;
+import ic2.core.init.Localization;
 import ic2.core.item.ItemMulti;
 import ic2.core.item.block.ItemBlockTileEntity;
 import ic2.core.ref.BlockName;
@@ -21,9 +22,11 @@ import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -31,9 +34,12 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Locale;
 
 public class ItemsTank extends ItemMulti<ItemsTank.Types> implements IModelRegister {
@@ -42,10 +48,29 @@ public class ItemsTank extends ItemMulti<ItemsTank.Types> implements IModelRegis
 
     public ItemsTank() {
         super(null, Types.class);
-        this.setCreativeTab(IUCore.SSPTab);
+        this.setCreativeTab(IUCore.IUTab);
         BlocksItems.registerItem((Item) this, IUCore.getIdentifier(NAME)).setUnlocalizedName(NAME);
         IUCore.proxy.addIModelRegister(this);
     }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(
+            final ItemStack stack,
+            @Nullable final World worldIn,
+            final List<String> tooltip,
+            final ITooltipFlag flagIn
+    ) {
+        if (stack.hasTagCompound() && stack.getTagCompound().hasKey("fluid")) {
+            FluidStack fluidStack = FluidStack.loadFluidStackFromNBT((NBTTagCompound) stack.getTagCompound().getTag("fluid"));
+
+            tooltip.add(Localization.translate("iu.fluid.info") + fluidStack.getLocalizedName());
+            tooltip.add(Localization.translate("iu.fluid.info1") + fluidStack.amount / 1000 + " B");
+
+        }
+        super.addInformation(stack, worldIn, tooltip, flagIn);
+    }
+
 
     public EnumActionResult onItemUse(
             EntityPlayer player,

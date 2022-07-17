@@ -1,17 +1,17 @@
 package com.denfop.tiles.base;
 
+import com.denfop.api.audio.EnumTypeAudio;
+import com.denfop.api.audio.IAudioFixer;
+import com.denfop.api.recipe.InvSlotOutput;
 import com.denfop.componets.AdvEnergy;
-import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.audio.AudioSource;
 import ic2.core.audio.PositionSpec;
 import ic2.core.block.TileEntityInventory;
-import ic2.core.block.invslot.InvSlotOutput;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
 
-public abstract class TileEntityStandartMachine extends TileEntityInventory implements IHasGui, INetworkTileEntityEventListener {
+public abstract class TileEntityStandartMachine extends TileEntityInventory implements IHasGui, IAudioFixer {
 
 
     public AudioSource audioSource;
@@ -20,6 +20,8 @@ public abstract class TileEntityStandartMachine extends TileEntityInventory impl
     public InvSlotOutput outputSlot = null;
 
     public AdvEnergy energy;
+    public EnumTypeAudio typeAudio = EnumTypeAudio.OFF;
+    public EnumTypeAudio[] valuesAudio = EnumTypeAudio.values();
 
     public TileEntityStandartMachine(int count) {
         if (count != 0) {
@@ -29,29 +31,22 @@ public abstract class TileEntityStandartMachine extends TileEntityInventory impl
 
     }
 
-
-    public void readFromNBT(NBTTagCompound nbttagcompound) {
-        super.readFromNBT(nbttagcompound);
-
-
+    public EnumTypeAudio getType() {
+        return typeAudio;
     }
 
-    public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound) {
-        super.writeToNBT(nbttagcompound);
-
-
-        return nbttagcompound;
+    public void setType(EnumTypeAudio type) {
+        typeAudio = type;
     }
 
-    protected void initiate(int soundEvent) {
+    public void initiate(int soundEvent) {
+        if (this.getType() == valuesAudio[soundEvent % valuesAudio.length]) {
+            return;
+        }
+        setType(valuesAudio[soundEvent % valuesAudio.length]);
         IC2.network.get(true).initiateTileEntityEvent(this, soundEvent, true);
     }
 
-    protected void onLoaded() {
-        super.onLoaded();
-
-
-    }
 
     protected void onUnloaded() {
         super.onUnloaded();

@@ -24,7 +24,7 @@ public class MetalFormerRecipe {
                     addmolot(
                             recipe[j] + RegisterOreDictionary.itemNames().get(i),
                             recipe1[j] + RegisterOreDictionary.itemNames().get(i),
-                            1
+                            2
                     );
                 }
                 if (j == 2) {
@@ -52,11 +52,18 @@ public class MetalFormerRecipe {
         }
         for (int j = 0; j < recipe.length; j++) {
             for (int i = 0; i < RegisterOreDictionary.itemNames1().size(); i++) {
-                if (j != 2 && j != 3 && j != 4) {
+                if (j == 0) {
                     addmolot(
                             recipe[j] + RegisterOreDictionary.itemNames1().get(i),
                             recipe1[j] + RegisterOreDictionary.itemNames1().get(i),
                             1
+                    );
+                }
+                if (j == 1) {
+                    addmolot(
+                            recipe[j] + RegisterOreDictionary.itemNames1().get(i),
+                            recipe1[j] + RegisterOreDictionary.itemNames1().get(i),
+                            2
                     );
                 }
                 if (j == 4) {
@@ -72,6 +79,10 @@ public class MetalFormerRecipe {
         Recipes.metalformerExtruding.addRecipe(input1.forStack(Ic2Items.platetin), null, false,
                 new ItemStack(Ic2Items.cell.getItem(), 3)
         );
+        Recipes.metalformerRolling.addRecipe(input1.forStack(Ic2Items.coal_chunk, 9), null, false,
+                new ItemStack(IUItem.coal_chunk1)
+        );
+
         Recipes.metalformerCutting.addRecipe(input1.forOreDict("plateAluminium"), null, false,
                 new ItemStack(IUItem.pipes, 1, 0)
         );
@@ -86,6 +97,9 @@ public class MetalFormerRecipe {
         );
         Recipes.metalformerCutting.addRecipe(input1.forOreDict("doubleplateAlcled"), null, false,
                 new ItemStack(IUItem.pipes, 1, 4)
+        );
+        Recipes.metalformerCutting.addRecipe(input1.forOreDict("plateMuntsa", 4), null, false,
+                new ItemStack(IUItem.expcable)
         );
         //
 

@@ -2,6 +2,7 @@ package com.denfop.register;
 
 import com.denfop.IUItem;
 import com.denfop.integration.exnihilo.ExNihiloIntegration;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Loader;
@@ -152,8 +153,9 @@ public class RegisterOreDictionary {
 
         OreDictionary.registerOre("oreThorium", IUItem.toriyore);
         OreDictionary.registerOre("gemThorium", new ItemStack(IUItem.toriy, 1, 0));
-        OreDictionary.registerOre("ingotUranium", new ItemStack(IUItem.itemSSP, 1, 2));
-
+        OreDictionary.registerOre("ingotUranium", new ItemStack(IUItem.itemiu, 1, 2));
+        OreDictionary.registerOre("oreRedstone", Blocks.REDSTONE_ORE);
+        OreDictionary.registerOre("oreRedstone", Blocks.LIT_REDSTONE_ORE);
         for (int j = 0; j < list_item1.size(); j++) {
             for (int i = 0; i < list_string1.size(); i++) {
 

@@ -68,20 +68,20 @@ public class ItemLeadBox extends Item implements IHandHeldInventory, IModelRegis
         }
         EntityPlayer player = (EntityPlayer) entityIn;
         if (worldIn.provider.getWorldTime() % 40 == 0) {
-            for (int i = 0; i < 36; i++) {
-                final ItemStack stack1 = player.inventory.getStackInSlot(i);
-                if (stack1.getItem() instanceof IRadioactiveItemType) {
-                    HandHeldLeadBox box = (HandHeldLeadBox) getInventory(player, stack);
-                    if (player.openContainer instanceof ContainerLeadBox) {
-                        player.closeScreen();
-                    }
-                    if (box.canAdd(stack1)) {
-                        box.add(stack1);
-                        box.save();
-                        player.removePotionEffect(IC2Potion.radiation);
-                        player.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
-                    }
+            if (!(player.openContainer instanceof ContainerLeadBox)) {
+                for (int i = 0; i < 36; i++) {
+                    final ItemStack stack1 = player.inventory.getStackInSlot(i);
+                    if (stack1.getItem() instanceof IRadioactiveItemType) {
+                        HandHeldLeadBox box = (HandHeldLeadBox) getInventory(player, stack);
+                        if (box.canAdd(stack1)) {
+                            box.add(stack1);
+                            player.removePotionEffect(IC2Potion.radiation);
+                            player.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
+                            player.inventoryContainer.detectAndSendChanges();
+                            box.markDirty();
+                        }
 
+                    }
                 }
             }
 

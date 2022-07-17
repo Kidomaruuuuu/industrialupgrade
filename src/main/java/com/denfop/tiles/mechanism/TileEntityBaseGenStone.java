@@ -6,22 +6,19 @@ import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.audio.AudioSource;
 import com.denfop.container.ContainerGenStone;
+import com.denfop.invslot.InvSlotUpgrade;
 import com.denfop.tiles.base.TileEntityElectricMachine;
-import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.upgrade.IUpgradableBlock;
-import ic2.api.upgrade.IUpgradeItem;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
-import ic2.core.IHasGui;
-import ic2.core.block.invslot.InvSlotUpgrade;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.List;
 
-public abstract class TileEntityBaseGenStone extends TileEntityElectricMachine implements IHasGui,
-        INetworkTileEntityEventListener, IUpgradableBlock, IUpdateTick {
+public abstract class TileEntityBaseGenStone extends TileEntityElectricMachine implements
+        IUpgradableBlock, IUpdateTick {
 
     public final int defaultEnergyConsume;
     public final int defaultOperationLength;
@@ -105,12 +102,13 @@ public abstract class TileEntityBaseGenStone extends TileEntityElectricMachine i
 
     protected void updateEntityServer() {
         super.updateEntityServer();
-        boolean needsInvUpdate = false;
 
 
         MachineRecipe output = this.output;
         if (output != null && this.outputSlot.canAdd(output.getRecipe().output.items) && this.energy.getEnergy() >= this.energyConsume) {
-            setActive(true);
+            if (!this.getActive()) {
+                setActive(true);
+            }
             this.progress = (short) (this.progress + 1);
             this.energy.useEnergy(this.energyConsume);
             double k = this.progress;
@@ -119,32 +117,23 @@ public abstract class TileEntityBaseGenStone extends TileEntityElectricMachine i
             if (this.progress >= this.operationLength) {
                 this.guiProgress = 0;
                 operate(output);
-                needsInvUpdate = true;
                 this.progress = 0;
             }
         } else {
             if (output == null) {
                 this.progress = 0;
             }
-            setActive(false);
-        }
-        for (int i = 0; i < this.upgradeSlot.size(); i++) {
-            ItemStack stack = this.upgradeSlot.get(i);
-            if (!stack.isEmpty() && stack.getItem() instanceof IUpgradeItem) {
-                if (((IUpgradeItem) stack.getItem()).onTick(stack, this)) {
-                    needsInvUpdate = true;
-                }
+            if (this.getActive()) {
+                setActive(false);
             }
         }
-
-        if (needsInvUpdate) {
-            super.markDirty();
+        if ((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark()) {
+            setOverclockRates();
         }
 
     }
 
     public void setOverclockRates() {
-        this.upgradeSlot.onChanged();
         this.operationsPerTick = this.upgradeSlot.getOperationsPerTick(this.defaultOperationLength);
         this.operationLength = this.upgradeSlot.getOperationLength(this.defaultOperationLength);
         this.energyConsume = this.upgradeSlot.getEnergyDemand(this.defaultEnergyConsume);

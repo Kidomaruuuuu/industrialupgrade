@@ -42,20 +42,6 @@ public class ProjectEIntegration {
             addEmc(new ItemStack(IUItem.verysmalldust, 1, i), 37);
         }
 
-        addEmc(new ItemStack(IUItem.core, 1, 0), 3000);
-        addEmc(new ItemStack(IUItem.core, 1, 1), 15000);
-        addEmc(new ItemStack(IUItem.core, 1, 2), 75000);
-        addEmc(new ItemStack(IUItem.core, 1, 3), 400000);
-        addEmc(new ItemStack(IUItem.core, 1, 4), 25000000);
-        addEmc(new ItemStack(IUItem.core, 1, 5), 125000000);
-        addEmc(new ItemStack(IUItem.core, 1, 6), 725000000);
-        addEmc(new ItemStack(IUItem.core, 1, 7), 4525000000L);
-        addEmc(new ItemStack(IUItem.core, 1, 8), 56525000000L);
-        addEmc(new ItemStack(IUItem.core, 1, 9), 787225000000L);
-        addEmc(new ItemStack(IUItem.core, 1, 10), 3526525000000L);
-        addEmc(new ItemStack(IUItem.core, 1, 11), 15426525000000L);
-        addEmc(new ItemStack(IUItem.core, 1, 12), 115426525000000L);
-        addEmc(new ItemStack(IUItem.core, 1, 13), 915426525000000L);
 
         addEmc(new ItemStack(IUItem.alloysingot, 1, 0), 2384);
         addEmc(new ItemStack(IUItem.alloysingot, 1, 1), 4000);

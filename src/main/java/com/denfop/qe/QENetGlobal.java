@@ -4,8 +4,6 @@ package com.denfop.qe;
 import com.denfop.api.qe.IQENet;
 import com.denfop.api.qe.IQETile;
 import com.denfop.api.qe.NodeQEStats;
-import com.denfop.componets.QEComponent;
-import ic2.core.block.TileEntityBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -43,12 +41,6 @@ public class QENetGlobal implements IQENet {
         return QENetGlobal.worldToEnergyNetMap.get(world);
     }
 
-    public static void onTickStart(final World world) {
-        final QENetLocal energyNet = getForWorld(world);
-        if (energyNet != null) {
-            energyNet.onTickStart();
-        }
-    }
 
     public static void onTickEnd(final World world) {
         final QENetLocal energyNet = getForWorld(world);
@@ -59,15 +51,9 @@ public class QENetGlobal implements IQENet {
 
     @Override
     public IQETile getTile(final World var1, final BlockPos var2) {
-        if (var1.getTileEntity(var2) instanceof IQETile) {
-            return (IQETile) var1.getTileEntity(var2);
-        }
-        if (var1.getTileEntity(var2) instanceof TileEntityBlock) {
-            TileEntityBlock tile = (TileEntityBlock) var1.getTileEntity(var2);
-            assert tile != null;
-            if (tile.hasComponent(QEComponent.class)) {
-                return tile.getComponent(QEComponent.class).getDelegate();
-            }
+        final QENetLocal local = getForWorld(var1);
+        if (local != null) {
+            return local.getTileEntity(var2);
         }
         return null;
     }

@@ -6,28 +6,30 @@ import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.componets.AdvEnergy;
 import com.denfop.container.ContainerTripleElectricMachine;
 import com.denfop.invslot.InvSlotUpgrade;
-import com.denfop.tiles.mechanism.TileEntityAdvAlloySmelter;
-import ic2.api.network.INetworkTileEntityEventListener;
+import com.denfop.tiles.mechanism.triple.heat.TileEntityAdvAlloySmelter;
 import ic2.api.upgrade.IUpgradableBlock;
-import ic2.api.upgrade.IUpgradeItem;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
-import ic2.core.IHasGui;
 import ic2.core.audio.AudioSource;
 import ic2.core.audio.PositionSpec;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.block.invslot.InvSlotDischarge;
+import ic2.core.init.Localization;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
 public abstract class TileEntityTripleElectricMachine extends TileEntityStandartMachine
-        implements IHasGui, INetworkTileEntityEventListener, IUpgradableBlock, IUpdateTick {
+        implements IUpgradableBlock, IUpdateTick {
 
     public final InvSlotDischarge dischargeSlot;
     public final int defaultEnergyConsume;
@@ -42,7 +44,6 @@ public abstract class TileEntityTripleElectricMachine extends TileEntityStandart
     public int operationLength;
     public int operationsPerTick;
     public AudioSource audioSource;
-    public short temperature;
     public MachineRecipe output;
     protected short progress;
     protected double guiProgress;
@@ -78,6 +79,27 @@ public abstract class TileEntityTripleElectricMachine extends TileEntityStandart
                 .addManagedSlot(this.dischargeSlot));
     }
 
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
+        if (stack.getItemDamage() == 3 && type == EnumTripleElectricMachine.ADV_ALLOY_SMELTER) {
+            if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                tooltip.add(Localization.translate("press.lshift"));
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                tooltip.add(Localization.translate("iu.heatmachine.info"));
+            }
+        }
+        if (this.hasComponent(AdvEnergy.class)) {
+            AdvEnergy energy = this.getComponent(AdvEnergy.class);
+            if (!energy.getSourceDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSourceTier()));
+            } else if (!energy.getSinkDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSinkTier()));
+            }
+        }
+
+    }
+
     @Override
     public void onUpdate() {
 
@@ -104,9 +126,6 @@ public abstract class TileEntityTripleElectricMachine extends TileEntityStandart
         return nbttagcompound;
     }
 
-    protected void initiate(int soundEvent) {
-        IC2.network.get(true).initiateTileEntityEvent(this, soundEvent, true);
-    }
 
     protected void onLoaded() {
         super.onLoaded();
@@ -137,19 +156,20 @@ public abstract class TileEntityTripleElectricMachine extends TileEntityStandart
 
     protected void updateEntityServer() {
         super.updateEntityServer();
-        boolean needsInvUpdate = false;
 
 
         if (this.output != null && this.outputSlot.canAdd(output.getRecipe().output.items) && this.energy.getEnergy() >= this.energyConsume) {
             if (this.type.equals(EnumTripleElectricMachine.ADV_ALLOY_SMELTER)) {
                 if (this.output.getRecipe().output.metadata.getShort("temperature") == 0 || output.getRecipe().output.metadata.getInteger(
-                        "temperature") > ((TileEntityAdvAlloySmelter) this).temperature) {
+                        "temperature") > ((TileEntityAdvAlloySmelter) this).heat.getEnergy()) {
                     return;
                 }
             }
             setActive(true);
             if (this.progress == 0) {
-                IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
+                if (this.operationLength > this.defaultOperationLength * 0.1) {
+                    IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
+                }
             }
             this.progress = (short) (this.progress + 1);
             this.energy.useEnergy(this.energyConsume);
@@ -159,34 +179,35 @@ public abstract class TileEntityTripleElectricMachine extends TileEntityStandart
             if (this.progress >= this.operationLength) {
                 this.guiProgress = 0;
                 operate(output);
-                needsInvUpdate = true;
                 this.progress = 0;
-                IC2.network.get(true).initiateTileEntityEvent(this, 2, true);
+                if (this.operationLength > this.defaultOperationLength * 0.1 || (this.getType() != valuesAudio[2 % valuesAudio.length])) {
+                    IC2.network.get(true).initiateTileEntityEvent(this, 2, true);
+                }
             }
         } else {
             if (this.type.equals(EnumTripleElectricMachine.ADV_ALLOY_SMELTER)) {
-                if (((TileEntityAdvAlloySmelter) this).temperature > 0) {
-                    ((TileEntityAdvAlloySmelter) this).temperature--;
+                if (((TileEntityAdvAlloySmelter) this).heat.getEnergy() > 0) {
+                    ((TileEntityAdvAlloySmelter) this).heat.useEnergy(1);
                 }
             }
             if (this.progress != 0 && getActive()) {
-                IC2.network.get(true).initiateTileEntityEvent(this, 1, true);
+                if (this.operationLength > this.defaultOperationLength * 0.1 || (this.getType() != valuesAudio[1 % valuesAudio.length])) {
+                    IC2.network.get(true).initiateTileEntityEvent(this, 1, true);
+                }
             }
             if (output == null) {
                 this.progress = 0;
             }
             setActive(false);
         }
-        if((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark())
+        if ((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark()) {
             setOverclockRates();
-        if (needsInvUpdate) {
-            super.markDirty();
         }
+
 
     }
 
     public void setOverclockRates() {
-        this.upgradeSlot.onChanged();
         this.operationsPerTick = this.upgradeSlot.getOperationsPerTick(this.defaultOperationLength);
         this.operationLength = this.upgradeSlot.getOperationLength(this.defaultOperationLength);
         this.energyConsume = this.upgradeSlot.getEnergyDemand(this.defaultEnergyConsume);

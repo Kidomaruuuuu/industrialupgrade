@@ -1,20 +1,18 @@
 package com.denfop.tiles.base;
 
 import com.denfop.IUCore;
+import com.denfop.api.recipe.InvSlotOutput;
 import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.audio.AudioSource;
 import com.denfop.container.ContainerObsidianGenerator;
 import com.denfop.invslot.InvSlotObsidianGenerator;
 import com.denfop.invslot.InvSlotUpgrade;
-import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.IUpgradeItem;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
-import ic2.core.IHasGui;
 import ic2.core.block.comp.Fluids;
 import ic2.core.block.invslot.InvSlotConsumableLiquidByList;
-import ic2.core.block.invslot.InvSlotOutput;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -28,7 +26,7 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import java.util.List;
 
 public abstract class TileEntityBaseObsidianGenerator extends TileEntityElectricMachine
-        implements IHasGui, INetworkTileEntityEventListener, IUpgradableBlock, IFluidHandler {
+        implements IUpgradableBlock, IFluidHandler {
 
     public final InvSlotOutput outputSlot1;
     public final InvSlotConsumableLiquidByList fluidSlot1;
@@ -145,7 +143,9 @@ public abstract class TileEntityBaseObsidianGenerator extends TileEntityElectric
 
 
         if (output != null && this.energy.canUseEnergy(energyConsume)) {
-            setActive(true);
+            if (!this.getActive()) {
+                setActive(true);
+            }
             if (this.progress == 0) {
                 IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
             }
@@ -168,17 +168,17 @@ public abstract class TileEntityBaseObsidianGenerator extends TileEntityElectric
             if (output == null) {
                 this.progress = 0;
             }
-            setActive(false);
+            if (this.getActive()) {
+                setActive(false);
+            }
         }
-        if(this.upgradeSlot.tickNoMark())
+        if (needsInvUpdate && this.upgradeSlot.tickNoMark()) {
             setOverclockRates();
-        if (needsInvUpdate) {
-            super.markDirty();
         }
+
     }
 
     public void setOverclockRates() {
-        this.upgradeSlot.onChanged();
         double previousProgress = (double) this.progress / (double) this.operationLength;
         double stackOpLen = (this.defaultOperationLength + this.upgradeSlot.extraProcessTime) * 64.0D
                 * this.upgradeSlot.processTimeMultiplier;

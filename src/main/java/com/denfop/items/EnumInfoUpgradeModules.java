@@ -47,6 +47,13 @@ public enum EnumInfoUpgradeModules {
     RANDOM(3, "random"),//37
     HUNGRY(1, "hungry"),//38
     GENERATOR(1, "generator", 36, 35, 28),//39
+    BAGS(1, "bags"), //40
+    FLY(1, "fly"), //41
+    SIZE(4, "size"), //42
+    LAPPACK_ENERGY(3, "lappack_energy"),  //43
+    PURIFIER(1, "purifier_module"),  //44
+    LATEX(1, "latex"),  //45
+    WRENCH(1, "wrench"),  //46
     ;
     public final int max;
     public final String name;

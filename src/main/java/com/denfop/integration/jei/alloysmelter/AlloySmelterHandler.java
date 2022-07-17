@@ -21,7 +21,7 @@ public class AlloySmelterHandler {
         this.temperature = temperature;
     }
 
-    public static List<AlloySmelterHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<AlloySmelterHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

@@ -26,6 +26,7 @@ public class ContainerTEConverter extends ContainerFullInv<TileEntityTEConverter
         ret.add("energy");
         ret.add("maxStorage2");
         ret.add("capacity");
+        ret.add("perenergy");
         ret.add("rf");
         ret.add("tier");
         ret.add("differenceenergy1");

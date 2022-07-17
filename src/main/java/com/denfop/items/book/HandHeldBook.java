@@ -24,6 +24,7 @@ public class HandHeldBook extends HandHeldInventory {
         return new ContainerBook(this);
     }
 
+
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer player, boolean isAdmin) {
         return new GUIBook(player, itemStack1, new ContainerBook(this));

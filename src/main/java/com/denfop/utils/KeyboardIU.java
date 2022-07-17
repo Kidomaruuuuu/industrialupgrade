@@ -34,6 +34,11 @@ public class KeyboardIU implements IKeyboard {
         return this.get(player, Key.BLACKMODE);
     }
 
+    @Override
+    public boolean isBlackListModeViewKeyDown(final EntityPlayer player) {
+        return this.get(player, Key.BLACKLISTVIEWMODE);
+    }
+
     public boolean isSaveModeKeyDown(EntityPlayer player) {
         return this.get(player, Key.SAVEMODE);
     }
@@ -56,7 +61,7 @@ public class KeyboardIU implements IKeyboard {
 
     public enum Key {
         CHANGE,
-        STREAKMODE,
+        BLACKLISTVIEWMODE,
         FLYMODE,
         VERTICALMODE,
         SAVEMODE,

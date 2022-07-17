@@ -20,5 +20,7 @@ public interface IEXPConductor extends IEXPAcceptor, IEXPEmitter {
 
     void removeConductor();
 
+    void update_render();
+
 }
 

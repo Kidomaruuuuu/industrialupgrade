@@ -85,6 +85,9 @@ public class ExperienceUtils {
     }
 
     public static int getLevelForExperience(int experience) {
+        if (experience <= 0) {
+            return 0;
+        }
         int i = 0;
         while (getExperienceForLevel(i) <= experience) {
             ++i;

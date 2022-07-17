@@ -2,6 +2,7 @@ package com.denfop.items.modules;
 
 import com.denfop.Constants;
 import com.denfop.IUCore;
+import com.denfop.IUItem;
 import com.denfop.api.IModelRegister;
 import com.denfop.tiles.panels.entity.EnumSolarPanels;
 import com.denfop.utils.ModUtils;
@@ -18,6 +19,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,9 +30,11 @@ public class ItemModuleTypePanel extends ItemMulti<ItemModuleTypePanel.CraftingT
 
     protected static final String NAME = "modulestype";
 
+    int number = 0;
+
     public ItemModuleTypePanel() {
         super(null, CraftingTypes.class);
-        this.setCreativeTab(IUCore.tabssp1);
+        this.setCreativeTab(IUCore.ModuleTab);
         BlocksItems.registerItem((Item) this, IUCore.getIdentifier(NAME)).setUnlocalizedName(NAME);
         IUCore.proxy.addIModelRegister(this);
     }
@@ -72,6 +76,24 @@ public class ItemModuleTypePanel extends ItemMulti<ItemModuleTypePanel.CraftingT
         info.add(Localization.translate("iu.tier") + ModUtils.getString(solar.tier));
         info.add(Localization.translate("iu.modules1"));
         info.add(Localization.translate("iu.modules2"));
+        info.add(Localization.translate("using_kit"));
+
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            final List<ItemStack> list = IUItem.upgrades_panels;
+            info.add(Localization.translate(list
+                    .get(number % list.size())
+                    .getUnlocalizedName()));
+        } else {
+            for (ItemStack name : IUItem.upgrades_panels) {
+                info.add(Localization.translate(name
+                        .getUnlocalizedName()));
+            }
+        }
+        if (worldIn != null) {
+            if (worldIn.provider.getWorldTime() % 40 == 0) {
+                number++;
+            }
+        }
     }
 
 

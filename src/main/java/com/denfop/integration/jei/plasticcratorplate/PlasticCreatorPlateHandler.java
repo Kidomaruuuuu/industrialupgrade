@@ -24,7 +24,7 @@ public class PlasticCreatorPlateHandler {
         this.output = output;
     }
 
-    public static List<PlasticCreatorPlateHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<PlasticCreatorPlateHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

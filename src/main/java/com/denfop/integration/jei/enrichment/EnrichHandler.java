@@ -19,7 +19,7 @@ public class EnrichHandler {
         this.output = output;
     }
 
-    public static List<EnrichHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<EnrichHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

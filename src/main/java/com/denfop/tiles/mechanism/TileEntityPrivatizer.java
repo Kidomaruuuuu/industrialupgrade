@@ -8,10 +8,7 @@ import com.denfop.invslot.InvSlotPrivatizer;
 import com.denfop.tiles.base.TileEntityElectricMachine;
 import com.denfop.utils.ModUtils;
 import ic2.api.network.INetworkClientTileEntityEventListener;
-import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.core.ContainerBase;
-import ic2.core.IHasGui;
-import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -19,13 +16,16 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TileEntityPrivatizer extends TileEntityElectricMachine
-        implements IHasGui, INetworkTileEntityEventListener, INetworkClientTileEntityEventListener {
+        implements INetworkClientTileEntityEventListener {
 
 
     public final InvSlotPrivatizer inputslot;
     public final InvSlotPrivatizer inputslotA;
-
+    public List<String> listItems = new ArrayList<>();
 
     public TileEntityPrivatizer() {
         super(0, 10, 1);
@@ -75,6 +75,12 @@ public class TileEntityPrivatizer extends TileEntityElectricMachine
     }
 
     @Override
+    protected void onLoaded() {
+        super.onLoaded();
+        this.inputslot.update();
+    }
+
+    @Override
     public void onNetworkEvent(int event) {
         if (this.audioSource == null && getStartSoundFile() != null) {
             this.audioSource = IUCore.audioManager.createSource(this, getStartSoundFile());
@@ -105,23 +111,17 @@ public class TileEntityPrivatizer extends TileEntityElectricMachine
     public void onGuiClosed(EntityPlayer arg0) {
     }
 
-    @Override
-    public String getInventoryName() {
-        return Localization.translate("iu.blockModuleMachine.name");
-    }
-
 
     @Override
     public void onNetworkEvent(EntityPlayer player, int event) {
         if (!this.inputslotA.isEmpty()) {
             initiate(1);
             NBTTagCompound nbt = ModUtils.nbt(this.inputslotA.get());
-            for (int i = 0; i < this.inputslot.size(); i++) {
-                if (this.inputslot.get(i) != null) {
-                    NBTTagCompound nbt1 = ModUtils.nbt(this.inputslot.get(i));
-                    nbt.setString("player_" + i, nbt1.getString("name"));
-                }
+            for (int i = 0; i < this.listItems.size(); i++) {
+                nbt.setString("player_" + i, this.listItems.get(i));
+
             }
+            nbt.setInteger("size", this.listItems.size());
         }
 
 

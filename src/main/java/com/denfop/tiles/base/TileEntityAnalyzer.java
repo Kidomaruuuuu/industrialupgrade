@@ -1,16 +1,22 @@
 package com.denfop.tiles.base;
 
 import com.denfop.IUCore;
+import com.denfop.IUItem;
+import com.denfop.api.vein.Type;
+import com.denfop.api.vein.Vein;
+import com.denfop.api.vein.VeinSystem;
 import com.denfop.audio.AudioSource;
 import com.denfop.container.ContainerAnalyzer;
 import com.denfop.gui.GuiAnalyzer;
 import com.denfop.invslot.InvSlotAnalyzer;
+import com.denfop.tiles.mechanism.TileEntityAnalyzerChest;
 import com.denfop.utils.ModUtils;
 import ic2.api.network.INetworkClientTileEntityEventListener;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -60,13 +66,14 @@ public class TileEntityAnalyzer extends TileEntityElectricMachine implements INe
     public boolean quarry;
     public List<String> blacklist;
     public List<String> whitelist;
+    public double consume;
     List<Integer> y1;
     private int chunkx;
     private int chunkz;
     private int y;
 
     public TileEntityAnalyzer() {
-        super(100000, 14, 1);
+        super(10000000, 14, 1);
         this.listore = new ArrayList<>();
 
         this.listnumberore = new ArrayList<>();
@@ -187,18 +194,18 @@ public class TileEntityAnalyzer extends TileEntityElectricMachine implements INe
             analyze();
         }
         if (this.quarry) {
-
-            setActive(true);
+            if (!this.getActive()) {
+                setActive(true);
+            }
             if (this.inputslot.getwirelessmodule()) {
                 List list6 = this.inputslot.wirelessmodule();
                 int xx = (int) list6.get(0);
                 int yy = (int) list6.get(1);
                 int zz = (int) list6.get(2);
                 BlockPos pos1 = new BlockPos(xx, yy, zz);
-                if (this.getWorld().getTileEntity(pos1) != null && this
-                        .getWorld()
-                        .getTileEntity(pos1) instanceof TileEntityBaseQuantumQuarry) {
-                    TileEntityBaseQuantumQuarry target1 = (TileEntityBaseQuantumQuarry) this.getWorld().getTileEntity(pos1);
+                final TileEntity tile = this.getWorld().getTileEntity(pos1);
+                if (tile instanceof TileEntityAnalyzerChest) {
+                    TileEntityAnalyzerChest target1 = (TileEntityAnalyzerChest) this.getWorld().getTileEntity(pos1);
                     quarry(target1);
                 }
 
@@ -210,8 +217,8 @@ public class TileEntityAnalyzer extends TileEntityElectricMachine implements INe
                             this.pos.getZ() + direction.getFrontOffsetZ()
                     );
                     TileEntity target = this.getWorld().getTileEntity(pos1);
-                    if (target instanceof TileEntityBaseQuantumQuarry) {
-                        TileEntityBaseQuantumQuarry target1 = (TileEntityBaseQuantumQuarry) target;
+                    if (target instanceof TileEntityAnalyzerChest) {
+                        TileEntityAnalyzerChest target1 = (TileEntityAnalyzerChest) target;
                         quarry(target1);
                     }
                 }
@@ -275,153 +282,209 @@ public class TileEntityAnalyzer extends TileEntityElectricMachine implements INe
         int tempz = this.chunksz[this.xcoord][this.zcoord];
         List<String> blacklist = this.blacklist;
         List<String> whitelist = this.whitelist;
-        if (this.getWorld().provider.getWorldTime() % 4 == 0) {
-            for (int x = tempx; x < tempx + 16; x++) {
-                for (int z = tempz; z < tempz + 16; z++) {
-                    for (int yy = this.y; yy < this.y + 4; yy++) {
-                        if (this.energy.getEnergy() < 1) {
-                            break;
-                        }
-                        this.energy.useEnergy(1);
+        for (int x = tempx; x < tempx + 16; x++) {
+            for (int z = tempz; z < tempz + 16; z++) {
+                for (int yy = this.y; yy < this.y + 2; yy++) {
+                    if (this.energy.getEnergy() < 1) {
+                        break;
+                    }
+                    this.energy.useEnergy(1);
+                    final IBlockState blockstate = this.getWorld().getBlockState(new BlockPos(
+                            x,
+                            yy,
+                            z
+                    ));
+                    if (!(blockstate.getMaterial() == Material.AIR)) {
+                        this.breakblock++;
 
-                        if (!this.getWorld().isAirBlock(new BlockPos(x, yy, z))) {
-                            if (!this.getWorld().getBlockState(new BlockPos(x, yy, z)).getBlock().equals(Blocks.AIR)) {
-                                this.breakblock++;
-                                Block block = this.getWorld().getBlockState(new BlockPos(x, yy, z)).getBlock();
-                                ItemStack stack = new ItemStack(block, 1,
-                                        block.getMetaFromState(this.getWorld().getBlockState(new BlockPos(x, yy, z)))
-                                );
-                                if (!stack.isEmpty()) {
-                                    if ((this
-                                            .getWorld()
-                                            .getBlockState(new BlockPos(x, yy, z))
-                                            .getMaterial() == Material.IRON || this
-                                            .getWorld()
-                                            .getBlockState(new BlockPos(x, yy, z))
-                                            .getMaterial() == Material.ROCK) && OreDictionary.getOreIDs(stack).length > 0) {
-
-
-                                        int id = OreDictionary.getOreIDs(stack)[0];
-                                        String name = OreDictionary.getOreName(id);
-                                        if (name.startsWith("ore")) {
-                                            if (!this.inputslot.CheckBlackList(
-                                                    blacklist,
-                                                    name
-                                            ) && this.inputslot.CheckWhiteList(whitelist, name)) {
-
-                                                if (this.listore.isEmpty()) {
-                                                    this.listore.add(name);
-                                                    this.listnumberore.add(1);
-                                                    this.yore.add(yy);
-                                                    this.y1.add(yy);
-                                                    this.numberores = this.listore.size();
-                                                    this.listnumberore1 = new int[this.listnumberore.size()];
-                                                    for (int i = 0; i < this.listnumberore.size(); i++) {
-                                                        this.listnumberore1[i] = this.listnumberore.get(i);
-                                                    }
-
-                                                    this.sum = ModUtils.getsum1(this.listnumberore) - this.listnumberore.size();
-                                                    this.sum1 = ModUtils.getsum1(this.y1);
-                                                    this.middleheightores = new ArrayList<>();
-                                                    for (int i = 0; i < this.listore.size(); i++) {
-                                                        this.middleheightores.add((this.yore.get(i) / (double) this.listnumberore.get(
-                                                                i)));
-                                                    }
-
-                                                }
-
-                                                if (!this.listore.contains(name)) {
+                        Block block = blockstate.getBlock();
+                        ItemStack stack = new ItemStack(block, 1,
+                                block.getMetaFromState(blockstate)
+                        );
+                        if (!stack.isEmpty()) {
+                            if ((blockstate
+                                    .getMaterial() == Material.IRON || blockstate
+                                    .getMaterial() == Material.ROCK) && OreDictionary.getOreIDs(stack).length > 0) {
 
 
-                                                    this.listore.add(name);
-                                                    this.listnumberore.add(1);
-                                                    this.yore.add(yy);
-                                                    this.y1.add(yy);
-                                                    this.numberores = this.listore.size();
-                                                    this.listnumberore1 = new int[this.listnumberore.size()];
-                                                    for (int i = 0; i < this.listnumberore.size(); i++) {
-                                                        this.listnumberore1[i] = this.listnumberore.get(i);
-                                                    }
+                                int id = OreDictionary.getOreIDs(stack)[0];
+                                String name = OreDictionary.getOreName(id);
+                                if (name.startsWith("ore")) {
+                                    if (!this.inputslot.CheckBlackList(
+                                            blacklist,
+                                            name
+                                    ) && this.inputslot.CheckWhiteList(whitelist, name)) {
 
-                                                    this.sum = ModUtils.getsum1(this.listnumberore) - this.listnumberore.size();
-                                                    this.sum1 = ModUtils.getsum1(this.y1);
-                                                    this.middleheightores = new ArrayList<>();
-                                                    for (int i = 0; i < this.listore.size(); i++) {
-                                                        this.middleheightores.add((this.yore.get(i) / (double) this.listnumberore.get(
-                                                                i)));
-                                                    }
-
-                                                }
-                                                if (listore.contains(name)) {
-                                                    yore.set(listore.indexOf(name), yore.get(listore.indexOf(name)) + yy);
-
-                                                    this.listnumberore.set(
-                                                            listore.indexOf(name),
-                                                            listnumberore.get(listore.indexOf(name)) + 1
-                                                    );
-                                                    this.y1.add(yy);
-                                                    this.numberores = listore.size();
-                                                    this.listnumberore1 = new int[this.listnumberore.size()];
-                                                    for (int i = 0; i < this.listnumberore.size(); i++) {
-                                                        this.listnumberore1[i] = this.listnumberore.get(i);
-                                                    }
-
-                                                    this.sum = ModUtils.getsum1(this.listnumberore) - this.listnumberore.size();
-                                                    this.sum1 = ModUtils.getsum1(this.y1);
-                                                    this.middleheightores = new ArrayList<>();
-                                                    for (int i = 0; i < this.listore.size(); i++) {
-                                                        this.middleheightores.add((this.yore.get(i) / (double) this.listnumberore.get(
-                                                                i)));
-                                                    }
-
-                                                }
-
-
+                                        if (this.listore.isEmpty()) {
+                                            this.listore.add(name);
+                                            this.listnumberore.add(1);
+                                            this.yore.add(yy);
+                                            this.y1.add(yy);
+                                            this.numberores = this.listore.size();
+                                            this.listnumberore1 = new int[this.listnumberore.size()];
+                                            for (int i = 0; i < this.listnumberore.size(); i++) {
+                                                this.listnumberore1[i] = this.listnumberore.get(i);
                                             }
+
+                                            this.sum = ModUtils.getsum1(this.listnumberore) - this.listnumberore.size();
+                                            this.sum1 = ModUtils.getsum1(this.y1);
+                                            this.middleheightores = new ArrayList<>();
+                                            for (int i = 0; i < this.listore.size(); i++) {
+                                                this.middleheightores.add((this.yore.get(i) / (double) this.listnumberore.get(
+                                                        i)));
+                                            }
+
                                         }
+
+                                        if (!this.listore.contains(name)) {
+
+
+                                            this.listore.add(name);
+                                            this.listnumberore.add(1);
+                                            this.yore.add(yy);
+                                            this.y1.add(yy);
+                                            this.numberores = this.listore.size();
+                                            this.listnumberore1 = new int[this.listnumberore.size()];
+                                            for (int i = 0; i < this.listnumberore.size(); i++) {
+                                                this.listnumberore1[i] = this.listnumberore.get(i);
+                                            }
+
+                                            this.sum = ModUtils.getsum1(this.listnumberore) - this.listnumberore.size();
+                                            this.sum1 = ModUtils.getsum1(this.y1);
+                                            this.middleheightores = new ArrayList<>();
+                                            for (int i = 0; i < this.listore.size(); i++) {
+                                                if (i < this.yore.size()) {
+                                                    this.middleheightores.add((this.yore.get(i) / (double) this.listnumberore.get(
+                                                            i)));
+                                                } else {
+                                                    this.middleheightores.add((0 / (double) this.listnumberore.get(
+                                                            i)));
+                                                }
+                                            }
+
+                                        }
+                                        if (listore.contains(name)) {
+                                            final int index = listore.indexOf(name);
+                                            if (index < this.yore.size()) {
+                                                yore.set(index, yore.get(index) + yy);
+                                            }
+
+
+                                            this.listnumberore.set(
+                                                    listore.indexOf(name),
+                                                    listnumberore.get(listore.indexOf(name)) + 1
+                                            );
+                                            this.y1.add(yy);
+                                            this.numberores = listore.size();
+                                            this.listnumberore1 = new int[this.listnumberore.size()];
+                                            for (int i = 0; i < this.listnumberore.size(); i++) {
+                                                this.listnumberore1[i] = this.listnumberore.get(i);
+                                            }
+
+                                            this.sum = ModUtils.getsum1(this.listnumberore) - this.listnumberore.size();
+                                            this.sum1 = ModUtils.getsum1(this.y1);
+                                            this.middleheightores = new ArrayList<>();
+                                            for (int i = 0; i < this.listore.size(); i++) {
+                                                if (i < this.yore.size()) {
+                                                    this.middleheightores.add((this.yore.get(i) / (double) this.listnumberore.get(
+                                                            i)));
+                                                } else {
+                                                    this.middleheightores.add((0 / (double) this.listnumberore.get(
+                                                            i)));
+                                                }
+                                            }
+
+                                        }
+
+
                                     }
                                 }
                             }
                         }
+
                     }
                 }
             }
         }
 
-        if (this.getWorld().provider.getWorldTime() % 4 == 0) {
-            this.y += 4;
+
+        this.y += 2;
 
 
-            if (this.y >= 256) {
-                zcoord++;
-                this.y = 0;
-                if (zcoord == zendcoord) {
-                    xcoord++;
-                    zcoord = 0;
-                    if (xcoord == xendcoord) {
-                        zcoord = zendcoord;
-                    }
+        if (this.y >= 256) {
+            final Vein vein = VeinSystem.system.getVein(this
+                    .getWorld()
+                    .getChunkFromBlockCoords(new BlockPos(tempx, 0, tempz))
+                    .getPos());
+            if (vein.getType() == Type.VEIN) {
+                final ItemStack stack = new ItemStack(IUItem.heavyore, 1, vein.getMeta());
+                int id = OreDictionary.getOreIDs(stack)[0];
+                String name = OreDictionary.getOreName(id);
+                boolean has = false;
+                if (!this.listore.contains(name)) {
+
+                    has = true;
+                    this.listore.add(name);
+                    this.listnumberore.add(vein.getCol());
+
+                    this.numberores = this.listore.size();
+
+
                 }
+                if (listore.contains(name) && !has) {
+
+
+                    this.listnumberore.set(
+                            listore.indexOf(name),
+                            listnumberore.get(listore.indexOf(name)) + vein.getCol()
+                    );
+
+                    this.numberores = listore.size();
+                    this.listnumberore1 = new int[this.listnumberore.size()];
+                    for (int i = 0; i < this.listnumberore.size(); i++) {
+                        this.listnumberore1[i] = this.listnumberore.get(i);
+                    }
+
+                    this.sum = ModUtils.getsum1(this.listnumberore) - this.listnumberore.size();
+
+
+                }
+            }
+            zcoord++;
+            this.y = 0;
+            if (zcoord == zendcoord) {
+                xcoord++;
+                zcoord = 0;
+                if (xcoord == xendcoord) {
+                    zcoord = zendcoord;
+                }
+
 
             }
 
-            if (xcoord == xendcoord && zcoord == zendcoord) {
-                this.analysis = false;
-                this.setActive(false);
-                this.xTempChunk = this.chunksx[this.xcoord - 1][this.zcoord - 1];
-                this.zTempChunk = this.chunksz[this.xcoord - 1][this.zcoord - 1];
-                this.y = 257;
-                this.start = true;
-                this.middleheightores = new ArrayList<>();
-                for (int i = 0; i < this.listore.size(); i++) {
+        }
+
+        if (xcoord == xendcoord && zcoord == zendcoord) {
+            this.analysis = false;
+            this.setActive(false);
+            this.xTempChunk = this.chunksx[this.xcoord - 1][this.zcoord - 1];
+            this.zTempChunk = this.chunksz[this.xcoord - 1][this.zcoord - 1];
+            this.y = 257;
+            this.start = true;
+            this.middleheightores = new ArrayList<>();
+            for (int i = 0; i < this.listore.size(); i++) {
+                if (i < this.yore.size()) {
                     this.middleheightores.add((this.yore.get(i) / (double) this.listnumberore.get(i)));
+                } else {
+                    this.middleheightores.add((0 / (double) this.listnumberore.get(i)));
                 }
-                initiate(2);
             }
+            initiate(2);
         }
+
     }
 
-    public void quarry(TileEntityBaseQuantumQuarry target1) {
+    public void quarry(TileEntityAnalyzerChest target1) {
         if (this.y >= 257 && this.start) {
             this.y = 0;
             this.breakblock = 0;
@@ -475,20 +538,17 @@ public class TileEntityAnalyzer extends TileEntityElectricMachine implements INe
                             break;
                         }
                         this.energy.useEnergy(1);
-                        if (!this.getWorld().isAirBlock(new BlockPos(x, yy, z))) {
-                            if (!this.getWorld().getBlockState(new BlockPos(x, yy, z)).getBlock().equals(Blocks.AIR)) {
+                        final IBlockState blockstate = this.getWorld().getBlockState(new BlockPos(x, yy, z));
+                        if (!(blockstate.getMaterial() == Material.AIR)) {
+                            if (!blockstate.getBlock().equals(Blocks.AIR)) {
                                 this.breakblock++;
-                                Block block = this.getWorld().getBlockState(new BlockPos(x, yy, z)).getBlock();
+                                Block block = blockstate.getBlock();
                                 ItemStack stack = new ItemStack(block, 1,
-                                        block.getMetaFromState(this.getWorld().getBlockState(new BlockPos(x, yy, z)))
+                                        block.getMetaFromState(blockstate)
                                 );
                                 if (!stack.isEmpty()) {
-                                    if ((this
-                                            .getWorld()
-                                            .getBlockState(new BlockPos(x, yy, z))
-                                            .getMaterial() == Material.IRON || this
-                                            .getWorld()
-                                            .getBlockState(new BlockPos(x, yy, z))
+                                    if ((blockstate
+                                            .getMaterial() == Material.IRON || blockstate
                                             .getMaterial() == Material.ROCK) && OreDictionary.getOreIDs(stack).length > 0) {
                                         int id = OreDictionary.getOreIDs(stack)[0];
                                         String name = OreDictionary.getOreName(id);
@@ -502,14 +562,14 @@ public class TileEntityAnalyzer extends TileEntityElectricMachine implements INe
                                             ))) {
                                                 continue;
                                             }
-                                            double energycost = this.inputslot.getenergycost(target1);
                                             String temp = name.substring(3);
 
                                             if (temp.startsWith("Infused")) {
                                                 temp = name.substring("Infused".length() + 3);
                                             }
 
-                                            if (!name.equals("oreRedstone") && (OreDictionary.getOres("gem" + temp) == null || OreDictionary
+                                            if (!(("gem" + temp).equals("gemIridium")) && !name.equals("oreRedstone") && (OreDictionary.getOres(
+                                                    "gem" + temp) == null || OreDictionary
                                                     .getOres("gem" + temp)
                                                     .size() < 1) && (OreDictionary.getOres("shard" + temp) == null || OreDictionary
                                                     .getOres("shard" + temp)
@@ -517,40 +577,35 @@ public class TileEntityAnalyzer extends TileEntityElectricMachine implements INe
 
                                                 boolean furnace = this.furnace;
                                                 if (!furnace) {
-                                                    if (!target1.list(target1, stack)) {
-                                                        if (target1.energy.getEnergy() >= energycost &&
-                                                                target1.outputSlot.canAdd(stack)) {
-                                                            target1.outputSlot.add(stack);
-                                                            this.getWorld().setBlockToAir(new BlockPos(x, yy, z));
-                                                            target1.energy.useEnergy(energycost);
-                                                            target1.getblock++;
-                                                        }
+
+                                                    if (this.energy.getEnergy() >= consume &&
+                                                            target1.outputSlot.add(stack)) {
+                                                        this.getWorld().setBlockToAir(new BlockPos(x, yy, z));
+                                                        this.energy.useEnergy(consume);
                                                     }
+
                                                 } else {
                                                     temp = name.substring(3);
                                                     temp = "ingot" + temp;
                                                     if (OreDictionary.getOres(temp).isEmpty()) {
-                                                        if (!target1.list(target1, stack)) {
-                                                            if (target1.energy.getEnergy() >= energycost &&
-                                                                    target1.outputSlot.canAdd(stack)) {
-                                                                target1.outputSlot.add(stack);
+
+
+                                                        if (this.energy.getEnergy() >= consume &&
+                                                                target1.outputSlot.add(stack)) {
+                                                            {
                                                                 this.getWorld().setBlockToAir(new BlockPos(x, yy, z));
-                                                                target1.energy.useEnergy(energycost);
-                                                                target1.getblock++;
+                                                                this.energy.useEnergy(consume);
                                                             }
                                                         }
                                                     } else {
 
                                                         ItemStack stack1 = OreDictionary.getOres(temp).get(0);
-                                                        if (!target1.list(target1, stack)) {
-                                                            if (target1.energy.getEnergy() >= energycost &&
-                                                                    target1.outputSlot.canAdd(stack1)) {
-                                                                target1.outputSlot.add(stack1);
-                                                                this.getWorld().setBlockToAir(new BlockPos(x, yy, z));
-                                                                target1.energy.useEnergy(energycost);
-                                                                target1.getblock++;
-                                                            }
+                                                        if (this.energy.getEnergy() >= consume &&
+                                                                target1.outputSlot.add(stack1)) {
+                                                            this.getWorld().setBlockToAir(new BlockPos(x, yy, z));
+                                                            this.energy.useEnergy(consume);
                                                         }
+
                                                     }
                                                 }
                                             } else {
@@ -566,23 +621,18 @@ public class TileEntityAnalyzer extends TileEntityElectricMachine implements INe
                                                 int chance2 = this.lucky;
 
 
-                                                List<Boolean> get = new ArrayList<>();
-                                                if (!target1.list(target1, stack)) {
-                                                    if (target1.energy.getEnergy() >= energycost) {
-                                                        for (int j = 0; j < chance2 + 1; j++) {
-                                                            if (target1.outputSlot.canAdd(gem)) {
-                                                                target1.outputSlot.add(gem);
-                                                                get.add(true);
-                                                            } else {
-                                                                get.add(false);
-                                                            }
+                                                boolean get = false;
+                                                if (this.energy.getEnergy() >= consume) {
+                                                    for (int j = 0; j < chance2 + 1; j++) {
+                                                        if (target1.outputSlot.add(gem)) {
+                                                            get = true;
                                                         }
                                                     }
                                                 }
-                                                if (ModUtils.Boolean(get)) {
+
+                                                if (get) {
                                                     this.getWorld().setBlockToAir(new BlockPos(x, yy, z));
-                                                    target1.energy.useEnergy(energycost);
-                                                    target1.getblock++;
+                                                    this.energy.useEnergy(consume);
                                                 }
 
                                             }
@@ -601,6 +651,22 @@ public class TileEntityAnalyzer extends TileEntityElectricMachine implements INe
 
 
             if (this.y >= 256) {
+                final Vein vein = VeinSystem.system.getVein(this
+                        .getWorld()
+                        .getChunkFromBlockCoords(new BlockPos(tempx, 0, tempz))
+                        .getPos());
+                if (vein.getType() == Type.VEIN) {
+                    final ItemStack stack = new ItemStack(IUItem.heavyore, 1, vein.getMeta());
+                    int size = vein.getCol();
+                    for (int i = 0; i < size; i++) {
+                        if (target1.outputSlot.add(stack)) {
+                            vein.removeCol(1);
+                        } else {
+                            break;
+                        }
+
+                    }
+                }
                 this.zcoord++;
                 this.y = 0;
                 if (this.zcoord == this.zendcoord) {

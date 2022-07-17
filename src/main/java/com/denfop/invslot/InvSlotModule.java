@@ -2,6 +2,7 @@ package com.denfop.invslot;
 
 
 import com.denfop.items.modules.ItemQuarryModule;
+import com.denfop.tiles.mechanism.TileEntityModuleMachine;
 import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlot;
 import net.minecraft.item.ItemStack;
@@ -10,12 +11,41 @@ import net.minecraftforge.oredict.OreDictionary;
 public class InvSlotModule extends InvSlot {
 
     private final int type;
+    private final TileEntityModuleMachine tile;
     private int stackSizeLimit;
 
     public InvSlotModule(TileEntityInventory base1, String name, int type, int count) {
         super(base1, name, InvSlot.Access.IO, count, InvSlot.InvSide.TOP);
         this.stackSizeLimit = 1;
         this.type = type;
+        this.tile = (TileEntityModuleMachine) base1;
+    }
+
+    @Override
+    public void put(final int index, final ItemStack content) {
+        super.put(index, content);
+        if (type == 0) {
+            this.update();
+        }
+    }
+
+    public void update() {
+        if (type == 0) {
+            this.tile.listItems.clear();
+            for (int i = 0; i < this.size(); i++) {
+                if (!this.get(i).isEmpty()) {
+
+
+                    int id = OreDictionary.getOreIDs(this.get(i))[0];
+                    String ore = OreDictionary.getOreName(id);
+
+                    if (!this.tile.listItems.contains(ore)) {
+                        this.tile.listItems.add(ore);
+                    }
+                }
+
+            }
+        }
     }
 
     public boolean accepts(ItemStack itemStack) {

@@ -1,20 +1,21 @@
 package com.denfop.tiles.base;
 
 import com.denfop.Config;
+import com.denfop.api.recipe.InvSlotOutput;
+import com.denfop.componets.AdvEnergy;
 import com.denfop.container.ContainerSolidMatter;
 import com.denfop.gui.GuiSolidMatter;
 import com.denfop.invslot.InvSlotUpgrade;
 import ic2.api.upgrade.IUpgradableBlock;
-import ic2.api.upgrade.IUpgradeItem;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.audio.AudioSource;
 import ic2.core.block.TileEntityInventory;
-import ic2.core.block.comp.Energy;
-import ic2.core.block.invslot.InvSlotOutput;
+import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -22,6 +23,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 public abstract class TileEntityMatterGenerator extends TileEntityInventory implements IHasGui,
@@ -30,7 +32,7 @@ public abstract class TileEntityMatterGenerator extends TileEntityInventory impl
     public final InvSlotOutput outputSlot;
     public final ItemStack itemstack;
     public final InvSlotUpgrade upgradeSlot;
-    private final Energy energy;
+    private final AdvEnergy energy;
     private final String name;
     public AudioSource audioSource;
     private double progress;
@@ -41,10 +43,27 @@ public abstract class TileEntityMatterGenerator extends TileEntityInventory impl
         this.upgradeSlot = new com.denfop.invslot.InvSlotUpgrade(this, "upgrade", 4);
         this.progress = 0;
         this.name = name;
-        this.energy = this.addComponent(Energy.asBasicSink(this, Config.SolidMatterStorage, 10));
+        this.energy = this.addComponent(AdvEnergy.asBasicSink(this, Config.SolidMatterStorage, 10));
 
     }
 
+    private static int applyModifier(int extra) {
+        double ret = (double) Math.round(((double) 10 + (double) extra));
+        return ret > 2.147483647E9D ? 2147483647 : (int) ret;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
+        if (this.hasComponent(AdvEnergy.class)) {
+            AdvEnergy energy = this.getComponent(AdvEnergy.class);
+            if (!energy.getSourceDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSourceTier()));
+            } else if (!energy.getSinkDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSinkTier()));
+            }
+        }
+
+    }
 
     public void readFromNBT(NBTTagCompound nbttagcompound) {
         super.readFromNBT(nbttagcompound);
@@ -61,10 +80,8 @@ public abstract class TileEntityMatterGenerator extends TileEntityInventory impl
         IC2.network.get(true).initiateTileEntityEvent(this, soundEvent, true);
     }
 
-
     protected void updateEntityServer() {
         super.updateEntityServer();
-        boolean needsInvUpdate = false;
         if (this.energy.getEnergy() > 0) {
             this.progress = this.energy.getEnergy() / this.energy.getCapacity();
             if (this.energy.getEnergy() >= this.energy.getCapacity()) {
@@ -78,12 +95,11 @@ public abstract class TileEntityMatterGenerator extends TileEntityInventory impl
         }
 
 
-        if (this.getWorld().provider.getWorldTime() % 10 == 0 && this.upgradeSlot.tickNoMark()) {
-            markDirty();
+        if (this.upgradeSlot.tickNoMark()) {
+            setUpgradestat();
         }
 
     }
-
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer entityPlayer, boolean isAdmin) {
@@ -94,6 +110,9 @@ public abstract class TileEntityMatterGenerator extends TileEntityInventory impl
         return new ContainerSolidMatter(entityPlayer, this);
     }
 
+    public void setUpgradestat() {
+        this.energy.setSinkTier(applyModifier(this.upgradeSlot.extraTier));
+    }
 
     public String getStartSoundFile() {
         return null;

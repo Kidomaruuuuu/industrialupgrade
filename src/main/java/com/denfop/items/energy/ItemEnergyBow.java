@@ -26,11 +26,9 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Enchantments;
-import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemArrow;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -43,9 +41,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.ArrowLooseEvent;
 import net.minecraftforge.event.entity.player.ArrowNockEvent;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -111,6 +109,14 @@ public class ItemEnergyBow extends ItemBow implements IElectricItem, IUpgradeIte
         return new ModelResourceLocation(loc, null);
     }
 
+    public int getItemEnchantability() {
+        return 0;
+    }
+
+    public boolean isBookEnchantable(@Nonnull ItemStack stack, @Nonnull ItemStack book) {
+        return false;
+    }
+
     @SideOnly(Side.CLIENT)
     @Override
     public void addInformation(
@@ -119,37 +125,12 @@ public class ItemEnergyBow extends ItemBow implements IElectricItem, IUpgradeIte
             @Nonnull final List<String> tooltip,
             @Nonnull final ITooltipFlag p_77624_4_
     ) {
-        NBTTagCompound nbt = ModUtils.nbt(stack);
-        IElectricItem item = (IElectricItem) stack.getItem();
-        if (!nbt.getBoolean("loaded")) {
-            if (nbt.getInteger("tier") == 0) {
-                nbt.setInteger("tier", item.getTier(stack));
-            }
-            if (nbt.getDouble("transferLimit") == 0.0D) {
-                nbt.setDouble("transferLimit", item.getTransferLimit(stack));
-            }
-            if (nbt.getDouble("maxCharge") == 0.0D) {
-                nbt.setDouble("maxCharge", item.getMaxCharge(stack));
-            }
-            nbt.setBoolean("loaded", true);
-        }
-        if (nbt.getDouble("transferLimit") != item.getTransferLimit(stack)) {
-            tooltip.add(String.format(Localization.translate("info.transferspeed"), nbt.getDouble("transferLimit")));
-        }
-        if (nbt.getInteger("tier") != item.getTier(stack)) {
-            tooltip.add(String.format(Localization.translate("info.chargingtier"), nbt.getInteger("tier")));
-        }
-
         if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             tooltip.add(Localization.translate("press.lshift"));
-        }
-
-
-        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+        } else {
             tooltip.add(Localization.translate("iu.changemode_key") + Keyboard.getKeyName(KeyboardClient.changemode.getKeyCode()) + Localization.translate(
                     "iu.changemode_rcm"));
         }
-
         super.addInformation(stack, p_77624_2_, tooltip, p_77624_4_);
     }
 
@@ -169,12 +150,21 @@ public class ItemEnergyBow extends ItemBow implements IElectricItem, IUpgradeIte
         }
     }
 
+    public EntityAdvArrow createArrow(World worldIn, ItemStack stack, EntityLivingBase shooter) {
+        EntityAdvArrow entitytippedarrow = new EntityAdvArrow(worldIn, shooter);
+        entitytippedarrow.setPotionEffect(stack);
+        entitytippedarrow.setStack(stack);
+        return entitytippedarrow;
+    }
+
     public boolean isRepairable() {
         return false;
     }
 
-    public int getItemEnchantability() {
-        return 0;
+
+    @Nonnull
+    public EntityAdvArrow customizeArrow(@Nonnull EntityArrow arrow) {
+        return (EntityAdvArrow) arrow;
     }
 
     public void onPlayerStoppedUsing(
@@ -208,8 +198,7 @@ public class ItemEnergyBow extends ItemBow implements IElectricItem, IUpgradeIte
             return;
         }
         if (!world.isRemote) {
-            ItemArrow itemarrow = (ItemArrow) (stack.getItem() instanceof ItemArrow ? stack.getItem() : Items.ARROW);
-            EntityArrow arrow = itemarrow.createArrow(world, stack, player);
+            EntityAdvArrow arrow = createArrow(world, stack, player);
             arrow = this.customizeArrow(arrow);
             arrow.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, f * 3.0F, 1.0F);
 
@@ -262,8 +251,7 @@ public class ItemEnergyBow extends ItemBow implements IElectricItem, IUpgradeIte
                     ElectricItem.manager.use(stack, CHARGE[mode] - CHARGE[mode] * 0.1 * bowenergy, null);
                     world.spawnEntity(arrow);
                     if (arrow.getIsCritical()) {
-                        ItemArrow itemarrow2 = (ItemArrow) (stack.getItem() instanceof ItemArrow ? stack.getItem() : Items.ARROW);
-                        EntityArrow arrow2 = itemarrow2.createArrow(world, stack, player);
+                        EntityArrow arrow2 = createArrow(world, stack, player);
                         arrow2 = this.customizeArrow(arrow2);
                         arrow2.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, f * 3.0F, 1.0F);
                         arrow2.setDamage(f * 2.0F);
@@ -271,8 +259,7 @@ public class ItemEnergyBow extends ItemBow implements IElectricItem, IUpgradeIte
                         arrow2.setIsCritical(true);
                         arrow2.pickupStatus = EntityArrow.PickupStatus.CREATIVE_ONLY;
 
-                        ItemArrow itemarrow3 = (ItemArrow) (stack.getItem() instanceof ItemArrow ? stack.getItem() : Items.ARROW);
-                        EntityArrow arrow3 = itemarrow3.createArrow(world, stack, player);
+                        EntityArrow arrow3 = createArrow(world, stack, player);
                         arrow3 = this.customizeArrow(arrow3);
                         arrow3.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, f * 3.0F, 1.0F);
 
@@ -281,8 +268,7 @@ public class ItemEnergyBow extends ItemBow implements IElectricItem, IUpgradeIte
                         arrow3.setIsCritical(true);
                         arrow3.pickupStatus = EntityArrow.PickupStatus.CREATIVE_ONLY;
 
-                        ItemArrow itemarrow4 = (ItemArrow) (stack.getItem() instanceof ItemArrow ? stack.getItem() : Items.ARROW);
-                        EntityArrow arrow4 = itemarrow4.createArrow(world, stack, player);
+                        EntityArrow arrow4 = createArrow(world, stack, player);
                         arrow4 = this.customizeArrow(arrow4);
                         arrow4.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, f * 3.0F, 1.0F);
 
@@ -291,8 +277,7 @@ public class ItemEnergyBow extends ItemBow implements IElectricItem, IUpgradeIte
                         arrow4.setIsCritical(true);
                         arrow4.pickupStatus = EntityArrow.PickupStatus.CREATIVE_ONLY;
 
-                        ItemArrow itemarrow5 = (ItemArrow) (stack.getItem() instanceof ItemArrow ? stack.getItem() : Items.ARROW);
-                        EntityArrow arrow5 = itemarrow5.createArrow(world, stack, player);
+                        EntityArrow arrow5 = createArrow(world, stack, player);
                         arrow5 = this.customizeArrow(arrow5);
                         arrow5.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, f * 3.0F, 1.0F);
 
@@ -363,13 +348,10 @@ public class ItemEnergyBow extends ItemBow implements IElectricItem, IUpgradeIte
         int bowenergy = UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.BOWENERGY, stack) ?
                 UpgradeSystem.system.getModules(EnumInfoUpgradeModules.BOWENERGY, stack).number : 0;
 
-        if (IUCore.keyboard.isChangeKeyDown(player) && nbt.getByte("toggleTimer") == 0) {
+        if (IUCore.keyboard.isChangeKeyDown(player)) {
             if (!world.isRemote) {
-                byte toggle = 10;
-                nbt.setByte("toggleTimer", toggle);
                 mode++;
-
-                if (mode > 4) {
+                if (mode >= CHARGE.length) {
                     mode = 0;
                 }
                 nbt.setInteger("bowMode", mode);
@@ -395,20 +377,18 @@ public class ItemEnergyBow extends ItemBow implements IElectricItem, IUpgradeIte
     }
 
     @SubscribeEvent
-    void blindness(AttackEntityEvent event) {
-        if (!(event.getEntityLiving() instanceof EntityPlayer)) {
+    void blindness(LivingHurtEvent event) {
+        if (!(event.getSource().getImmediateSource() instanceof EntityAdvArrow)) {
             return;
         }
-        EntityPlayer player = (EntityPlayer) event.getEntityLiving();
-        ItemStack stack = event.getEntityPlayer().getHeldItemMainhand();
-        if (stack.getItem() != this) {
-            return;
-        }
+
+        EntityAdvArrow tippedArrow = (EntityAdvArrow) event.getSource().getImmediateSource();
+        ItemStack stack = tippedArrow.getStack();
         boolean blindness = UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.BLINDNESS, stack);
         if (!blindness) {
             return;
         }
-        player.addPotionEffect(new PotionEffect(MobEffects.BLINDNESS, 60));
+        event.getEntityLiving().addPotionEffect(new PotionEffect(MobEffects.BLINDNESS, 60));
     }
 
     public void onUpdate(
@@ -423,12 +403,6 @@ public class ItemEnergyBow extends ItemBow implements IElectricItem, IUpgradeIte
         if (!UpgradeSystem.system.hasInMap(stack)) {
             nbt.setBoolean("hasID", false);
             MinecraftForge.EVENT_BUS.post(new EventItemLoad(world, this, stack));
-        }
-
-        byte toggle = nbt.getByte("toggleTimer");
-        if (toggle > 0) {
-            toggle = (byte) (toggle - 1);
-            nbt.setByte("toggleTimer", toggle);
         }
 
     }
@@ -457,40 +431,17 @@ public class ItemEnergyBow extends ItemBow implements IElectricItem, IUpgradeIte
     }
 
     public double getMaxCharge(ItemStack stack) {
-        NBTTagCompound nbt = ModUtils.nbt(stack);
-        if (nbt.getDouble("maxCharge") == 0.0D) {
-            nbt.setDouble("maxCharge", getDefaultMaxCharge());
-        }
-        return nbt.getDouble("maxCharge");
+        return this.maxenergy;
     }
 
     public int getTier(ItemStack stack) {
-        NBTTagCompound nbt = ModUtils.nbt(stack);
-        if (nbt.getInteger("tier") == 0) {
-            nbt.setInteger("tier", getDefaultTier());
-        }
-        return nbt.getInteger("tier");
-    }
-
-    public double getTransferLimit(ItemStack stack) {
-        NBTTagCompound nbt = ModUtils.nbt(stack);
-        if (nbt.getDouble("transferLimit") == 0.0D) {
-            nbt.setDouble("transferLimit", getDefaultTransferLimit());
-        }
-        return nbt.getDouble("transferLimit");
-    }
-
-    public int getDefaultMaxCharge() {
-        return maxenergy;
-    }
-
-    public int getDefaultTier() {
         return this.tier;
     }
 
-    public int getDefaultTransferLimit() {
-        return this.transferenergy;
+    public double getTransferLimit(ItemStack stack) {
+        return transferenergy;
     }
+
 
     @Override
     public void registerModels() {
@@ -503,11 +454,6 @@ public class ItemEnergyBow extends ItemBow implements IElectricItem, IUpgradeIte
         ModelBakery.registerItemVariants(this, getModelLocation1(name));
 
 
-    }
-
-
-    @Override
-    public void setUpdate(final boolean update) {
     }
 
 

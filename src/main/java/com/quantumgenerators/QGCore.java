@@ -31,7 +31,7 @@ public final class QGCore {
         TeBlockRegistry.addAll(enumClass, ref);
         TeBlockRegistry.setDefaultMaterial(ref, Material.ROCK);
         TeBlockRegistry.addCreativeRegisterer((list, block, itemblock, tab) -> {
-            if (tab == CreativeTabs.SEARCH || tab == IUCore.SSPTab) {
+            if (tab == CreativeTabs.SEARCH || tab == IUCore.IUTab) {
                 block.getAllTypes().forEach(type -> {
                     if (type.hasItem()) {
                         list.add(block.getItemStack(type));
@@ -58,7 +58,7 @@ public final class QGCore {
     public void load(final FMLPreInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(this);
         BlockQG.buildDummies();
-        qg = TeBlockRegistry.get(BlockQG.IDENTITY).setCreativeTab(IUCore.SSPTab);
+        qg = TeBlockRegistry.get(BlockQG.IDENTITY).setCreativeTab(IUCore.IUTab);
     }
 
 

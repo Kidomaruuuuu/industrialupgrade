@@ -8,6 +8,6 @@ public interface IMultiUpdateTick extends IUpdateTick {
 
     void setRecipeOutput(MachineRecipe output, int slotId);
 
-    EnumTypeMachines getType();
+    EnumTypeMachines getTypeMachine();
 
 }

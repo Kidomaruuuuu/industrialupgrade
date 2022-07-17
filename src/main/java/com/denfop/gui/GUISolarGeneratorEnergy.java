@@ -4,10 +4,8 @@ import com.denfop.Constants;
 import com.denfop.container.ContainerSolarGeneratorEnergy;
 import com.denfop.utils.ModUtils;
 import ic2.core.GuiIC2;
-import ic2.core.IC2;
 import ic2.core.gui.Area;
 import ic2.core.init.Localization;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -31,9 +29,6 @@ public class GuiSolarGeneratorEnergy extends GuiIC2<ContainerSolarGeneratorEnerg
 
 
     }
-
-
-
 
 
     @Override

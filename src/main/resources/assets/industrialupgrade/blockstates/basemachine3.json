@@ -134,7 +134,9 @@
 	  "creator_schedules": {
         "model": "industrialupgrade:basemachine/creator_schedules"
       },
-	  
+	  "analyzer_chest": {
+        "model": "industrialupgrade:basemachine/analyzer_chest"
+      },
 	  
       "quantum_solar_panelrain": {
         "model": "industrialupgrade:quantum_solar_panelrain"

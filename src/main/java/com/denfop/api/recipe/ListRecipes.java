@@ -4,7 +4,11 @@ import ic2.api.recipe.IRecipeInput;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidTank;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ListRecipes implements IRecipes {
@@ -24,6 +28,7 @@ public class ListRecipes implements IRecipes {
         this.addRecipeManager("sunnuriumpanel", 2, true);
         this.addRecipeManager("synthesis", 2, true);
         this.addRecipeManager("upgradeblock", 2, true);
+        this.addRecipeManager("antiupgradeblock", 1, true);
         this.addRecipeManager("advalloysmelter", 3, true);
         this.addRecipeManager("genstone", 2, false);
         this.addRecipeManager("microchip", 5, true);
@@ -33,19 +38,21 @@ public class ListRecipes implements IRecipes {
         this.addRecipeManager("molecular", 1, true);
         this.addRecipeManager("plastic", 2, true);
         this.addRecipeManager("plasticplate", 1, true);
-        this.addRecipeManager("converter", 1, false);
-        this.addRecipeManager("macerator", 1, true);
-        this.addRecipeManager("compressor", 1, true);
-        this.addRecipeManager("extractor", 1, true);
-        this.addRecipeManager("recycler", 1, true);
-        this.addRecipeManager("furnace", 1, true);
-        this.addRecipeManager("extruding", 1, true);
-        this.addRecipeManager("cutting", 1, true);
-        this.addRecipeManager("rolling", 1, true);
-        this.addRecipeManager("farmer", 1, true);
-        this.addRecipeManager("scrap", 1, true);
-        this.addRecipeManager("comb_macerator", 1, true);
-        this.addRecipeManager("handlerho", 1, true);
+        this.addRecipeManager("converter", 1, false, true);
+        this.addRecipeManager("macerator", 1, true, true);
+        this.addRecipeManager("compressor", 1, true, true);
+        this.addRecipeManager("extractor", 1, true, true);
+        this.addRecipeManager("recycler", 1, true, true);
+        this.addRecipeManager("furnace", 1, true, true);
+        this.addRecipeManager("extruding", 1, true, true);
+        this.addRecipeManager("cutting", 1, true, true);
+        this.addRecipeManager("rolling", 1, true, true);
+        this.addRecipeManager("farmer", 1, true, true);
+        this.addRecipeManager("scrap", 1, true, true);
+        this.addRecipeManager("comb_macerator", 1, true, true);
+        this.addRecipeManager("handlerho", 1, true, true);
+        this.addRecipeManager("matter", 1, false, false);
+
     }
 
     public IBaseRecipe getRecipe(String name) {
@@ -63,12 +70,13 @@ public class ListRecipes implements IRecipes {
     }
 
 
-
     public void addRecipeManager(String name, int size, boolean consume, boolean require) {
         this.map_recipe_managers.put(name, new RecipeManager(name, size, consume, require));
         if (!this.map_recipes.containsKey(name)) {
             List<BaseMachineRecipe> lst = new ArrayList<>();
+            List<IRecipeInputStack> lst1 = new ArrayList<>();
             this.map_recipes.put(name, lst);
+            this.map_recipe_managers_itemStack.put(name, lst1);
         }
     }
 
@@ -77,6 +85,29 @@ public class ListRecipes implements IRecipes {
         recipes.removeIf(recipe -> recipe.getOutput().items.get(0).isItemEqual(output.items.get(0)));
 
     }
+
+    @Override
+    public BaseMachineRecipe getRecipeOutputFluid(
+            final IBaseRecipe recipe,
+            final MachineRecipe recipeOutput,
+            final boolean consume,
+            final List<ItemStack> list,
+            final FluidTank tank
+    ) {
+        if (recipeOutput == null) {
+            return null;
+        }
+        List<Integer> list1 = recipeOutput.getList();
+
+        if (consume) {
+            for (int i = 0; i < list.size(); i++) {
+                list.get(i).shrink(list1.get(i));
+            }
+            tank.drain(recipeOutput.getRecipe().input.getFluid(), true);
+        }
+        return recipeOutput.getRecipe();
+    }
+
 
     @Override
     public BaseMachineRecipe getRecipeOutputFluid(
@@ -129,10 +160,106 @@ public class ListRecipes implements IRecipes {
                     for (int j = 0; j < list.size(); j++) {
                         list.get(j).setCount(list.get(j).getCount() - col[j]);
                     }
-                    tank.drain(1000, true);
+                    tank.drain(baseMachineRecipe.input.getFluid(), true);
                     break;
                 } else {
                     return baseMachineRecipe;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public MachineRecipe getRecipeOutputMachineFluid(
+            final IBaseRecipe recipe,
+            final List<BaseMachineRecipe> recipe_list,
+            final boolean adjustInput,
+            final List<ItemStack> list,
+            final FluidTank tank
+    ) {
+        int size = recipe.getSize();
+        for (BaseMachineRecipe baseMachineRecipe : recipe_list) {
+            if (!recipe.require()) {
+                int[] col = new int[size];
+                int[] col1 = new int[size];
+                List<Integer> lst = new ArrayList<>();
+                for (int i = 0; i < size; i++) {
+                    lst.add(i);
+                }
+                List<IRecipeInput> recipeInputList = baseMachineRecipe.input.getInputs();
+                List<Integer> lst1 = new ArrayList<>();
+                for (int j = 0; j < list.size(); j++) {
+                    for (int i = 0; i < recipeInputList.size(); i++) {
+                        if (recipeInputList.get(i).matches(list.get(j)) && !lst1.contains(i)) {
+                            lst1.add(i);
+
+                            col1[j] = i;
+                            break;
+                        }
+                    }
+                }
+                if (lst.size() == lst1.size()) {
+                    for (int j = 0; j < list.size(); j++) {
+                        ItemStack stack2 = recipeInputList.get(col1[j]).getInputs().get(0);
+                        ItemStack stack = list.get(j);
+                        if (stack.getCount() < stack2.getCount()) {
+                            return null;
+                        }
+                        col[j] = stack2.getCount();
+                    }
+                    if (adjustInput) {
+                        for (int j = 0; j < list.size(); j++) {
+                            list.get(j).setCount(list.get(j).getCount() - col[j]);
+                        }
+                        tank.drain(baseMachineRecipe.input.getFluid(), true);
+                        break;
+                    } else {
+                        return new MachineRecipe(baseMachineRecipe, Arrays.stream(col)
+                                .boxed()
+                                .collect(Collectors.toList()));
+                    }
+                }
+            } else {
+                List<IRecipeInput> recipeInputList = baseMachineRecipe.input.getInputs();
+
+                boolean need = true;
+                for (int i = 0; i < size; i++) {
+                    if (!recipeInputList.get(i).matches(list.get(i))) {
+                        need = true;
+                        break;
+
+                    }
+                    if (recipeInputList.get(i).getInputs().get(0).getCount() > list.get(i).getCount()) {
+                        need = true;
+                        break;
+                    }
+                    need = false;
+                }
+                if (need) {
+                    continue;
+                }
+                if (tank.getFluid() == null) {
+                    return null;
+                }
+                if (tank.getFluidAmount() < 1000) {
+                    return null;
+                }
+                if (!tank.getFluid().isFluidEqual(baseMachineRecipe.input.getFluid())) {
+                    continue;
+                }
+                List<Integer> integer = new ArrayList<>();
+                for (int j = 0; j < list.size(); j++) {
+                    integer.add(recipeInputList.get(j).getInputs().get(0).getCount());
+                }
+                if (adjustInput) {
+                    for (int j = 0; j < list.size(); j++) {
+                        list.get(j).setCount(list.get(j).getCount() - recipeInputList.get(j).getAmount());
+                    }
+                    tank.drain(baseMachineRecipe.input.getFluid(), true);
+                    break;
+                } else {
+                    return new MachineRecipe(baseMachineRecipe, integer);
                 }
             }
         }
@@ -190,7 +317,7 @@ public class ListRecipes implements IRecipes {
                     for (int j = 0; j < list.size(); j++) {
                         list.get(j).setCount(list.get(j).getCount() - col[j]);
                     }
-                    tank.drain(1000, true);
+                    tank.drain(baseMachineRecipe.input.getFluid(), true);
                     break;
                 } else {
                     return new MachineRecipe(baseMachineRecipe, Arrays.stream(col)
@@ -219,10 +346,11 @@ public class ListRecipes implements IRecipes {
         if (!this.map_recipes.containsKey(name)) {
             List<IRecipeInput> iRecipeInputList = recipe.input.getInputs();
             List<IRecipeInputStack> inputStackList = new ArrayList<>();
-            if(!name.equals("furnace")) {
-                for (IRecipeInput recipeInput : iRecipeInputList)
-                    inputStackList.add(new RecipeInputStack(recipeInput));
+
+            for (IRecipeInput recipeInput : iRecipeInputList) {
+                inputStackList.add(new RecipeInputStack(recipeInput));
             }
+
             this.map_recipe_managers_itemStack.put(name, inputStackList);
             List<BaseMachineRecipe> lst = new ArrayList<>();
             if (name.equals("comb_macerator")) {
@@ -235,29 +363,31 @@ public class ListRecipes implements IRecipes {
                 recipe.output.items.get(0).setCount(3);
             }
             List<IRecipeInputStack> iRecipeInputList = this.map_recipe_managers_itemStack.get(name);
-            if(!name.equals("furnace")) {
-                if (iRecipeInputList.isEmpty()) {
-                    for (IRecipeInput input1 : recipe.input.getInputs())
-                        iRecipeInputList.add(new RecipeInputStack(input1));
-                } else
-                    for (IRecipeInput input1 : recipe.input.getInputs()) {
-                        for (ItemStack stack : input1.getInputs()) {
-                            boolean continues1 = false;
-                            for (IRecipeInputStack input : iRecipeInputList) {
-                                if (!input.matched(stack)) {
-                                    iRecipeInputList.add(new RecipeInputStack(input1));
-                                    continues1 = true;
-                                    break;
-                                }
 
-                            }
-                            if (continues1) {
+            if (iRecipeInputList.isEmpty()) {
+                for (IRecipeInput input1 : recipe.input.getInputs()) {
+                    iRecipeInputList.add(new RecipeInputStack(input1));
+                }
+            } else {
+                for (IRecipeInput input1 : recipe.input.getInputs()) {
+                    for (ItemStack stack : input1.getInputs()) {
+                        boolean continues1 = false;
+                        for (IRecipeInputStack input : iRecipeInputList) {
+                            if (!input.matched(stack)) {
+                                iRecipeInputList.add(new RecipeInputStack(input1));
+                                continues1 = true;
                                 break;
                             }
+
+                        }
+                        if (continues1) {
+                            break;
                         }
                     }
+                }
             }
-            this.map_recipe_managers_itemStack.replace(name,iRecipeInputList);
+
+            this.map_recipe_managers_itemStack.replace(name, iRecipeInputList);
             this.map_recipes.get(name).add(recipe);
         }
     }
@@ -318,15 +448,21 @@ public class ListRecipes implements IRecipes {
                 for (BaseMachineRecipe baseMachineRecipe : recipes) {
                     List<IRecipeInput> recipeInputList = baseMachineRecipe.input.getInputs();
 
+                    boolean need = true;
                     for (int i = 0; i < size; i++) {
                         if (!recipeInputList.get(i).matches(stack1.get(i))) {
-                            continue;
+                            need = true;
+                            break;
 
-                        } else {
-                            if (!(stack1.get(i).getCount() >= recipeInputList.get(i).getAmount())) {
-                                continue;
-                            }
                         }
+                        if (recipeInputList.get(i).getInputs().get(0).getCount() > stack1.get(i).getCount()) {
+                            need = true;
+                            break;
+                        }
+                        need = false;
+                    }
+                    if (need) {
+                        continue;
                     }
                     if (adjustInput) {
                         for (int j = 0; j < stack1.size(); j++) {
@@ -399,15 +535,21 @@ public class ListRecipes implements IRecipes {
                 for (BaseMachineRecipe baseMachineRecipe : recipes) {
                     List<IRecipeInput> recipeInputList = baseMachineRecipe.input.getInputs();
 
+                    boolean need = true;
                     for (int i = 0; i < size; i++) {
                         if (!recipeInputList.get(i).matches(stack1.get(i))) {
-                            continue;
+                            need = true;
+                            break;
 
-                        } else {
-                            if (!(stack1.get(i).getCount() >= recipeInputList.get(i).getAmount())) {
-                                continue;
-                            }
                         }
+                        if (recipeInputList.get(i).getInputs().get(0).getCount() > stack1.get(i).getCount()) {
+                            need = true;
+                            break;
+                        }
+                        need = false;
+                    }
+                    if (need) {
+                        continue;
                     }
                     List<Integer> integer = new ArrayList<>();
                     for (int j = 0; j < stack1.size(); j++) {
@@ -479,15 +621,21 @@ public class ListRecipes implements IRecipes {
                 for (BaseMachineRecipe baseMachineRecipe : recipes) {
                     List<IRecipeInput> recipeInputList = baseMachineRecipe.input.getInputs();
 
+                    boolean need = true;
                     for (int i = 0; i < size; i++) {
                         if (!recipeInputList.get(i).matches(stack1.get(i))) {
-                            continue;
+                            need = true;
+                            break;
 
-                        } else {
-                            if (!(stack1.get(i).getCount() >= recipeInputList.get(i).getAmount())) {
-                                continue;
-                            }
                         }
+                        if (recipeInputList.get(i).getInputs().get(0).getCount() > stack1.get(i).getCount()) {
+                            need = true;
+                            break;
+                        }
+                        need = false;
+                    }
+                    if (need) {
+                        continue;
                     }
                     if (adjustInput) {
                         for (int j = 0; j < stack1.size(); j++) {
@@ -557,15 +705,21 @@ public class ListRecipes implements IRecipes {
                 for (BaseMachineRecipe baseMachineRecipe : recipes) {
                     List<IRecipeInput> recipeInputList = baseMachineRecipe.input.getInputs();
 
+                    boolean need = true;
                     for (int i = 0; i < size; i++) {
                         if (!recipeInputList.get(i).matches(stack1.get(i))) {
-                            continue;
+                            need = true;
+                            break;
 
-                        } else {
-                            if (!(stack1.get(i).getCount() >= recipeInputList.get(i).getAmount())) {
-                                continue;
-                            }
                         }
+                        if (recipeInputList.get(i).getInputs().get(0).getCount() > stack1.get(i).getCount()) {
+                            need = true;
+                            break;
+                        }
+                        need = false;
+                    }
+                    if (need) {
+                        continue;
                     }
                     List<Integer> integer = new ArrayList<>();
                     for (int j = 0; j < stack1.size(); j++) {
@@ -590,8 +744,9 @@ public class ListRecipes implements IRecipes {
 
     @Override
     public boolean needContinue(final MachineRecipe recipe, final InvSlotRecipes slot) {
-        if(recipe == null)
+        if (recipe == null) {
             return false;
+        }
         BaseMachineRecipe recipe1 = recipe.getRecipe();
         for (int i = 0; i < recipe1.input.getInputs().size(); i++) {
             if (slot.get(i).isEmpty() || slot.get(i).getCount() < recipe1.input
@@ -604,6 +759,27 @@ public class ListRecipes implements IRecipes {
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean needContinue(final MachineRecipe recipe, final InvSlotRecipes slot, final FluidTank tank) {
+        if (recipe == null) {
+            return false;
+        }
+        BaseMachineRecipe recipe1 = recipe.getRecipe();
+        for (int i = 0; i < recipe1.input.getInputs().size(); i++) {
+            if (slot.get(i).isEmpty() || slot.get(i).getCount() < recipe1.input
+                    .getInputs()
+                    .get(0)
+                    .getInputs()
+                    .get(0)
+                    .getCount()) {
+                return false;
+            }
+        }
+        return tank.getFluid() != null && tank.getFluid().getFluid().equals(recipe1.input
+                .getFluid()
+                .getFluid()) && tank.getFluidAmount() >= recipe1.input.getFluid().amount;
     }
 
     @Override
@@ -659,21 +835,27 @@ public class ListRecipes implements IRecipes {
             for (BaseMachineRecipe baseMachineRecipe : recipes) {
                 List<IRecipeInput> recipeInputList = baseMachineRecipe.input.getInputs();
 
+                boolean need = true;
                 for (int i = 0; i < size; i++) {
                     if (!recipeInputList.get(i).matches(stack1.get(i))) {
-                        continue;
+                        need = true;
+                        break;
 
-                    } else {
-                        if (!(stack1.get(i).getCount() >= recipeInputList.get(i).getAmount())) {
-                            continue;
-                        }
                     }
+                    if (recipeInputList.get(i).getInputs().get(0).getCount() > stack1.get(i).getCount()) {
+                        need = true;
+                        break;
+                    }
+                    need = false;
+                }
+                if (need) {
+                    continue;
                 }
                 if (adjustInput) {
                     for (int j = 0; j < stack1.size(); j++) {
                         stack1.get(j).setCount(stack1.get(j).getCount() - recipeInputList.get(j).getAmount());
                     }
-
+                    break;
                 } else {
                     return baseMachineRecipe;
                 }
@@ -733,21 +915,24 @@ public class ListRecipes implements IRecipes {
             for (BaseMachineRecipe baseMachineRecipe : recipes) {
                 List<IRecipeInput> recipeInputList = baseMachineRecipe.input.getInputs();
 
+                boolean need = true;
                 for (int i = 0; i < size; i++) {
                     if (!recipeInputList.get(i).matches(stacks.get(i))) {
-                        continue;
+                        need = true;
+                        break;
 
-                    } else {
-                        if (!(stacks.get(i).getCount() >= recipeInputList.get(i).getAmount())) {
-                            continue;
-                        }
                     }
+
+                    need = false;
+                }
+                if (need) {
+                    continue;
                 }
                 if (adjustInput) {
                     for (int j = 0; j < stacks.size(); j++) {
                         stacks.get(j).setCount(stacks.get(j).getCount() - recipeInputList.get(j).getAmount());
                     }
-
+                    break;
                 } else {
                     return baseMachineRecipe;
                 }
@@ -755,6 +940,43 @@ public class ListRecipes implements IRecipes {
         }
 
         return null;
+    }
+
+    @Override
+    public BaseMachineRecipe getRecipeConsume(
+            final IBaseRecipe recipe, MachineRecipe recipes,
+            final boolean adjustInput, final List<ItemStack> stacks
+    ) {
+        List<Integer> integerList = recipes.getList();
+
+        if (adjustInput) {
+            for (int i = 0; i < stacks.size(); i++) {
+                stacks.get(i).shrink(integerList.get(i));
+            }
+        }
+
+
+        return recipes.getRecipe();
+    }
+
+    @Override
+    public MachineRecipe getMachineRecipeConsume(
+            final IBaseRecipe recipe, MachineRecipe recipes,
+            final boolean adjustInput, final List<ItemStack> stacks
+    ) {
+        if (recipes == null) {
+            return null;
+        }
+        List<Integer> integerList = recipes.getList();
+
+        if (adjustInput) {
+            for (int i = 0; i < stacks.size(); i++) {
+                stacks.get(i).shrink(integerList.get(i));
+            }
+        }
+
+
+        return recipes;
     }
 
     @Override
@@ -809,29 +1031,30 @@ public class ListRecipes implements IRecipes {
         } else {
             for (BaseMachineRecipe baseMachineRecipe : recipes) {
                 List<IRecipeInput> recipeInputList = baseMachineRecipe.input.getInputs();
-
+                boolean need = true;
                 for (int i = 0; i < size; i++) {
                     if (!recipeInputList.get(i).matches(stacks.get(i))) {
-                        continue;
+                        need = true;
+                        break;
 
-                    } else {
-                        if (!(stacks.get(i).getCount() >= recipeInputList.get(i).getAmount())) {
-                            continue;
-                        }
                     }
+
+                    need = false;
+                }
+                if (need) {
+                    continue;
                 }
                 List<Integer> integer = new ArrayList<>();
-                for (int j = 0; j < stacks.size(); j++) {
+                for (int j = 0; j < size; j++) {
                     integer.add(recipeInputList.get(j).getInputs().get(0).getCount());
                 }
                 if (adjustInput) {
                     for (int j = 0; j < stacks.size(); j++) {
                         stacks.get(j).setCount(stacks.get(j).getCount() - recipeInputList.get(j).getAmount());
                     }
-
-                } else {
-                    return new MachineRecipe(baseMachineRecipe, integer);
+                    break;
                 }
+                return new MachineRecipe(baseMachineRecipe, integer);
             }
         }
 
@@ -869,8 +1092,6 @@ public class ListRecipes implements IRecipes {
                 if (lst.size() == lst1.size()) {
                     for (int j = 0; j < stacks.size(); j++) {
                         ItemStack stack2 = recipeInputList.get(col1[j]).getInputs().get(0);
-                        ItemStack stack = stacks.get(j);
-
                         col[j] = stack2.getCount();
                     }
                     if (adjustInput) {
@@ -887,13 +1108,9 @@ public class ListRecipes implements IRecipes {
             for (BaseMachineRecipe baseMachineRecipe : recipes) {
                 List<IRecipeInput> recipeInputList = baseMachineRecipe.input.getInputs();
 
-                for (int i = 0; i < size; i++) {
-                    if (!recipeInputList.get(i).matches(stacks.get(i))) {
-                        continue;
+                if (!recipeInputList.get(0).matches(stacks.get(0))) {
+                    continue;
 
-                    } else {
-
-                    }
                 }
                 if (adjustInput) {
                     for (int j = 0; j < stacks.size(); j++) {
@@ -959,14 +1176,13 @@ public class ListRecipes implements IRecipes {
             for (BaseMachineRecipe baseMachineRecipe : recipes) {
                 List<IRecipeInput> recipeInputList = baseMachineRecipe.input.getInputs();
 
-                for (int i = 0; i < size; i++) {
-                    if (!recipeInputList.get(i).matches(stacks.get(i))) {
-                        continue;
 
-                    } else {
+                if (!recipeInputList.get(0).matches(stacks.get(0))) {
+                    continue;
 
-                    }
                 }
+
+
                 List<Integer> integer = new ArrayList<>();
                 for (int j = 0; j < stacks.size(); j++) {
                     integer.add(recipeInputList.get(j).getInputs().get(0).getCount());
@@ -975,7 +1191,7 @@ public class ListRecipes implements IRecipes {
                     for (int j = 0; j < stacks.size(); j++) {
                         stacks.get(j).setCount(stacks.get(j).getCount() - recipeInputList.get(j).getAmount());
                     }
-
+                    break;
                 } else {
                     return new MachineRecipe(baseMachineRecipe, integer);
                 }

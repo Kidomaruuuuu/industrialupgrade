@@ -139,7 +139,7 @@ public class ItemArmorImprovemedNano extends ItemArmorElectric
         EntityPlayer player = (EntityPlayer) event.getEntityLiving();
         NBTTagCompound nbtData = player.getEntityData();
         if (!player.inventory.armorInventory.get(0).isEmpty()
-                && player.inventory.armorInventory.get(0).getItem() == IUItem.quantumBoots) {
+                && player.inventory.armorInventory.get(0).getItem() == IUItem.spectral_boots) {
             nbtData.setBoolean("stepHeight", true);
             player.stepHeight = 1.0F;
 
@@ -167,9 +167,9 @@ public class ItemArmorImprovemedNano extends ItemArmorElectric
         }
         EntityPlayer player = (EntityPlayer) event.getEntity();
         if (!player.inventory.armorInventory.get(0).isEmpty()
-                && (player.inventory.armorInventory.get(0).getItem() == IUItem.quantumBoots || player.inventory.armorInventory
+                && (player.inventory.armorInventory.get(0).getItem() == IUItem.spectral_boots || player.inventory.armorInventory
                 .get(0)
-                .getItem() == IUItem.NanoLeggings)) {
+                .getItem() == IUItem.adv_nano_leggings)) {
             player.motionY = 0.8;
             ElectricItem.manager.use(player.inventory.armorInventory.get(0), 4000.0D, player);
 
@@ -243,8 +243,9 @@ public class ItemArmorImprovemedNano extends ItemArmorElectric
             @Nonnull final ITooltipFlag flagIn
     ) {
         NBTTagCompound nbtData = ModUtils.nbt(stack);
-        if (stack.getItem() == IUItem.NanoBodyarmor) {
+        if (stack.getItem() == IUItem.adv_nano_chestplate) {
             tooltip.add(Localization.translate("iu.fly") + " " + ModUtils.Boolean(nbtData.getBoolean("jetpack")));
+            tooltip.add(Localization.translate("iu.fly_need"));
             if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
                 tooltip.add(Localization.translate("press.lshift"));
             }
@@ -392,10 +393,10 @@ public class ItemArmorImprovemedNano extends ItemArmorElectric
             if (armor.getItem() == this) {
                 int fallDamage = Math.max((int) event.getDistance() - 10, 0);
                 double energyCost = (5000 * fallDamage) * (1 - (UpgradeSystem.system.hasModules(
-                        EnumInfoUpgradeModules.REPAIRED,
+                        EnumInfoUpgradeModules.FALLING_DAMAGE,
                         armor
                 ) ?
-                        UpgradeSystem.system.getModules(EnumInfoUpgradeModules.REPAIRED, armor).number : 0) * 0.25);
+                        UpgradeSystem.system.getModules(EnumInfoUpgradeModules.FALLING_DAMAGE, armor).number : 0) * 0.25);
                 if (energyCost <= ElectricItem.manager.getCharge(armor)) {
                     ElectricItem.manager.discharge(armor, energyCost, 2147483647, true, false, false);
                     event.setCanceled(true);
@@ -594,10 +595,19 @@ public class ItemArmorImprovemedNano extends ItemArmorElectric
 
                 break;
             case 2:
-                if (!player.onGround) {
-                    if (nbtData.getBoolean("jetpack")) {
+                if (nbtData.getBoolean("jetpack")) {
+                    player.fallDistance = 0;
 
-                        if (ElectricItem.manager.canUse(itemStack, 25) && !player.onGround) {
+                    if (nbtData.getBoolean("jump") && !nbtData.getBoolean("canFly") && !player.capabilities.allowFlying && IC2.keyboard.isJumpKeyDown(
+                            player) && !nbtData.getBoolean(
+                            "isFlyActive") && toggleTimer == 0) {
+                        toggleTimer = 10;
+                        nbtData.setBoolean("canFly", true);
+                    }
+                    nbtData.setBoolean("jump", !player.onGround);
+
+                    if (!player.onGround) {
+                        if (ElectricItem.manager.canUse(itemStack, 25)) {
                             ElectricItem.manager.use(itemStack, 25, null);
                         } else {
                             nbtData.setBoolean("jetpack", false);
@@ -630,14 +640,9 @@ public class ItemArmorImprovemedNano extends ItemArmorElectric
 
                         nbtData.setBoolean("jetpack", jetpack);
                         if (jetpack) {
-                            IC2.platform.messagePlayer(player, "Nano Jetpack enabled.");
-                            player.capabilities.isFlying = true;
-
-                            player.capabilities.allowFlying = true;
-                            player.fallDistance = 0.0F;
-                            player.distanceWalkedModified = 0.0F;
+                            IC2.platform.messagePlayer(player, Localization.translate("iu.flymode_armor.info"));
                         } else {
-                            IC2.platform.messagePlayer(player, "Nano Jetpack disabled.");
+                            IC2.platform.messagePlayer(player,  Localization.translate("iu.flymode_armor.info1"));
 
                         }
                     }
@@ -770,11 +775,6 @@ public class ItemArmorImprovemedNano extends ItemArmorElectric
         List<String> info = new ArrayList<>();
         info.add(ElectricItem.manager.getToolTip(stack));
         return info;
-    }
-
-
-    @Override
-    public void setUpdate(final boolean update) {
     }
 
 

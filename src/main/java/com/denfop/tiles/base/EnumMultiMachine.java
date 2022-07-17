@@ -507,7 +507,29 @@ public enum EnumMultiMachine {
                 }
             }
         }
-
+        final ItemStack stack = new ItemStack(IUItem.oilquarry);
+        IUItem.map_upgrades.get(0).add(stack);
+        IUItem.map_upgrades.get(1).add(stack);
+        IUItem.map_upgrades.get(2).add(stack);
+        List<ItemStack> list1 = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            List<ItemStack> list = IUItem.map_upgrades.get(i);
+            list.forEach(stack2 -> {
+                if (!list1.contains(stack2)) {
+                    list1.add(stack2);
+                }
+            });
+        }
+        list1.add(stack);
+        IUItem.map_upgrades.put(3, list1);
+        List<ItemStack> list2 = new ArrayList<>(IUItem.map_upgrades.get(3));
+        list2.removeIf(stack1 -> stack1.isItemEqual(stack));
+        for (EnumMultiMachine multiMachine : values()) {
+            if (multiMachine.upgrade == -1) {
+                list2.add(new ItemStack(multiMachine.block, 1, multiMachine.meta));
+            }
+        }
+        IUItem.upgrades_panels = list2;
     }
 
 }

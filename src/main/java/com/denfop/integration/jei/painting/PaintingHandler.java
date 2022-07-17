@@ -22,7 +22,7 @@ public class PaintingHandler {
         this.metadata = metadata;
     }
 
-    public static List<PaintingHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<PaintingHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

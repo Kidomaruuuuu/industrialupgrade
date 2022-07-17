@@ -18,7 +18,9 @@ public class EventHandler {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onEnergyTileLoad(final SETileLoadEvent event) {
-
+        if (event.getWorld().isRemote) {
+            return;
+        }
         final SENetLocal local = SENetGlobal.getForWorld(event.getWorld());
 
         if (local != null) {
@@ -28,6 +30,9 @@ public class EventHandler {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onEnergyTileUnload(final SETileUnloadEvent event) {
+        if (event.getWorld().isRemote) {
+            return;
+        }
         final SENetLocal local = SENetGlobal.getForWorld(event.getWorld());
         if (local != null) {
             local.removeTile(event.tile);
@@ -36,15 +41,16 @@ public class EventHandler {
 
     @SubscribeEvent
     public void tick(final TickEvent.WorldTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) {
-            SENetGlobal.onTickStart(event.world);
-        } else if (event.phase == TickEvent.Phase.END) {
+        if (event.phase == TickEvent.Phase.END) {
             SENetGlobal.onTickEnd(event.world);
         }
     }
 
     @SubscribeEvent
     public void onWorldUnload(final WorldEvent.Unload event) {
+        if (event.getWorld().isRemote) {
+            return;
+        }
         SENetGlobal.onWorldUnload(event.getWorld());
     }
 

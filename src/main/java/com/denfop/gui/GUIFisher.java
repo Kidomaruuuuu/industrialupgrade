@@ -40,8 +40,16 @@ public class GuiFisher extends GuiIC2<ContainerFisher> {
                         this.container.base.energy.getCapacity()
                 )) + "/" + ModUtils.getString(this.container.base.energy.getCapacity()) + " " +
                         "EU";
+        String tooltip =
+                ModUtils.getString(Math.min(
+                        this.container.base.progress,
+                        100
+                )) + "%";
         new AdvArea(this, 147, 27, 158, 76)
                 .withTooltip(tooltip2)
+                .drawForeground(par1, par2);
+        new AdvArea(this, 41, 45, 55, 60)
+                .withTooltip(tooltip)
                 .drawForeground(par1, par2);
     }
 
@@ -81,7 +89,7 @@ public class GuiFisher extends GuiIC2<ContainerFisher> {
         }
 
         if (progress > 0) {
-            drawTexturedModalRect(this.guiLeft + 42, this.guiTop + 46, 177, 48, progress + 1, 13);
+            drawTexturedModalRect(this.guiLeft + 42, this.guiTop + 46, 177, 48, progress + 1, 14);
         }
 
 

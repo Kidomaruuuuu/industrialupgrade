@@ -29,7 +29,7 @@ public class ItemUpgradeModule extends ItemMulti<ItemUpgradeModule.Types> implem
 
     public ItemUpgradeModule() {
         super(null, Types.class);
-        this.setCreativeTab(IUCore.tabssp1);
+        this.setCreativeTab(IUCore.ModuleTab);
         BlocksItems.registerItem((Item) this, IUCore.getIdentifier(NAME)).setUnlocalizedName(NAME);
         IUCore.proxy.addIModelRegister(this);
     }
@@ -110,6 +110,13 @@ public class ItemUpgradeModule extends ItemMulti<ItemUpgradeModule.Types> implem
         upgrademodule37(37),
         upgrademodule38(38),
         upgrademodule39(39),
+        upgrademodule40(40),
+        upgrademodule41(41),
+        upgrademodule42(42),
+        upgrademodule43(43),
+        upgrademodule44(44),
+        upgrademodule45(45),
+        upgrademodule46(46),
         ;
 
         private final String name;

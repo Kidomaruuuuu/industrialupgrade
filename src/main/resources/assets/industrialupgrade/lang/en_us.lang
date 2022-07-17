@@ -1,9 +1,9 @@
-# Sunnarium
-iu.itemsunnarium.sunnarium2=Sunnarium
-iu.itemsunnarium.sunnarium_plate=Sunnarium Plate
-iu.itemsunnarium.sunnarium_enriched=Enriched Sunnarium
-iu.itemsunnarium.sunnarium_enriched_plate=Enriched Sunnarium Plate
-iu.itemsunnarium.sunnariumpart=Sunnarium Fragment
+# Solarite
+iu.itemsunnarium.sunnarium2=Solarite
+iu.itemsunnarium.sunnarium_plate=Solarite Plate
+iu.itemsunnarium.sunnarium_enriched=Enriched Solarite
+iu.itemsunnarium.sunnarium_enriched_plate=Enriched Solarite Plate
+iu.itemsunnarium.sunnariumpart=Solarite Piece
 
 # Uranium
 iu.itemiucrafring.itemuraningot=Uranium Ingot
@@ -88,7 +88,7 @@ item.ultimate_solar_helmet.name=§9Perfect Solar Helmet
 item.spectral_solar_helmet.name=§eSpectral Solar Helmet
 item.singular_solar_helmet.name=§8Singular Solar Helmet
 
-#Katana
+# Katana
 iu.katana=Katana
 
 # Sabers
@@ -176,6 +176,8 @@ iu.nanobox.name=§8Nano Box
 iu.quantumitems7.name=§eAdvanced Nano Box
 iu.quantumitems6.name=§bQuantum Box
 iu.quantumitems3.name=Improved Quantum Box
+iu.spectral_box.name=Spectral Box
+iu.adv_spectral_box.name=Improved Spectral Box
 
 # Cables
 iu.itemcable=§aSpectral Cable
@@ -357,6 +359,13 @@ iu.upgrademodules.upgrademodule36=Modification Module: Ore Macerator
 iu.upgrademodules.upgrademodule37=Modification Module: Treasures
 iu.upgrademodules.upgrademodule38=Modification Module: Hunger
 iu.upgrademodules.upgrademodule39=Modification Module: Generator
+iu.upgrademodules.upgrademodule40=Modification Module: Auto Collection
+iu.upgrademodules.upgrademodule41=Modification Module: Creative Flight
+iu.upgrademodules.upgrademodule42=Modification Module: Magnet Power
+iu.upgrademodules.upgrademodule43=Modification Module: Economical Charging
+iu.upgrademodules.upgrademodule44=Modification Module: Free Cleaning
+iu.upgrademodules.upgrademodule45=Modification Module: Treetap Power
+iu.upgrademodules.upgrademodule46=Modification Module: Wrench
 
 iu.entitymodules.module_player=Hunter Module: Player
 iu.entitymodules.module_mob=Hunter Module: Mob
@@ -430,13 +439,15 @@ message.ultDDrill.mode.bigHoles1=Advanced Big Holes Mode
 message.ultDDrill.mode.bigHoles2=Perfect Big Holes Mode
 message.ultDDrill.mode.treemode=Tree Mode
 message.ultDDrill.mode.pickaxe=Ores Mode
+message.ultDDrill.mode.tunel=Tunnel
 message.description.normal=Digs one block
-message.description.bigHoles=Digs an area 3x3
-message.description.bigHoles1=Digs an area 5x5
-message.description.bigHoles2=Digs an area 7x7
+message.description.bigHoles=Digs an area at least 3x3
+message.description.bigHoles1=Digs an area at least 5x5
+message.description.bigHoles2=Digs an area at least 7x7
 message.description.lowPower=Allows you to spend less energy to destroy the block
 message.description.treemode=Cuts down the whole tree
 message.description.pickaxe=Allows you to dig an ore vein at once
+message.description.tunel=Digs 6 blocks long
 
 iu.toriy=Thorium
 iu.radiationresources.rad_toriy=Irradiant Thorium
@@ -533,6 +544,7 @@ itemGroup.EnergyTab=IU: Tools/Armor
 itemGroup.ResourceTab=IU: Resources
 itemGroup.ReactorsTab=IU: Radioactive
 itemGroup.UpgradeTab=IU: Upgrades
+itemGroup.BlueprintTab=IU: Schemes
 
 itemCellEmpty.name=Advanced Cell
 itemCellUuMatter.name=Liquefied Neutron
@@ -1301,6 +1313,10 @@ silver_dustore.name=Silver Ore Dust
 zinc_dustore.name=Zinc Ore Dust
 manganese_dustore.name=Manganese Ore Dust
 
+industrialupgrade.transformer_iu.lv=LV-Transformer
+industrialupgrade.transformer_iu.mv=MV-Transformer
+industrialupgrade.transformer_iu.hv=HV-Transformer
+industrialupgrade.transformer_iu.ev=EV-Transformer
 industrialupgrade.transformer_iu.umv=UV-Transformer 
 industrialupgrade.transformer_iu.uhv=LkV-Transformer
 industrialupgrade.transformer_iu.uev=MkV-Transformer
@@ -1549,24 +1565,24 @@ industrialupgrade.adv_se_gen.adv_se_gen=Improved Solar Energy Generator
 industrialupgrade.imp_se_gen.imp_se_gen=Advanced Solar Energy Generator
 industrialupgrade.basemachine3.combiner_se_generators=Solar Energy Generator Combiner
 
-industrialupgrade.gen_sunnarium.gen_sunnarium=Sunnarium Manufacturer
-industrialupgrade.gen_sunnarium_plate.gen_sunnarium_plate=Sunnarium Plate Manufacturer
+industrialupgrade.gen_sunnarium.gen_sunnarium=Solarite Transformer
+industrialupgrade.gen_sunnarium_plate.gen_sunnarium_plate=Solarite Plate Manufacturer
 
 iu.doublescrapbox.name=Double Scrap Box
 
-iu.itemsunnariumpanel.hsp=Hybrid Sunnarium Plate
-iu.itemsunnariumpanel.usp=Perfect Sunnarium Plate
-iu.itemsunnariumpanel.qsp=Quantum Sunnarium Plate
-iu.itemsunnariumpanel.spsp=Spectral Sunnarium Plate
-iu.itemsunnariumpanel.psp=Protonic Sunnarium Plate
-iu.itemsunnariumpanel.ssp=Singular Sunnarium Plate
-iu.itemsunnariumpanel.admsp=Diffractive Sunnarium Plate
-iu.itemsunnariumpanel.phsp=Photonic Sunnarium Plate
-iu.itemsunnariumpanel.nsp=Neutron Sunnarium Plate
-iu.itemsunnariumpanel.bsp=Baryon Sunnarium Plate
-iu.itemsunnariumpanel.adspp=Hadron Sunnarium Plate
-iu.itemsunnariumpanel.gsp=Graviton Sunnarium Plate
-iu.itemsunnariumpanel.ksp=Quark Sunnarium Plate
+iu.itemsunnariumpanel.hsp=Hybrid Solarite Plate
+iu.itemsunnariumpanel.usp=Perfect Solarite Plate
+iu.itemsunnariumpanel.qsp=Quantum Solarite Plate
+iu.itemsunnariumpanel.spsp=Spectral Solarite Plate
+iu.itemsunnariumpanel.psp=Protonic Solarite Plate
+iu.itemsunnariumpanel.ssp=Singular Solarite Plate
+iu.itemsunnariumpanel.admsp=Diffractive Solarite Plate
+iu.itemsunnariumpanel.phsp=Photonic Solarite Plate
+iu.itemsunnariumpanel.nsp=Neutron Solarite Plate
+iu.itemsunnariumpanel.bsp=Baryon Solarite Plate
+iu.itemsunnariumpanel.adspp=Hadron Solarite Plate
+iu.itemsunnariumpanel.gsp=Graviton Solarite Plate
+iu.itemsunnariumpanel.ksp=Quark Solarite Plate
 
 iu.upgrades.transformerupgrade1=Transformer Upgrade x2
 iu.upgrades.transformerupgrade2=Transformer Upgrade x4
@@ -1623,6 +1639,7 @@ iu.seconds=s.
 iu.time1= until the 1st stage of pollution 
 iu.time2= until the 2nd stage of pollution 
 iu.time3= until the 3rd stage of pollution 
+iu.time4=The final stage of pollution has arrived.
 pollutionpnale=The panel is dirty
 pollutioninformation=Hover over
 iu.panelinformation=Solar Panel Information
@@ -1883,21 +1900,21 @@ achievement.thoriumore.desc=Get Thorium
 achievement.SE_generator=Sun in hands
 achievement.SE_generator.desc=Create a Solar Energy Generator
 achievement.sunnarium_part=Particle of the Sun
-achievement.sunnarium_part.desc=Get the Sunnarium Fragment
+achievement.sunnarium_part.desc=Get the Solarite Piece
 achievement.adv_SE_generator=More Sun
 achievement.adv_SE_generator.desc=Upgrade your Solar Energy Generator
 achievement.imp_SE_generator=Solar addiction
 achievement.imp_SE_generator.desc=Upgrade your Solar Energy Generator even further
 achievement.sunnarium_maker=Gather together the fragments
-achievement.sunnarium_maker.desc=Create a Sunnarium Manufacturer
+achievement.sunnarium_maker.desc=Create a Solarite Transformer
 achievement.sunnarium=Sun with your own hands...
-achievement.sunnarium.desc=Get Sunnarium
+achievement.sunnarium.desc=Get Solarite
 achievement.sunnarium_plate=...now compress it!
-achievement.sunnarium_plate.desc=Get Sunnarium Plate
+achievement.sunnarium_plate.desc=Get Solarite Plate
 achievement.enrichment=Enrich it!
 achievement.enrichment.desc=Create an Enrichment!
 achievement.sunnarium_enrich=Radioactive Sun
-achievement.sunnarium_enrich.desc=Receive Irradiant Sunnarium
+achievement.sunnarium_enrich.desc=Receive Irradiant Solarite
 achievement.uranium_enrich=Radioactive Uranium
 achievement.uranium_enrich.desc=Get Irradiant Uranium
 achievement.glass_enrich=Depression glass
@@ -1906,7 +1923,7 @@ achievement.thorium_enrich=Radioactive Thorium
 achievement.thorium_enrich.desc=Get Irradiant Thorium
 
 achievement.sunnarium_makerpanel=Unusual compressed sun
-achievement.sunnarium_makerpanel.desc=Create a Sunnarium Plate Manufacturer
+achievement.sunnarium_makerpanel.desc=Create a Solarite Plate Manufacturer
 achievement.molecular_transformer=Transformer of everything
 achievement.molecular_transformer.desc=Create a Molecular Transformer
 achievement.double_molecular_transformer=Transformation with a vengeance
@@ -2076,8 +2093,10 @@ industrialupgrade.basemachine3.ender_assembler=Ender Assembler
 industrialupgrade.basemachine3.research_table=Research Table
 industrialupgrade.basemachine3.creator_schedules=Template Maker
 industrialupgrade.basemachine3.gas_combiner=Gas Mixer
+industrialupgrade.basemachine3.analyzer_chest=Analyzer Chest
 
 # Blueprints
+iu.templates.templates=Scheme Template
 iu.blueprint.blueprint_0="Molecular Transformer Core" Scheme
 iu.blueprint.blueprint_1="Neutronuim Core" Scheme
 iu.blueprint.blueprint_2="Nuclear Reactor" Scheme
@@ -2129,7 +2148,7 @@ iu.blueprint.blueprint_47="Photonic Glass" Scheme
 iu.blueprint.blueprint_48="Photonic Circuit" Scheme
 iu.blueprint.blueprint_49="Photonic Solar Panel" Scheme
 iu.blueprint.blueprint_50="Photonic Rotor Core" Scheme
-iu.blueprint.blueprint_51="Photonic Sunnarium Plate" Scheme
+iu.blueprint.blueprint_51="Photonic Solarite Plate" Scheme
 iu.blueprint.blueprint_52="Photonic Rotor Blade" Scheme
 iu.blueprint.blueprint_53="Purple Paint" Scheme
 iu.blueprint.blueprint_54="Recycler" Scheme
@@ -2259,7 +2278,7 @@ iu.blueprint.blueprint_177="Perfect Glass" Scheme
 iu.blueprint.blueprint_178="Perfect MFSU" Scheme
 iu.blueprint.blueprint_179="Perfect Electric Furnace" Scheme
 iu.blueprint.blueprint_180="Perfect Heat Pipe" Scheme
-iu.blueprint.blueprint_181="Perfect Sunnarium Plate" Scheme
+iu.blueprint.blueprint_181="Perfect Solarite Plate" Scheme
 iu.blueprint.blueprint_182="Perfect Reactor Chamber" Scheme
 iu.blueprint.blueprint_183="Perfect Lappack" Scheme
 iu.blueprint.blueprint_184="Perfect Electric Jetpack" Scheme
@@ -2280,7 +2299,61 @@ iu.blueprint.blueprint_198="Perfect Liquid Tank" Scheme
 iu.blueprint.blueprint_199="Perfect Macerator" Scheme
 iu.blueprint.blueprint_200="Perfect Geothermal Generator" Scheme
 
-itemGroup.BlueprintTab=IU: Schemes
+turn_off=Switch off
+turn_on=Switch on
+iu.storage_fluid=§aCapacity: 
+iu.expcable=Experience Cable
 
-turn_on=Turn on
-turn_off=Turn off
+iu.radiationbox=Automatically places and stores radioactive elements into itself
+iu.fly_mode=Allows creative flight
+iu.size_mode=Magnet radius increased by: 
+iu.bags_mode=Auto collection
+iu.lappack_mode=Economical charging of things on: 
+iu.purifier_mode=Allows cost-effective cleaning of panels
+iu.latex_mode=100% chance of getting the maximum amount Sticky Resin from Rubber Tree
+iu.wrench_mode=Removal of machines without loss
+iu.savemode_allow=Safemode enabled
+iu.blacklist_allow=Blacklist enabled
+iu.blacklist_description=Tool blacklist
+iu.blacklist_gui=To view items in the black list, click on: 
+iu.fly_need=Use double jump to start flying
+iu.instruments.info=Digs: 
+iu.fluid.info=Fluid: 
+iu.fluid.info1=Stored: 
+iu.fluid.info2=Fluids: 
+iu.matter.info=Stores 200 units of matter
+iu.changemode_rcm1=Right-click
+iu.magnet.info=Works at a distance: 
+iu.instruments.info2=Consumes per block: 
+iu.multimachine.info=Needs to be cooled down with a refrigerator
+iu.heatmachine.info=Use a liquid or electric heater for heating.
+iu.quarry_energy.info=Uses QE (Quantum Energy)
+iu.solarium_energy.info=Generate SE
+iu.solarium_energy_sink.info=Need SE to work
+iu.vein.info=Analyze chunks with a Core Search Drilling Rig
+iu.vein.info1=With it, you can find veins of minerals or oil
+iu.vein.info2=The location of the oil vein depends on the biomes
+iu.vein.info3=The percentage of obtaining a vein of a mineral is 20%
+iu.oilpump.info=Need an oil vein
+iu.blastfurnace.info=Instruction
+iu.blastfurnace.info1=Construction 3х3х3
+iu.blastfurnace.info2=Scheme from top to bottom
+iu.blastfurnace.info3=Put last: 
+iu.flymode_armor.info=Flight enabled
+iu.flymode_armor.info1=Flight disabled
+iu.flymode_armor.info2=Vertical mode enabled
+iu.flymode_armor.info3=Vertical mode disabled
+
+industrialupgrade.blastfurnace.blast_furnace_main=Blast Furnace Controller
+industrialupgrade.blastfurnace.blast_furnace_input=Blast Furnace Input
+industrialupgrade.blastfurnace.blast_furnace_heat=Blast Furnace Heating Pump
+industrialupgrade.blastfurnace.blast_furnace_output=Blast Furnace Output
+industrialupgrade.blastfurnace.blast_furnace_input_fluid=Blast Furnace Fluid Input
+industrialupgrade.blastfurnace.blast_furnace_part=Blast Furnace Block
+
+iu.quantumgenerator.info=Generates QE
+iu.simplyquarries.info=Has slots to upgrade: 
+iu.simplyquarries.info1=Consume by default: 
+iu.simplyquarries.info2=Digs: 
+iu.simplyquarries.info3=blocks per tick
+iu.quantumgenerator.info1=Can be upgraded with this type of panel module

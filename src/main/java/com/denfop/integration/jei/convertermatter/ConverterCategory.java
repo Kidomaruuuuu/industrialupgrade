@@ -90,12 +90,11 @@ public class ConverterCategory extends Gui implements IRecipeCategory<ConverterW
             final ConverterWrapper recipes,
             @Nonnull final IIngredients ingredients
     ) {
-        IGuiItemStackGroup isg = layout.getItemStacks(); // Группа ItemStack, которая нужна для рендера.
-
-        isg.init(0, false, 113, 45); // Инициализируем слот 1.  true/false - это обозначение того, является ли слот *ВХОДНЫМ*,
-        isg.set(0, recipes.getOutput()); // Добавляем в слот 1 выходной предмет.
-        isg.init(1, true, 47, 45); // Инициализируем слот 1.  true/false - это обозначение того, является ли слот *ВХОДНЫМ*,
-        isg.set(1, recipes.getOutput()); // Добавляем в слот 1 выходной предмет.
+        IGuiItemStackGroup isg = layout.getItemStacks();
+        isg.init(0, false, 113, 45);
+        isg.set(0, recipes.getOutput());
+        isg.init(1, true, 47, 45);
+        isg.set(1, recipes.getOutput());
 
     }
 

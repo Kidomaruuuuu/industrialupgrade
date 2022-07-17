@@ -114,6 +114,7 @@ public class GuiSolarPanels extends GuiIC2<ContainerSolarPanels> {
         String Time4 = Localization.translate("iu.time1");
         String Time5 = Localization.translate("iu.time2");
         String Time6 = Localization.translate("iu.time3");
+        String Time7 = Localization.translate("iu.time4");
         String maxstorage_1 = ModUtils.getString(this.tileentity.maxStorage);
         String maxstorage_2 = ModUtils.getString(this.tileentity.storage);
         // TODO
@@ -234,14 +235,16 @@ public class GuiSolarPanels extends GuiIC2<ContainerSolarPanels> {
         this.fontRenderer.drawString(tierString + ModUtils.getString(this.tileentity.tier), 50, 46 - 4 - 12 - 8 + 5 - 6,
                 13487565
         );
-        if (this.tileentity.time >= 0) {
+        if (this.tileentity.time > 0) {
             temptime = Time1 + Time + Time4;
         }
-        if (this.tileentity.time1 >= 0 && this.tileentity.time <= 0) {
+        if (this.tileentity.time1 > 0 && this.tileentity.time <= 0) {
             temptime = Time1 + Time2 + Time5;
         }
-        if (this.tileentity.time2 >= 0 && this.tileentity.time1 <= 0 && this.tileentity.time <= 0) {
+        if (this.tileentity.time2 > 0 && this.tileentity.time1 <= 0 && this.tileentity.time <= 0) {
             temptime = Time1 + Time3 + Time6;
+        } else if (this.tileentity.time2 <= 0 && this.tileentity.time1 <= 0 && this.tileentity.time <= 0) {
+            temptime = Time7;
         }
         double temp = this.tileentity.tier - this.tileentity.o;
         if (temp > 0) {

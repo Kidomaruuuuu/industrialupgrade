@@ -28,7 +28,7 @@ public class ItemModuleType extends ItemMulti<ItemModuleType.CraftingTypes> impl
 
     public ItemModuleType() {
         super(null, CraftingTypes.class);
-        this.setCreativeTab(IUCore.tabssp1);
+        this.setCreativeTab(IUCore.ModuleTab);
         BlocksItems.registerItem((Item) this, IUCore.getIdentifier(NAME)).setUnlocalizedName(NAME);
         IUCore.proxy.addIModelRegister(this);
     }

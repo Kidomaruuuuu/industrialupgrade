@@ -14,9 +14,12 @@ import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlotUpgrade;
+import ic2.core.init.Localization;
 import ic2.core.util.Util;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.relauncher.Side;
@@ -69,6 +72,19 @@ public class TileEntityQEConverter extends TileEntityInventory implements IHasGu
         this.capacity2 = this.energy2.getCapacity();
     }
 
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
+        if (this.hasComponent(AdvEnergy.class)) {
+            AdvEnergy energy = this.getComponent(AdvEnergy.class);
+            if (!energy.getSourceDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSourceTier()));
+            } else if (!energy.getSinkDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSinkTier()));
+            }
+        }
+
+    }
+
     protected void onLoaded() {
         super.onLoaded();
         if (IC2.platform.isSimulating()) {
@@ -79,7 +95,6 @@ public class TileEntityQEConverter extends TileEntityInventory implements IHasGu
     }
 
     public void setOverclockRates() {
-        this.upgradeSlot.onChanged();
         int tier = this.upgradeSlot.getTier(5);
         this.energy.setSinkTier(tier);
         this.energy.setSourceTier(tier);
@@ -128,29 +143,30 @@ public class TileEntityQEConverter extends TileEntityInventory implements IHasGu
             }
 
         }
-        if(this.energy2.getEnergy() > 0)
-        if (!this.list.isEmpty()) {
-            if (this.rf) {
-                NodeStats stats = EnergyNet.instance.getNodeStats(this.energy.getDelegate());
-                NodeQEStats stats1 = QENet.instance.getNodeStats(this.energy2.getDelegate(), this.world);
+        if (this.energy2.getEnergy() > 0) {
+            if (!this.list.isEmpty()) {
+                if (this.rf) {
+                    NodeStats stats = EnergyNet.instance.getNodeStats(this.energy.getDelegate());
+                    NodeQEStats stats1 = QENet.instance.getNodeStats(this.energy2.getDelegate(), this.world);
 
-                if (stats != null) {
-                    this.differenceenergy1 = stats.getEnergyIn();
-                }
-                if (stats1 != null) {
-                    this.differenceenergy = stats1.getQE();
-                }
+                    if (stats != null) {
+                        this.differenceenergy1 = stats.getEnergyIn();
+                    }
+                    if (stats1 != null) {
+                        this.differenceenergy = stats1.getQE();
+                    }
 
-            } else {
-                this.perenergy1 = this.energy.getEnergy();
-                NodeStats stats = EnergyNet.instance.getNodeStats(this.energy.getDelegate());
-                NodeQEStats stats1 = QENet.instance.getNodeStats(this.energy2.getDelegate(), this.world);
+                } else {
+                    this.perenergy1 = this.energy.getEnergy();
+                    NodeStats stats = EnergyNet.instance.getNodeStats(this.energy.getDelegate());
+                    NodeQEStats stats1 = QENet.instance.getNodeStats(this.energy2.getDelegate(), this.world);
 
-                if (stats != null) {
-                    this.differenceenergy = stats.getEnergyOut();
-                }
-                if (stats1 != null) {
-                    this.differenceenergy = stats1.getQEIn();
+                    if (stats != null) {
+                        this.differenceenergy = stats.getEnergyOut();
+                    }
+                    if (stats1 != null) {
+                        this.differenceenergy = stats1.getQEIn();
+                    }
                 }
             }
         }

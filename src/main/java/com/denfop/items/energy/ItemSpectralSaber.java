@@ -136,6 +136,10 @@ public class ItemSpectralSaber extends ItemTool implements IElectricItem, IUpgra
         return new ModelResourceLocation(loc, null);
     }
 
+    public boolean isBookEnchantable(@Nonnull ItemStack stack, @Nonnull ItemStack book) {
+        return false;
+    }
+
     @Override
     public void getSubItems(@Nonnull final CreativeTabs subs, @Nonnull final NonNullList<ItemStack> items) {
         if (this.isInCreativeTab(subs)) {
@@ -195,9 +199,6 @@ public class ItemSpectralSaber extends ItemTool implements IElectricItem, IUpgra
         return this.maxCharge;
     }
 
-    public boolean isBookEnchantable(@Nonnull ItemStack stack, @Nonnull ItemStack book) {
-        return true;
-    }
 
     @Override
     public boolean canProvideEnergy(ItemStack itemStack) {
@@ -533,11 +534,6 @@ public class ItemSpectralSaber extends ItemTool implements IElectricItem, IUpgra
         for (final String s : mode) {
             ModelBakery.registerItemVariants(this, getModelLocation1(name, s));
         }
-
-    }
-
-    @Override
-    public void setUpdate(final boolean update) {
 
     }
 

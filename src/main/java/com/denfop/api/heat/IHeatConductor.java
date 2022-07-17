@@ -20,5 +20,7 @@ public interface IHeatConductor extends IHeatAcceptor, IHeatEmitter {
 
     void removeConductor();
 
+    void update_render();
+
 }
 

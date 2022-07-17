@@ -72,7 +72,7 @@ public class InvSlotBaseQuarry extends InvSlot {
                         break;
                     case WHITELIST:
                     case BLACKLIST:
-                        ((TileEntityBaseQuarry) this.base).list = ModUtils.getListFromModule(type1);
+                        this.tile.list = ModUtils.getListFromModule(type1);
                         tile.list_modules = module;
                         break;
 
@@ -133,7 +133,7 @@ public class InvSlotBaseQuarry extends InvSlot {
                     case WHITELIST:
                     case BLACKLIST:
                         tile.list_modules = module;
-                        ((TileEntityBaseQuarry) this.base).list = ModUtils.getListFromModule(type1);
+                        this.tile.list = ModUtils.getListFromModule(type1);
                         break;
 
                 }

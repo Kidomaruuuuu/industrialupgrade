@@ -185,7 +185,7 @@ public class GuiQuarryVein extends GuiIC2<ContainerQuarryVein> {
                             ModUtils.convertRGBcolorToInt(13, 229, 34)
                     );
                     Vein vein = this.container.base.vein;
-                    int col = vein.getCol();
+                    int col = this.container.base.count;
                     int colmax = vein.getMaxCol();
                     boolean isOil = vein.getType() == Type.OIL;
                     String name_vein;
@@ -276,10 +276,6 @@ public class GuiQuarryVein extends GuiIC2<ContainerQuarryVein> {
         }
     }
 
-
-    public String getName() {
-        return container.base.getInventoryName();
-    }
 
     public ResourceLocation getTexture() {
         return new ResourceLocation(Constants.MOD_ID, "textures/gui/guiquarryvein.png");

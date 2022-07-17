@@ -1,21 +1,28 @@
 package com.denfop.tiles.base;
 
 import com.denfop.IUCore;
+import com.denfop.api.audio.EnumTypeAudio;
+import com.denfop.api.audio.IAudioFixer;
+import com.denfop.api.recipe.InvSlotOutput;
 import com.denfop.audio.AudioSource;
 import com.denfop.audio.PositionSpec;
 import com.denfop.componets.AdvEnergy;
-import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.block.invslot.InvSlotDischarge;
-import ic2.core.block.invslot.InvSlotOutput;
 import ic2.core.init.Localization;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public abstract class TileEntityElectricMachine extends TileEntityInventory implements IHasGui, INetworkTileEntityEventListener {
+import java.util.List;
+
+public abstract class TileEntityElectricMachine extends TileEntityInventory implements IHasGui, IAudioFixer {
 
 
     public int tier;
@@ -27,7 +34,8 @@ public abstract class TileEntityElectricMachine extends TileEntityInventory impl
 
     public AdvEnergy energy = null;
     public InvSlotDischarge dischargeSlot;
-
+    public EnumTypeAudio typeAudio = EnumTypeAudio.OFF;
+    public EnumTypeAudio[] valuesAudio = EnumTypeAudio.values();
 
     public TileEntityElectricMachine(double MaxEnergy, int tier, int count) {
 
@@ -43,9 +51,38 @@ public abstract class TileEntityElectricMachine extends TileEntityInventory impl
         if (MaxEnergy != 0) {
             this.guiChargeLevel = this.energy.getFillRatio();
         }
+        valuesAudio = EnumTypeAudio.values();
 
     }
 
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
+        if (this.hasComponent(AdvEnergy.class)) {
+            AdvEnergy energy = this.getComponent(AdvEnergy.class);
+            if (!energy.getSourceDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSourceTier()));
+            } else if (!energy.getSinkDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSinkTier()));
+            }
+        }
+
+    }
+
+    public EnumTypeAudio getType() {
+        return typeAudio;
+    }
+
+    public void setType(EnumTypeAudio type) {
+        typeAudio = type;
+    }
+
+    public void initiate(int soundEvent) {
+        if (this.getType() == valuesAudio[soundEvent % valuesAudio.length]) {
+            return;
+        }
+        setType(valuesAudio[soundEvent % valuesAudio.length]);
+        IC2.network.get(true).initiateTileEntityEvent(this, soundEvent, true);
+    }
 
     public void readFromNBT(NBTTagCompound nbttagcompound) {
         super.readFromNBT(nbttagcompound);
@@ -58,10 +95,6 @@ public abstract class TileEntityElectricMachine extends TileEntityInventory impl
 
 
         return nbttagcompound;
-    }
-
-    protected void initiate(int soundEvent) {
-        IC2.network.get(true).initiateTileEntityEvent(this, soundEvent, true);
     }
 
 
@@ -133,11 +166,6 @@ public abstract class TileEntityElectricMachine extends TileEntityInventory impl
     public void onGuiClosed(EntityPlayer player) {
     }
 
-
-    public String getInventoryName() {
-
-        return Localization.translate(this.getName());
-    }
 
     public float getChargeLevel() {
         return (float) Math.min(1, this.energy.getEnergy() / this.energy.getCapacity());

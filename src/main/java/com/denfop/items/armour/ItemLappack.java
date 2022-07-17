@@ -6,6 +6,11 @@ import com.denfop.Config;
 import com.denfop.Constants;
 import com.denfop.IUCore;
 import com.denfop.api.IModelRegister;
+import com.denfop.api.upgrade.EnumUpgrades;
+import com.denfop.api.upgrade.IUpgradeItem;
+import com.denfop.api.upgrade.UpgradeSystem;
+import com.denfop.api.upgrade.event.EventItemLoad;
+import com.denfop.items.EnumInfoUpgradeModules;
 import com.denfop.proxy.CommonProxy;
 import com.denfop.utils.ModUtils;
 import ic2.api.item.ElectricItem;
@@ -25,10 +30,12 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.MobEffects;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
@@ -38,16 +45,18 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.ISpecialArmor;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ItemLappack extends ItemArmorElectric implements IElectricItem, IModelRegister, IMetalArmor, ISpecialArmor,
-        IItemHudInfo {
+        IItemHudInfo, IUpgradeItem {
 
     private final int maxCharge;
 
@@ -76,6 +85,8 @@ public class ItemLappack extends ItemArmorElectric implements IElectricItem, IMo
         setMaxDamage(27);
         BlocksItems.registerItem((Item) this, IUCore.getIdentifier(name)).setUnlocalizedName(name);
         IUCore.proxy.addIModelRegister(this);
+        UpgradeSystem.system.addRecipe(this, EnumUpgrades.LAPPACK.list);
+
     }
 
     @SideOnly(Side.CLIENT)
@@ -94,6 +105,22 @@ public class ItemLappack extends ItemArmorElectric implements IElectricItem, IMo
             toolMode = 0;
         }
         return toolMode;
+    }
+
+    @Override
+    public void onUpdate(
+            final ItemStack stack,
+            final World worldIn,
+            final Entity entityIn,
+            final int itemSlot,
+            final boolean isSelected
+    ) {
+        NBTTagCompound nbt = ModUtils.nbt(stack);
+
+        if (!UpgradeSystem.system.hasInMap(stack)) {
+            nbt.setBoolean("hasID", false);
+            MinecraftForge.EVENT_BUS.post(new EventItemLoad(worldIn, this, stack));
+        }
     }
 
     public void setDamage(ItemStack stack, int damage) {
@@ -157,8 +184,11 @@ public class ItemLappack extends ItemArmorElectric implements IElectricItem, IMo
     ) {
         double absorptionRatio = getBaseAbsorptionRatio() * 0;
         int energyPerDamage = this.getEnergyPerDamage();
+        int protect = (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.PROTECTION, armor) ?
+                UpgradeSystem.system.getModules(EnumInfoUpgradeModules.PROTECTION, armor).number : 0);
+
         int damageLimit = (int) ((energyPerDamage > 0)
-                ? (25.0D * ElectricItem.manager.getCharge(armor) / energyPerDamage)
+                ? (25.0D * ElectricItem.manager.getCharge(armor) / (energyPerDamage - energyPerDamage * protect * 0.2))
                 : 0.0D);
         return new ISpecialArmor.ArmorProperties(0, absorptionRatio, damageLimit);
     }
@@ -265,6 +295,13 @@ public class ItemLappack extends ItemArmorElectric implements IElectricItem, IMo
             par3List.add(TextFormatting.GOLD + Localization.translate("iu.message.text.powerSupply") + ": " + TextFormatting.GREEN + Localization.translate(
                     "iu.message.text.enabled"));
         }
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            par3List.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            par3List.add(Localization.translate("iu.changemode_key") + Localization.translate(
+                    "iu.changemode_rcm1"));
+        }
     }
 
 
@@ -272,7 +309,7 @@ public class ItemLappack extends ItemArmorElectric implements IElectricItem, IMo
         NBTTagCompound nbtData = ModUtils.nbt(itemStack);
 
         byte toggleTimer = nbtData.getByte("toggleTimer");
-        if (IC2.keyboard.isModeSwitchKeyDown(player) && toggleTimer == 0) {
+        if (IUCore.keyboard.isChangeKeyDown(player) && toggleTimer == 0) {
             toggleTimer = 10;
             int toolMode = readToolMode(itemStack);
             toolMode++;
@@ -301,6 +338,11 @@ public class ItemLappack extends ItemArmorElectric implements IElectricItem, IMo
         }
         int toolMode = readToolMode(itemStack);
         boolean ret = false;
+        double energy3 = (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.LAPPACK_ENERGY, itemStack) ?
+                UpgradeSystem.system.getModules(EnumInfoUpgradeModules.LAPPACK_ENERGY, itemStack).number : 0);
+        if (energy3 != 0) {
+            energy3 *= 0.005;
+        }
         if (toolMode == 1) {
 
             for (int i = 0; i < player.inventory.armorInventory.size(); i++) {
@@ -308,7 +350,9 @@ public class ItemLappack extends ItemArmorElectric implements IElectricItem, IMo
                 if (!player.inventory.armorInventory.get(i).isEmpty() && player.inventory.armorInventory
                         .get(i)
                         .getItem() instanceof IElectricItem) {
-                    if (ElectricItem.manager.getCharge(itemStack) > 0) {
+                    if (ElectricItem.manager.getCharge(itemStack) > 0 && !(itemStack.isItemEqual(player.inventory.armorInventory.get(
+                            i)))) {
+
                         double sentPacket = ElectricItem.manager.charge(
                                 player.inventory.armorInventory.get(i),
                                 ElectricItem.manager.getCharge(itemStack),
@@ -318,7 +362,17 @@ public class ItemLappack extends ItemArmorElectric implements IElectricItem, IMo
                         );
 
                         if (sentPacket > 0.0D) {
-                            ElectricItem.manager.discharge(itemStack, sentPacket, Integer.MAX_VALUE, true, false, false);
+                            System.out.println(sentPacket);
+                            ElectricItem.manager.discharge(itemStack, sentPacket, Integer.MAX_VALUE, true, false,
+                                    false
+                            );
+                            ElectricItem.manager.charge(
+                                    itemStack,
+                                    sentPacket * energy3,
+                                    2147483647,
+                                    true,
+                                    false
+                            );
                             ret = true;
 
                         }
@@ -327,7 +381,8 @@ public class ItemLappack extends ItemArmorElectric implements IElectricItem, IMo
                 IEnergyContainerItem item;
                 if (!player.inventory.armorInventory.get(i).isEmpty()
                         && player.inventory.armorInventory.get(i).getItem() instanceof IEnergyContainerItem) {
-                    if (ElectricItem.manager.getCharge(itemStack) > 0) {
+                    if (ElectricItem.manager.getCharge(itemStack) > 0 && !(itemStack.isItemEqual(player.inventory.armorInventory.get(
+                            i)))) {
                         item = (IEnergyContainerItem) player.inventory.armorInventory.get(i).getItem();
 
                         int amountRfCanBeReceivedIncludesLimit = item.receiveEnergy(
@@ -340,14 +395,23 @@ public class ItemLappack extends ItemArmorElectric implements IElectricItem, IMo
                                 ElectricItem.manager.getCharge(itemStack) * Config.coefficientrf
                         );
                         item.receiveEnergy(player.inventory.armorInventory.get(i), (int) realSentEnergyRF, false);
-                        ElectricItem.manager.discharge(
-                                itemStack,
-                                realSentEnergyRF / (double) Config.coefficientrf,
-                                Integer.MAX_VALUE,
-                                true,
-                                false,
-                                false
-                        );
+                        if (realSentEnergyRF > 0) {
+                            ElectricItem.manager.discharge(
+                                    itemStack,
+                                    (realSentEnergyRF / (double) Config.coefficientrf),
+                                    Integer.MAX_VALUE,
+                                    true,
+                                    false,
+                                    false
+                            );
+                            ElectricItem.manager.charge(
+                                    itemStack,
+                                    (realSentEnergyRF / (double) Config.coefficientrf) * energy3,
+                                    2147483647,
+                                    true,
+                                    false
+                            );
+                        }
                     }
                 }
             }
@@ -364,8 +428,16 @@ public class ItemLappack extends ItemArmorElectric implements IElectricItem, IMo
                                 false
                         );
 
+
                         if (sentPacket > 0.0D) {
                             ElectricItem.manager.discharge(itemStack, sentPacket, Integer.MAX_VALUE, true, false, false);
+                            ElectricItem.manager.charge(
+                                    itemStack,
+                                    sentPacket * energy3,
+                                    2147483647,
+                                    true,
+                                    false
+                            );
                             ret = true;
 
                         }
@@ -388,16 +460,38 @@ public class ItemLappack extends ItemArmorElectric implements IElectricItem, IMo
                                 ElectricItem.manager.getCharge(itemStack) * Config.coefficientrf
                         );
                         item.receiveEnergy(player.inventory.mainInventory.get(j), (int) realSentEnergyRF, false);
-                        ElectricItem.manager.discharge(
-                                itemStack,
-                                realSentEnergyRF / (double) Config.coefficientrf,
-                                Integer.MAX_VALUE,
-                                true,
-                                false,
-                                false
-                        );
+                        if (realSentEnergyRF > 0) {
+                            ElectricItem.manager.discharge(
+                                    itemStack,
+                                    (realSentEnergyRF / (double) Config.coefficientrf),
+                                    Integer.MAX_VALUE,
+                                    true,
+                                    false,
+                                    false
+                            );
+                            ElectricItem.manager.charge(
+                                    itemStack,
+                                    (realSentEnergyRF / (double) Config.coefficientrf) * energy3,
+                                    2147483647,
+                                    true,
+                                    false
+                            );
+                        }
                     }
                 }
+            }
+            boolean fireResistance = UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.FIRE_PROTECTION, itemStack);
+            if (fireResistance) {
+                player.addPotionEffect(new PotionEffect(MobEffects.FIRE_RESISTANCE, 300));
+            }
+            int resistance = (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.RESISTANCE, itemStack) ?
+                    UpgradeSystem.system.getModules(EnumInfoUpgradeModules.RESISTANCE, itemStack).number : 0);
+
+            if (resistance != 0) {
+                player.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 300, resistance));
+            }
+            if (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.INVISIBILITY, itemStack)) {
+                player.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 300));
             }
             if (ret) {
                 player.openContainer.detectAndSendChanges();

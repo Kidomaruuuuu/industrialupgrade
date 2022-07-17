@@ -12,10 +12,8 @@ import com.denfop.gui.GuiSunnariumPanelMaker;
 import com.denfop.tiles.base.EnumDoubleElectricMachine;
 import com.denfop.tiles.base.TileEntityDoubleElectricMachine;
 import ic2.api.recipe.IRecipeInputFactory;
-import ic2.api.upgrade.IUpgradeItem;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.IC2;
-import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -35,7 +33,7 @@ public class TileEntitySunnariumPanelMaker extends TileEntityDoubleElectricMachi
     public final SEComponent sunenergy;
 
     public TileEntitySunnariumPanelMaker() {
-        super(1, 300, 1, Localization.translate("iu.SunnariumPanelMaker.name"), EnumDoubleElectricMachine.SUNNARIUM_PANEL);
+        super(1, 300, 1, EnumDoubleElectricMachine.SUNNARIUM_PANEL);
         this.sunenergy = this.addComponent(SEComponent
                 .asBasicSink(this, 10000, 1));
     }
@@ -145,12 +143,12 @@ public class TileEntitySunnariumPanelMaker extends TileEntityDoubleElectricMachi
     }
 
     protected void updateEntityServer() {
-        boolean needsInvUpdate = false;
-
 
         MachineRecipe output = this.output;
         if (output != null && this.energy.getEnergy() >= this.energyConsume && this.sunenergy.getEnergy() >= 5) {
-            setActive(true);
+            if (!this.getActive()) {
+                setActive(true);
+            }
             if (this.progress == 0) {
                 IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
             }
@@ -163,7 +161,6 @@ public class TileEntitySunnariumPanelMaker extends TileEntityDoubleElectricMachi
             if (this.progress >= this.operationLength) {
                 this.guiProgress = 0;
                 operate(output);
-                needsInvUpdate = true;
                 this.progress = 0;
                 IC2.network.get(true).initiateTileEntityEvent(this, 2, true);
             }
@@ -174,19 +171,12 @@ public class TileEntitySunnariumPanelMaker extends TileEntityDoubleElectricMachi
             if (output == null) {
                 this.progress = 0;
             }
-            setActive(false);
-        }
-        for (int i = 0; i < this.upgradeSlot.size(); i++) {
-            ItemStack stack = this.upgradeSlot.get(i);
-            if (stack != null && stack.getItem() instanceof IUpgradeItem) {
-                if (((IUpgradeItem) stack.getItem()).onTick(stack, this)) {
-                    needsInvUpdate = true;
-                }
+            if (this.getActive()) {
+                setActive(false);
             }
         }
-
-        if (needsInvUpdate) {
-            super.markDirty();
+        if ((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark()) {
+            setOverclockRates();
         }
 
     }
@@ -219,11 +209,6 @@ public class TileEntitySunnariumPanelMaker extends TileEntityDoubleElectricMachi
 
     public boolean shouldRenderInPass(int pass) {
         return true;
-    }
-
-    public String getInventoryName() {
-
-        return Localization.translate("iu.SunnariumPanelMaker.name");
     }
 
 

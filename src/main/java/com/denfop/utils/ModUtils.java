@@ -2,15 +2,29 @@ package com.denfop.utils;
 
 import com.denfop.IUCore;
 import com.denfop.Ic2Items;
+import com.denfop.api.recipe.InvSlotOutput;
+import ic2.core.block.TileEntityBlock;
 import ic2.core.init.Localization;
+import ic2.core.util.StackUtil;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.wrapper.InvWrapper;
+import net.minecraftforge.items.wrapper.SidedInvWrapper;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +33,14 @@ public class ModUtils {
 
     public static Logger log;
 
-    public static List<ItemStack> blacklist_block() {
+    public static ItemStack getCable(ItemStack stack, int insulation) {
+        final NBTTagCompound nbt = nbt(stack);
+        nbt.setByte("insulation", (byte) insulation);
+        nbt.setByte("type", (byte) stack.getItemDamage());
+        return stack;
+    }
+
+    public static List<ItemStack> get_blacklist_block() {
         List<ItemStack> list = new ArrayList<>();
         list.add(new ItemStack(Blocks.STONE));
         list.add(new ItemStack(Blocks.DIRT));
@@ -33,7 +54,6 @@ public class ModUtils {
         list.add(new ItemStack(Blocks.STONE, 1, 6));
         list.add(new ItemStack(Blocks.DIRT, 1, 1));
         list.add(new ItemStack(Blocks.DIRT, 1, 2));
-        list.add(new ItemStack(Blocks.DIRT, 1, 3));
         return list;
     }
 
@@ -54,12 +74,11 @@ public class ModUtils {
     public static List<ItemStack> getListFromModule(ItemStack stack) {
         List<ItemStack> stacks = new ArrayList<>();
         if (!stack.isEmpty()) {
-            for (int j = 0; j < 18; j++) {
+            final NBTTagCompound nbt = ModUtils.nbt(stack);
+            int size = nbt.getInteger("size");
+            for (int j = 0; j < size; j++) {
                 String l = "number_" + j;
                 String temp = ModUtils.NBTGetString(stack, l);
-                if (temp.isEmpty()) {
-                    continue;
-                }
                 stacks.addAll(OreDictionary.getOres(temp));
 
             }
@@ -69,7 +88,7 @@ public class ModUtils {
 
     public static boolean getore(Block localBlock, int meta) {
         ItemStack stack = new ItemStack(localBlock, 1, meta);
-        for (ItemStack itemstack : blacklist_block()) {
+        for (ItemStack itemstack : get_blacklist_block()) {
             if (stack.isItemEqual(itemstack)) {
                 return false;
             }
@@ -78,7 +97,7 @@ public class ModUtils {
     }
 
     public static boolean getore(Item localBlock) {
-        for (ItemStack itemstack : blacklist_block()) {
+        for (ItemStack itemstack : get_blacklist_block()) {
             if (localBlock == itemstack.getItem()) {
                 return false;
             }
@@ -87,7 +106,7 @@ public class ModUtils {
     }
 
     public static boolean getore(ItemStack localBlock) {
-        for (ItemStack itemstack : blacklist_block()) {
+        for (ItemStack itemstack : get_blacklist_block()) {
             if (localBlock.isItemEqual(itemstack)) {
                 return false;
             }
@@ -97,7 +116,7 @@ public class ModUtils {
 
     public static boolean getore(Block stack, Block localBlock) {
         ItemStack stack1 = new ItemStack(localBlock);
-        for (ItemStack itemstack : blacklist_block()) {
+        for (ItemStack itemstack : get_blacklist_block()) {
             if (stack1.isItemEqual(itemstack)) {
                 return false;
             }
@@ -105,6 +124,11 @@ public class ModUtils {
         if (stack != localBlock) {
             return false;
         }
+
+        if (localBlock == Blocks.LIT_REDSTONE_ORE) {
+            return true;
+        }
+
         for (ItemStack itemstack : IUCore.get_ore) {
             if (stack == Block.getBlockFromItem(itemstack.getItem())) {
                 return true;
@@ -160,17 +184,6 @@ public class ModUtils {
         return sum_sum;
     }
 
-    public static boolean Boolean(List<Boolean> boolean1) {
-
-        for (Boolean aBoolean : boolean1) {
-            if (aBoolean) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
 
     public static void SetDoubleWithoutItem(NBTTagCompound NBTTagCompound, String name, double amount) {
         if (NBTTagCompound == null) {
@@ -191,45 +204,7 @@ public class ModUtils {
 
     public static void mode(ItemStack stack, List<String> list) {
         NBTTagCompound nbt = nbt(stack);
-        String mode = nbt.getString("mode");
-        if (mode.isEmpty()) {
-            list.add(Localization.translate("defaultskin"));
-        }
-        switch (mode) {
-            case "Zelen":
-                list.add(Localization.translate("camouflageskin"));
-                break;
-            case "Demon":
-                list.add(Localization.translate("demonskin"));
-                break;
-            case "Dark":
-                list.add(Localization.translate("Darkskin"));
-                break;
-            case "Cold":
-                list.add(Localization.translate("Coldskin"));
-                break;
-            case "Ender":
-                list.add(Localization.translate("Enderskin"));
-                break;
-            case "Ukraine":
-                list.add(Localization.translate("Ukraineskin"));
-                break;
-            case "Fire":
-                list.add(Localization.translate("Fireskin"));
-                break;
-            case "Emerald":
-                list.add(Localization.translate("Emeraldskin"));
-                break;
-            case "Taiga":
-                list.add(Localization.translate("Taigaskin"));
-                break;
-            case "Desert":
-                list.add(Localization.translate("Desertskin"));
-                break;
-            case "Snow":
-                list.add(Localization.translate("Snowskin"));
-                break;
-        }
+        list.add(mode(nbt));
     }
 
     public static String mode(NBTTagCompound nbt) {
@@ -264,6 +239,48 @@ public class ModUtils {
         return Localization.translate("defaultskin");
     }
 
+    public static ItemStack mode(NBTTagCompound nbt, ItemStack stack) {
+        String mode = nbt.getString("mode");
+        ItemStack stack1 = stack.copy();
+        if (mode.isEmpty()) {
+            return stack1;
+        }
+        nbt = nbt(stack1);
+        nbt.setString("mode", mode);
+        return stack1;
+    }
+
+    public static String mode(int meta) {
+        if (meta == 0) {
+            return Localization.translate("defaultskin");
+        }
+        switch (meta) {
+            case 3:
+                return Localization.translate("camouflageskin");
+            case 4:
+                return Localization.translate("demonskin");
+            case 6:
+                return Localization.translate("Darkskin");
+            case 1:
+                return Localization.translate("Coldskin");
+            case 7:
+                return Localization.translate("Enderskin");
+            case 2:
+                return Localization.translate("Ukraineskin");
+            case 5:
+                return Localization.translate("Fireskin");
+            case 11:
+                return Localization.translate("Emeraldskin");
+            case 8:
+                return Localization.translate("Taigaskin");
+            case 10:
+                return Localization.translate("Desertskin");
+            case 9:
+                return Localization.translate("Snowskin");
+        }
+        return Localization.translate("defaultskin");
+    }
+
     public static String getString(float number) {
         float gg;
         int i;
@@ -274,13 +291,13 @@ public class ModUtils {
 
             gg = number;
             maxstorage_2 = String.format("%.0f", gg);
-        } else if (i >= 3 && i < 6 && number >= 1000 && number < 1000000) {
+        } else if (i >= 3 && i < 6) {
             gg = number / (1000);
             maxstorage_2 = String.format("%.2fK", gg);
-        } else if (i >= 6 && i < 9 && number >= 1000000 && number < 1000000000) {
+        } else if (i >= 6 && i < 9) {
             gg = number / (1000000);
             maxstorage_2 = String.format("%.2fM", gg);
-        } else if (i >= 9 && i < 12 && number >= 1000000000 && number < 2100000000) {
+        } else if (i >= 9 && i < 12) {
             gg = number / (1000000000);
             maxstorage_2 = String.format("%.2fG", gg);
         }
@@ -313,31 +330,32 @@ public class ModUtils {
 
     public static String getString(double number) {
         String maxstorage_2 = "0";
-        if (number <= 1000) {
+        int i = (int) Math.log10(number);
+        if (i < 3) {
 
             maxstorage_2 = String.format("%.0f", number);
-        } else if (number >= 10E2D && number < 10E5D) {
+        } else if (i < 6) {
 
             maxstorage_2 = String.format("%.2fK", number / 10E2D);
-        } else if (number >= 10E5D && number < 10E8D) {
+        } else if (i < 9) {
 
             maxstorage_2 = String.format("%.2fM", number / 10E5D);
-        } else if (number >= 10E8D && number < 10E11D) {
+        } else if (i < 12) {
 
             maxstorage_2 = String.format("%.2fG", number / 10E8D);
-        } else if (number >= 10E11D && number < 10E14D) {
+        } else if (i < 15) {
 
             maxstorage_2 = String.format("%.2fT", number / 10E11D);
-        } else if (number >= 10E14D && number < 10E17D) {
+        } else if (i < 18) {
 
             maxstorage_2 = String.format("%.2fP", number / 10E14D);
-        } else if (number >= 10E17D && number < 10E20D) {
+        } else if (i < 21) {
 
             maxstorage_2 = String.format("%.2fE", number / 10E17D);
-        } else if (number >= 10E20D && number < 10E23D) {
+        } else if (i < 24) {
 
             maxstorage_2 = String.format("%.2fZ", number / 10E20D);
-        } else if (number >= 10E23D && number < 10E26D) {
+        } else if (i < 27) {
 
             maxstorage_2 = String.format("%.2fY", number / 10E23D);
         }
@@ -414,6 +432,199 @@ public class ModUtils {
         float divColor = 255.0F;
         Color tmpColor = new Color(r / divColor, g / divColor, b / divColor);
         return tmpColor.getRGB();
+    }
+
+    public static IItemHandler getItemHandler(@Nullable TileEntity tile, EnumFacing side) {
+        if (tile == null) {
+            return null;
+        }
+
+        IItemHandler handler = tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side) ? tile.getCapability(
+                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY,
+                side
+        ) : null;
+
+        if (handler == null) {
+            if (side != null && tile instanceof ISidedInventory) {
+                handler = new SidedInvWrapper((ISidedInventory) tile, side);
+            } else if (tile instanceof IInventory) {
+                handler = new InvWrapper((IInventory) tile);
+            }
+        }
+
+        return handler;
+    }
+
+    public static void tick(ItemStack stack, InvSlotOutput slot, TileEntityBlock tile) {
+        EnumFacing facing = getDirection(stack);
+        if (facing != null) {
+            BlockPos pos = tile.getPos().offset(facing);
+            final TileEntity tile1 = tile.getWorld().getTileEntity(pos);
+            final IItemHandler handler = getItemHandler(tile1, facing.getOpposite());
+            if (handler == null) {
+                return;
+            }
+            final int slots = handler.getSlots();
+            for (int j = 0; j < slot.size(); j++) {
+                ItemStack took = slot.get(j);
+                if (took.isEmpty()) {
+                    continue;
+                }
+                took = took.copy();
+                if (!(handler instanceof ISidedInventory)) {
+
+                    if (insertItem(handler, took, true, slots).isEmpty()) {
+                        slot.put(j, ItemStack.EMPTY);
+                        insertItem(handler, took, false, slots);
+                    }
+                } else {
+                    if (insertItem1(handler, took, true, slots).isEmpty()) {
+                        slot.put(j, ItemStack.EMPTY);
+                        insertItem1(handler, took, false, slots);
+
+                    }
+                }
+
+            }
+        } else {
+            for (EnumFacing facing1 : EnumFacing.values()) {
+                BlockPos pos = tile.getPos().offset(facing1);
+                final TileEntity tile1 = tile.getWorld().getTileEntity(pos);
+                final IItemHandler handler = getItemHandler(tile1, facing1.getOpposite());
+                if (handler == null) {
+                    continue;
+                }
+                final int slots = handler.getSlots();
+                for (int j = 0; j < slot.size(); j++) {
+                    ItemStack took = slot.get(j);
+                    if (took.isEmpty()) {
+                        continue;
+                    }
+                    took = took.copy();
+                    if (!(handler instanceof ISidedInventory)) {
+
+                        if (insertItem(handler, took, true, slots).isEmpty()) {
+                            slot.put(j, ItemStack.EMPTY);
+                            insertItem(handler, took, false, slots);
+                        }
+                    } else {
+                        if (insertItem1(handler, took, true, slots).isEmpty()) {
+                            slot.put(j, ItemStack.EMPTY);
+                            insertItem1(handler, took, false, slots);
+
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+    @Nonnull
+    public static ItemStack insertItem1(IItemHandler dest, @Nonnull ItemStack stack, boolean simulate, int slot) {
+        if (dest == null || stack.isEmpty()) {
+            return stack;
+        }
+
+        for (int i = 0; i < slot; i++) {
+            stack = insertItem2(dest, i, stack, simulate);
+            if (stack.isEmpty()) {
+                return ItemStack.EMPTY;
+            }
+        }
+
+        return stack;
+    }
+
+    public static boolean canItemStacksStack(@Nonnull ItemStack a, @Nonnull ItemStack b) {
+        if (a.isEmpty() || !a.isItemEqual(b) || a.hasTagCompound() != b.hasTagCompound()) {
+            return false;
+        }
+
+        return (!a.hasTagCompound() || a.getTagCompound().equals(b.getTagCompound()));
+    }
+
+    @Nonnull
+    public static ItemStack insertItem2(IItemHandler dest, int slot, @Nonnull ItemStack stack, boolean simulate) {
+        if (stack.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+        ItemStack stackInSlot = dest.getStackInSlot(slot);
+
+        int m;
+        if (!stackInSlot.isEmpty()) {
+            int max = stackInSlot.getMaxStackSize();
+            int limit = dest.getSlotLimit(slot);
+            if (stackInSlot.getCount() >= Math.min(max, limit)) {
+                return stack;
+            }
+
+            if (!canItemStacksStack(stack, stackInSlot)) {
+                return stack;
+            }
+
+
+            m = Math.min(max, limit) - stackInSlot.getCount();
+
+            if (stack.getCount() <= m) {
+                if (!simulate) {
+                    ItemStack copy = stack.copy();
+                    copy.grow(stackInSlot.getCount());
+                    ((SidedInvWrapper) dest).setStackInSlot(slot, copy);
+                    return ItemStack.EMPTY;
+                }
+
+            } else {
+                // copy the stack to not modify the original one
+                stack = stack.copy();
+                if (!simulate) {
+                    ItemStack copy = stack.splitStack(m);
+                    copy.grow(stackInSlot.getCount());
+                    ((SidedInvWrapper) dest).setStackInSlot(slot, copy);
+                    return ItemStack.EMPTY;
+                }
+            }
+            return stack;
+        } else {
+
+
+            m = Math.min(stack.getMaxStackSize(), dest.getSlotLimit(slot));
+            if (m < stack.getCount()) {
+                // copy the stack to not modify the original one
+                stack = stack.copy();
+                if (!simulate) {
+                    ((SidedInvWrapper) dest).setStackInSlot(slot, stack.splitStack(m));
+                }
+                return stack;
+            } else {
+                if (!simulate) {
+                    ((SidedInvWrapper) dest).setStackInSlot(slot, stack);
+                }
+                return ItemStack.EMPTY;
+            }
+        }
+
+    }
+
+    @Nonnull
+    public static ItemStack insertItem(IItemHandler dest, @Nonnull ItemStack stack, boolean simulate, final int slots) {
+        if (dest == null || stack.isEmpty()) {
+            return stack;
+        }
+
+        for (int i = 0; i < slots; i++) {
+            stack = dest.insertItem(i, stack, simulate);
+            if (stack.isEmpty()) {
+                return ItemStack.EMPTY;
+            }
+        }
+
+        return stack;
+    }
+
+    private static EnumFacing getDirection(ItemStack stack) {
+        int rawDir = StackUtil.getOrCreateNbtData(stack).getByte("dir");
+        return rawDir >= 1 && rawDir <= 6 ? EnumFacing.VALUES[rawDir - 1] : null;
     }
 
 }

@@ -4,6 +4,7 @@ import com.denfop.IUItem;
 import com.denfop.blocks.FluidName;
 import com.denfop.container.ContainerOilRefiner;
 import com.denfop.gui.GuiOilRefiner;
+import com.denfop.tiles.base.IManufacturerBlock;
 import com.denfop.tiles.base.TileEntityBaseLiquedMachine;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
@@ -18,7 +19,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class TileEntityOilRefiner extends TileEntityBaseLiquedMachine {
+public class TileEntityOilRefiner extends TileEntityBaseLiquedMachine implements IManufacturerBlock {
 
     public TileEntityOilRefiner() {
         super(24000, 14, 2, 3, new boolean[]{false, true, true}, new boolean[]{true, false, false},
@@ -26,6 +27,21 @@ public class TileEntityOilRefiner extends TileEntityBaseLiquedMachine {
                         FluidName.fluiddizel.getInstance()}
         );
 
+    }
+
+    @Override
+    public int getLevel() {
+        return this.level;
+    }
+
+    @Override
+    public void setLevel(final int level) {
+        this.level = level;
+    }
+
+    @Override
+    public void removeLevel(final int level) {
+        this.level -= level;
     }
 
     @Override
@@ -124,17 +140,30 @@ public class TileEntityOilRefiner extends TileEntityBaseLiquedMachine {
                 drains = drain1 ? drains + 2 * cap1 : drains;
 
                 this.getFluidTank(0).drain(drains, true);
-                initiate(0);
+                if (!this.getActive()) {
+                    initiate(0);
+                    setActive(true);
+                }
                 this.useEnergy(25);
-                setActive(true);
             } else {
-                initiate(2);
-                setActive(false);
+                if (!this.getActive()) {
+                    initiate(2);
+                    setActive(false);
+                }
             }
         }
 
-        if (this.world.provider.getWorldTime() % 15 == 0) {
-            IC2.network.get(true).updateTileEntityField(this, "fluidTank");
+        if (this.world.provider.getWorldTime() % 20 == 0) {
+            boolean need = false;
+            for (int i = 0; i < this.fluidTank.length; i++) {
+                if (this.fluidTank[i].getFluidAmount() != this.old_amount[i]) {
+                    this.old_amount[i] = this.fluidTank[i].getFluidAmount();
+                    need = true;
+                }
+            }
+            if (need) {
+                IC2.network.get(true).updateTileEntityField(this, "fluidTank");
+            }
         }
 
 

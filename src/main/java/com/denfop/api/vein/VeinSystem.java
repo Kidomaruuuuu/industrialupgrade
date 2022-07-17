@@ -19,6 +19,7 @@ import java.util.Random;
 public class VeinSystem implements IVeinSystem {
 
     public static IVeinSystem system;
+    private final Random rand;
     List<Vein> list;
     List<ChunkPos> chunkPos;
     Map<ChunkPos, Vein> chunkPosVeinMap;
@@ -28,6 +29,7 @@ public class VeinSystem implements IVeinSystem {
         this.list = new ArrayList<>();
         this.chunkPos = new ArrayList<>();
         this.chunkPosVeinMap = new HashMap<>();
+        this.rand = new Random();
         MinecraftForge.EVENT_BUS.register(this);
     }
 
@@ -91,8 +93,7 @@ public class VeinSystem implements IVeinSystem {
     }
 
     private void getnumber(Chunk chunk, IVein vein) {
-        final Biome biome = chunk.getWorld().getBiome(new BlockPos(chunk.x, 0, chunk.z));
-        Random rand = chunk.getWorld().rand;
+        final Biome biome = chunk.getWorld().getBiome(new BlockPos(chunk.x * 16, 0, chunk.z * 16));
         int number;
         if (Biome.getIdForBiome(biome) == 2) {
             int random = rand.nextInt(100);

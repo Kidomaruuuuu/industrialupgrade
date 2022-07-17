@@ -23,7 +23,7 @@ public class GenNeuHandler {
         this.input2 = input2;
     }
 
-    public static List<GenNeuHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<GenNeuHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

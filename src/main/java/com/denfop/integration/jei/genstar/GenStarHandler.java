@@ -28,7 +28,7 @@ public class GenStarHandler {
         this.output = output;
     }
 
-    public static List<GenStarHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<GenStarHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

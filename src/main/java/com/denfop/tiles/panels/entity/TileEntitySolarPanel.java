@@ -1,13 +1,17 @@
 package com.denfop.tiles.panels.entity;
 
 
+import aroma1997.uncomplication.enet.SunCoef;
 import cofh.redstoneflux.api.IEnergyProvider;
 import cofh.redstoneflux.api.IEnergyReceiver;
 import com.denfop.Config;
+import com.denfop.api.IAdvEnergyNet;
 import com.denfop.api.energy.IAdvEnergySource;
 import com.denfop.container.ContainerSolarPanels;
 import com.denfop.gui.GuiSolarPanels;
 import com.denfop.invslot.InvSlotPanel;
+import com.denfop.items.modules.ItemAdditionModule;
+import com.denfop.proxy.CommonProxy;
 import com.denfop.utils.ModUtils;
 import ic2.api.energy.EnergyNet;
 import ic2.api.energy.event.EnergyTileLoadEvent;
@@ -23,18 +27,23 @@ import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.init.Localization;
+import ic2.core.ref.TeBlock;
+import ic2.core.util.StackUtil;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -52,10 +61,10 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IAdvEne
     public List<IEnergyTile> list;
     public EnumSolarPanels solarpanels;
     public int tier;
-
+    public List<WirelessTransfer> wirelessTransferList = new ArrayList<>();
     public InvSlotPanel inputslot;
     public boolean getmodulerf = false;
-
+    public Biome biome;
     public boolean personality = false;
     public int solarType;
     public String player = null;
@@ -96,6 +105,9 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IAdvEne
     protected boolean addedToEnet;
     protected double pastEnergy;
     protected double perenergy;
+    protected SunCoef sunCoef;
+    List<TransferRFEnergy> transferRFEnergyList = new ArrayList<>();
+    private final List<String> list_player = new ArrayList<>();
 
     public TileEntitySolarPanel(
             final int tier, final double gDay,
@@ -131,6 +143,16 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IAdvEne
 
     public TileEntitySolarPanel(EnumSolarPanels solarpanels) {
         this(solarpanels.tier, solarpanels.genday, solarpanels.producing, solarpanels.maxstorage, solarpanels);
+
+    }
+
+    protected boolean canEntityDestroy(Entity entity) {
+        return !this.personality || (entity instanceof EntityPlayer && this.list_player.contains(entity.getName()));
+    }
+
+    @Override
+    protected boolean wrenchCanRemove(final EntityPlayer player) {
+        return !this.personality || (this.list_player.contains(player.getName()));
 
     }
 
@@ -213,15 +235,49 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IAdvEne
         }
         double coefficient_phase;
         coefficient_phase = experimental_generating();
-
-
-        this.generating *= coefpollution * coefficient_phase * moonPhase;
+        double coef = moonPhase;
+        if (this.sunIsUp) {
+            coef = 1;
+        }
+        this.generating *= coefpollution * coefficient_phase * coef;
     }
 
     @Override
     public void onPlaced(final ItemStack stack, final EntityLivingBase placer, final EnumFacing facing) {
         super.onPlaced(stack, placer, facing);
         this.player = placer.getName();
+        NBTTagCompound nbt = StackUtil.getOrCreateNbtData(stack);
+        if (nbt.getBoolean("hasPollution")) {
+            this.time = nbt.getInteger("time");
+            this.time1 = nbt.getInteger("time1");
+            this.time2 = nbt.getInteger("time2");
+            this.work = nbt.getBoolean("work");
+            this.work1 = nbt.getBoolean("work1");
+            this.work2 = nbt.getBoolean("work2");
+        }
+    }
+
+    protected List<ItemStack> getSelfDrops(int fortune, boolean wrench) {
+        ItemStack drop = this.getPickBlock(null, null);
+        drop = this.adjustDrop(drop, wrench, fortune);
+        return drop == null ? Collections.emptyList() : Collections.singletonList(drop);
+    }
+
+    protected ItemStack adjustDrop(ItemStack drop, boolean wrench, int fortune) {
+        drop = super.adjustDrop(drop, wrench);
+        if (wrench || this.teBlock.getDefaultDrop() == TeBlock.DefaultDrop.Self) {
+            NBTTagCompound nbt = StackUtil.getOrCreateNbtData(drop);
+            if (fortune != 100) {
+                nbt.setInteger("time", this.time);
+                nbt.setInteger("time1", this.time1);
+                nbt.setInteger("time2", this.time2);
+                nbt.setBoolean("work", this.work);
+                nbt.setBoolean("work1", this.work1);
+                nbt.setBoolean("work2", this.work2);
+                nbt.setBoolean("hasPollution", true);
+            }
+        }
+        return drop;
     }
 
     protected void onLoaded() {
@@ -230,35 +286,36 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IAdvEne
             this.addedToEnet = !MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent(this));
             this.canRain = (this.world.getBiome(this.pos).canRain() || this.world.getBiome(this.pos).getRainfall() > 0.0F);
             this.hasSky = !this.world.provider.isNether();
+            this.biome = this.world.getBiome(this.pos);
             updateVisibility();
             this.inputslot.checkmodule();
             this.inputslot.getrfmodule();
             this.inputslot.personality();
             this.solarType = this.inputslot.solartype();
+            this.wirelessTransferList.clear();
+            this.inputslot.wirelessmodule();
+            IAdvEnergyNet advEnergyNet = (IAdvEnergyNet) EnergyNet.instance;
+            this.sunCoef = advEnergyNet.getSunCoefficient(this.world);
+            if (this.personality) {
+                for (int h = 0; h < this.inputslot.size(); h++) {
+                    if (!this.inputslot.get(h).isEmpty() && this.inputslot.get(h).getItem() instanceof ItemAdditionModule
+                            && this.inputslot.get(h).getItemDamage() == 0) {
+                        NBTTagCompound nbt = ModUtils.nbt(this.inputslot.get(h));
+                        int size = nbt.getInteger("size");
+                        for (int m = 0; m < size; m++) {
+                            this.list_player.add(nbt.getString("player_" + m));
+                        }
+                        break;
+                    }
 
+                }
+                this.list_player.add(this.player);
+            }
         }
     }
 
     private double experimental_generating() {
-        double k = 0;
-        float angle = this.getWorld().getCelestialAngle(1.0F) - 0.784690560F < 0 ? 1.0F - 0.784690560F : -0.784690560F;
-        float celestialAngle = (this.getWorld().getCelestialAngle(1.0F) + angle) * 360.0F;
-
-        celestialAngle %= 360;
-        celestialAngle += 12;
-        //TODO: end code GC
-        if (celestialAngle <= 90) {
-            k = celestialAngle / 90;
-        } else if (celestialAngle > 90 && celestialAngle < 180) {
-            celestialAngle -= 90;
-            k = 1 - celestialAngle / 90;
-        } else if (celestialAngle > 180 && celestialAngle < 270) {
-            celestialAngle -= 180;
-            k = celestialAngle / 90;
-        } else if (celestialAngle > 270 && celestialAngle < 360) {
-            celestialAngle -= 270;
-            k = 1 - celestialAngle / 90;
-        }
+        double k = this.sunCoef.getCoef();
 
         double coef = this.coef;
 
@@ -354,24 +411,49 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IAdvEne
             this.inputslot.rfcharge();
         }
         if (this.getmodulerf) {
-            for (EnumFacing facing : EnumFacing.VALUES) {
-                BlockPos pos = new BlockPos(
-                        this.pos.getX() + facing.getFrontOffsetX(),
-                        this.pos.getY() + facing.getFrontOffsetY(),
-                        this.pos.getZ() + facing.getFrontOffsetZ()
-                );
 
-                if (this.getWorld().getTileEntity(pos) == null) {
+            if (this.getWorld().getWorldTime() % 60 == 0) {
+                transferRFEnergyList.clear();
+                for (EnumFacing facing : EnumFacing.VALUES) {
+                    BlockPos pos = new BlockPos(
+                            this.pos.getX() + facing.getFrontOffsetX(),
+                            this.pos.getY() + facing.getFrontOffsetY(),
+                            this.pos.getZ() + facing.getFrontOffsetZ()
+                    );
+                    TileEntity tile = this.getWorld().getTileEntity(pos);
+                    if (tile == null) {
+                        continue;
+                    }
+                    if (tile instanceof IEnergyReceiver) {
+                        transferRFEnergyList.add(new TransferRFEnergy(tile, ((IEnergyReceiver) tile), facing));
+                    }
+                }
+
+            }
+            boolean refresh = false;
+            for (TransferRFEnergy rfEnergy : this.transferRFEnergyList) {
+                if (rfEnergy.getTile().isInvalid()) {
+                    refresh = true;
                     continue;
                 }
-                TileEntity tile = this.getWorld().getTileEntity(pos);
-
-                if (!(tile instanceof TileEntitySolarPanel)) {
-
+                extractEnergy(rfEnergy.getFacing(), rfEnergy.getSink().receiveEnergy(rfEnergy.getFacing().getOpposite(),
+                        extractEnergy(rfEnergy.getFacing(), (int) this.storage2, true), false
+                ), false);
+            }
+            if (refresh) {
+                transferRFEnergyList.clear();
+                for (EnumFacing facing : EnumFacing.VALUES) {
+                    BlockPos pos = new BlockPos(
+                            this.pos.getX() + facing.getFrontOffsetX(),
+                            this.pos.getY() + facing.getFrontOffsetY(),
+                            this.pos.getZ() + facing.getFrontOffsetZ()
+                    );
+                    TileEntity tile = this.getWorld().getTileEntity(pos);
+                    if (tile == null) {
+                        continue;
+                    }
                     if (tile instanceof IEnergyReceiver) {
-                        extractEnergy(facing, ((IEnergyReceiver) tile).receiveEnergy(facing.getOpposite(),
-                                extractEnergy(facing, (int) this.storage2, true), false
-                        ), false);
+                        transferRFEnergyList.add(new TransferRFEnergy(tile, ((IEnergyReceiver) tile), facing));
                     }
                 }
             }
@@ -385,7 +467,23 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IAdvEne
             this.inputslot.time();
         }
         if (this.wireless) {
-            this.inputslot.wirelessmodule();
+            boolean refresh = false;
+            try {
+                for (WirelessTransfer transfer : this.wirelessTransferList) {
+                    if (transfer.getTile().isInvalid()) {
+                        refresh = true;
+                        continue;
+                    }
+                    double energy = Math.min(this.getOfferedEnergy(), transfer.getSink().getDemandedEnergy());
+                    transfer.work(energy);
+                    this.storage -= energy;
+                }
+            } catch (Exception ignored) {
+            }
+            if (refresh) {
+                this.wirelessTransferList.clear();
+                this.inputslot.wirelessmodule();
+            }
         }
         gainFuel();
 
@@ -427,7 +525,7 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IAdvEne
     }
 
     public void updateVisibility() {
-        this.wetBiome = this.world.getBiome(this.pos).getRainfall() > 0.0F;
+        this.wetBiome = this.biome.getRainfall() > 0.0F;
         this.noSunWorld = this.world.provider.isNether();
 
         this.rain = this.wetBiome && (this.world.isRaining() || this.world.isThundering());
@@ -474,11 +572,23 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IAdvEne
         return this.tier;
     }
 
-    protected List<ItemStack> getSelfDrops(int fortune, boolean wrench) {
-        ItemStack drop = this.getPickBlock(null, null);
-        drop = this.adjustDrop(drop, wrench);
 
-        return drop == null ? Collections.emptyList() : Collections.singletonList(drop);
+    @Override
+    protected boolean onActivated(
+            final EntityPlayer player,
+            final EnumHand hand,
+            final EnumFacing side,
+            final float hitX,
+            final float hitY,
+            final float hitZ
+    ) {
+        if (personality) {
+            if (!(this.list_player.contains(player.getName()) || player.capabilities.isCreativeMode)) {
+                CommonProxy.sendPlayerMessage(player, Localization.translate("iu.error"));
+                return false;
+            }
+        }
+        return super.onActivated(player, hand, side, hitX, hitY, hitZ);
     }
 
     @Override

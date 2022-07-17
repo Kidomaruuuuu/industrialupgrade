@@ -2,7 +2,7 @@ package com.denfop.render.tank;
 
 import com.denfop.Constants;
 import com.denfop.api.render.IModelCustom;
-import com.denfop.render.AdvancedModelLoader;
+import com.denfop.render.base.AdvancedModelLoader;
 import com.denfop.tiles.base.TileEntityLiquedTank;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;

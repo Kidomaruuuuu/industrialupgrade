@@ -14,11 +14,11 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public class GUIQuantumQuarry extends GuiIC2<ContainerQuantumQuarry> {
+public class GuiQuantumQuarry extends GuiIC2<ContainerQuantumQuarry> {
 
     public final ContainerQuantumQuarry container;
 
-    public GUIQuantumQuarry(ContainerQuantumQuarry container1) {
+    public GuiQuantumQuarry(ContainerQuantumQuarry container1) {
         super(container1);
         this.container = container1;
     }
@@ -80,10 +80,6 @@ public class GUIQuantumQuarry extends GuiIC2<ContainerQuantumQuarry> {
 
     }
 
-
-    public String getName() {
-        return container.base.getInventoryName();
-    }
 
     public ResourceLocation getTexture() {
         return new ResourceLocation(Constants.MOD_ID, "textures/gui/GUIQuantumQuerry.png");

@@ -8,7 +8,7 @@ import net.minecraft.entity.player.EntityPlayer;
 public class ContainerModuleMachine extends ContainerFullInv<TileEntityModuleMachine> {
 
     public ContainerModuleMachine(EntityPlayer entityPlayer, TileEntityModuleMachine tileEntity1) {
-        this(entityPlayer, tileEntity1, 166);
+        this(entityPlayer, tileEntity1, 179);
 
 
         for (int j = 0; j < 9; ++j) {
@@ -21,6 +21,12 @@ public class ContainerModuleMachine extends ContainerFullInv<TileEntityModuleMac
 
             addSlotToContainer(new SlotInvSlot(tileEntity1.inputslot,
                     j, 9 + 18 * j, 54
+            ));
+        }
+        for (int j = 0; j < 9; ++j) {
+
+            addSlotToContainer(new SlotInvSlot(tileEntity1.inputslot,
+                    18 +j, 9 + 18 * j, 72
             ));
         }
         addSlotToContainer(new SlotInvSlot((tileEntity1).inputslotA, 0, 81,

@@ -27,7 +27,6 @@ import javax.annotation.Nonnull;
 public class GenStoneCategory extends Gui implements IRecipeCategory<GenStoneRecipeWrapper> {
 
     private final IDrawableStatic bg;
-    private int progress = 0;
     private int energy = 0;
 
     public GenStoneCategory(
@@ -66,14 +65,13 @@ public class GenStoneCategory extends Gui implements IRecipeCategory<GenStoneRec
 
     @Override
     public void drawExtras(final Minecraft mc) {
-        progress++;
         energy++;
         int energylevel = (int) Math.min(14.0F * energy / 100, 14);
 
 
         mc.getTextureManager().bindTexture(getTexture());
         drawTexturedModalRect(
-                54 - 48, +33 + 14 - energylevel, 176,
+                54 - 48, 33 + 14 - energylevel, 176,
                 14 - energylevel, 14, energylevel
         );
         RenderHelper.enableGUIStandardItemLighting();
@@ -103,17 +101,13 @@ public class GenStoneCategory extends Gui implements IRecipeCategory<GenStoneRec
             final GenStoneRecipeWrapper recipes,
             @Nonnull final IIngredients ingredients
     ) {
-        IGuiItemStackGroup isg = layout.getItemStacks(); // Группа ItemStack, которая нужна для рендера.
-        isg.init(0, true, 34, 6); // Инициализируем слот 0. true/false - это обозначение того, является ли слот *ВХОДНЫМ*, true
-        // - да, false - нет. Остальные 2 числа - координаты. X/Y.
-        isg.set(0, recipes.getInput()); // Добавляем в слот 0 входной предмет.
-        isg.init(1, true, 34, 46); // Инициализируем слот 0. true/false - это обозначение того, является ли слот *ВХОДНЫМ*, true
-        // - да, false - нет. Остальные 2 числа - координаты. X/Y.
-        isg.set(1, recipes.getInput1()); // Добавляем в слот 0 входной предмет.
-
-        isg.init(2, false, 86, 4); // Инициализируем слот 1.  true/false - это обозначение того, является ли слот *ВХОДНЫМ*,
-        // true - да, false - нет. Остальные 2 числа - координаты. X/Y.
-        isg.set(2, recipes.getOutput()); // Добавляем в слот 1 выходной предмет.
+        IGuiItemStackGroup isg = layout.getItemStacks();
+        isg.init(0, true, 34, 6);
+        isg.set(0, recipes.getInput());
+        isg.init(1, true, 34, 46);
+        isg.set(1, recipes.getInput1());
+        isg.init(2, false, 86, 4);
+        isg.set(2, recipes.getOutput());
     }
 
     protected ResourceLocation getTexture() {

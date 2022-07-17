@@ -24,7 +24,7 @@ public class ElectrolyzerHandler {
         this.output = output;
     }
 
-    public static List<ElectrolyzerHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<ElectrolyzerHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

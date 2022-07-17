@@ -5,7 +5,7 @@ import com.denfop.IUItem;
 import com.denfop.api.render.IModelCustom;
 import com.denfop.api.vein.Type;
 import com.denfop.blocks.BlockHeavyOre;
-import com.denfop.render.AdvancedModelLoader;
+import com.denfop.render.base.AdvancedModelLoader;
 import com.denfop.tiles.base.TileEntityQuarryVein;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;

@@ -556,11 +556,6 @@ public class ItemSolarPanelHelmet extends ItemArmorElectric implements IElectric
 
 
     @Override
-    public void setUpdate(final boolean update) {
-    }
-
-
-    @Override
     public void onUpdate(@Nonnull ItemStack itemStack, @Nonnull World world, @Nonnull Entity entity, int slot, boolean par5) {
         NBTTagCompound nbt = ModUtils.nbt(itemStack);
 

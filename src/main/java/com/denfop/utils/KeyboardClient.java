@@ -19,7 +19,7 @@ public class KeyboardClient extends KeyboardIU {
 
     public static final KeyBinding changemode = new KeyBinding("Change mode key", Keyboard.KEY_G, "IndustrialUpgrade");
     public static final KeyBinding flymode = new KeyBinding("Fly Key", Keyboard.KEY_F, "IndustrialUpgrade");
-    public static final KeyBinding streakmode = new KeyBinding("Change Streak Key", Keyboard.KEY_X, "IndustrialUpgrade");
+    public static final KeyBinding blacklistviewmode = new KeyBinding("BlackList View Key", Keyboard.KEY_X, "IndustrialUpgrade");
     public static final KeyBinding verticalmode = new KeyBinding("Vertical Key", Keyboard.KEY_K, "IndustrialUpgrade");
     public static final KeyBinding savemode = new KeyBinding("Save move Key", Keyboard.KEY_L, "IndustrialUpgrade");
     public static final KeyBinding blackmode = new KeyBinding("BlackList Key", Keyboard.KEY_J, "IndustrialUpgrade");
@@ -29,7 +29,7 @@ public class KeyboardClient extends KeyboardIU {
     public KeyboardClient() {
         ClientRegistry.registerKeyBinding(changemode);
         ClientRegistry.registerKeyBinding(flymode);
-        ClientRegistry.registerKeyBinding(streakmode);
+        ClientRegistry.registerKeyBinding(blacklistviewmode);
         ClientRegistry.registerKeyBinding(verticalmode);
         ClientRegistry.registerKeyBinding(savemode);
         ClientRegistry.registerKeyBinding(blackmode);
@@ -48,8 +48,8 @@ public class KeyboardClient extends KeyboardIU {
             if (GameSettings.isKeyDown(verticalmode)) {
                 keys.add(Key.VERTICALMODE);
             }
-            if (GameSettings.isKeyDown(streakmode)) {
-                keys.add(Key.STREAKMODE);
+            if (GameSettings.isKeyDown(blacklistviewmode)) {
+                keys.add(Key.BLACKLISTVIEWMODE);
             }
             if (GameSettings.isKeyDown(savemode)) {
                 keys.add(Key.SAVEMODE);

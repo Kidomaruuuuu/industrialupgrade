@@ -17,7 +17,6 @@ public class CompressorRecipe {
 
         addcompressor(new ItemStack(IUItem.sunnarium, 1, 3), new ItemStack(IUItem.sunnarium, 1, 2));
         addcompressor(new ItemStack(IUItem.Helium), new ItemStack(IUItem.cell_all, 1, 2));
-        addcompressor(Ic2Items.carbonFiber, 9, new ItemStack(IUItem.coal_chunk1));
         addcompressor(Ic2Items.carbonPlate, 9, new ItemStack(IUItem.compresscarbon));
         addcompressor(Ic2Items.advancedAlloy, 9, new ItemStack(IUItem.compresscarbonultra));
         addcompressor(Ic2Items.iridiumPlate, 4, new ItemStack(IUItem.compressIridiumplate));
@@ -70,8 +69,8 @@ public class CompressorRecipe {
 
             }
         }
-        addcompressor(Ic2Items.uraniumOre, 1, new ItemStack(IUItem.itemSSP, 1, 2));
-        addcompressor(Ic2Items.crushedUraniumOre, 1, new ItemStack(IUItem.itemSSP, 1, 2));
+        addcompressor(Ic2Items.uraniumOre, 1, new ItemStack(IUItem.itemiu, 1, 2));
+        addcompressor(Ic2Items.crushedUraniumOre, 1, new ItemStack(IUItem.itemiu, 1, 2));
     }
 
     public static void addcompressor(ItemStack input, int n, ItemStack output) {

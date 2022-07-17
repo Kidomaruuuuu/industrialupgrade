@@ -38,7 +38,7 @@ public class ItemsQuarryVein extends ItemMulti<ItemsQuarryVein.Types> implements
 
     public ItemsQuarryVein() {
         super(null, Types.class);
-        this.setCreativeTab(IUCore.SSPTab);
+        this.setCreativeTab(IUCore.IUTab);
         BlocksItems.registerItem((Item) this, IUCore.getIdentifier(NAME)).setUnlocalizedName(NAME);
         IUCore.proxy.addIModelRegister(this);
     }

@@ -5,26 +5,35 @@ import com.denfop.Constants;
 import com.denfop.IUCore;
 import com.denfop.IUItem;
 import com.denfop.api.IModelRegister;
+import com.denfop.api.upgrade.EnumUpgrades;
+import com.denfop.api.upgrade.IUpgradeItem;
+import com.denfop.api.upgrade.UpgradeSystem;
+import com.denfop.api.upgrade.event.EventItemLoad;
 import com.denfop.audio.PositionSpec;
+import com.denfop.items.EnumInfoUpgradeModules;
 import com.denfop.proxy.CommonProxy;
+import com.denfop.tiles.base.IManufacturerBlock;
 import com.denfop.tiles.base.TileEntityDoubleMolecular;
 import com.denfop.tiles.base.TileEntityMolecularTransformer;
 import com.denfop.tiles.base.TileEntityMultiMachine;
 import com.denfop.tiles.panels.entity.TileEntitySolarPanel;
 import com.denfop.utils.KeyboardClient;
+import com.denfop.utils.ModUtils;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import ic2.api.item.ElectricItem;
 import ic2.api.item.IElectricItem;
 import ic2.api.tile.IWrenchable;
 import ic2.core.IC2;
+import ic2.core.block.BlockRubWood;
 import ic2.core.block.TileEntityBarrel;
 import ic2.core.init.BlocksItems;
 import ic2.core.init.Localization;
 import ic2.core.init.MainConfig;
 import ic2.core.item.ElectricItemManager;
-import ic2.core.item.tool.ItemTreetap;
+import ic2.core.item.type.MiscResourceType;
 import ic2.core.ref.BlockName;
+import ic2.core.ref.ItemName;
 import ic2.core.util.ConfigUtil;
 import ic2.core.util.LogCategory;
 import ic2.core.util.StackUtil;
@@ -38,6 +47,7 @@ import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.item.EntityItem;
@@ -49,6 +59,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemTool;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
@@ -73,11 +84,12 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegister {
+public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegister, IUpgradeItem {
 
     protected static final double ROTATE = 50.0D;
     protected static final double HOE = 50.0D;
@@ -92,8 +104,8 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
         BlocksItems.registerItem((Item) this, IUCore.getIdentifier(name)).setUnlocalizedName(name);
         IUCore.proxy.addIModelRegister(this);
         this.name = name;
+        UpgradeSystem.system.addRecipe(this, EnumUpgrades.GRAVITOOL.list);
     }
-
 
     public static GraviToolMode readToolMode(ItemStack stack) {
         return GraviToolMode.getFromID(StackUtil.getOrCreateNbtData(stack).getInteger("toolMode"));
@@ -108,8 +120,10 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
     }
 
     public static boolean hasNecessaryPower(ItemStack stack, double usage, EntityPlayer player) {
-        ElectricItem.manager.chargeFromArmor(stack, player);
-        return Util.isSimilar(ElectricItem.manager.discharge(stack, usage, Integer.MAX_VALUE, true, false, true), usage);
+        double coef = 1D - (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.ENERGY, stack) ?
+                UpgradeSystem.system.getModules(EnumInfoUpgradeModules.ENERGY, stack).number * 0.25D : 0);
+
+        return ElectricItem.manager.canUse(stack, usage * coef);
     }
 
     protected static boolean checkNecessaryPower(ItemStack stack, double usage, EntityPlayer player) {
@@ -117,7 +131,10 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
     }
 
     protected static boolean checkNecessaryPower(ItemStack stack, double usage, EntityPlayer player, boolean supressSound) {
-        if (ElectricItem.manager.use(stack, usage, player)) {
+        double coef = 1D - (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.ENERGY, stack) ?
+                UpgradeSystem.system.getModules(EnumInfoUpgradeModules.ENERGY, stack).number * 0.25D : 0);
+
+        if (ElectricItem.manager.use(stack, usage * coef, player)) {
             if (!supressSound && player.world.isRemote) {
                 IUCore.audioManager.playOnce(
                         player,
@@ -129,10 +146,9 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
             }
 
             return true;
+        } else {
+            CommonProxy.sendPlayerMessage(player, Localization.translate("message.text.noenergy"));
         }
-
-
-        CommonProxy.sendPlayerMessage(player, Localization.translate("message.text.noenergy"));
 
         return false;
     }
@@ -143,6 +159,110 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
         }
         assert stack.getTagCompound() != null;
         return stack.getTagCompound().hasKey("toolMode", 4);
+    }
+
+    private static void ejectResin(World world, BlockPos pos, EnumFacing side, int quantity) {
+        double ejectX = (double) pos.getX() + 0.5D + (double) side.getFrontOffsetX() * 0.3D;
+        double ejectY = (double) pos.getY() + 0.5D + (double) side.getFrontOffsetY() * 0.3D;
+        double ejectZ = (double) pos.getZ() + 0.5D + (double) side.getFrontOffsetZ() * 0.3D;
+
+
+        EntityItem entityitem = new EntityItem(
+                world,
+                ejectX,
+                ejectY,
+                ejectZ,
+                ItemName.misc_resource.getItemStack(MiscResourceType.resin)
+        );
+        entityitem.setDefaultPickupDelay();
+        entityitem.getItem().setCount(quantity);
+        world.spawnEntity(entityitem);
+
+
+    }
+
+    public static boolean attemptExtract(
+            EntityPlayer player,
+            World world,
+            BlockPos pos,
+            EnumFacing side,
+            IBlockState state,
+            List<ItemStack> stacks,
+            final ItemStack stack
+    ) {
+        assert state.getBlock() == BlockName.rubber_wood.getInstance();
+
+        BlockRubWood.RubberWoodState rwState = state.getValue(BlockRubWood.stateProperty);
+        boolean max = UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.LATEX, stack);
+        if (!rwState.isPlain() && rwState.facing == side) {
+            if (rwState.wet) {
+                if (!world.isRemote) {
+                    world.setBlockState(pos, state.withProperty(BlockRubWood.stateProperty, rwState.getDry()));
+                    if (stacks != null) {
+                        stacks.add(StackUtil.copyWithSize(
+                                ItemName.misc_resource.getItemStack(MiscResourceType.resin),
+                                world.rand.nextInt(3) + 1
+                        ));
+                    } else {
+                        ejectResin(world, pos, side, !max ? world.rand.nextInt(3) + 1 : 3);
+                    }
+
+                    if (player != null) {
+                        IC2.achievements.issueAchievement(player, "acquireResin");
+                    }
+                }
+
+                if (world.isRemote && player != null) {
+                    IC2.audioManager.playOnce(
+                            player,
+                            ic2.core.audio.PositionSpec.Hand,
+                            "Tools/Treetap.ogg",
+                            true,
+                            IC2.audioManager.getDefaultVolume()
+                    );
+                }
+
+                return true;
+            } else {
+                if (!world.isRemote && world.rand.nextInt(5) == 0) {
+                    world.setBlockState(
+                            pos,
+                            state.withProperty(BlockRubWood.stateProperty, BlockRubWood.RubberWoodState.plain_y)
+                    );
+                }
+
+                if (world.rand.nextInt(5) == 0) {
+                    if (!world.isRemote) {
+                        ejectResin(world, pos, side, 1);
+                        if (stacks != null) {
+                            stacks.add(ItemName.misc_resource.getItemStack(MiscResourceType.resin));
+                        } else {
+                            ejectResin(world, pos, side, 1);
+                        }
+                    }
+
+                    if (world.isRemote && player != null) {
+                        IC2.audioManager.playOnce(
+                                player,
+                                ic2.core.audio.PositionSpec.Hand,
+                                "Tools/Treetap.ogg",
+                                true,
+                                IC2.audioManager.getDefaultVolume()
+                        );
+                    }
+
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isBookEnchantable(@Nonnull ItemStack stack, @Nonnull ItemStack book) {
+        return false;
     }
 
     @SideOnly(Side.CLIENT)
@@ -199,7 +319,6 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
 
         super.addInformation(par1ItemStack, worldIn, par3List, flagIn);
     }
-
 
     @Nonnull
     @Override
@@ -263,17 +382,23 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
             float hitY,
             float hitZ
     ) {
-        ItemStack stack = StackUtil.get(player, hand);
-        switch (readToolMode(stack)) {
+        ItemStack stack4 = StackUtil.get(player, hand);
+        switch (readToolMode(stack4)) {
             case HOE:
-                return this.onHoeUse(stack, player, world, pos, facing) ? EnumActionResult.SUCCESS : EnumActionResult.FAIL;
+                return this.onHoeUse(stack4, player, world, pos, facing) ? EnumActionResult.SUCCESS : EnumActionResult.FAIL;
             case TREETAP:
-                return this.onTreeTapUse(stack, player, world, pos, facing) ? EnumActionResult.SUCCESS : EnumActionResult.FAIL;
+                return this.onTreeTapUse(stack4, player, world, pos, facing) ? EnumActionResult.SUCCESS : EnumActionResult.FAIL;
             case PURIFIER:
                 TileEntity tile = world.getTileEntity(pos);
-                if (!(tile instanceof TileEntitySolarPanel) && !(tile instanceof TileEntityMultiMachine) && !(tile instanceof TileEntityMolecularTransformer) && !(tile instanceof TileEntityDoubleMolecular)) {
+                ItemStack itemstack = player.getHeldItem(hand);
+                if (!(tile instanceof TileEntitySolarPanel) && !(tile instanceof TileEntityMultiMachine) && !(tile instanceof TileEntityMolecularTransformer) && !(tile instanceof TileEntityDoubleMolecular) && !(tile instanceof IManufacturerBlock)) {
                     return EnumActionResult.PASS;
                 }
+                double coef = 1D - (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.ENERGY, player.getHeldItem(hand))
+                        ?
+                        UpgradeSystem.system.getModules(EnumInfoUpgradeModules.ENERGY, player.getHeldItem(hand)).number * 0.25D
+                        : 0);
+
                 if (tile instanceof TileEntitySolarPanel) {
                     TileEntitySolarPanel base = (TileEntitySolarPanel) tile;
                     double energy = 10000;
@@ -286,14 +411,18 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
                     if (base.time2 > 0 && base.time <= 0 && base.time1 <= 0) {
                         energy += ((double) 10000 / (double) (base.time2 / 20)) + 10000;
                     }
-                    if (ElectricItem.manager.canUse(stack, energy)) {
+                    if (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.PURIFIER, itemstack)) {
+                        energy = 0;
+                    }
+
+                    if (ElectricItem.manager.canUse(itemstack, energy * coef)) {
                         base.time = 28800;
                         base.time1 = 14400;
                         base.time2 = 14400;
                         base.work = true;
                         base.work1 = true;
                         base.work2 = true;
-                        ElectricItem.manager.use(stack, 1000, player);
+                        ElectricItem.manager.use(itemstack, energy * coef, player);
                         if (IC2.platform.isRendering()) {
                             IUCore.audioManager.playOnce(
                                     player,
@@ -307,65 +436,123 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
                     }
                     return super.onItemUseFirst(player, world, pos, facing, hitX, hitY, hitZ, hand);
                 } else if (tile instanceof TileEntityMultiMachine) {
-                    if (!ElectricItem.manager.canUse(stack, 500)) {
+                    if (!ElectricItem.manager.canUse(itemstack, 500 * coef)) {
                         return EnumActionResult.PASS;
                     }
-                    TileEntityMultiMachine base = (TileEntityMultiMachine) tile;
-                    ItemStack stack_rf = ItemStack.EMPTY;
-                    ItemStack stack_quickly = ItemStack.EMPTY;
-                    ItemStack stack_modulesize = ItemStack.EMPTY;
-                    ItemStack panel = ItemStack.EMPTY;
-                    if (base.rf) {
-                        stack_rf = new ItemStack(IUItem.module7, 1, 4);
-                    }
-                    if (base.quickly) {
-                        stack_quickly = new ItemStack(IUItem.module_quickly);
-                    }
-                    if (base.modulesize) {
-                        stack_modulesize = new ItemStack(IUItem.module_stack);
-                    }
-                    if (base.solartype != null) {
-                        panel = new ItemStack(IUItem.module6, 1, base.solartype.meta);
-                    }
-                    if (!stack_rf.isEmpty() || !stack_quickly.isEmpty() || !stack_modulesize.isEmpty() || !panel.isEmpty()) {
-                        final EntityItem item = new EntityItem(world);
-                        if (!stack_rf.isEmpty()) {
-                            item.setItem(stack_rf);
-                            base.module--;
+                    if (!player.isSneaking()) {
+                        TileEntityMultiMachine base = (TileEntityMultiMachine) tile;
+                        ItemStack stack_rf = ItemStack.EMPTY;
+                        ItemStack stack_quickly = ItemStack.EMPTY;
+                        ItemStack stack_modulesize = ItemStack.EMPTY;
+                        ItemStack panel = ItemStack.EMPTY;
+                        ItemStack stack_modulestorage = ItemStack.EMPTY;
+                        if (base.rf) {
+                            stack_rf = new ItemStack(IUItem.module7, 1, 4);
+                        }
+                        if (base.quickly) {
+                            stack_quickly = new ItemStack(IUItem.module_quickly);
+                        }
+                        if (base.modulesize) {
+                            stack_modulesize = new ItemStack(IUItem.module_stack);
+                        }
+                        if (base.solartype != null) {
+                            panel = new ItemStack(IUItem.module6, 1, base.solartype.meta);
+                        }
+                        if (base.modulestorage) {
+                            stack_modulestorage = new ItemStack(IUItem.module_storage);
+                        }
+                        if (!stack_rf.isEmpty() || !stack_quickly.isEmpty() || !stack_modulesize.isEmpty() || !panel.isEmpty()) {
+                            final EntityItem item = new EntityItem(world);
+                            if (!stack_rf.isEmpty()) {
+                                item.setItem(stack_rf);
+                                base.module--;
+                                base.rf = false;
+                            } else if (!stack_quickly.isEmpty()) {
+                                item.setItem(stack_quickly);
+                                base.module--;
+                                base.quickly = false;
+                            } else if (!stack_modulesize.isEmpty()) {
+                                item.setItem(stack_modulesize);
+                                base.modulesize = false;
+                                base.module--;
+                            } else if (!panel.isEmpty()) {
+                                item.setItem(panel);
+                                base.solartype = null;
+                            } else if (!stack_modulestorage.isEmpty()) {
+                                item.setItem(stack_modulestorage);
+                                base.modulestorage = false;
+                                base.module--;
+                            }
+                            if (!player.getEntityWorld().isRemote) {
+                                item.setLocationAndAngles(player.posX, player.posY, player.posZ, 0.0F, 0.0F);
+                                item.setPickupDelay(0);
+                                world.spawnEntity(item);
+                                ElectricItem.manager.use(itemstack, 500 * coef, player);
+                                if (IC2.platform.isRendering()) {
+                                    IUCore.audioManager.playOnce(
+                                            player,
+                                            com.denfop.audio.PositionSpec.Hand,
+                                            "Tools/purifier.ogg",
+                                            true,
+                                            IC2.audioManager.getDefaultVolume()
+                                    );
+                                }
+                                return EnumActionResult.SUCCESS;
+                            }
+                        }
+                    } else {
+                        TileEntityMultiMachine base = (TileEntityMultiMachine) tile;
+                        List<ItemStack> stack_list = new ArrayList<>();
+                        if (base.rf) {
+                            stack_list.add(new ItemStack(IUItem.module7, 1, 4));
                             base.rf = false;
-                        } else if (!stack_quickly.isEmpty()) {
-                            item.setItem(stack_quickly);
                             base.module--;
+                        }
+                        if (base.quickly) {
+                            stack_list.add(new ItemStack(IUItem.module_quickly));
                             base.quickly = false;
-                        } else if (!stack_modulesize.isEmpty()) {
-                            item.setItem(stack_modulesize);
+                            base.module--;
+                        }
+                        if (base.modulesize) {
+                            stack_list.add(new ItemStack(IUItem.module_stack));
                             base.modulesize = false;
                             base.module--;
-                        } else if (!panel.isEmpty()) {
-                            item.setItem(panel);
+                        }
+                        if (base.solartype != null) {
+                            stack_list.add(new ItemStack(IUItem.module6, 1, base.solartype.meta));
                             base.solartype = null;
                         }
-                        if (!player.getEntityWorld().isRemote) {
-                            item.setLocationAndAngles(player.posX, player.posY, player.posZ, 0.0F, 0.0F);
-                            item.setPickupDelay(0);
-                            world.spawnEntity(item);
-                            ElectricItem.manager.use(stack, 500, null);
-                            if (IC2.platform.isRendering()) {
-                                IUCore.audioManager.playOnce(
-                                        player,
-                                        com.denfop.audio.PositionSpec.Hand,
-                                        "Tools/purifier.ogg",
-                                        true,
-                                        IC2.audioManager.getDefaultVolume()
-                                );
-                            }
-                            return EnumActionResult.SUCCESS;
-                        }
+                        if (base.modulestorage) {
+                            stack_list.add(new ItemStack(IUItem.module_storage));
+                            base.modulestorage = false;
+                            base.module--;
 
+                        }
+                        for (ItemStack stack : stack_list) {
+                            final EntityItem item = new EntityItem(world);
+                            if (!player.getEntityWorld().isRemote) {
+                                item.setLocationAndAngles(player.posX, player.posY, player.posZ, 0.0F, 0.0F);
+                                item.setPickupDelay(0);
+                                item.setItem(stack);
+                                world.spawnEntity(item);
+                                if (IC2.platform.isRendering()) {
+                                    IUCore.audioManager.playOnce(
+                                            player,
+                                            com.denfop.audio.PositionSpec.Hand,
+                                            "Tools/purifier.ogg",
+                                            true,
+                                            IC2.audioManager.getDefaultVolume()
+                                    );
+                                }
+
+                            }
+                        }
+                        ElectricItem.manager.use(itemstack, 500 * coef, player);
+                        return EnumActionResult.SUCCESS;
                     }
                 } else if (tile instanceof TileEntityMolecularTransformer) {
                     TileEntityMolecularTransformer base = (TileEntityMolecularTransformer) tile;
-                    if (!ElectricItem.manager.canUse(stack, 500)) {
+                    if (!ElectricItem.manager.canUse(itemstack, 500 * coef)) {
                         return EnumActionResult.PASS;
                     }
                     if (base.rf) {
@@ -377,7 +564,34 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
                             item.setLocationAndAngles(player.posX, player.posY, player.posZ, 0.0F, 0.0F);
                             item.setPickupDelay(0);
                             world.spawnEntity(item);
-                            ElectricItem.manager.use(stack, 500, null);
+                            ElectricItem.manager.use(itemstack, 500 * coef, player);
+                            if (IC2.platform.isRendering()) {
+                                IUCore.audioManager.playOnce(
+                                        player,
+                                        com.denfop.audio.PositionSpec.Hand,
+                                        "Tools/purifier.ogg",
+                                        true,
+                                        IC2.audioManager.getDefaultVolume()
+                                );
+                            }
+                            return EnumActionResult.SUCCESS;
+                        }
+                    }
+                } else if (tile instanceof TileEntityDoubleMolecular) {
+                    TileEntityDoubleMolecular base = (TileEntityDoubleMolecular) tile;
+                    if (!ElectricItem.manager.canUse(itemstack, 500 * coef)) {
+                        return EnumActionResult.PASS;
+                    }
+                    if (base.rf) {
+                        final ItemStack stack_rf = new ItemStack(IUItem.module7, 1, 4);
+                        base.rf = false;
+                        final EntityItem item = new EntityItem(world);
+                        item.setItem(stack_rf);
+                        if (!player.getEntityWorld().isRemote) {
+                            item.setLocationAndAngles(player.posX, player.posY, player.posZ, 0.0F, 0.0F);
+                            item.setPickupDelay(0);
+                            world.spawnEntity(item);
+                            ElectricItem.manager.use(itemstack, 500 * coef, player);
                             if (IC2.platform.isRendering()) {
                                 IUCore.audioManager.playOnce(
                                         player,
@@ -391,20 +605,21 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
                         }
                     }
                 } else {
-                    TileEntityDoubleMolecular base = (TileEntityDoubleMolecular) tile;
-                    if (!ElectricItem.manager.canUse(stack, 500)) {
-                        return EnumActionResult.PASS;
-                    }
-                    if (base.rf) {
-                        final ItemStack stack_rf = new ItemStack(IUItem.module7, 1, 4);
-                        base.rf = false;
+                    IManufacturerBlock base = (IManufacturerBlock) tile;
+                    if (player.isSneaking()) {
+                        int level = base.getLevel();
+                        if (level == 0) {
+                            return EnumActionResult.PASS;
+                        }
+                        final ItemStack stack = new ItemStack(IUItem.upgrade_speed_creation, level);
+                        base.setLevel(0);
                         final EntityItem item = new EntityItem(world);
-                        item.setItem(stack_rf);
+                        item.setItem(stack);
                         if (!player.getEntityWorld().isRemote) {
                             item.setLocationAndAngles(player.posX, player.posY, player.posZ, 0.0F, 0.0F);
                             item.setPickupDelay(0);
                             world.spawnEntity(item);
-                            ElectricItem.manager.use(stack, 500, null);
+                            ElectricItem.manager.use(itemstack, 500, player);
                             if (IC2.platform.isRendering()) {
                                 IUCore.audioManager.playOnce(
                                         player,
@@ -416,9 +631,35 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
                             }
                             return EnumActionResult.SUCCESS;
                         }
+                    } else {
+                        int level = base.getLevel();
+                        if (level == 0) {
+                            return EnumActionResult.PASS;
+                        }
+                        final ItemStack stack = new ItemStack(IUItem.upgrade_speed_creation, 1);
+                        base.removeLevel(1);
+                        final EntityItem item = new EntityItem(world);
+                        item.setItem(stack);
+                        if (!player.getEntityWorld().isRemote) {
+                            item.setLocationAndAngles(player.posX, player.posY, player.posZ, 0.0F, 0.0F);
+                            item.setPickupDelay(0);
+                            world.spawnEntity(item);
+                            ElectricItem.manager.use(itemstack, 500, player);
+                            if (IC2.platform.isRendering()) {
+                                IUCore.audioManager.playOnce(
+                                        player,
+                                        com.denfop.audio.PositionSpec.Hand,
+                                        "Tools/purifier.ogg",
+                                        true,
+                                        IC2.audioManager.getDefaultVolume()
+                                );
+                            }
+                            return EnumActionResult.SUCCESS;
+                        }
+
                     }
+
                 }
-                return EnumActionResult.PASS;
 
             default:
                 return super.onItemUse(player, world, pos, hand, facing, hitX, hitY, hitZ);
@@ -496,7 +737,7 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
                 stack,
                 TAP,
                 player
-        ) && ItemTreetap.attemptExtract(player, world, pos, side, state, null) && checkNecessaryPower(stack, TAP, player);
+        ) && attemptExtract(player, world, pos, side, state, null, stack) && checkNecessaryPower(stack, TAP, player);
     }
 
     protected boolean onWrenchUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side) {
@@ -576,7 +817,11 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
 
                     block.onBlockDestroyedByPlayer(world, pos, state);
 
-                    for (ItemStack drop : wrenchable.getWrenchDrops(world, pos, state, te, player, 0)) {
+                    int fortune = 0;
+                    if (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.WRENCH, stack)) {
+                        fortune = 100;
+                    }
+                    for (ItemStack drop : wrenchable.getWrenchDrops(world, pos, state, te, player, fortune)) {
                         StackUtil.dropAsEntity(world, pos, drop);
                     }
 
@@ -590,6 +835,21 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
         }
 
         return false;
+    }
+
+    public void onUpdate(
+            @Nonnull ItemStack itemStack,
+            @Nonnull World p_77663_2_,
+            @Nonnull Entity p_77663_3_,
+            int p_77663_4_,
+            boolean p_77663_5_
+    ) {
+        NBTTagCompound nbt = ModUtils.nbt(itemStack);
+
+        if (!UpgradeSystem.system.hasInMap(itemStack)) {
+            nbt.setBoolean("hasID", false);
+            MinecraftForge.EVENT_BUS.post(new EventItemLoad(p_77663_2_, this, itemStack));
+        }
     }
 
     protected boolean onScrewdriverUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos) {

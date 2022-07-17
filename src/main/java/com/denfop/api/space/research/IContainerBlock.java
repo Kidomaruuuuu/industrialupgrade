@@ -1,6 +1,7 @@
 package com.denfop.api.space.research;
 
-import ic2.core.block.invslot.InvSlotOutput;
+
+import com.denfop.api.recipe.InvSlotOutput;
 
 public interface IContainerBlock {
 

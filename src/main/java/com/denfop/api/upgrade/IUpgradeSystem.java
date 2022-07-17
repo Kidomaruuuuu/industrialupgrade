@@ -32,6 +32,10 @@ public interface IUpgradeSystem {
 
     UpgradeItemInform getModules(EnumInfoUpgradeModules module, ItemStack item);
 
+    UpgradeItemInform getModules(final EnumInfoUpgradeModules module, final ItemStack item, List<UpgradeItemInform> list);
+
+    boolean hasModules(final EnumInfoUpgradeModules module, final ItemStack item, List<UpgradeItemInform> list);
+
     boolean hasModules(EnumInfoUpgradeModules module, ItemStack item);
 
     void updateListFromNBT(IUpgradeItem item, ItemStack stack);
@@ -50,4 +54,5 @@ public interface IUpgradeSystem {
 
     boolean shouldUpdate(EnumInfoUpgradeModules type, ItemStack stack1);
 
+    void updateBlackListFromStack( final ItemStack stack);
 }

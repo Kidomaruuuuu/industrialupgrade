@@ -75,17 +75,13 @@ public class DoubleMolecularTransformerCategory extends Gui implements IRecipeCa
             final DoubleMolecularTransformerRecipeWrapper recipes,
             @Nonnull final IIngredients ingredients
     ) {
-        IGuiItemStackGroup isg = layout.getItemStacks(); // Группа ItemStack, которая нужна для рендера.
-        isg.init(0, true, 2, 4); // Инициализируем слот 0. true/false - это обозначение того, является ли слот *ВХОДНЫМ*, true
-        // - да, false - нет. Остальные 2 числа - координаты. X/Y.
-        isg.set(0, recipes.getInput()); // Добавляем в слот 0 входной предмет.
-        isg.init(1, true, 20, 4); // Инициализируем слот 0. true/false - это обозначение того, является ли слот *ВХОДНЫМ*, true
-        // - да, false - нет. Остальные 2 числа - координаты. X/Y.
-        isg.set(1, recipes.getInput1()); // Добавляем в слот 0 входной предмет.
-
-        isg.init(2, false, 11, 45); // Инициализируем слот 1.  true/false - это обозначение того, является ли слот *ВХОДНЫМ*,
-        // true - да, false - нет. Остальные 2 числа - координаты. X/Y.
-        isg.set(2, recipes.getOutput()); // Добавляем в слот 1 выходной предмет.
+        IGuiItemStackGroup isg = layout.getItemStacks();
+        isg.init(0, true, 2, 4);
+        isg.set(0, recipes.getInput());
+        isg.init(1, true, 20, 4);
+        isg.set(1, recipes.getInput1());
+        isg.init(2, false, 11, 45);
+        isg.set(2, recipes.getOutput());
     }
 
     protected ResourceLocation getTexture() {

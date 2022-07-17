@@ -27,6 +27,10 @@ public class InvSlotConverterSolidMatter extends InvSlot {
     public void put(final int index, final ItemStack content) {
         super.put(index, content);
         this.getmatter();
+        TileEntityConverterSolidMatter tile = (TileEntityConverterSolidMatter) base;
+        if (tile.getRecipeOutput() != null) {
+            tile.getrequiredmatter(tile.getRecipeOutput().getRecipe().getOutput());
+        }
     }
 
     public void getmatter() {

@@ -21,7 +21,7 @@ public class ItemSpawnerModules extends ItemMulti<ItemSpawnerModules.Types> impl
 
     public ItemSpawnerModules() {
         super(null, Types.class);
-        this.setCreativeTab(IUCore.tabssp1);
+        this.setCreativeTab(IUCore.ModuleTab);
         BlocksItems.registerItem((Item) this, IUCore.getIdentifier(NAME)).setUnlocalizedName(NAME);
         IUCore.proxy.addIModelRegister(this);
     }

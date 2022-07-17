@@ -32,7 +32,7 @@ public final class SimplyQuarries {
         TeBlockRegistry.addAll(enumClass, ref);
         TeBlockRegistry.setDefaultMaterial(ref, Material.ROCK);
         TeBlockRegistry.addCreativeRegisterer((list, block, itemblock, tab) -> {
-            if (tab == CreativeTabs.SEARCH || tab == IUCore.SSPTab) {
+            if (tab == CreativeTabs.SEARCH || tab == IUCore.IUTab) {
                 block.getAllTypes().forEach(type -> {
                     if (type.hasItem()) {
                         list.add(block.getItemStack(type));
@@ -60,13 +60,28 @@ public final class SimplyQuarries {
 
         MinecraftForge.EVENT_BUS.register(this);
         BlockQuarry.buildDummies();
-        quarry = TeBlockRegistry.get(BlockQuarry.IDENTITY).setCreativeTab(IUCore.SSPTab);
+        quarry = TeBlockRegistry.get(BlockQuarry.IDENTITY).setCreativeTab(IUCore.IUTab);
     }
 
 
     @Mod.EventHandler
     public void init(final FMLInitializationEvent event) {
-
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(IUItem.machines, 1, 8),
+                "EDE",
+                "BAB",
+                "CCC",
+                'E',
+                (IUItem.cirsuitQuantum),
+                'D',
+                new ItemStack(quarry, 1),
+                'C',
+                new ItemStack(IUItem.compressIridiumplate),
+                'B',
+                new ItemStack(IUItem.advQuantumtool),
+                'A',
+                new ItemStack(IUItem.core, 1, 7)
+        );
         Recipes.advRecipes.addRecipe(
                 new ItemStack(quarry, 1),
                 "DED",
@@ -75,7 +90,7 @@ public final class SimplyQuarries {
                 'A',
                 new ItemStack(IUItem.core, 1, 3),
                 'B',
-                Ic2Items.advminer,
+                Ic2Items.advancedMachine,
                 'C',
                 new ItemStack(IUItem.quantumtool),
                 'D',
@@ -93,7 +108,7 @@ public final class SimplyQuarries {
                 'E',
                 new ItemStack(IUItem.nanoBox),
                 'D',
-                (IUItem.QuantumItems9),
+                (IUItem.circuitNano),
                 'B',
                 OreDictionary.getOres("doubleplateAluminium"),
                 'A',

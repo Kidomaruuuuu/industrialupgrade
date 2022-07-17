@@ -23,7 +23,7 @@ public class AdvRefinerHandler {
         this.output = output;
     }
 
-    public static List<AdvRefinerHandler> getRecipes() { // Получатель всех рецептов.
+    public static List<AdvRefinerHandler> getRecipes() {
         if (recipes.isEmpty()) {
             initRecipes();
         }

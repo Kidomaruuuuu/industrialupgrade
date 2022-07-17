@@ -20,5 +20,7 @@ public interface ISEConductor extends ISEAcceptor, ISEEmitter {
 
     void removeConductor();
 
+    void update_render();
+
 }
 

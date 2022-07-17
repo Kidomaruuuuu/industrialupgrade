@@ -66,9 +66,6 @@ public class GuiSynthesis extends GuiIC2<ContainerDoubleElectricMachine> {
         }
     }
 
-    public String getName() {
-        return this.container.base.getInventoryName();
-    }
 
     public ResourceLocation getTexture() {
         return new ResourceLocation(Constants.MOD_ID, "textures/gui/GuiSynthesis.png");

@@ -47,7 +47,7 @@ public class GuiHeatMachine extends GuiIC2<ContainerHeatMachine> {
     protected void drawForegroundLayer(int par1, int par2) {
         super.drawForegroundLayer(par1, par2);
         this.fontRenderer.drawString(this.name, (this.xSize - this.fontRenderer.getStringWidth(this.name)) / 2, 6, 4210752);
-        String temp = this.container.base.getTemperature() + "°C" + "/" + this.container.base.getMaxTemperature() + "°C";
+        String temp = (int) this.container.base.heat.storage + "°C" + "/" + (int) this.container.base.maxtemperature + "°C";
         new AdvArea(this, 53, 42, 83, 53).withTooltip(temp).drawForeground(par1, par2);
         if (!this.container.base.hasFluid) {
             String tooltip2 =
@@ -69,8 +69,8 @@ public class GuiHeatMachine extends GuiIC2<ContainerHeatMachine> {
         int yOffset = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(xOffset, yOffset, 0, 0, this.xSize, this.ySize);
         int temperature = 0;
-        if (this.container.base.getMaxTemperature() > 0) {
-            temperature = 38 * this.container.base.getTemperature() / this.container.base.getMaxTemperature();
+        if (this.container.base.maxtemperature > 0) {
+            temperature = (int) (30 * this.container.base.heat.getEnergy() / this.container.base.maxtemperature);
         }
         if (temperature > 0) {
             drawTexturedModalRect(this.guiLeft + 53, this.guiTop + 42, 176, 104, temperature + 1, 11);

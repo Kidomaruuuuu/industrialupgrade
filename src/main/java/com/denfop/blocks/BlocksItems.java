@@ -2,6 +2,7 @@ package com.denfop.blocks;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialLiquid;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -16,7 +17,7 @@ public class BlocksItems {
             FluidName name, int density,
             int temperature, boolean isGaseous
     ) {
-
+        Material steam = new MaterialLiquid(MapColor.SILVER);
         Fluid fluid =
                 (new IUFluid(name))
                         .setDensity(density)
@@ -27,7 +28,7 @@ public class BlocksItems {
         }
 
         if (!fluid.canBePlacedInWorld()) {
-            Block block = new BlockIUFluid(name, fluid, new MaterialLiquid(MapColor.SILVER));
+            Block block = new BlockIUFluid(name, fluid, steam);
             fluid.setBlock(block);
             fluid.setUnlocalizedName(block.getUnlocalizedName().substring(4));
         }
@@ -42,6 +43,7 @@ public class BlocksItems {
     }
 
     private void initFluids() {
+
         registerIC2fluid(FluidName.fluidNeutron, 3000, 300, false);
         registerIC2fluid(FluidName.fluidHelium, 1000, 300, true);
         registerIC2fluid(FluidName.fluidbenz, 3000, 500, false);

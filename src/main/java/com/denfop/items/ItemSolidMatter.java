@@ -6,14 +6,20 @@ import com.denfop.api.IModelRegister;
 import com.denfop.tiles.solidmatter.EnumSolidMatter;
 import ic2.core.block.state.IIdProvider;
 import ic2.core.init.BlocksItems;
+import ic2.core.init.Localization;
 import ic2.core.item.ItemMulti;
 import ic2.core.ref.ItemName;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Locale;
 
 public class ItemSolidMatter extends ItemMulti<ItemSolidMatter.Types> implements IModelRegister {
@@ -48,6 +54,17 @@ public class ItemSolidMatter extends ItemMulti<ItemSolidMatter.Types> implements
 
         }
 
+    }
+
+    @Override
+    public void addInformation(
+            final ItemStack stack,
+            @Nullable final World worldIn,
+            final List<String> tooltip,
+            final ITooltipFlag flagIn
+    ) {
+        tooltip.add(Localization.translate("iu.matter.info"));
+        super.addInformation(stack, worldIn, tooltip, flagIn);
     }
 
     @Override

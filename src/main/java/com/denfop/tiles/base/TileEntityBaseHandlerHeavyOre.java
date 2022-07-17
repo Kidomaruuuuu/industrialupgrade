@@ -1,45 +1,43 @@
 package com.denfop.tiles.base;
 
-import com.denfop.api.ITemperature;
-import com.denfop.api.heat.IHeatSink;
 import com.denfop.api.recipe.IUpdateTick;
+import com.denfop.api.recipe.InvSlotOutput;
 import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.audio.AudioSource;
+import com.denfop.componets.HeatComponent;
 import com.denfop.invslot.InvSlotUpgrade;
-import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.upgrade.IUpgradableBlock;
-import ic2.api.upgrade.IUpgradeItem;
 import ic2.core.IC2;
-import ic2.core.IHasGui;
-import ic2.core.block.invslot.InvSlotOutput;
+import ic2.core.init.Localization;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
 import java.util.List;
 import java.util.Random;
 
 public abstract class TileEntityBaseHandlerHeavyOre extends TileEntityElectricMachine
-        implements IHasGui, INetworkTileEntityEventListener, IUpgradableBlock, ITemperature, IHeatSink, IUpdateTick {
+        implements IUpgradableBlock, IUpdateTick {
 
     public final int defaultEnergyConsume;
     public final int defaultOperationLength;
     public final int defaultTier;
     public final int defaultEnergyStorage;
-    public final short maxtemperature;
     public final InvSlotOutput outputSlot;
     public final InvSlotUpgrade upgradeSlot;
+    public final HeatComponent heat;
     public int energyConsume;
     public int operationLength;
     public int operationsPerTick;
-    public short temperature;
     public AudioSource audioSource;
     public InvSlotRecipes inputSlotA;
     public MachineRecipe output;
-    protected boolean needTemperature;
     protected short progress;
     protected double guiProgress;
-    private ITemperature source;
 
     public TileEntityBaseHandlerHeavyOre(int energyPerTick, int length, int outputSlots) {
         this(energyPerTick, length, outputSlots, 1);
@@ -54,12 +52,9 @@ public abstract class TileEntityBaseHandlerHeavyOre extends TileEntityElectricMa
         this.defaultEnergyStorage = energyPerTick * length;
         this.outputSlot = new InvSlotOutput(this, "output", outputSlots);
         this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
-        this.temperature = 0;
-        this.maxtemperature = 5000;
-        this.needTemperature = false;
         this.inputSlotA = new InvSlotRecipes(this, "handlerho", this);
-
-        this.source = null;
+        this.heat = this.addComponent(HeatComponent
+                .asBasicSink(this, 5000));
     }
 
     public static int applyModifier(int base, int extra, double multiplier) {
@@ -68,26 +63,26 @@ public abstract class TileEntityBaseHandlerHeavyOre extends TileEntityElectricMa
     }
 
     @Override
-    public ITemperature getSource() {
-        return this.source;
-    }
+    @SideOnly(Side.CLIENT)
+    public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
 
-    @Override
-    public void setSource(final ITemperature source) {
-        this.source = source;
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.heatmachine.info"));
+        }
+        super.addInformation(stack, tooltip, advanced);
     }
-
 
     public void readFromNBT(NBTTagCompound nbttagcompound) {
         super.readFromNBT(nbttagcompound);
         this.progress = nbttagcompound.getShort("progress");
-        this.temperature = nbttagcompound.getShort("temperature");
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound) {
         super.writeToNBT(nbttagcompound);
         nbttagcompound.setShort("progress", this.progress);
-        nbttagcompound.setShort("temperature", this.temperature);
         return nbttagcompound;
     }
 
@@ -99,7 +94,6 @@ public abstract class TileEntityBaseHandlerHeavyOre extends TileEntityElectricMa
     }
 
     public void setOverclockRates() {
-        this.upgradeSlot.onChanged();
         double previousProgress = (double) this.progress / (double) this.operationLength;
         double stackOpLen = (this.defaultOperationLength + this.upgradeSlot.extraProcessTime) * 64.0D
                 * this.upgradeSlot.processTimeMultiplier;

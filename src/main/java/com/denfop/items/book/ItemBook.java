@@ -90,7 +90,7 @@ public class ItemBook extends Item implements IHandHeldInventory, IModelRegister
         if (!player.getEntityWorld().isRemote && !StackUtil.isEmpty(stack) && player.openContainer instanceof ContainerBook) {
             HandHeldBook toolbox = ((ContainerBook) player.openContainer).base;
             if (toolbox.isThisContainer(stack)) {
-                toolbox.saveAndThrow(stack);
+                toolbox.saveAsThrown(stack);
                 player.closeScreen();
             }
         }

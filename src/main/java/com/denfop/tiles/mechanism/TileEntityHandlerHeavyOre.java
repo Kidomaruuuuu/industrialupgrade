@@ -2,11 +2,7 @@ package com.denfop.tiles.mechanism;
 
 import com.denfop.IUItem;
 import com.denfop.Ic2Items;
-import com.denfop.api.ITemperature;
 import com.denfop.api.Recipes;
-import com.denfop.api.heat.IHeatEmitter;
-import com.denfop.api.heat.event.HeatTileLoadEvent;
-import com.denfop.api.heat.event.HeatTileUnloadEvent;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.MachineRecipe;
@@ -14,10 +10,8 @@ import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.container.ContainerHandlerHeavyOre;
 import com.denfop.gui.GuiHandlerHeavyOre;
 import com.denfop.tiles.base.TileEntityBaseHandlerHeavyOre;
-import com.denfop.tiles.base.TileEntityElectricMachine;
 import com.denfop.utils.ModUtils;
 import ic2.api.recipe.IRecipeInputFactory;
-import ic2.api.upgrade.IUpgradeItem;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
@@ -31,13 +25,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
@@ -137,17 +129,26 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
 
     }
 
+    protected List<ItemStack> getWrenchDrops(EntityPlayer player, int fortune) {
+        List<ItemStack> ret = super.getWrenchDrops(player, fortune);
+        if (this.auto) {
+            ret.add(new ItemStack(IUItem.autoheater));
+            this.auto = false;
+        }
+        return ret;
+    }
+
     public void updateEntityServer() {
         super.updateEntityServer();
-        boolean needsInvUpdate = false;
         if (!this.inputSlotA.isEmpty() && output != null && this.outputSlot.canAdd(this.output.getRecipe().output.items) && this.energy.getEnergy() >= this.energyConsume && output.getRecipe().output.metadata != null) {
 
             if (output.getRecipe().output.metadata.getShort("temperature") == 0 || output.getRecipe().output.metadata.getInteger(
-                    "temperature") > this.temperature) {
+                    "temperature") > this.heat.getEnergy()) {
                 return;
             }
-
-            setActive(true);
+            if (!this.getActive()) {
+                setActive(true);
+            }
             if (this.progress == 0) {
                 IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
             }
@@ -159,7 +160,6 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
             if (this.progress >= this.operationLength) {
                 this.guiProgress = 0;
                 operate(output);
-                needsInvUpdate = true;
                 this.progress = 0;
                 IC2.network.get(true).initiateTileEntityEvent(this, 2, true);
             }
@@ -170,19 +170,25 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
             if (output == null) {
                 this.progress = 0;
             }
-            setActive(false);
+            if (this.getActive()) {
+                setActive(false);
+            }
+            if (this.heat.getEnergy() > 0) {
+                this.heat.useEnergy(1);
+            }
 
         }
-        if (this.temperature > 0) {
-            this.temperature--;
+
+        if (this.auto) {
+            if (this.heat.getEnergy() + 1 <= this.heat.getCapacity()) {
+                this.heat.addEnergy(2);
+            }
         }
 
-
-        if((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark())
+        if ((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark()) {
             setOverclockRates();
-        if (needsInvUpdate) {
-            super.markDirty();
         }
+
     }
 
     @Override
@@ -215,20 +221,6 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
         this.auto = nbttagcompound.getBoolean("auto");
     }
 
-
-    @Override
-    public World getWorldTile() {
-        return this.getWorld();
-    }
-
-    @Override
-    public boolean receiver() {
-        return true;
-    }
-
-    public ITemperature getITemperature() {
-        return this;
-    }
 
     public String getInventoryName() {
 
@@ -266,7 +258,6 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
 
     protected void onLoaded() {
         super.onLoaded();
-        MinecraftForge.EVENT_BUS.post(new HeatTileLoadEvent(this));
         if (IC2.platform.isSimulating()) {
             this.setOverclockRates();
         }
@@ -276,7 +267,6 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
     }
 
     protected void onUnloaded() {
-        MinecraftForge.EVENT_BUS.post(new HeatTileUnloadEvent(this));
         super.onUnloaded();
         if (IC2.platform.isRendering() && this.audioSource != null) {
             IC2.audioManager.removeSources(this);
@@ -294,58 +284,6 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
 
     }
 
-    @Override
-    public short getTemperature() {
-        return this.temperature;
-    }
-
-    @Override
-    public void setTemperature(short temperature) {
-        this.temperature = temperature;
-    }
-
-    @Override
-    public short getMaxTemperature() {
-        return this.maxtemperature;
-    }
-
-    @Override
-    public boolean isFluidTemperature() {
-        return false;
-    }
-
-    @Override
-    public FluidStack getFluid() {
-        return null;
-    }
-
-    @Override
-    public TileEntityElectricMachine getTile() {
-        return this;
-    }
-
-    @Override
-    public boolean acceptsHeatFrom(final IHeatEmitter var1, final EnumFacing var2) {
-        return true;
-    }
-
-
-    @Override
-    public double getDemandedHeat() {
-        return Math.max(0.0D, this.maxtemperature);
-    }
-
-    public void setHeatStored(double amount) {
-        if (this.temperature < amount) {
-            this.temperature = (short) amount;
-        }
-    }
-
-    @Override
-    public double injectHeat(final EnumFacing var1, final double var2, final double var4) {
-        this.setHeatStored(var2);
-        return 0.0D;
-    }
 
     @Override
     public void onUpdate() {

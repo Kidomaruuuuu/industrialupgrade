@@ -3,32 +3,48 @@ package com.denfop.items.bags;
 import com.denfop.Constants;
 import com.denfop.IUCore;
 import com.denfop.api.IModelRegister;
+import com.denfop.api.upgrade.EnumUpgrades;
+import com.denfop.api.upgrade.IUpgradeItem;
+import com.denfop.api.upgrade.UpgradeSystem;
+import com.denfop.api.upgrade.event.EventItemLoad;
 import com.denfop.container.ContainerBags;
+import com.denfop.items.EnumInfoUpgradeModules;
+import com.denfop.utils.ModUtils;
 import ic2.api.item.ElectricItem;
 import ic2.api.item.IElectricItem;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.init.BlocksItems;
+import ic2.core.init.Localization;
 import ic2.core.item.IHandHeldInventory;
 import ic2.core.util.StackUtil;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.Nullable;
+import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ItemEnergyBags extends Item implements IHandHeldInventory, IElectricItem, IModelRegister {
+public class ItemEnergyBags extends Item implements IHandHeldInventory, IUpgradeItem, IElectricItem, IModelRegister {
 
     private final int slots;
     private final int maxStorage;
@@ -48,6 +64,8 @@ public class ItemEnergyBags extends Item implements IHandHeldInventory, IElectri
         this.maxStorage = maxStorage;
         IUCore.proxy.addIModelRegister(this);
         BlocksItems.registerItem((Item) this, IUCore.getIdentifier(internalName)).setUnlocalizedName(internalName);
+        UpgradeSystem.system.addRecipe(this, EnumUpgrades.BAGS.list);
+
     }
 
     @SideOnly(Side.CLIENT)
@@ -57,6 +75,58 @@ public class ItemEnergyBags extends Item implements IHandHeldInventory, IElectri
                 "bags" + "/" + name;
 
         return new ModelResourceLocation(loc, null);
+    }
+
+    public int getItemEnchantability() {
+        return 0;
+    }
+
+    public boolean isBookEnchantable(@Nonnull ItemStack stack, @Nonnull ItemStack book) {
+        return false;
+    }
+
+    @Override
+    public void onUpdate(
+            final ItemStack stack,
+            final World worldIn,
+            final Entity entityIn,
+            final int itemSlot,
+            final boolean isSelected
+    ) {
+        NBTTagCompound nbt = ModUtils.nbt(stack);
+
+        if (!UpgradeSystem.system.hasInMap(stack)) {
+            nbt.setBoolean("hasID", false);
+            MinecraftForge.EVENT_BUS.post(new EventItemLoad(worldIn, this, stack));
+        }
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(
+            final ItemStack stack,
+            @Nullable final World worldIn,
+            final List<String> tooltip,
+            final ITooltipFlag flagIn
+    ) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        } else {
+            final NBTTagCompound nbt = ModUtils.nbt(stack);
+            if (!nbt.hasKey("bag")) {
+                return;
+            }
+            List<BagsDescription> list = new ArrayList<>();
+            final NBTTagCompound nbt1 = nbt.getCompoundTag("bag");
+            int size = nbt1.getInteger("size");
+            for (int i = 0; i < size; i++) {
+                list.add(new BagsDescription(nbt1.getCompoundTag(String.valueOf(i))));
+            }
+            for (BagsDescription description : list) {
+                tooltip.add(TextFormatting.GREEN + "" + description.getCount() + "x " + description.getStack().getDisplayName());
+            }
+        }
+        super.addInformation(stack, worldIn, tooltip, flagIn);
     }
 
     @Nonnull
@@ -87,8 +157,11 @@ public class ItemEnergyBags extends Item implements IHandHeldInventory, IElectri
 
     @Nonnull
     public ActionResult<ItemStack> onItemRightClick(@Nonnull World world, EntityPlayer player, @Nonnull EnumHand hand) {
-        if (ElectricItem.manager.canUse(player.getHeldItem(hand), 350)) {
-            ElectricItem.manager.use(player.getHeldItem(hand), 350, player);
+        double coef = 1D - (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.ENERGY, player.getHeldItem(hand)) ?
+                UpgradeSystem.system.getModules(EnumInfoUpgradeModules.ENERGY, player.getHeldItem(hand)).number * 0.25D : 0);
+
+        if (ElectricItem.manager.canUse(player.getHeldItem(hand), 350 * coef)) {
+            ElectricItem.manager.use(player.getHeldItem(hand), 350 * coef, player);
             ItemStack stack = StackUtil.get(player, hand);
             if (IC2.platform.isSimulating()) {
                 IC2.platform.launchGui(player, this.getInventory(player, stack));
@@ -103,7 +176,7 @@ public class ItemEnergyBags extends Item implements IHandHeldInventory, IElectri
         if (!player.getEntityWorld().isRemote && !StackUtil.isEmpty(stack) && player.openContainer instanceof ContainerBags) {
             HandHeldBags toolbox = ((ContainerBags) player.openContainer).base;
             if (toolbox.isThisContainer(stack)) {
-                toolbox.saveAndThrow(stack);
+                toolbox.saveAsThrown(stack);
                 player.closeScreen();
             }
         }
@@ -111,6 +184,16 @@ public class ItemEnergyBags extends Item implements IHandHeldInventory, IElectri
         return true;
     }
 
+    public boolean canInsert(EntityPlayer player, ItemStack stack, ItemStack stack1) {
+        HandHeldBags box = (HandHeldBags) getInventory(player, stack);
+        return box.canAdd(stack1);
+    }
+
+    public void insert(EntityPlayer player, ItemStack stack, ItemStack stack1) {
+        HandHeldBags box = (HandHeldBags) getInventory(player, stack);
+        box.add(stack1);
+        box.markDirty();
+    }
 
     public IHasGui getInventory(EntityPlayer player, ItemStack stack) {
         return new HandHeldBags(player, stack, slots);

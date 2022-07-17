@@ -44,6 +44,7 @@ public class BlocksRadiationOre extends BlockCore implements IModelRegister {
         setHarvestLevel("pickaxe", 2);
     }
 
+    @Nonnull
     @Override
     public IBlockState getStateFromMeta(final int meta) {
         return getDefaultState().withProperty(VARIANT, Type.values()[meta]);

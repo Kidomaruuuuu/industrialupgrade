@@ -7,10 +7,7 @@ import com.denfop.invslot.InvSlotTuner;
 import com.denfop.tiles.base.TileEntityElectricMachine;
 import com.denfop.utils.ModUtils;
 import ic2.api.network.INetworkClientTileEntityEventListener;
-import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.core.ContainerBase;
-import ic2.core.IHasGui;
-import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -18,7 +15,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class TileEntityTunerWireless extends TileEntityElectricMachine
-        implements IHasGui, INetworkTileEntityEventListener, INetworkClientTileEntityEventListener {
+        implements INetworkClientTileEntityEventListener {
 
 
     public final InvSlotTuner inputslot;
@@ -94,11 +91,6 @@ public class TileEntityTunerWireless extends TileEntityElectricMachine
 
     @Override
     public void onGuiClosed(EntityPlayer arg0) {
-    }
-
-    @Override
-    public String getInventoryName() {
-        return Localization.translate("iu.blockTuner.name");
     }
 
 

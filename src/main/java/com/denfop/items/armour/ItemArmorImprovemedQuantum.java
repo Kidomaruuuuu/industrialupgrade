@@ -12,8 +12,8 @@ import com.denfop.api.upgrade.IUpgradeItem;
 import com.denfop.api.upgrade.UpgradeSystem;
 import com.denfop.api.upgrade.event.EventItemLoad;
 import com.denfop.items.EnumInfoUpgradeModules;
+import com.denfop.items.energy.HandHeldUpgradeItem;
 import com.denfop.items.energy.ItemBattery;
-import com.denfop.items.energy.ItemMagnet;
 import com.denfop.utils.KeyboardClient;
 import com.denfop.utils.ModUtils;
 import ic2.api.item.ElectricItem;
@@ -23,17 +23,21 @@ import ic2.api.item.IItemHudInfo;
 import ic2.api.item.IMetalArmor;
 import ic2.core.IC2;
 import ic2.core.IC2Potion;
+import ic2.core.IHasGui;
 import ic2.core.init.BlocksItems;
 import ic2.core.init.Localization;
 import ic2.core.init.MainConfig;
 import ic2.core.item.BaseElectricItem;
+import ic2.core.item.IHandHeldInventory;
 import ic2.core.item.ItemTinCan;
 import ic2.core.item.armor.ItemArmorElectric;
+import ic2.core.network.NetworkManager;
 import ic2.core.ref.ItemName;
 import ic2.core.slot.ArmorSlot;
 import ic2.core.util.ConfigUtil;
 import ic2.core.util.LogCategory;
 import ic2.core.util.StackUtil;
+import ic2.core.util.Util;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
@@ -42,12 +46,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.MobEffects;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.server.SPacketEntityTeleport;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ActionResult;
@@ -174,7 +180,7 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
         EntityPlayer player = (EntityPlayer) event.getEntityLiving();
         NBTTagCompound nbtData = player.getEntityData();
         if (!player.inventory.armorInventory.get(0).isEmpty()
-                && player.inventory.armorInventory.get(0).getItem() == IUItem.quantumBoots) {
+                && player.inventory.armorInventory.get(0).getItem() == IUItem.spectral_boots) {
             nbtData.setBoolean("stepHeight", true);
             player.stepHeight = 1.0F;
 
@@ -221,8 +227,10 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
     ) {
         NBTTagCompound nbtData = ModUtils.nbt(itemStack);
 
-        if (itemStack.getItem() == IUItem.quantumBodyarmor) {
+        if (itemStack.getItem() == IUItem.spectral_chestplate) {
             info.add(Localization.translate("iu.fly") + " " + ModUtils.Boolean(nbtData.getBoolean("jetpack")));
+            info.add(Localization.translate("iu.fly_need"));
+
             if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
                 info.add(Localization.translate("press.lshift"));
             }
@@ -423,13 +431,18 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
                 int fallDamage = Math.max((int) event.getDistance() - 10, 0);
 
                 double energyCost = (5000 * fallDamage) * (1 - (UpgradeSystem.system.hasModules(
-                        EnumInfoUpgradeModules.REPAIRED,
+                        EnumInfoUpgradeModules.FALLING_DAMAGE,
                         armor
                 ) ?
-                        UpgradeSystem.system.getModules(EnumInfoUpgradeModules.REPAIRED, armor).number : 0) * 0.25);
+                        UpgradeSystem.system.getModules(EnumInfoUpgradeModules.FALLING_DAMAGE, armor).number : 0) * 0.25);
 
                 if (energyCost <= ElectricItem.manager.getCharge(armor)) {
                     ElectricItem.manager.discharge(armor, energyCost, 2147483647, true, false, false);
+                    event.setCanceled(true);
+                }
+            }
+            if (entity instanceof EntityPlayer && entity.getItemStackFromSlot(EntityEquipmentSlot.CHEST).getItem() == this) {
+                if (entity.getEntityData().getBoolean("isFlyActive")) {
                     event.setCanceled(true);
                 }
             }
@@ -443,13 +456,14 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
         }
         EntityPlayer player = (EntityPlayer) event.getEntity();
         if (!player.inventory.armorInventory.get(0).isEmpty()
-                && (player.inventory.armorInventory.get(0).getItem() == IUItem.quantumBoots || player.inventory.armorInventory
+                && (player.inventory.armorInventory.get(0).getItem() == IUItem.spectral_boots || player.inventory.armorInventory
                 .get(0)
-                .getItem() == IUItem.NanoLeggings)) {
+                .getItem() == IUItem.adv_nano_boots)) {
             player.motionY = 0.8;
             ElectricItem.manager.use(player.inventory.armorInventory.get(0), 4000.0D, player);
 
         }
+
     }
 
     @Nonnull
@@ -503,7 +517,7 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
         int air;
         boolean Nightvision;
         short hubmode;
-        boolean jetpack, hoverMode, enableQuantumSpeedOnSprint;
+        boolean jetpack, enableQuantumSpeedOnSprint;
         NBTTagCompound nbtData = ModUtils.nbt(itemStack);
         byte toggleTimer = nbtData.getByte("toggleTimer");
         boolean ret = false;
@@ -672,11 +686,20 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
 
                 break;
             case 2:
-                if (!player.onGround) {
-                    if (nbtData.getBoolean("jetpack")) {
 
+                if (nbtData.getBoolean("jetpack")) {
+                    player.fallDistance = 0;
+
+                    if (nbtData.getBoolean("jump") && !nbtData.getBoolean("canFly") && !player.capabilities.allowFlying && IC2.keyboard.isJumpKeyDown(
+                            player) && !nbtData.getBoolean(
+                            "isFlyActive") && toggleTimer == 0) {
+                        toggleTimer = 10;
+                        nbtData.setBoolean("canFly", true);
+                    }
+                    nbtData.setBoolean("jump", !player.onGround);
+
+                    if (!player.onGround) {
                         if (ElectricItem.manager.canUse(itemStack, 25)) {
-
                             ElectricItem.manager.use(itemStack, 25, null);
                         } else {
                             nbtData.setBoolean("jetpack", false);
@@ -684,23 +707,9 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
                     }
                 }
 
+
                 jetpack = nbtData.getBoolean("jetpack");
                 boolean vertical = nbtData.getBoolean("vertical");
-                hoverMode = nbtData.getBoolean("hoverMode");
-                if (IC2.keyboard.isJumpKeyDown(player) && IC2.keyboard.isModeSwitchKeyDown(player) && toggleTimer == 0) {
-                    ItemStack jetpack1 = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
-                    ElectricItem.manager.discharge(jetpack1, 3000, 2147483647, true, false, false);
-                    toggleTimer = 10;
-                    hoverMode = !hoverMode;
-                    if (IC2.platform.isSimulating()) {
-                        nbtData.setBoolean("hoverMode", hoverMode);
-                        if (hoverMode) {
-                            IC2.platform.messagePlayer(player, "Quantum Hover Mode enabled.");
-                        } else {
-                            IC2.platform.messagePlayer(player, "Quantum Hover Mode disabled.");
-                        }
-                    }
-                }
                 if (IUCore.keyboard.isVerticalMode(player) && toggleTimer == 0) {
                     toggleTimer = 10;
                     vertical = !vertical;
@@ -708,10 +717,10 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
 
                         nbtData.setBoolean("vertical", vertical);
                         if (vertical) {
-                            IC2.platform.messagePlayer(player, "Vertical Mode enabled.");
+                            IC2.platform.messagePlayer(player,Localization.translate("iu.flymode_armor.info2"));
 
                         } else {
-                            IC2.platform.messagePlayer(player, "Vertical Mode disabled.");
+                            IC2.platform.messagePlayer(player, Localization.translate("iu.flymode_armor.info3"));
 
                         }
                     }
@@ -744,32 +753,25 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
                         for (Entity entityinlist : list) {
                             if (entityinlist instanceof EntityItem) {
                                 EntityItem item = (EntityItem) entityinlist;
-                                if (ElectricItem.manager.canUse(itemStack, 500)) {
-                                    ItemStack stack = item.getItem();
-                                    if (!(stack.getItem() instanceof ItemMagnet)) {
-                                        if (mode == 1) {
-                                            if (player.inventory.addItemStackToInventory(stack)) {
-                                                ElectricItem.manager.use(itemStack, 500, player);
-                                            } else {
-                                                boolean xcoord = item.posX + 2 >= player.posX && item.posX - 2 <= player.posX;
-                                                boolean zcoord = item.posZ + 2 >= player.posZ && item.posZ - 2 <= player.posZ;
+                                if (ElectricItem.manager.canUse(itemStack, 200)) {
+                                    if (mode == 1) {
 
-                                                if (!xcoord && !zcoord) {
-                                                    item.setPosition(player.posX, player.posY - 1, player.posZ);
-                                                    item.setPickupDelay(10);
-                                                }
-                                            }
-                                            ret1 = true;
-                                        } else if (mode == 2) {
-                                            boolean xcoord = item.posX + 2 >= player.posX && item.posX - 2 <= player.posX;
-                                            boolean zcoord = item.posZ + 2 >= player.posZ && item.posZ - 2 <= player.posZ;
-
-                                            if (!xcoord && !zcoord) {
-                                                item.setPosition(player.posX, player.posY - 1, player.posZ);
-                                                item.setPickupDelay(10);
-                                            }
-
+                                        item.setLocationAndAngles(player.posX, player.posY, player.posZ, 0.0F, 0.0F);
+                                        if (!player.world.isRemote) {
+                                            ((EntityPlayerMP) player).connection.sendPacket(new SPacketEntityTeleport(item));
                                         }
+                                        item.setPickupDelay(0);
+                                        ElectricItem.manager.use(itemStack, 200, null);
+                                        ret1 = true;
+                                    } else if (mode == 2) {
+                                        boolean xcoord = item.posX + 2 >= player.posX && item.posX - 2 <= player.posX;
+                                        boolean zcoord = item.posZ + 2 >= player.posZ && item.posZ - 2 <= player.posZ;
+
+                                        if (!xcoord && !zcoord) {
+                                            item.setPosition(player.posX, player.posY - 1, player.posZ);
+                                            item.setPickupDelay(10);
+                                        }
+
                                     }
                                 }
 
@@ -805,14 +807,9 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
 
                         nbtData.setBoolean("jetpack", jetpack);
                         if (jetpack) {
-                            IC2.platform.messagePlayer(player, "Quantum Jetpack enabled.");
-                            player.capabilities.isFlying = true;
-
-                            player.capabilities.allowFlying = true;
-                            player.fallDistance = 0.0F;
-                            player.distanceWalkedModified = 0.0F;
+                            IC2.platform.messagePlayer(player, Localization.translate("iu.flymode_armor.info"));
                         } else {
-                            IC2.platform.messagePlayer(player, "Quantum Jetpack disabled.");
+                            IC2.platform.messagePlayer(player,  Localization.translate("iu.flymode_armor.info1"));
 
                         }
                     }
@@ -1053,11 +1050,6 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
 
 
     @Override
-    public void setUpdate(final boolean update) {
-    }
-
-
-    @Override
     public void onUpdate(@Nonnull ItemStack itemStack, @Nonnull World world, @Nonnull Entity entity, int slot, boolean par5) {
         NBTTagCompound nbt = ModUtils.nbt(itemStack);
 
@@ -1065,6 +1057,10 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
             nbt.setBoolean("hasID", false);
             MinecraftForge.EVENT_BUS.post(new EventItemLoad(world, this, itemStack));
         }
+
+
     }
+
+
 
 }

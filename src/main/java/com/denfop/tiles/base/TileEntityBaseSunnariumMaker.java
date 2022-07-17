@@ -6,21 +6,23 @@ import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.componets.SEComponent;
 import com.denfop.container.ContainerSunnariumMaker;
 import com.denfop.invslot.InvSlotUpgrade;
-import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.upgrade.IUpgradableBlock;
-import ic2.api.upgrade.IUpgradeItem;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
-import ic2.core.IHasGui;
 import ic2.core.audio.AudioSource;
+import ic2.core.init.Localization;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
 import java.util.List;
 
 public abstract class TileEntityBaseSunnariumMaker extends TileEntityElectricMachine
-        implements IHasGui, INetworkTileEntityEventListener, IUpgradableBlock {
+        implements IUpgradableBlock {
 
     public final int defaultEnergyConsume;
     public final int defaultOperationLength;
@@ -91,6 +93,19 @@ public abstract class TileEntityBaseSunnariumMaker extends TileEntityElectricMac
 
     }
 
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.solarium_energy_sink.info"));
+        }
+        super.addInformation(stack, tooltip, advanced);
+
+    }
+
     public void onUnloaded() {
         super.onUnloaded();
         if (IC2.platform.isRendering() && this.audioSource != null) {
@@ -99,7 +114,7 @@ public abstract class TileEntityBaseSunnariumMaker extends TileEntityElectricMac
         }
     }
 
-    public void  markDirty() {
+    public void markDirty() {
         super.markDirty();
         if (IC2.platform.isSimulating()) {
             setOverclockRates();
@@ -115,9 +130,13 @@ public abstract class TileEntityBaseSunnariumMaker extends TileEntityElectricMac
 
         if (output != null && this.outputSlot.canAdd(output.getRecipe().output.items) && this.outputSlot.canAdd(output.getRecipe().output.items) && this.energy.canUseEnergy(
                 energyConsume) && this.sunenergy.canUseEnergy(5)) {
-            setActive(true);
+            if (!this.getActive()) {
+                setActive(true);
+            }
             if (this.progress == 0) {
-                IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
+                if (this.operationLength > this.defaultOperationLength * 0.1) {
+                    IC2.network.get(true).initiateTileEntityEvent(this, 0, true);
+                }
             }
             this.progress = (short) (this.progress + 1);
             this.energy.useEnergy(energyConsume);
@@ -130,26 +149,30 @@ public abstract class TileEntityBaseSunnariumMaker extends TileEntityElectricMac
                 operate(output);
                 needsInvUpdate = true;
                 this.progress = 0;
-                IC2.network.get(true).initiateTileEntityEvent(this, 2, true);
+                if (this.operationLength > this.defaultOperationLength * 0.1 || (this.getType() != valuesAudio[2 % valuesAudio.length])) {
+                    IC2.network.get(true).initiateTileEntityEvent(this, 2, true);
+                }
             }
         } else {
             if (this.progress != 0 && getActive()) {
-                IC2.network.get(true).initiateTileEntityEvent(this, 1, true);
+                if (this.operationLength > this.defaultOperationLength * 0.1 || (this.getType() != valuesAudio[1 % valuesAudio.length])) {
+                    IC2.network.get(true).initiateTileEntityEvent(this, 1, true);
+                }
             }
             if (output == null) {
                 this.progress = 0;
             }
-            setActive(false);
+            if (this.getActive()) {
+                setActive(false);
+            }
         }
-        if((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark())
+        if ((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark()) {
             setOverclockRates();
-        if (needsInvUpdate) {
-            super.markDirty();
         }
+
     }
 
     public void setOverclockRates() {
-        this.upgradeSlot.onChanged();
         double previousProgress = (double) this.progress / (double) this.operationLength;
         double stackOpLen = (this.defaultOperationLength + this.upgradeSlot.extraProcessTime) * 64.0D
                 * this.upgradeSlot.processTimeMultiplier;

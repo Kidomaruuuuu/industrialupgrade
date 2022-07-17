@@ -1,20 +1,22 @@
 package com.denfop;
 
-import aroma1997.uncomplication.enet.EnergyNetGlobal;
+import aroma1997.uncomplication.enet.transformer.EnergyNetGlobal;
 import com.denfop.api.IElectricBlock;
 import com.denfop.api.IStorage;
 import com.denfop.api.Recipes;
-import com.denfop.api.cooling.CoolNet;
+import com.denfop.api.cool.CoolNet;
 import com.denfop.api.exp.EXPNet;
 import com.denfop.api.heat.HeatNet;
 import com.denfop.api.qe.QENet;
 import com.denfop.api.radiationsystem.RadiationSystem;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.ListRecipes;
+import com.denfop.api.recipe.RecipeInputStack;
 import com.denfop.api.se.SENet;
 import com.denfop.api.upgrade.BaseUpgradeSystem;
 import com.denfop.api.upgrade.UpgradeSystem;
 import com.denfop.api.vein.VeinSystem;
+import com.denfop.api.windsystem.WindSystem;
 import com.denfop.audio.AudioManager;
 import com.denfop.blocks.BlockIUFluid;
 import com.denfop.blocks.mechanism.BlockAdminPanel;
@@ -25,11 +27,15 @@ import com.denfop.blocks.mechanism.BlockBaseMachine;
 import com.denfop.blocks.mechanism.BlockBaseMachine1;
 import com.denfop.blocks.mechanism.BlockBaseMachine2;
 import com.denfop.blocks.mechanism.BlockBaseMachine3;
+import com.denfop.blocks.mechanism.BlockBlastFurnace;
 import com.denfop.blocks.mechanism.BlockCable;
+import com.denfop.blocks.mechanism.BlockChargepadStorage;
 import com.denfop.blocks.mechanism.BlockCombinerSolid;
 import com.denfop.blocks.mechanism.BlockConverterMatter;
 import com.denfop.blocks.mechanism.BlockCoolPipes;
 import com.denfop.blocks.mechanism.BlockDoubleMolecularTransfomer;
+import com.denfop.blocks.mechanism.BlockEnergyStorage;
+import com.denfop.blocks.mechanism.BlockExpCable;
 import com.denfop.blocks.mechanism.BlockImpChamber;
 import com.denfop.blocks.mechanism.BlockImpSolarEnergy;
 import com.denfop.blocks.mechanism.BlockMolecular;
@@ -47,15 +53,13 @@ import com.denfop.blocks.mechanism.BlockSCable;
 import com.denfop.blocks.mechanism.BlockSimpleMachine;
 import com.denfop.blocks.mechanism.BlockSintezator;
 import com.denfop.blocks.mechanism.BlockSolarEnergy;
+import com.denfop.blocks.mechanism.BlockSolarPanels;
 import com.denfop.blocks.mechanism.BlockSolidMatter;
 import com.denfop.blocks.mechanism.BlockSunnariumMaker;
 import com.denfop.blocks.mechanism.BlockSunnariumPanelMaker;
 import com.denfop.blocks.mechanism.BlockTank;
 import com.denfop.blocks.mechanism.BlockTransformer;
 import com.denfop.blocks.mechanism.BlockUpgradeBlock;
-import com.denfop.blocks.mechanism.IUChargepadStorage;
-import com.denfop.blocks.mechanism.IUStorage;
-import com.denfop.blocks.mechanism.SSPBlock;
 import com.denfop.cool.CoolNetGlobal;
 import com.denfop.events.TickHandler;
 import com.denfop.events.TickHandlerIU;
@@ -64,18 +68,23 @@ import com.denfop.heat.HeatNetGlobal;
 import com.denfop.integration.avaritia.BlockAvaritiaSolarPanel;
 import com.denfop.integration.botania.BlockBotSolarPanel;
 import com.denfop.integration.de.BlockDESolarPanel;
+import com.denfop.integration.rs.RefinedStorageIntegration;
 import com.denfop.integration.thaumcraft.BlockThaumSolarPanel;
-import com.denfop.items.ItemUpgradeMachinesKit;
+import com.denfop.items.energy.EntityAdvArrow;
 import com.denfop.items.energy.ItemQuantumSaber;
 import com.denfop.items.energy.ItemSpectralSaber;
 import com.denfop.items.modules.EnumModule;
+import com.denfop.items.upgradekit.ItemUpgradeMachinesKit;
 import com.denfop.network.NetworkManager;
 import com.denfop.proxy.CommonProxy;
 import com.denfop.qe.QENetGlobal;
+import com.denfop.register.RegisterOreDictionary;
 import com.denfop.se.SENetGlobal;
 import com.denfop.tabs.TabCore;
+import com.denfop.tiles.mechanism.blastfurnace.api.BlastSystem;
 import com.denfop.utils.KeyboardIU;
 import com.denfop.utils.Keys;
+import com.denfop.utils.ListInformationUtils;
 import com.denfop.utils.ModUtils;
 import ic2.api.energy.EnergyNet;
 import ic2.api.event.TeBlockFinalCallEvent;
@@ -89,11 +98,13 @@ import ic2.core.util.Util;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -108,6 +119,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
@@ -126,8 +139,8 @@ import java.util.logging.Level;
 @Mod(modid = Constants.MOD_ID, name = Constants.MOD_NAME, dependencies = Constants.MOD_DEPS, version = Constants.MOD_VERSION, acceptedMinecraftVersions = "[1.12,1.12.2]", certificateFingerprint = Constants.MOD_CERTIFICATE)
 public final class IUCore {
 
-    public static final CreativeTabs SSPTab = new TabCore(0, "IUTab");
-    public static final CreativeTabs tabssp1 = new TabCore(1, "ModuleTab");
+    public static final CreativeTabs IUTab = new TabCore(0, "IUTab");
+    public static final CreativeTabs ModuleTab = new TabCore(1, "ModuleTab");
     public static final CreativeTabs ItemTab = new TabCore(2, "ItemTab");
     public static final CreativeTabs OreTab = new TabCore(3, "OreTab");
     public static final CreativeTabs EnergyTab = new TabCore(4, "EnergyTab");
@@ -142,6 +155,9 @@ public final class IUCore {
     public static final List<ItemStack> get_ingot = new ArrayList<>();
     public static final List<ItemStack> get_crushed = new ArrayList<>();
     public static final List<ItemStack> get_comb_crushed = new ArrayList<>();
+    public static final List<RecipeInputStack> get_all_list = new ArrayList<>();
+    public static final List<ItemStack> fish_rodding = new ArrayList<>();
+
     public static Logger log;
     @SidedProxy(clientSide = "com.denfop.proxy.ClientProxy", serverSide = "com.denfop.proxy.CommonProxy")
     public static CommonProxy proxy;
@@ -165,6 +181,14 @@ public final class IUCore {
 
     }
 
+    @SubscribeEvent
+    public static void registerEntities(RegistryEvent.Register<EntityEntry> evt) {
+        evt.getRegistry().register(EntityEntryBuilder.create().entity(EntityAdvArrow.class).id(new ResourceLocation(
+                Constants.MOD_ID,
+                "adv_arrow"
+        ), 8).name("AdvArrow").tracker(256, 10, true).build());
+    }
+
     public static boolean isSimulating() {
         return !FMLCommonHandler.instance().getEffectiveSide().isClient();
     }
@@ -173,11 +197,11 @@ public final class IUCore {
         TeBlockRegistry.addAll(enumClass, ref);
         TeBlockRegistry.setDefaultMaterial(ref, Material.ROCK);
         TeBlockRegistry.addCreativeRegisterer((list, block, itemblock, tab) -> {
-            if (tab == CreativeTabs.SEARCH || tab == SSPTab) {
+            if (tab == CreativeTabs.SEARCH || tab == IUTab) {
                 block.getAllTypes().forEach(type -> {
                     if (type.hasItem()) {
                         list.add(block.getItemStack(type));
-                        if (ref.equals(IUStorage.IDENTITY) || ref.equals(IUChargepadStorage.IDENTITY)) {
+                        if (ref.equals(BlockEnergyStorage.IDENTITY) || ref.equals(BlockChargepadStorage.IDENTITY)) {
                             ItemStack filled = block.getItemStack(type);
                             ModUtils.nbt(filled).setDouble(
                                     "energy",
@@ -198,9 +222,9 @@ public final class IUCore {
     @SubscribeEvent
     public static void register(final TeBlockFinalCallEvent event) {
 
-        register(SSPBlock.class, SSPBlock.IDENTITY);
-        register(IUStorage.class, IUStorage.IDENTITY);
-        register(IUChargepadStorage.class, IUChargepadStorage.IDENTITY);
+        register(BlockSolarPanels.class, BlockSolarPanels.IDENTITY);
+        register(BlockEnergyStorage.class, BlockEnergyStorage.IDENTITY);
+        register(BlockChargepadStorage.class, BlockChargepadStorage.IDENTITY);
         register(BlockMoreMachine.class, BlockMoreMachine.IDENTITY);
         register(BlockMoreMachine1.class, BlockMoreMachine1.IDENTITY);
         register(BlockMoreMachine2.class, BlockMoreMachine2.IDENTITY);
@@ -234,6 +258,9 @@ public final class IUCore {
         register(BlockQuarryVein.class, BlockQuarryVein.IDENTITY);
         register(BlockQCable.class, BlockQCable.IDENTITY);
         register(BlockSCable.class, BlockSCable.IDENTITY);
+        register(BlockExpCable.class, BlockExpCable.IDENTITY);
+
+        register(BlockBlastFurnace.class, BlockBlastFurnace.IDENTITY);
         register(BlockCoolPipes.class, BlockCoolPipes.IDENTITY);
         register(BlockTank.class, BlockTank.IDENTITY);
         register(BlockConverterMatter.class, BlockConverterMatter.IDENTITY);
@@ -273,8 +300,10 @@ public final class IUCore {
         QENet.instance = QENetGlobal.initialize();
         SENet.instance = SENetGlobal.initialize();
         EXPNet.instance = EXPNetGlobal.initialize();
+        BlastSystem.instance = new BlastSystem();
         new VeinSystem();
         new RadiationSystem();
+        new WindSystem();
     }
 
     @SubscribeEvent
@@ -314,7 +343,6 @@ public final class IUCore {
     }
 
 
-
     @SubscribeEvent
     public void getore(OreDictionary.OreRegisterEvent event) {
         String oreClass = event.getName();
@@ -330,12 +358,6 @@ public final class IUCore {
 
         }
         if (oreClass.startsWith("ore")) {
-            if (oreClass.equals("oreChargedCertusQuartz")) {
-                return;
-            }
-            if (oreClass.equals("oreCertusQuartz")) {
-                return;
-            }
             String temp = oreClass.substring(3);
 
             if (OreDictionary.getOres("gem" + temp) == null || OreDictionary.getOres("gem" + temp).size() < 1) {
@@ -361,7 +383,6 @@ public final class IUCore {
             }
 
 
-
         }
     }
 
@@ -378,18 +399,6 @@ public final class IUCore {
         }
     }
 
-    void addInList(ItemStack stack) {
-        boolean add = true;
-        for (int i = 0; i < get_ingot.size(); i++) {
-            if (get_ingot.get(i).isItemEqual(stack)) {
-                add = false;
-                break;
-            }
-        }
-        if (add) {
-            get_ingot.add(stack);
-        }
-    }
 
     @Mod.EventHandler
     public void postInit(final FMLPostInitializationEvent event) {
@@ -402,10 +411,7 @@ public final class IUCore {
         addInList1(new ItemStack(Items.DYE, 1, 4));
         addInList1(new ItemStack(Items.COAL));
         addInList1(new ItemStack(Items.GLOWSTONE_DUST));
-
-
-
-
+        addInList1(new ItemStack(Items.QUARTZ));
 
         addOre("oreCoal");
         addOre("oreIron");
@@ -417,6 +423,8 @@ public final class IUCore {
         addOre1("oreGold");
         addOre1("oreIridium");
         addOre("oreIridium");
+        get_ore.add(new ItemStack(Blocks.REDSTONE_ORE));
+        get_ore.add(new ItemStack(Blocks.LIT_REDSTONE_ORE));
         removeOre("oreEndLapis");
         removeOre("oreEndEmerald");
         removeOre("oreEndDiamond");
@@ -444,7 +452,17 @@ public final class IUCore {
         removeOre("oreCrystalEntropy");
         removeOre("oreCrystalTaint");
         removeOre("gemIridium");
-
+        removeOre("gemAmericium");
+        removeOre("gemNeptunium");
+        removeOre("gemCurium");
+        removeOre("gemThorium");
+        for (String name : RegisterOreDictionary.list_heavyore) {
+            removeOre("ore" + name);
+        }
+        removeOre("oreDraconium");
+        removeOre("oreClathrateOilShale");
+        removeOre("oreClathrateOilSand");
+        removeOre("oreClathrateOilSand");
         for (ItemStack stack : IUCore.list) {
             BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput("macerator", false, stack);
             if (recipe != null) {
@@ -471,6 +489,28 @@ public final class IUCore {
                 this.get_ingot.add(stack);
             }
         }
+
+        IUCore.list.forEach(stack -> {
+
+            get_all_list.add(new RecipeInputStack(stack));
+        });
+        get_all_list.removeIf(stack -> IUCore.get_ingot.contains(stack));
+        IUCore.get_ingot.forEach(stack -> {
+
+            get_all_list.add(new RecipeInputStack(stack));
+        });
+        get_all_list.removeIf(stack -> IUCore.get_comb_crushed.contains(stack));
+        IUCore.get_comb_crushed.forEach(stack -> {
+
+            get_all_list.add(new RecipeInputStack(stack));
+        });
+        get_all_list.removeIf(stack -> IUCore.get_crushed.contains(stack));
+        IUCore.get_crushed.forEach(stack -> {
+
+            get_all_list.add(new RecipeInputStack(stack));
+        });
+
+
         final Iterable<? extends MachineRecipe<IRecipeInput, Collection<ItemStack>>> recipe = ic2.api.recipe.Recipes.compressor.getRecipes();
         final Iterator<? extends MachineRecipe<IRecipeInput, Collection<ItemStack>>> iter = recipe.iterator();
         List<MachineRecipe<IRecipeInput, Collection<ItemStack>>> lst = new ArrayList<>();
@@ -482,7 +522,40 @@ public final class IUCore {
                 break;
             }
         }
-
+        fish_rodding.add(new ItemStack(Items.FISH));
+        fish_rodding.add(new ItemStack(Items.FISH, 1, 1));
+        fish_rodding.add(new ItemStack(Items.FISH, 1, 2));
+        fish_rodding.add(new ItemStack(Items.FISH, 1, 3));
+        fish_rodding.add(new ItemStack(Items.BONE));
+        fish_rodding.add(new ItemStack(Items.ENCHANTED_BOOK));
+        fish_rodding.add(new ItemStack(Items.POTIONITEM));
+        fish_rodding.add(new ItemStack(Items.LEATHER_BOOTS));
+        fish_rodding.add(new ItemStack(Items.BOW));
+        fish_rodding.add(new ItemStack(Items.SADDLE));
+        fish_rodding.add(new ItemStack(Items.FISHING_ROD));
+        fish_rodding.add(new ItemStack(Blocks.WATERLILY));
+        fish_rodding.add(new ItemStack(Blocks.TRIPWIRE_HOOK));
+        fish_rodding.add(new ItemStack(Items.NAME_TAG));
+        fish_rodding.add(new ItemStack(Items.STICK));
+        fish_rodding.add(new ItemStack(Items.BOWL));
+        fish_rodding.add(new ItemStack(Items.ROTTEN_FLESH));
+        fish_rodding.add(new ItemStack(Items.STRING));
+        fish_rodding.add(new ItemStack(Items.LEATHER));
+        fish_rodding.add(new ItemStack(Items.DYE));
+        final Iterable<? extends MachineRecipe<IRecipeInput, Collection<ItemStack>>> recipe2 =
+                ic2.api.recipe.Recipes.blastfurnace.getRecipes();
+        final Iterator<? extends MachineRecipe<IRecipeInput, Collection<ItemStack>>> iter2 = recipe2.iterator();
+        List<MachineRecipe<IRecipeInput, Collection<ItemStack>>> lst2 = new ArrayList<>();
+        while (iter2.hasNext()) {
+            MachineRecipe<IRecipeInput, Collection<ItemStack>> recipe1 = iter2.next();
+            List<ItemStack> list = (List<ItemStack>) recipe1.getOutput();
+            if (list.get(0).isItemEqual(Ic2Items.advIronIngot)) {
+                list.get(1).shrink(list.get(1).getCount());
+            }
+        }
+        if (Loader.isModLoaded("refinedstorage")) {
+            RefinedStorageIntegration.init();
+        }
     }
 
     @SubscribeEvent
@@ -504,14 +577,23 @@ public final class IUCore {
         }
 
     }
+
     @SubscribeEvent
     public void onServerTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
             ++ItemUpgradeMachinesKit.tick;
-            if(ItemUpgradeMachinesKit.tick % 40 == 0)
-            for(int i =0; i < ItemUpgradeMachinesKit.inform.length;i++){
-                final List<ItemStack> list1 = IUItem.map_upgrades.get(i);
-                ItemUpgradeMachinesKit.inform[i] = ++ItemUpgradeMachinesKit.inform[i] % list1.size();
+            if (ItemUpgradeMachinesKit.tick % 40 == 0) {
+                for (int i = 0; i < ItemUpgradeMachinesKit.inform.length; i++) {
+                    final List<ItemStack> list1 = IUItem.map_upgrades.get(i);
+                    ItemUpgradeMachinesKit.inform[i] = ++ItemUpgradeMachinesKit.inform[i] % list1.size();
+                }
+            }
+            ++ListInformationUtils.tick;
+            if (ListInformationUtils.tick % 40 == 0) {
+                ListInformationUtils.index = (ListInformationUtils.index + 1) % ListInformationUtils.mechanism_info.size();
+                ListInformationUtils.index1 = (ListInformationUtils.index1 + 1) % ListInformationUtils.mechanism_info1.size();
+                ListInformationUtils.index2 = (ListInformationUtils.index2 + 1) % ListInformationUtils.mechanism_info2.size();
+
             }
         }
 

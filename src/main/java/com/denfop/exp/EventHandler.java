@@ -18,7 +18,9 @@ public class EventHandler {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onEnergyTileLoad(final EXPTileLoadEvent event) {
-
+        if (event.getWorld().isRemote) {
+            return;
+        }
         final EXPNetLocal local = EXPNetGlobal.getForWorld(event.getWorld());
 
         if (local != null) {
@@ -28,6 +30,9 @@ public class EventHandler {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onEnergyTileUnload(final EXPTileUnloadEvent event) {
+        if (event.getWorld().isRemote) {
+            return;
+        }
         final EXPNetLocal local = EXPNetGlobal.getForWorld(event.getWorld());
         if (local != null) {
             local.removeTile(event.tile);
@@ -36,15 +41,19 @@ public class EventHandler {
 
     @SubscribeEvent
     public void tick(final TickEvent.WorldTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) {
-            EXPNetGlobal.onTickStart(event.world);
-        } else if (event.phase == TickEvent.Phase.END) {
+        if (event.world.isRemote) {
+            return;
+        }
+        if (event.phase == TickEvent.Phase.END) {
             EXPNetGlobal.onTickEnd(event.world);
         }
     }
 
     @SubscribeEvent
     public void onWorldUnload(final WorldEvent.Unload event) {
+        if (event.getWorld().isRemote) {
+            return;
+        }
         EXPNetGlobal.onWorldUnload(event.getWorld());
     }
 

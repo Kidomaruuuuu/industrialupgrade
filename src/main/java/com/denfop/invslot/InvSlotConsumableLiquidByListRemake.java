@@ -1,8 +1,12 @@
 package com.denfop.invslot;
 
+import com.denfop.api.recipe.InvSlotOutput;
 import ic2.core.block.IInventorySlotHolder;
-import ic2.core.block.invslot.InvSlotConsumableLiquid;
+import ic2.core.util.StackUtil;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.IFluidTank;
+import org.apache.commons.lang3.mutable.MutableObject;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -31,6 +35,27 @@ public class InvSlotConsumableLiquidByListRemake extends InvSlotConsumableLiquid
 
     public Iterable<Fluid> getPossibleFluids() {
         return this.acceptedFluids;
+    }
+
+    public boolean processFromTank(IFluidTank tank, InvSlotOutput outputSlot) {
+        if (!this.isEmpty() && tank.getFluidAmount() > 0) {
+            MutableObject<ItemStack> output = new MutableObject();
+            boolean wasChange = false;
+            if (this.transferFromTank(
+                    tank,
+                    output,
+                    true
+            ) && (StackUtil.isEmpty(output.getValue()) || outputSlot.canAdd(output.getValue()))) {
+                wasChange = this.transferFromTank(tank, output, false);
+                if (!StackUtil.isEmpty(output.getValue())) {
+                    outputSlot.add(output.getValue());
+                }
+            }
+
+            return wasChange;
+        } else {
+            return false;
+        }
     }
 
 }

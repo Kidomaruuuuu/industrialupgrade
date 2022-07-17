@@ -1,5 +1,6 @@
 package com.denfop.items.modules;
 
+import com.denfop.Config;
 import com.denfop.Constants;
 import com.denfop.IUCore;
 import com.denfop.api.IModelRegister;
@@ -14,11 +15,12 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
@@ -36,7 +38,7 @@ public class ItemEntityModule extends ItemMulti<ItemEntityModule.Types> implemen
 
     public ItemEntityModule() {
         super(null, Types.class);
-        this.setCreativeTab(IUCore.tabssp1);
+        this.setCreativeTab(IUCore.ModuleTab);
         BlocksItems.registerItem((Item) this, IUCore.getIdentifier(NAME)).setUnlocalizedName(NAME);
         IUCore.proxy.addIModelRegister(this);
     }
@@ -62,14 +64,12 @@ public class ItemEntityModule extends ItemMulti<ItemEntityModule.Types> implemen
             }
 
             String entityId = EntityList.getEntityString(entity);
+            if (Config.EntityList.contains(entityId)) {
+                return false;
+            }
             NBTTagCompound root = new NBTTagCompound();
             assert entityId != null;
             root.setString("id", entityId);
-            if (entity instanceof EntitySheep) {
-                root.setInteger("type", ((EntitySheep) entity).getFleeceColor().getColorValue());
-            }
-
-
             entity.writeToNBT(root);
             root.setString("nameEntity", entity.getName());
             root.setInteger("id_mob", entity.getEntityId());
@@ -83,7 +83,29 @@ public class ItemEntityModule extends ItemMulti<ItemEntityModule.Types> implemen
             ItemStack stack1 = capturedMobUtils.toStack(this, 1, 1);
 
 
-            if (!player.inventory.addItemStackToInventory(stack1)) {
+            double var8 = 0.7D;
+            double var10 = (double) player.getEntityWorld().rand.nextFloat() * var8 + (1.0D - var8) * 0.5D;
+            double var12 = (double) player.getEntityWorld().rand.nextFloat() * var8 + (1.0D - var8) * 0.5D;
+            double var14 = (double) player.getEntityWorld().rand.nextFloat() * var8 + (1.0D - var8) * 0.5D;
+            EntityItem var16 = new EntityItem(
+                    player.getEntityWorld(),
+                    player.posX + var10,
+                    player.posY + var12,
+                    player.posZ + var14,
+                    stack1
+            );
+            var16.setDefaultPickupDelay();
+            player.getEntityWorld().spawnEntity(var16);
+
+            return true;
+        } else if (stack.getItemDamage() == 0) {
+
+            if (entity instanceof EntityPlayer) {
+                ItemStack stack1 = stack.copy();
+                NBTTagCompound root = new NBTTagCompound();
+                root.setString("name", entity.getDisplayName().getFormattedText());
+                stack.setCount(stack.getCount() - 1);
+
                 double var8 = 0.7D;
                 double var10 = (double) player.getEntityWorld().rand.nextFloat() * var8 + (1.0D - var8) * 0.5D;
                 double var12 = (double) player.getEntityWorld().rand.nextFloat() * var8 + (1.0D - var8) * 0.5D;
@@ -97,36 +119,8 @@ public class ItemEntityModule extends ItemMulti<ItemEntityModule.Types> implemen
                 );
                 var16.setDefaultPickupDelay();
                 player.getEntityWorld().spawnEntity(var16);
-            }
-            player.inventoryContainer.detectAndSendChanges();
-            return true;
-        } else if (stack.getItemDamage() == 0) {
 
-            if (entity instanceof EntityPlayer) {
-                ItemStack stack1 = stack.copy();
-                NBTTagCompound root = new NBTTagCompound();
-                root.setString("name", entity.getDisplayName().getFormattedText());
-                entity.writeToNBT(root);
-                stack1.setTagCompound(root);
-                entity.setDead();
-                stack.setCount(stack.getCount() - 1);
-                if (player.inventory.addItemStackToInventory(stack1)) {
-                } else {
-                    double var8 = 0.7D;
-                    double var10 = (double) player.getEntityWorld().rand.nextFloat() * var8 + (1.0D - var8) * 0.5D;
-                    double var12 = (double) player.getEntityWorld().rand.nextFloat() * var8 + (1.0D - var8) * 0.5D;
-                    double var14 = (double) player.getEntityWorld().rand.nextFloat() * var8 + (1.0D - var8) * 0.5D;
-                    EntityItem var16 = new EntityItem(
-                            player.getEntityWorld(),
-                            player.posX + var10,
-                            player.posY + var12,
-                            player.posZ + var14,
-                            stack1
-                    );
-                    var16.setDefaultPickupDelay();
-                    player.getEntityWorld().spawnEntity(var16);
-                }
-                player.inventoryContainer.detectAndSendChanges();
+
                 return true;
             } else {
                 return false;
@@ -137,6 +131,17 @@ public class ItemEntityModule extends ItemMulti<ItemEntityModule.Types> implemen
 
     }
 
+    @Override
+    public ActionResult<ItemStack> onItemRightClick(final World world, final EntityPlayer player, final EnumHand hand) {
+        ItemStack stack = player.getHeldItem(hand);
+        if (stack.getItemDamage() == 1) {
+            if (player.isSneaking()) {
+                stack.setTagCompound(new NBTTagCompound());
+                return ActionResult.newResult(EnumActionResult.SUCCESS, stack);
+            }
+        }
+        return super.onItemRightClick(world, player, hand);
+    }
 
     @Override
     public void addInformation(

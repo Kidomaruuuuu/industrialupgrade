@@ -50,6 +50,15 @@ public class GuiMultiMachine2 extends GuiIC2<ContainerMultiMachine> {
                 );
             }
         }
+        if (tile.exp != null) {
+            int exp = (int) (14.0F * tile.exp.getFillRatio());
+            if (heat >= 0) {
+                drawTexturedModalRect(
+                        xoffset + 34, yoffset + 47 + 14 - exp, 223, 14 - exp, 4,
+                        exp
+                );
+            }
+        }
         for (Slot slot : this.container.inventorySlots) {
             if (slot instanceof SlotInvSlot) {
                 int xX = xoffset + slot.xPos;
@@ -85,7 +94,10 @@ public class GuiMultiMachine2 extends GuiIC2<ContainerMultiMachine> {
         this.drawXCenteredString(this.xSize / 2, 6, Localization.translate(this.container.base.getName()), 4210752, false);
         String tooltip1 = ModUtils.getString(this.container.base.energy2) + "/" + ModUtils.getString(this.container.base.maxEnergy2) + " RF";
         String tooltip2 =
-                ModUtils.getString(this.container.base.energy.getEnergy()) + "/" + ModUtils.getString(Math.max( this.container.base.energy.getEnergy(),this.container.base.energy.getCapacity())) + " " +
+                ModUtils.getString(this.container.base.energy.getEnergy()) + "/" + ModUtils.getString(Math.max(
+                        this.container.base.energy.getEnergy(),
+                        this.container.base.energy.getCapacity()
+                )) + " " +
                         "EU";
 
         GuiTooltipHelper.drawAreaTooltip(this, x - this.guiLeft, y - this.guiTop, tooltip2, 5, 47, 19, 61);
@@ -96,7 +108,14 @@ public class GuiMultiMachine2 extends GuiIC2<ContainerMultiMachine> {
                         .getEnergy()) + "°C" + "/" + ModUtils.getString(this.container.base.getComponent().getCapacity()) + "°C";
 
         GuiTooltipHelper.drawAreaTooltip(this, x - this.guiLeft, y - this.guiTop, tooltip, 27, 47, 30, 61);
+        if (tile.exp != null) {
+            String tooltip4 =
+                    ModUtils.getString(this.container.base
+                            .exp
+                            .getEnergy()) + "/" + ModUtils.getString(this.container.base.exp.getCapacity());
 
+            GuiTooltipHelper.drawAreaTooltip(this, x - this.guiLeft, y - this.guiTop, tooltip4, 34, 47, 37, 61);
+        }
         i = 0;
         for (Slot slot : this.container.inventorySlots) {
             if (slot instanceof SlotInvSlot) {

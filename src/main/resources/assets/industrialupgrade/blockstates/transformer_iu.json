@@ -44,101 +44,12 @@
 	  "heev_active": {
         "model": "industrialupgrade:basemachine/heev_active"
       },
-	  "adv_reactor": {
-        "model": "industrialupgrade:basemachine/adv_reactor"
-      },
-	  "adv_reactor_active": {
-        "model": "industrialupgrade:basemachine/adv_reactor_active"
-      },
-	  "imp_reactor": {
-        "model": "industrialupgrade:basemachine/imp_reactor"
-      },
-	  "imp_reactor_active": {
-        "model": "industrialupgrade:basemachine/imp_reactor_active"
-      },
-	  "per_reactor": {
-        "model": "industrialupgrade:basemachine/per_reactor"
-      },
-	  "per_reactor_active": {
-        "model": "industrialupgrade:basemachine/per_reactor_active"
-      },
-	  "per_quantum_quarry": {
-        "model": "industrialupgrade:basemachine/per_quantum_quarry"
-      },
-	  "per_quantum_quarry_active": {
-        "model": "industrialupgrade:basemachine/per_quantum_quarry_active"
-      },
-	  "quantum_quarry": {
-        "model": "industrialupgrade:basemachine/quantum_quarry"
-      },
-	  "quantum_quarry_active": {
-        "model": "industrialupgrade:basemachine/quantum_quarry_active"
-      },
-	  "magnet": {
-        "model": "industrialupgrade:basemachine/magnet"
-      },
-	  "magnet_active": {
-        "model": "industrialupgrade:basemachine/magnet_active"
-      },
-	  "synthesis": {
-        "model": "industrialupgrade:basemachine/synthesis"
-      },
-	  "synthesis_active": {
-        "model": "industrialupgrade:basemachine/synthesis_active"
-      },
-	  "magnet_generator": {
-        "model": "industrialupgrade:basemachine/magnet_generator"
-      },
-	  "magnet_generator_active": {
-        "model": "industrialupgrade:basemachine/magnet_generator_active"
-      },
-	  "se_advgen": {
-        "model": "industrialupgrade:basemachine/se_advgen"
-      },
-	  "se_advgen": {
-        "model": "industrialupgrade:basemachine/se_advgen"
-      },
-	  "se_advgen": {
-        "model": "industrialupgrade:basemachine/se_advgen"
-      },
-	  "se_advgen": {
-        "model": "industrialupgrade:basemachine/se_advgen"
-      },
-	  "se_advgen": {
-        "model": "industrialupgrade:basemachine/se_advgen"
-      },
-	  "se_advgen": {
-        "model": "industrialupgrade:basemachine/se_advgen"
-      },
-	  "se_advgen": {
-        "model": "industrialupgrade:basemachine/se_advgen"
-      },
-	  "se_advgen": {
-        "model": "industrialupgrade:basemachine/se_advgen"
-      },
-	  "se_advgen": {
-        "model": "industrialupgrade:basemachine/se_advgen"
-      },
-	  "se_advgen": {
-        "model": "industrialupgrade:basemachine/se_advgen"
-      },
-	  "se_advgen": {
-        "model": "industrialupgrade:basemachine/se_advgen"
-      },
-	  "se_advgen": {
-        "model": "industrialupgrade:basemachine/se_advgen"
-      },
-	  "se_advgen": {
-        "model": "industrialupgrade:basemachine/se_advgen"
-      },
-	  "se_advgen": {
-        "model": "industrialupgrade:basemachine/se_advgen"
-      },
+	  "lv": { "model": "ic2:wiring/transformer/lv_transformer" },
+			"mv": { "model": "ic2:wiring/transformer/mv_transformer" },
+			"hv": { "model": "ic2:wiring/transformer/hv_transformer" },
+			"ev": { "model": "ic2:wiring/transformer/ev_transformer" }
 	  
 	  
-      "quantum_solar_panelrain": {
-        "model": "industrialupgrade:quantum_solar_panelrain"
-      }
     },
     "facing": {
       "down": {

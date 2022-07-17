@@ -12,7 +12,6 @@ public class ContainerMultiMatter extends ContainerFullInv<TileEntityMultiMatter
 
     public ContainerMultiMatter(EntityPlayer entityPlayer, TileEntityMultiMatter tileEntity1) {
         super(entityPlayer, tileEntity1, 166);
-
         addSlotToContainer(new SlotInvSlot(tileEntity1.amplifierSlot, 0, 72, 40));
         addSlotToContainer(new SlotInvSlot(tileEntity1.outputSlot, 0, 125, 59));
         addSlotToContainer(new SlotInvSlot(tileEntity1.containerslot, 0, 125, 23));
@@ -26,6 +25,7 @@ public class ContainerMultiMatter extends ContainerFullInv<TileEntityMultiMatter
         ret.add("energy");
         ret.add("scrap");
         ret.add("fluidTank");
+        ret.add("work");
 
         return ret;
     }

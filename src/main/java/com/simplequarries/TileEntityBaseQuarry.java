@@ -1,34 +1,40 @@
 package com.simplequarries;
 
 import com.denfop.IUCore;
+import com.denfop.IUItem;
 import com.denfop.Ic2Items;
 import com.denfop.api.Recipes;
+import com.denfop.api.audio.EnumTypeAudio;
+import com.denfop.api.audio.IAudioFixer;
 import com.denfop.api.recipe.BaseMachineRecipe;
+import com.denfop.api.recipe.InvSlotOutput;
+import com.denfop.api.vein.Type;
 import com.denfop.api.vein.Vein;
+import com.denfop.api.vein.VeinSystem;
 import com.denfop.audio.AudioSource;
 import com.denfop.audio.PositionSpec;
 import com.denfop.componets.AdvEnergy;
+import com.denfop.componets.CoolComponent;
 import com.denfop.componets.EXPComponent;
 import com.denfop.componets.QEComponent;
 import com.denfop.items.modules.EnumQuarryModules;
 import com.denfop.items.modules.EnumQuarryType;
 import com.denfop.tiles.base.FakePlayerSpawner;
 import com.denfop.utils.ExperienceUtils;
+import com.denfop.utils.ModUtils;
 import ic2.api.network.INetworkClientTileEntityEventListener;
-import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.api.upgrade.IUpgradableBlock;
-import ic2.api.upgrade.IUpgradeItem;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
-import ic2.core.block.invslot.InvSlotOutput;
 import ic2.core.init.Localization;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -42,13 +48,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
+import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui, INetworkTileEntityEventListener,
+public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui, IAudioFixer,
         INetworkClientTileEntityEventListener,
         IUpgradableBlock {
 
@@ -59,6 +66,7 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
     public final double speed;
     public final InvSlotOutput outputSlot;
     public final EXPComponent exp;
+    public final CoolComponent cold;
     public int min_y;
     public int max_y;
     public AudioSource audioSource;
@@ -79,12 +87,16 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
     public int chance;
     public int col;
     public Vein vein;
+    public EnumTypeAudio typeAudio = EnumTypeAudio.OFF;
+    public EnumTypeAudio[] valuesAudio = EnumTypeAudio.values();
+    public boolean vein_need = false;
 
     public TileEntityBaseQuarry(String name, double coef, int index) {
         this.name = name;
         this.energyconsume = 500 * coef;
         this.energy = this.addComponent(AdvEnergy.asBasicSink(this, 5E7D, 14));
         this.energy1 = this.addComponent(QEComponent.asBasicSink(this, 200000, 14));
+        this.cold = this.addComponent(CoolComponent.asBasicSink(this, 100));
 
         this.outputSlot = new InvSlotOutput(this, "output", 24);
         this.work = true;
@@ -103,6 +115,45 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
 
     }
 
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.multimachine.info"));
+            tooltip.add(Localization.translate("iu.simplyquarries.info") + index);
+            tooltip.add(Localization.translate("iu.simplyquarries.info1") + (int) this.constenergyconsume + " EU/t");
+            tooltip.add(Localization.translate("iu.simplyquarries.info2") + (int) this.speed + " " + Localization.translate("iu" +
+                    ".simplyquarries.info3"));
+        }
+
+        if (this.hasComponent(AdvEnergy.class)) {
+            AdvEnergy energy = this.getComponent(AdvEnergy.class);
+            if (!energy.getSourceDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSourceTier()));
+            } else if (!energy.getSinkDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSinkTier()));
+            }
+        }
+
+    }
+
+    public EnumTypeAudio getType() {
+        return typeAudio;
+    }
+
+    public void setType(EnumTypeAudio type) {
+        typeAudio = type;
+    }
+
+    public void initiate(int soundEvent) {
+        if (this.getType() == valuesAudio[soundEvent % valuesAudio.length]) {
+            return;
+        }
+        setType(valuesAudio[soundEvent % valuesAudio.length]);
+        IC2.network.get(true).initiateTileEntityEvent(this, soundEvent, true);
+    }
 
     public void readFromNBT(NBTTagCompound nbttagcompound) {
         super.readFromNBT(nbttagcompound);
@@ -113,6 +164,8 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
         this.max_y = nbttagcompound.getInteger("max_y");
         this.blockpos = new BlockPos(x, y, z);
         this.work = nbttagcompound.getBoolean("work");
+        this.vein_need = nbttagcompound.getBoolean("vein_need");
+
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound) {
@@ -125,22 +178,36 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
         nbttagcompound.setInteger("min_y", this.min_y);
         nbttagcompound.setInteger("max_y", this.max_y);
         nbttagcompound.setBoolean("work", work);
+        nbttagcompound.setBoolean("vein_need", vein_need);
         return nbttagcompound;
     }
 
-    protected void initiate(int soundEvent) {
-        IC2.network.get(true).initiateTileEntityEvent(this, soundEvent, true);
-    }
 
     @Override
     public void onPlaced(final ItemStack stack, final EntityLivingBase placer, final EnumFacing facing) {
         super.onPlaced(stack, placer, facing);
         this.max_y = placer.getEntityWorld().provider.getHeight();
+        this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
+        if (this.vein != null) {
+            if (this.vein.getType() != Type.VEIN) {
+                return;
+            }
+
+
+        }
     }
 
     protected void onLoaded() {
         super.onLoaded();
         this.input.update();
+        this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
+        if (this.vein != null) {
+            if (this.vein.getType() != Type.VEIN) {
+                return;
+            }
+
+
+        }
     }
 
     public boolean list(EnumQuarryModules type, ItemStack stack1) {
@@ -169,15 +236,13 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
 
     }
 
-    public void markDirty() {
-        super.markDirty();
-
-
-    }
 
     protected void updateEntityServer() {
         super.updateEntityServer();
         if (!this.work) {
+            return;
+        }
+        if (this.cold.getEnergy() >= 100) {
             return;
         }
         this.energyconsume = this.constenergyconsume;
@@ -186,244 +251,257 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
             int chunkz = this.getWorld().getChunkFromBlockCoords(this.pos).z * 16;
             this.blockpos = new BlockPos(chunkx, this.min_y, chunkz);
         }
-
-        for (int i = 0; i < this.speed; i++) {
-            if (this.energy.canUseEnergy(this.energyconsume)) {
-                this.energy.useEnergy(this.energyconsume);
-                if(!this.getActive()) {
-                    initiate(0);
-                    setActive(true);
-                }
-                if (!this.getWorld().isAirBlock(this.blockpos)) {
-                    Block block = this.getWorld().getBlockState(this.blockpos).getBlock();
-                    ItemStack stack = new ItemStack(block, 1,
-                            block.getMetaFromState(this.getWorld().getBlockState(this.blockpos))
-                    );
-                    if (!stack.isEmpty()) {
-                        if ((this.getWorld().getBlockState(this.blockpos).getMaterial() == Material.IRON || this
-                                .getWorld()
-                                .getBlockState(this.blockpos)
-                                .getMaterial() == Material.ROCK) && OreDictionary.getOreIDs(stack).length > 0) {
-                            int id = OreDictionary.getOreIDs(stack)[0];
-                            String name = OreDictionary.getOreName(id);
-                            if (name.startsWith("ore")) {
-
-                                if (list(this.list_modules, stack)) {
-                                    int chunkx = this.getWorld().getChunkFromBlockCoords(this.pos).x * 16 * col;
-                                    int chunkz = this.getWorld().getChunkFromBlockCoords(this.pos).z * 16 * col;
-                                    if (this.blockpos.getX() < chunkx + 16 * this.col) {
-                                        this.blockpos = this.blockpos.add(1, 0, 0);
-                                    } else {
-                                        if (this.blockpos.getZ() < chunkz + 16 * this.col) {
-                                            this.blockpos = this.blockpos.add(-16 * this.col, 0, 1);
-                                        } else {
-                                            if (this.blockpos.getY() < this.max_y) {
-                                                this.blockpos = this.blockpos.add(0, 1, -16 * col);
-                                            } else {
-                                                this.work = false;
-                                            }
-                                        }
-                                    }
-                                    if (this.col == 1) {
-                                        if (this.blockpos.getX() > chunkx + 16 || this.blockpos.getZ() > chunkz + 16) {
-                                            this.blockpos = null;
-                                        }
-                                    }
-                                    return;
-                                }
-
-                                if (this.player == null) {
-                                    this.player = new FakePlayerSpawner(getWorld());
-                                }
-                                ItemStack stack1 = new ItemStack(Items.ENCHANTED_BOOK);
-                                if (this.chance != 0) {
-                                    stack.addEnchantment(Enchantments.FORTUNE, this.chance);
-                                }
-
-                                final IBlockState state = this
-                                        .getWorld()
-                                        .getBlockState(this.blockpos);
-                                block.onBlockHarvested(this.world, this.blockpos, state, player);
-
-                                if (block.removedByPlayer(state, world, this.blockpos, player, true)) {
-                                    int exp = block.getExpDrop(state, world, this.blockpos, this.chance);
-                                    block.onBlockDestroyedByPlayer(world, this.blockpos, state);
-                                    block.harvestBlock(world, player, this.blockpos, state, null, stack1);
-                                    this.getWorld().setBlockToAir(this.blockpos);
-                                    this.exp.addEnergy(exp);
-                                    List<EntityItem> items = player.getEntityWorld().getEntitiesWithinAABB(
-                                            EntityItem.class,
-                                            new AxisAlignedBB(
-                                                    this.blockpos.getX() - 1,
-                                                    this.blockpos.getY() - 1,
-                                                    this.blockpos.getZ() - 1,
-                                                    this.blockpos.getX() + 1,
-                                                    this.blockpos.getY() + 1,
-                                                    this.blockpos.getZ() + 1
-                                            )
-                                    );
-                                    int chance = 0;
-                                    if (this.energy1.canUseEnergy(80)) {
-                                        chance = this.getWorld().rand.nextInt(101);
-                                        this.energy1.useEnergy(80);
-                                    }
-                                    for (EntityItem item : items) {
-                                        if (!this.furnace) {
-
-                                            if (this.mac_enabled) {
-                                                ItemStack stack4;
-                                                BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
-                                                        "macerator",
-                                                        false,
-                                                        item.getItem()
-                                                );
-                                                if (recipe != null) {
-                                                    stack4 = recipe.getOutput().items.get(0);
-                                                } else {
-                                                    stack4 = item.getItem();
-                                                }
-                                                if (this.outputSlot.canAdd(stack4)) {
-                                                    this.outputSlot.add(stack4);
-                                                    if (chance > 85) {
-                                                        this.outputSlot.add(stack4);
-                                                    }
-                                                    item.setDead();
-                                                }
-                                            } else if (this.comb_mac_enabled) {
-                                                ItemStack stack4;
-                                                BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
-                                                        "comb_macerator",
-                                                        false,
-                                                        item.getItem()
-                                                );
-                                                if (recipe != null) {
-                                                    stack4 = recipe.getOutput().items.get(0);
-                                                } else {
-                                                    stack4 = item.getItem();
-                                                }
-                                                if (this.outputSlot.canAdd(stack4)) {
-                                                    this.outputSlot.add(stack4);
-                                                    if (chance > 85) {
-                                                        this.outputSlot.add(stack4);
-                                                    }
-                                                    item.setDead();
-                                                }
-                                            } else {
-                                                if (this.outputSlot.canAdd(item.getItem())) {
-                                                    this.outputSlot.add(item.getItem());
-                                                    if (chance > 85) {
-                                                        this.outputSlot.add(item.getItem());
-                                                    }
-                                                    item.setDead();
-                                                }
-                                            }
-                                        } else {
-                                            ItemStack stack4 = item.getItem();
-                                            ItemStack stack5 = ItemStack.EMPTY;
-                                            if (this.mac_enabled) {
-                                                BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
-                                                        "macerator",
-                                                        false,
-                                                        item.getItem()
-                                                );
-                                                if (recipe != null) {
-                                                    stack5 = recipe.getOutput().items.get(0);
-                                                }
-
-
-                                            } else if (this.comb_mac_enabled) {
-                                                BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
-                                                        "comb_macerator",
-                                                        false,
-                                                        item.getItem()
-                                                );
-                                                if (recipe != null) {
-                                                    stack5 = recipe.getOutput().items.get(0);
-                                                }
-
-
-                                            }
-                                            BaseMachineRecipe recipe;
-                                            if (stack5.isEmpty()) {
-                                                recipe = Recipes.recipes.getRecipeOutput("furnace", false,
-                                                        stack4
-                                                );
-                                            } else {
-                                                recipe = Recipes.recipes.getRecipeOutput("furnace", false,
-                                                        stack5
-                                                );
-                                            }
-
-                                            if (recipe != null) {
-                                                stack4 = recipe.getOutput().items.get(0);
-                                            } else {
-                                                stack4 = item.getItem();
-                                            }
-
-                                            if (!stack5.isEmpty()) {
-                                                stack4.setCount(stack5.getCount());
-                                            } else if (!stack4.isEmpty()) {
-                                                stack4.setCount(item.getItem().getCount());
-                                            }
-                                            if (stack4.isEmpty()) {
-                                                if (this.outputSlot.canAdd(item.getItem())) {
-                                                    this.outputSlot.add(item.getItem());
-                                                    if (chance > 85) {
-                                                        this.outputSlot.add(item.getItem());
-                                                    }
-                                                }
-                                            } else {
-                                                if (this.outputSlot.canAdd(stack4)) {
-                                                    this.outputSlot.add(stack4);
-                                                    if (chance > 85) {
-                                                        this.outputSlot.add(stack4);
-                                                    }
-                                                }
-                                            }
-                                            item.setDead();
-                                        }
-
-                                    }
-
-                                }
+        if (vein_need) {
+            if (vein != null) {
+                if (vein.get()) {
+                    if (this.energy.getEnergy() > this.energyconsume) {
+                        if (this.vein.getCol() > 0) {
+                            final ItemStack stack1 = new ItemStack(IUItem.heavyore, 1, vein.getMeta());
+                            if (this.outputSlot.add(stack1)) {
+                                this.energy.useEnergy(this.energyconsume);
+                                this.vein.removeCol(1);
+                                this.cold.addEnergy(0.05);
 
                             }
                         }
                     }
                 }
-                int chunkx = this.getWorld().getChunkFromBlockCoords(this.pos).x * 16;
-                int chunkz = this.getWorld().getChunkFromBlockCoords(this.pos).z * 16;
-                if (this.blockpos.getX() < chunkx + 16 * col) {
-                    this.blockpos = blockpos.add(1, 0, 0);
-                } else {
-                    if (this.blockpos.getZ() < chunkz + 16 * col) {
-                        this.blockpos = this.blockpos.add(-16 * col, 0, 1);
-                    } else {
-                        if (this.blockpos.getY() < this.max_y) {
-                            this.blockpos = this.blockpos.add(0, 1, -16 * col);
-                        } else {
-                            this.work = false;
+            }
+        } else {
+            for (int i = 0; i < this.speed; i++) {
+                if (this.energy.canUseEnergy(this.energyconsume)) {
+                    this.energy.useEnergy(this.energyconsume);
+                    if (!this.getActive()) {
+                        initiate(0);
+                        setActive(true);
+
+                    }
+                    final IBlockState state = this
+                            .getWorld()
+                            .getBlockState(this.blockpos);
+                    if (!(state.getMaterial() == Material.AIR)) {
+                        Block block = state.getBlock();
+                        ItemStack stack = new ItemStack(block, 1,
+                                block.getMetaFromState(state)
+                        );
+                        this.cold.addEnergy(0.005);
+                        if (!stack.isEmpty()) {
+                            if ((state.getMaterial() == Material.IRON || state
+                                    .getMaterial() == Material.ROCK) && OreDictionary.getOreIDs(stack).length > 0) {
+                                int id = OreDictionary.getOreIDs(stack)[0];
+                                String name = OreDictionary.getOreName(id);
+
+                                if (name.startsWith("ore")) {
+
+                                    if (list(this.list_modules, stack)) {
+                                        int chunkx = this.getWorld().getChunkFromBlockCoords(this.pos).x * 16 * col;
+                                        int chunkz = this.getWorld().getChunkFromBlockCoords(this.pos).z * 16 * col;
+                                        if (this.blockpos.getX() < chunkx + 16 * this.col) {
+                                            this.blockpos = this.blockpos.add(1, 0, 0);
+                                        } else {
+                                            if (this.blockpos.getZ() < chunkz + 16 * this.col) {
+                                                this.blockpos = this.blockpos.add(-16 * this.col, 0, 1);
+                                            } else {
+                                                if (this.blockpos.getY() < this.max_y) {
+                                                    this.blockpos = this.blockpos.add(0, 1, -16 * col);
+                                                } else {
+                                                    this.work = false;
+                                                }
+                                            }
+                                        }
+                                        if (this.col == 1) {
+                                            if (this.blockpos.getX() > chunkx + 16 || this.blockpos.getZ() > chunkz + 16) {
+                                                this.blockpos = null;
+                                            }
+                                        }
+                                        return;
+                                    }
+
+                                    if (this.player == null) {
+                                        this.player = new FakePlayerSpawner(getWorld());
+                                    }
+                                    ItemStack stack1 = new ItemStack(Items.ENCHANTED_BOOK);
+                                    if (this.chance != 0) {
+                                        stack1.addEnchantment(Enchantments.FORTUNE, this.chance);
+                                    }
+
+
+                                    block.onBlockHarvested(this.world, this.blockpos, state, player);
+
+                                    if (block.removedByPlayer(state, world, this.blockpos, player, true)) {
+                                        int exp = block.getExpDrop(state, world, this.blockpos, this.chance);
+                                        block.onBlockDestroyedByPlayer(world, this.blockpos, state);
+                                        block.harvestBlock(world, player, this.blockpos, state, null, stack1);
+                                        this.exp.addEnergy(exp);
+                                        List<EntityItem> items = player.getEntityWorld().getEntitiesWithinAABB(
+                                                EntityItem.class,
+                                                new AxisAlignedBB(
+                                                        this.blockpos.getX() - 1,
+                                                        this.blockpos.getY() - 1,
+                                                        this.blockpos.getZ() - 1,
+                                                        this.blockpos.getX() + 1,
+                                                        this.blockpos.getY() + 1,
+                                                        this.blockpos.getZ() + 1
+                                                )
+                                        );
+                                        int chance = 0;
+                                        if (this.energy1.canUseEnergy(80)) {
+                                            chance = this.getWorld().rand.nextInt(101);
+                                            this.energy1.useEnergy(80);
+                                        }
+                                        for (EntityItem item : items) {
+                                            if (!this.furnace) {
+
+                                                if (this.mac_enabled) {
+                                                    ItemStack stack4;
+                                                    BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
+                                                            "macerator",
+                                                            false,
+                                                            item.getItem()
+                                                    );
+                                                    if (recipe != null) {
+                                                        stack4 = recipe.getOutput().items.get(0);
+                                                    } else {
+                                                        stack4 = item.getItem();
+                                                    }
+                                                    if (this.outputSlot.add(stack4)) {
+                                                        if (chance > 85) {
+                                                            this.outputSlot.add(stack4);
+                                                        }
+                                                        item.setDead();
+                                                    }
+                                                } else if (this.comb_mac_enabled) {
+                                                    ItemStack stack4;
+                                                    BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
+                                                            "comb_macerator",
+                                                            false,
+                                                            item.getItem()
+                                                    );
+                                                    if (recipe != null) {
+                                                        stack4 = recipe.getOutput().items.get(0);
+                                                    } else {
+                                                        stack4 = item.getItem();
+                                                    }
+                                                    if (this.outputSlot.add(stack4)) {
+                                                        if (chance > 85) {
+                                                            this.outputSlot.add(stack4);
+                                                        }
+                                                        item.setDead();
+                                                    }
+                                                } else {
+                                                    if (this.outputSlot.add(item.getItem())) {
+                                                        if (chance > 85) {
+                                                            this.outputSlot.add(item.getItem());
+                                                        }
+                                                        item.setDead();
+                                                    }
+                                                }
+                                            } else {
+                                                ItemStack stack4 = item.getItem();
+                                                ItemStack stack5 = ItemStack.EMPTY;
+                                                if (this.mac_enabled) {
+                                                    BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
+                                                            "macerator",
+                                                            false,
+                                                            item.getItem()
+                                                    );
+                                                    if (recipe != null) {
+                                                        stack5 = recipe.getOutput().items.get(0).copy();
+                                                    }
+
+
+                                                } else if (this.comb_mac_enabled) {
+                                                    BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
+                                                            "comb_macerator",
+                                                            false,
+                                                            item.getItem()
+                                                    );
+                                                    if (recipe != null) {
+                                                        stack5 = recipe.getOutput().items.get(0).copy();
+                                                    }
+
+
+                                                }
+                                                BaseMachineRecipe recipe;
+                                                if (stack5.isEmpty()) {
+                                                    recipe = Recipes.recipes.getRecipeOutput("furnace", false,
+                                                            stack4
+                                                    );
+                                                } else {
+                                                    recipe = Recipes.recipes.getRecipeOutput("furnace", false,
+                                                            stack5
+                                                    );
+                                                }
+
+                                                if (recipe != null) {
+                                                    stack4 = recipe.getOutput().items.get(0).copy();
+                                                } else {
+                                                    stack4 = item.getItem();
+                                                }
+
+                                                if (!stack5.isEmpty()) {
+                                                    stack4.setCount(stack5.getCount());
+                                                } else if (!stack4.isEmpty()) {
+                                                    stack4.setCount(item.getItem().getCount());
+                                                }
+                                                if (stack4.isEmpty()) {
+                                                    if (this.outputSlot.add(item.getItem())) {
+                                                        if (chance > 85) {
+                                                            this.outputSlot.add(item.getItem());
+                                                        }
+                                                    }
+                                                } else {
+                                                    if (this.outputSlot.add(stack4)) {
+                                                        if (chance > 85) {
+                                                            this.outputSlot.add(stack4);
+                                                        }
+                                                    }
+                                                }
+                                                item.setDead();
+                                            }
+
+                                        }
+
+                                    }
+
+                                }
+                            }
                         }
                     }
-                }
-                if (col == 1) {
-                    if (this.blockpos.getX() > chunkx + 16 || this.blockpos.getZ() > chunkz + 16) {
-                        this.blockpos = new BlockPos(chunkx, this.min_y, chunkz);
+                    int chunkx = this.getWorld().getChunkFromBlockCoords(this.pos).x * 16;
+                    int chunkz = this.getWorld().getChunkFromBlockCoords(this.pos).z * 16;
+                    if (this.blockpos.getX() < chunkx + 16 * col) {
+                        this.blockpos = blockpos.add(1, 0, 0);
+                    } else {
+                        if (this.blockpos.getZ() < chunkz + 16 * col) {
+                            this.blockpos = this.blockpos.add(-16 * col, 0, 1);
+                        } else {
+                            if (this.blockpos.getY() < this.max_y) {
+                                this.blockpos = this.blockpos.add(0, 1, -16 * col);
+                            } else {
+                                this.work = false;
+                            }
+                        }
                     }
-                }
+                    if (col == 1) {
+                        if (this.blockpos.getX() > chunkx + 16 || this.blockpos.getZ() > chunkz + 16) {
+                            this.blockpos = new BlockPos(chunkx, this.min_y, chunkz);
+                        }
+                    }
 
-            } else {
-                if(this.getActive()) {
-                    initiate(2);
-                    setActive(false);
+                } else {
+                    if (this.getActive()) {
+                        initiate(2);
+                        setActive(false);
+                    }
                 }
             }
         }
 
 
-        if (getActive()) {
+        if (getActive() && this.world.provider.getWorldTime() % 15 == 0) {
             ItemStack stack3 = Ic2Items.ejectorUpgrade;
-            ((IUpgradeItem) stack3.getItem()).onTick(stack3, this);
+            ModUtils.tick(stack3, this.outputSlot, this);
         }
     }
 
@@ -552,7 +630,11 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
                 }
                 break;
             case 4:
-                this.exp.useEnergy(ExperienceUtils.addPlayerXP1(entityPlayer, (int) this.exp.getEnergy()));
+                ExperienceUtils.addPlayerXP1(entityPlayer, (int) this.exp.getEnergy());
+                this.exp.useEnergy(this.exp.getEnergy());
+                break;
+            case 5:
+                vein_need = !vein_need;
                 break;
         }
     }
