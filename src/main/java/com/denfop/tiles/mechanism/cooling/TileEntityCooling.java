@@ -5,17 +5,24 @@ import com.denfop.container.ContainerCoolMachine;
 import com.denfop.gui.GuiCoolMachine;
 import com.denfop.tiles.base.TileEntityElectricMachine;
 import ic2.api.network.INetworkClientTileEntityEventListener;
+import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
+
+import java.util.List;
 
 public class TileEntityCooling extends TileEntityElectricMachine implements INetworkClientTileEntityEventListener {
 
 
     public final CoolComponent cold;
     public int max;
+    private int coef;
 
     public TileEntityCooling() {
         super(10000D, 14, 1);
@@ -56,14 +63,31 @@ public class TileEntityCooling extends TileEntityElectricMachine implements INet
             this.max = (int) this.cold.getCapacity();
         }
     }
-
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.machines_work_energy") + 50 + Localization.translate("iu" +
+                    ".machines_work_energy_type_eu"));
+        }
+        super.addInformation(stack, tooltip, advanced);
+    }
+    @Override
+    protected void onLoaded() {
+        super.onLoaded();
+        this.coef = (int) Math.max(Math.ceil(this.cold.storage / 16),1);
+    }
     protected void updateEntityServer() {
         super.updateEntityServer();
-        if (this.energy.getEnergy() >= 50 && this.cold.getEnergy() < this.cold.getCapacity()) {
+        if(this.cold.allow)
+        if (this.energy.getEnergy() >= 30 * this.coef && this.cold.getEnergy() < this.cold.getCapacity()) {
             this.cold.addEnergy(1);
-            this.energy.useEnergy(50);
+            this.energy.useEnergy(30* this.coef);
         }
-        if (this.world.provider.getWorldTime() % 20 == 0 && this.cold.getEnergy() > 1) {
+        if (this.world.provider.getWorldTime() % 20 == 0 && this.cold.getEnergy() >= 1) {
             this.cold.addEnergy(-1);
         }
     }

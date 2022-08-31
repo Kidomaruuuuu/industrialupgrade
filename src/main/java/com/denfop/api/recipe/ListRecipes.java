@@ -2,6 +2,7 @@ package com.denfop.api.recipe;
 
 import ic2.api.recipe.IRecipeInput;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ListRecipes implements IRecipes {
@@ -16,6 +18,7 @@ public class ListRecipes implements IRecipes {
     public Map<String, List<BaseMachineRecipe>> map_recipes = new HashMap<>();
     public Map<String, IBaseRecipe> map_recipe_managers = new HashMap<>();
     public Map<String, List<IRecipeInputStack>> map_recipe_managers_itemStack = new HashMap<>();
+    public Map<String, List<BaseFluidMachineRecipe>> map_recipes_fluid = new HashMap<>();
 
     public ListRecipes() {
         init();
@@ -52,6 +55,9 @@ public class ListRecipes implements IRecipes {
         this.addRecipeManager("comb_macerator", 1, true, true);
         this.addRecipeManager("handlerho", 1, true, true);
         this.addRecipeManager("matter", 1, false, false);
+        this.addRecipeManager("rotor_assembler", 5, true, true);
+        this.addRecipeManager("rod_assembler", 6, true, true);
+        this.addRecipeManager("rotor_upgrade", 2, false, true);
 
     }
 
@@ -61,6 +67,27 @@ public class ListRecipes implements IRecipes {
 
     public void addRecipeManager(String name, int size, boolean consume) {
         this.map_recipe_managers.put(name, new RecipeManager(name, size, consume));
+        if (!this.map_recipes_fluid.containsKey(name)) {
+            List<BaseFluidMachineRecipe> lst = new ArrayList<>();
+            this.map_recipes_fluid.put(name, lst);
+        }
+    }
+
+    public List<BaseFluidMachineRecipe> getFluidRecipes(String name) {
+        return this.map_recipes_fluid.get(name);
+    }
+
+    public BaseFluidMachineRecipe getFluidRecipe(List<FluidStack> fluidStacks, List<BaseFluidMachineRecipe> recipes) {
+        for (BaseFluidMachineRecipe recipe : recipes) {
+            if (recipe.matches(fluidStacks)) {
+                return recipe;
+            }
+        }
+        return null;
+    }
+
+    public void addRecipeManagerFluid(String name, int size, boolean consume) {
+        this.map_recipe_managers.put(name, new RecipeManager(name, size, consume));
         if (!this.map_recipes.containsKey(name)) {
             List<BaseMachineRecipe> lst = new ArrayList<>();
             List<IRecipeInputStack> lst1 = new ArrayList<>();
@@ -68,7 +95,6 @@ public class ListRecipes implements IRecipes {
             this.map_recipe_managers_itemStack.put(name, lst1);
         }
     }
-
 
     public void addRecipeManager(String name, int size, boolean consume, boolean require) {
         this.map_recipe_managers.put(name, new RecipeManager(name, size, consume, require));
@@ -339,6 +365,7 @@ public class ListRecipes implements IRecipes {
     }
 
     public List<IRecipeInputStack> getMap_recipe_managers_itemStack(String name) {
+
         return map_recipe_managers_itemStack.get(name);
     }
 
@@ -394,6 +421,16 @@ public class ListRecipes implements IRecipes {
 
     public List<BaseMachineRecipe> getRecipeList(String name) {
         return this.map_recipes.get(name);
+    }
+
+    @Override
+    public Set<Map.Entry<ItemStack, BaseMachineRecipe>> getRecipeStack(final String name) {
+        final List<BaseMachineRecipe> list = this.map_recipes.get(name);
+        Map<ItemStack, BaseMachineRecipe> baseMachineRecipeMap = new HashMap<>();
+        for (BaseMachineRecipe baseMachineRecipe : list) {
+            baseMachineRecipeMap.put(baseMachineRecipe.input.getInputs().get(0).getInputs().get(0), baseMachineRecipe);
+        }
+        return baseMachineRecipeMap.entrySet();
     }
 
     public BaseMachineRecipe getRecipeOutput(

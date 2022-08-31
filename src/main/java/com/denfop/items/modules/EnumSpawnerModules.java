@@ -8,7 +8,9 @@ public enum EnumSpawnerModules {
     EXPERIENCE_I(EnumSpawnerType.EXPERIENCE, 4, 25),
     EXPERIENCE_II(EnumSpawnerType.EXPERIENCE, 5, 50),
     SPAWN(EnumSpawnerType.SPAWN, 6, 2),
-    SPAWN_I(EnumSpawnerType.SPAWN, 7, 3);
+    SPAWN_I(EnumSpawnerType.SPAWN, 7, 3),
+    FIRE(EnumSpawnerType.FIRE, 8, 40),
+    ;
 
 
     public final EnumSpawnerType type;

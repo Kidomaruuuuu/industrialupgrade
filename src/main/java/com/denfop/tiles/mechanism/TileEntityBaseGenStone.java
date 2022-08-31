@@ -11,9 +11,14 @@ import com.denfop.tiles.base.TileEntityElectricMachine;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
+import ic2.core.init.Localization;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
 import java.util.List;
 
@@ -61,7 +66,18 @@ public abstract class TileEntityBaseGenStone extends TileEntityElectricMachine i
         super.readFromNBT(nbttagcompound);
         this.progress = nbttagcompound.getShort("progress");
     }
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate("iu.machines_work_energy_type_eu"));
+            tooltip.add(Localization.translate("iu.machines_work_length") + this.defaultOperationLength);
+        }
+        super.addInformation(stack,tooltip,advanced);
 
+    }
     public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound) {
         super.writeToNBT(nbttagcompound);
         nbttagcompound.setShort("progress", this.progress);
@@ -140,9 +156,7 @@ public abstract class TileEntityBaseGenStone extends TileEntityElectricMachine i
         int tier = this.upgradeSlot.getTier(this.defaultTier);
         this.energy.setSinkTier(tier);
         this.energy.setCapacity(this.upgradeSlot.getEnergyStorage(
-                this.defaultEnergyStorage,
-                this.defaultOperationLength,
-                this.defaultEnergyConsume
+                this.defaultEnergyStorage
         ));
         dischargeSlot.setTier(tier);
     }

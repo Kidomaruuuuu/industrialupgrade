@@ -184,7 +184,7 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
 
         addrecipe("ingotCaravky", new ItemStack(IUItem.iuingot, 1, 18), 600000);
         addrecipe("ingotCobalt", new ItemStack(IUItem.iuingot, 1, 16), 350000);
-        addrecipe(new ItemStack(IUItem.iuingot, 1, 16), new ItemStack(IUItem.iuingot, 1, 15), 300000);
+        addrecipe("ingotGermanium", new ItemStack(IUItem.iuingot, 1, 15), 300000);
 
     }
 
@@ -400,8 +400,8 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
                 size = this.output.getRecipe().input.getInputs().get(0).getInputs().get(0).getCount();
                 size = (int) Math.floor((float) this.inputSlot.get().getCount() / size);
                 int size1 = !this.outputSlot.isEmpty()
-                        ? (64 - this.outputSlot.get().getCount()) / output1.stackSize
-                        : 64 / output1.stackSize;
+                        ? (64 - this.outputSlot.get().getCount()) / output1.getCount()
+                        : 64 / output1.getCount();
 
                 size = Math.min(size1, size);
                 size = Math.min(size, output1.getMaxStackSize());
@@ -432,12 +432,13 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
                 }
 
 
-                this.progress = this.energy.getEnergy();
-                double k = this.progress;
-                this.guiProgress = (k / output.getRecipe().output.metadata.getDouble("energy"));
+                try {
+                    this.guiProgress = (this.energy.getEnergy() / this.energy.getCapacity());
+                }catch (Exception e){
+                    this.guiProgress = 0;
+                }
 
-
-                if (this.energy.getEnergy() >= output.getRecipe().output.metadata.getDouble("energy")) {
+                if (this.guiProgress >= 1) {
                     operate(output);
 
                     this.progress = 0;
@@ -477,22 +478,22 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
 
                 size = (int) Math.floor((float) this.inputSlot.get().getCount() / size);
                 int size1 = !this.outputSlot.isEmpty()
-                        ? (64 - this.outputSlot.get().getCount()) / output1.stackSize
-                        : 64 / output1.stackSize;
+                        ? (64 - this.outputSlot.get().getCount()) / output1.getCount()
+                        : 64 / output1.getCount();
 
                 size = Math.min(size1, size);
                 size = Math.min(size, output1.getMaxStackSize());
                 if (this.size_recipe != size) {
                     this.setOverclockRates();
                 }
-                double p = (this.energy.getEnergy() / (output.getRecipe().output.metadata.getDouble("energy") * size));
-                if (p <= 1) {
-                    this.guiProgress = p;
+
+                try {
+                    this.guiProgress = (this.energy.getEnergy() / this.energy.getCapacity());
+                }catch (Exception e){
+                    this.guiProgress = 0;
                 }
-                if (p > 1) {
-                    this.guiProgress = 1;
-                }
-                if (this.energy.getEnergy() >= (output.getRecipe().output.metadata.getDouble("energy") * size)) {
+
+                if ( this.guiProgress >= 1) {
                     operate(output, size);
 
                     this.progress = 0;
@@ -562,7 +563,7 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
 
     @Override
     public boolean canConnectEnergy(final EnumFacing enumFacing) {
-        return true;
+        return this.rf;
     }
 
     @Override
@@ -588,6 +589,7 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
     @Override
     public void setRecipeOutput(final MachineRecipe output) {
         this.output = output;
+        this.setOverclockRates();
     }
 
 }

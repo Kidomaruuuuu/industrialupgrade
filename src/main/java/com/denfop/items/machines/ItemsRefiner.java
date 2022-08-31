@@ -34,6 +34,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +50,7 @@ public class ItemsRefiner extends ItemMulti<ItemsRefiner.Types> implements IMode
         BlocksItems.registerItem((Item) this, IUCore.getIdentifier(NAME)).setUnlocalizedName(NAME);
         IUCore.proxy.addIModelRegister(this);
     }
+
     @SideOnly(Side.CLIENT)
     @Override
     public void addInformation(
@@ -57,6 +59,13 @@ public class ItemsRefiner extends ItemMulti<ItemsRefiner.Types> implements IMode
             final List<String> tooltip,
             final ITooltipFlag flagIn
     ) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.machines_work_energy") + 25 + Localization.translate("iu" +
+                    ".machines_work_energy_type_eu"));
+        }
         if (stack.hasTagCompound()) {
             NBTTagCompound nbt = StackUtil.getOrCreateNbtData(stack);
 
@@ -73,21 +82,24 @@ public class ItemsRefiner extends ItemMulti<ItemsRefiner.Types> implements IMode
                 super.addInformation(stack, world, tooltip, flagIn);
                 return;
             }
-            if(fluidStackList.size() == 1){
+            if (fluidStackList.size() == 1) {
                 tooltip.add(Localization.translate("iu.fluid.info") + fluidStackList.get(0).getLocalizedName());
-                tooltip.add(Localization.translate("iu.fluid.info1") +  fluidStackList.get(0).amount / 1000 + " B");
-            }else{
+                tooltip.add(Localization.translate("iu.fluid.info1") + fluidStackList.get(0).amount / 1000 + " B");
+            } else {
                 tooltip.add(Localization.translate("iu.fluid.info2"));
-                for(FluidStack fluidStack : fluidStackList)
+                for (FluidStack fluidStack : fluidStackList) {
                     tooltip.add(fluidStack.getLocalizedName() + " " + fluidStack.amount / 1000 + " B");
+                }
 
             }
+
             super.addInformation(stack, world, tooltip, flagIn);
             return;
         }
         super.addInformation(stack, world, tooltip, flagIn);
 
     }
+
     public EnumActionResult onItemUse(
             EntityPlayer player,
             World world,

@@ -54,5 +54,6 @@ public interface IUpgradeSystem {
 
     boolean shouldUpdate(EnumInfoUpgradeModules type, ItemStack stack1);
 
-    void updateBlackListFromStack( final ItemStack stack);
+    void updateBlackListFromStack(final ItemStack stack);
+
 }

@@ -66,6 +66,7 @@ import com.denfop.items.ItemExcitedNucleus;
 import com.denfop.items.ItemLens;
 import com.denfop.items.ItemPaints;
 import com.denfop.items.ItemPhotoniumGlass;
+import com.denfop.items.ItemRotorsUpgrade;
 import com.denfop.items.ItemSolidMatter;
 import com.denfop.items.ItemWindRod;
 import com.denfop.items.ItemsTemplates;
@@ -87,6 +88,7 @@ import com.denfop.items.energy.ItemMagnet;
 import com.denfop.items.energy.ItemPurifier;
 import com.denfop.items.energy.ItemQuantumSaber;
 import com.denfop.items.energy.ItemSpectralSaber;
+import com.denfop.items.energy.ItemWindMeter;
 import com.denfop.items.energy.instruments.EnumTypeInstruments;
 import com.denfop.items.energy.instruments.EnumVarietyInstruments;
 import com.denfop.items.energy.instruments.ItemEnergyInstruments;
@@ -167,28 +169,28 @@ public class Register {
     );
 
     public static void init() {
-
+        IUItem.rotors_upgrade = new ItemRotorsUpgrade();
         IUItem.excitednucleus = new ItemExcitedNucleus();
         IUItem.templates = new ItemsTemplates();
-        IUItem.rotor_wood = new ItemAdvancedWindRotor("rotor_wood", 5, 10800, 0.25F, 10, 60, new ResourceLocation(
+        IUItem.rotor_wood = new ItemAdvancedWindRotor("rotor_wood", 5, 10800 / 2, 0.25F, new ResourceLocation(
                 "ic2",
                 "textures/items/rotor" +
                         "/wood_rotor_model.png"
-        ));
-        IUItem.rotor_bronze = new ItemAdvancedWindRotor("rotor_bronze", 7, 86400, 0.5F, 14, 75, new ResourceLocation(
+        ), 1, 0);
+        IUItem.rotor_bronze = new ItemAdvancedWindRotor("rotor_bronze", 7, 86400 / 2, 0.5F, new ResourceLocation(
                 "ic2",
                 "textures/items/rotor/bronze_rotor_model.png"
-        ));
-        IUItem.rotor_iron = new ItemAdvancedWindRotor("rotor_iron", 7, 86400, 0.5F, 14, 75, new ResourceLocation(
+        ), 2, 1);
+        IUItem.rotor_iron = new ItemAdvancedWindRotor("rotor_iron", 7, (int) (86400 / 1.5), 0.5F, new ResourceLocation(
                 "ic2",
                 "textures/items/rotor/iron_rotor_model.png"
-        ));
-        IUItem.rotor_steel = new ItemAdvancedWindRotor("rotor_steel", 9, 172800, 0.75F, 17, 90, new ResourceLocation(
+        ), 3, 2);
+        IUItem.rotor_steel = new ItemAdvancedWindRotor("rotor_steel", 9, (int) (172800 / 1.5), 0.75F, new ResourceLocation(
                 "ic2",
                 "textures/items/rotor/steel_rotor_model.png"
-        ));
-        IUItem.rotor_carbon = new ItemAdvancedWindRotor("rotor_carbon", 11, 604800, 1.0F, 20, 110, new ResourceLocation(
-                "ic2", "textures/items/rotor/carbon_rotor_model.png"));
+        ), 4, 3);
+        IUItem.rotor_carbon = new ItemAdvancedWindRotor("rotor_carbon", 11, (int) (604800 / 1.5) , 1.0F, new ResourceLocation(
+                "ic2", "textures/items/rotor/carbon_rotor_model.png"), 5, 4);
         IUItem.blueprint = new ItemBlueprint();
         IUItem.neutroniumingot = new IUItemBase("neutroniumingot");
         IUItem.upgrade_speed_creation = (IUItemBase) new IUItemBase("upgrade_speed_creation").setCreativeTab(IUCore.ModuleTab);
@@ -242,7 +244,7 @@ public class Register {
         IUItem.pipes = new ItemPipes();
         IUItem.convertersolidmatter = TeBlockRegistry
                 .get(BlockConverterMatter.IDENTITY)
-                .setCreativeTab(IUCore.IUTab); // BlockConverterMatter
+                .setCreativeTab(IUCore.IUTab);
         IUItem.oilgetter = TeBlockRegistry.get(BlockPetrolQuarry.IDENTITY).setCreativeTab(IUCore.IUTab); // BlockPetrolQuarry
         IUItem.combinersolidmatter = TeBlockRegistry.get(BlockCombinerSolid.IDENTITY).setCreativeTab(IUCore.IUTab);
 
@@ -317,7 +319,8 @@ public class Register {
                 (float) Config.NanoTransfer,
                 Config.Nanotier
         );
-        IUItem.adv_nano_boots = new ItemArmorImprovemedNano("itemArmorNanoBoots",
+        IUItem.adv_nano_boots = new ItemArmorImprovemedNano(
+                "itemArmorNanoBoots",
                 EntityEquipmentSlot.FEET,
                 (float) Config.NanoBoots,
                 (float) Config.NanoTransfer,
@@ -330,43 +333,43 @@ public class Register {
         IUItem.lapotronCrystal = new ItemBattery("itembatlamacrystal", Config.Storagequantumsuit, 8092.0D, 4, false);
 
         IUItem.iridium = new ItemStack(new ItemAdvancedWindRotor("iridium", Config.Radius, Config.durability,
-                Config.efficiency, Config.minWindStrength, Config.maxWindStrength,
-                new ResourceLocation(Constants.MOD_ID, "textures/items/carbon_rotor_model_1.png")
+                Config.efficiency,
+                new ResourceLocation(Constants.MOD_ID, "textures/items/carbon_rotor_model_1.png"), 6, 5
         ));
         IUItem.compressiridium = new ItemStack(new ItemAdvancedWindRotor("compressiridium", Config.Radius1,
-                Config.durability1, Config.efficiency1, Config.minWindStrength1, Config.maxWindStrength1,
-                new ResourceLocation(Constants.MOD_ID, "textures/items/carbon_rotor_model_2.png")
+                Config.durability1, Config.efficiency1,
+                new ResourceLocation(Constants.MOD_ID, "textures/items/carbon_rotor_model_2.png"), 7, 6
         ));
         IUItem.spectral = new ItemStack(new ItemAdvancedWindRotor("spectral", Config.Radius2,
-                Config.durability2, Config.efficiency2, Config.minWindStrength2, Config.maxWindStrength2,
-                new ResourceLocation(Constants.MOD_ID, "textures/items/carbon_rotor_model_3.png")
+                Config.durability2, Config.efficiency2,
+                new ResourceLocation(Constants.MOD_ID, "textures/items/carbon_rotor_model_3.png"), 8, 7
         ));
         IUItem.myphical = new ItemStack(new ItemAdvancedWindRotor("myphical", Config.Radius5,
-                Config.durability5, Config.efficiency5, Config.minWindStrength5, Config.maxWindStrength5,
-                new ResourceLocation(Constants.MOD_ID, "textures/items/carbon_rotor_model_4.png")
+                Config.durability5, Config.efficiency5,
+                new ResourceLocation(Constants.MOD_ID, "textures/items/carbon_rotor_model_4.png"), 9, 8
         ));
 
         IUItem.photon = new ItemStack(new ItemAdvancedWindRotor("photon", Config.Radius3, Config.durability3,
-                Config.efficiency3, Config.minWindStrength3, Config.maxWindStrength3,
-                new ResourceLocation(Constants.MOD_ID, "textures/items/carbon_rotor_model_6.png")
+                Config.efficiency3,
+                new ResourceLocation(Constants.MOD_ID, "textures/items/carbon_rotor_model_6.png"), 10, 9
         ));
         IUItem.neutron = new ItemStack(new ItemAdvancedWindRotor("neutron", Config.Radius4, Config.durability4,
-                Config.efficiency4, Config.minWindStrength4, Config.maxWindStrength4,
-                new ResourceLocation(Constants.MOD_ID, "textures/items/carbon_rotor_model_5.png")
+                Config.efficiency4,
+                new ResourceLocation(Constants.MOD_ID, "textures/items/carbon_rotor_model_5.png"), 11, 10
         ));
 
         IUItem.barionrotor = new ItemStack(new ItemAdvancedWindRotor("barionrotor", Config.Radius5,
-                Config.durability4 * 4, Config.efficiency4 + 4, Config.minWindStrength5, Config.maxWindStrength5,
-                new ResourceLocation(Constants.MOD_ID, "textures/items/carbon_rotor_model_7.png")
+                Config.durability4 * 4, Config.efficiency4 * 2,
+                new ResourceLocation(Constants.MOD_ID, "textures/items/carbon_rotor_model_7.png"), 12, 11
         ));
 
         IUItem.adronrotor = new ItemStack(new ItemAdvancedWindRotor("adronrotor", Config.Radius5,
-                Config.durability4 * 16, Config.efficiency4 + 8, Config.minWindStrength5, Config.maxWindStrength5,
-                new ResourceLocation(Constants.MOD_ID, "textures/items/carbon_rotor_model_8.png")
+                Config.durability4 * 16, Config.efficiency4 * 4,
+                new ResourceLocation(Constants.MOD_ID, "textures/items/carbon_rotor_model_8.png"), 13, 12
         ));
         IUItem.ultramarinerotor = new ItemStack(new ItemAdvancedWindRotor("ultramarinerotor", Config.Radius5,
-                Config.durability4 * 64, Config.efficiency4 + 16, Config.minWindStrength5, Config.maxWindStrength5,
-                new ResourceLocation(Constants.MOD_ID, "textures/items/carbon_rotor_model_9.png")
+                Config.durability4 * 64, Config.efficiency4 * 8,
+                new ResourceLocation(Constants.MOD_ID, "textures/items/carbon_rotor_model_9.png"), 14, 13
         ));
 
 
@@ -586,10 +589,11 @@ public class Register {
         IUItem.module7 = new ItemAdditionModule();
         IUItem.module5 = new ItemModuleType();
         IUItem.module6 = new ItemModuleTypePanel();
-
+        IUItem.windmeter = new ItemWindMeter();
+        IUItem.rotorupgrade_schemes = new IUItemBase("rotorupgrade_schemes");
         IUItem.spectral_box = new IUItemBase("spectral_box");
         IUItem.adv_spectral_box = new IUItemBase("adv_spectral_box");
-        IUItem.Helium = new IUItemBase("helium");
+
         IUItem.coal_chunk1 = new IUItemBase("coal_chunk");
         IUItem.compresscarbon = new IUItemBase("compresscarbon");
         IUItem.compresscarbonultra = new IUItemBase("compresscarbonultra");

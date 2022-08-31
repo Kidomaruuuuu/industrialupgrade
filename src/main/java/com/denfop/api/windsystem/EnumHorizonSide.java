@@ -9,20 +9,23 @@ public enum EnumHorizonSide {
     E(),
     N(),
     S(),
-    NW(N,W),
-    SW(S,W),
-    EN(E,N),
-    ES(E,S),
-    EW(E,W),
-    SN(S,N),
+    NW(N, W),
+    SW(S, W),
+    EN(N, E),
+    ES(S, E),
+    EW(E, W),
+    SN(S, N),
     ;
+
     private List<EnumHorizonSide> enumHorizonSide;
 
-    EnumHorizonSide(EnumHorizonSide... enumHorizonSide){
-       this.enumHorizonSide = Arrays.asList(enumHorizonSide);
-       if(this.enumHorizonSide.isEmpty())
-           this.enumHorizonSide = Collections.singletonList(this);
+    EnumHorizonSide(EnumHorizonSide... enumHorizonSide) {
+        this.enumHorizonSide = Arrays.asList(enumHorizonSide);
+        if (this.enumHorizonSide.isEmpty()) {
+            this.enumHorizonSide = Collections.singletonList(this);
+        }
     }
+
 
     public List<EnumHorizonSide> getEnumWindSide() {
         return enumHorizonSide;

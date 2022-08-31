@@ -93,7 +93,7 @@ public final class PowerUtils {
                 Character.valueOf('A'),
                 Ic2Items.copperCableItem,
                 Character.valueOf('B'),
-                new ItemStack(IUItem.tranformer,1,8),
+                new ItemStack(IUItem.tranformer, 1, 8),
                 Character.valueOf('C'),
                 Ic2Items.electronicCircuit,
                 Character.valueOf('D'),
@@ -105,8 +105,15 @@ public final class PowerUtils {
                 new ItemStack(IUItem.module7, 1, 4)
         );
         Recipes.advRecipes.addRecipe(new ItemStack(PowerItem.module_fe),
-                "ABA", "CDC", "ABA", Character.valueOf('A'), new ItemStack(IUItem.basecircuit),
-                Character.valueOf('B'), new ItemStack(IUItem.tranformer,1,9), Character.valueOf('C'), new ItemStack(IUItem.basecircuit, 1, 4),
+                "ABA",
+                "CDC",
+                "ABA",
+                Character.valueOf('A'),
+                new ItemStack(IUItem.basecircuit),
+                Character.valueOf('B'),
+                new ItemStack(IUItem.tranformer, 1, 9),
+                Character.valueOf('C'),
+                new ItemStack(IUItem.basecircuit, 1, 4),
                 Character.valueOf('D'),
                 new ItemStack(IUItem.core, 1, 1)
         );

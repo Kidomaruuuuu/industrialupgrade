@@ -28,9 +28,12 @@ public class TileEntityWitherMaker extends TileEntityBaseWitherMaker {
     public TileEntityWitherMaker() {
         super(1, 1500, 1);
         this.inputSlotA = new InvSlotRecipes(this, "wither", this);
-
+        inputSlotA.setStackSizeLimit(1);
     }
+    public int getInventoryStackLimit() {
 
+        return 1;
+    }
     public static void init() {
         final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
         GenerationMicrochip(

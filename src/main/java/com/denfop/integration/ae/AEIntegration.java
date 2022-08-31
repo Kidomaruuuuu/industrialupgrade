@@ -15,6 +15,10 @@ public class AEIntegration {
                 Api.INSTANCE.definitions().materials().certusQuartzDust().maybeStack(1).get()
         );
         addmacerator(
+                Api.INSTANCE.definitions().materials().certusQuartzCrystalCharged().maybeStack(1).get(),
+                Api.INSTANCE.definitions().materials().certusQuartzDust().maybeStack(1).get()
+        );
+        addmacerator(
                 Api.INSTANCE.definitions().materials().fluixCrystal().maybeStack(1).get(),
                 Api.INSTANCE.definitions().materials().fluixDust().maybeStack(1).get()
         );

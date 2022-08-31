@@ -144,8 +144,15 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
 
             if (output.getRecipe().output.metadata.getShort("temperature") == 0 || output.getRecipe().output.metadata.getInteger(
                     "temperature") > this.heat.getEnergy()) {
+                if(!( this).heat.need)
+                    ( this).heat.need = true;
                 return;
-            }
+
+            } else
+            if(( this).heat.need)
+                ( this).heat.need = false;
+            ( this).heat.storage--;
+
             if (!this.getActive()) {
                 setActive(true);
             }
@@ -184,7 +191,8 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
                 this.heat.addEnergy(2);
             }
         }
-
+        if (output == null )
+            ( this).heat.useEnergy(1);
         if ((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark()) {
             setOverclockRates();
         }
@@ -263,7 +271,8 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
         }
         inputSlotA.load();
         this.getOutput();
-
+        if(this.output == null)
+            ( this).heat.need = false;
     }
 
     protected void onUnloaded() {

@@ -41,11 +41,7 @@ public class TileEntityEnrichment extends TileEntityDoubleElectricMachine {
                 new ItemStack(IUItem.itemiu, 1, 0)
         );
         addenrichment(new ItemStack(IUItem.itemiu, 1, 0), Ic2Items.reinforcedGlass, new ItemStack(IUItem.itemiu, 2, 1));
-        addenrichment(
-                new ItemStack(IUItem.Helium, 1),
-                new ItemStack(IUItem.cell_all, 1),
-                new ItemStack(IUItem.cell_all, 4, 2)
-        );
+
         addenrichment(
                 new ItemStack(IUItem.sunnarium, 1, 3),
                 new ItemStack(IUItem.itemiu, 1, 0),

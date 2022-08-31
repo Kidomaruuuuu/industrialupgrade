@@ -17,8 +17,6 @@ public class InvSlotBlastFurnace extends InvSlot {
     }
 
 
-
-
     public boolean accepts(ItemStack itemStack) {
 
         return itemStack.getItem().equals(Items.IRON_INGOT);
@@ -31,7 +29,6 @@ public class InvSlotBlastFurnace extends InvSlot {
     public void setStackSizeLimit(int stackSizeLimit) {
         this.stackSizeLimit = stackSizeLimit;
     }
-
 
 
 }

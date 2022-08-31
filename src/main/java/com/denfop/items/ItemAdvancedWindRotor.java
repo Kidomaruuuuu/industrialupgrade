@@ -2,41 +2,51 @@ package com.denfop.items;
 
 import com.denfop.Constants;
 import com.denfop.IUCore;
+import com.denfop.IUItem;
+import com.denfop.api.Recipes;
+import com.denfop.api.recipe.BaseMachineRecipe;
+import com.denfop.api.recipe.Input;
+import com.denfop.api.recipe.RecipeOutput;
+import com.denfop.api.windsystem.IWindRotor;
+import com.denfop.api.windsystem.upgrade.IRotorUpgradeItem;
+import com.denfop.api.windsystem.upgrade.RotorUpgradeItemInform;
+import com.denfop.api.windsystem.upgrade.RotorUpgradeSystem;
+import com.denfop.api.windsystem.upgrade.event.EventRotorItemLoad;
 import com.denfop.items.reactors.ItemGradualInt;
-import ic2.api.item.IKineticRotor;
-import ic2.core.block.kineticgenerator.gui.GuiWaterKineticGenerator;
-import ic2.core.block.kineticgenerator.gui.GuiWindKineticGenerator;
+import com.denfop.utils.ModUtils;
+import ic2.api.energy.EnergyNet;
+import ic2.api.recipe.IRecipeInputFactory;
 import ic2.core.init.Localization;
-import ic2.core.init.MainConfig;
-import ic2.core.profile.NotClassic;
-import ic2.core.util.ConfigUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
-@NotClassic
-public class ItemAdvancedWindRotor extends ItemGradualInt implements IKineticRotor {
 
-    private final int maxWindStrength;
-    private final int minWindStrength;
+public class ItemAdvancedWindRotor extends ItemGradualInt implements IWindRotor, IRotorUpgradeItem {
+
     private final int radius;
     private final float efficiency;
     private final ResourceLocation renderTexture;
-    private final boolean water;
+    private final int level;
+    private final int index;
+    private final int tier;
 
     public ItemAdvancedWindRotor(
-            String name, int Radius, int durability, float efficiency, int minWindStrength, int maxWindStrength,
-            ResourceLocation RenderTexture
+            String name, int Radius, int durability, float efficiency,
+            ResourceLocation RenderTexture, int level, int index
     ) {
         super(name, durability);
         this.setCreativeTab(IUCore.ItemTab);
@@ -44,9 +54,22 @@ public class ItemAdvancedWindRotor extends ItemGradualInt implements IKineticRot
         this.radius = Radius;
         this.efficiency = efficiency;
         this.renderTexture = RenderTexture;
-        this.minWindStrength = minWindStrength;
-        this.maxWindStrength = maxWindStrength;
-        this.water = false;
+        this.level = level;
+        this.index = index;
+        double KU1 = 20 * efficiency * 27.0F;
+        this.tier = EnergyNet.instance.getTierFromPower(KU1);
+        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
+        for(int i = 0; i<11;i++)
+        Recipes.recipes.addRecipe(
+                "rotor_upgrade",
+                new BaseMachineRecipe(
+                        new Input(
+                                input.forStack(new ItemStack(this,1,0)),
+                                input.forStack(new ItemStack(IUItem.rotors_upgrade,1, i))
+                        ),
+                        new RecipeOutput(null, new ItemStack(this,1,0))
+                )
+        );
     }
 
     @SideOnly(Side.CLIENT)
@@ -61,6 +84,16 @@ public class ItemAdvancedWindRotor extends ItemGradualInt implements IKineticRot
                 ':' +
                 "rotor" + "/" + name;
         return new ModelResourceLocation(loc, null);
+    }
+
+    @Override
+    public void onUpdate(@Nonnull ItemStack itemStack, @Nonnull World world, @Nonnull Entity entity, int slot, boolean par5) {
+        NBTTagCompound nbt = ModUtils.nbt(itemStack);
+
+        if (!RotorUpgradeSystem.instance.hasInMap(itemStack)) {
+            nbt.setBoolean("hasID", false);
+            MinecraftForge.EVENT_BUS.post(new EventRotorItemLoad(world, this, itemStack));
+        }
     }
 
     @SideOnly(Side.CLIENT)
@@ -79,35 +112,38 @@ public class ItemAdvancedWindRotor extends ItemGradualInt implements IKineticRot
     }
 
     @SideOnly(Side.CLIENT)
-    public void addInformation(@Nonnull ItemStack stack, World world, List<String> tooltip, ITooltipFlag advanced) {
-        tooltip.add(Localization.translate("ic2.itemrotor.wind.info", this.minWindStrength, this.maxWindStrength));
-        GearboxType type = null;
-        if (Minecraft.getMinecraft().currentScreen instanceof GuiWaterKineticGenerator) {
-            type = GearboxType.WATER;
-        } else if (Minecraft.getMinecraft().currentScreen instanceof GuiWindKineticGenerator) {
-            type = GearboxType.WIND;
+    public void addInformation(@Nonnull ItemStack stack, World world, List<String> tooltip, @Nonnull ITooltipFlag advanced) {
+        int windStrength = 10;
+        int windStrength1 = 20;
+        double KU = windStrength * this.getEfficiency(stack) * 27.0F;
+
+
+        double KU1 = windStrength1 * this.getEfficiency(stack) * 27.0F;
+
+        tooltip.add(Localization.translate("iu.windgenerator") + windStrength + " m/s " + Localization.translate("iu" +
+                ".windgenerator1") + ModUtils.getString(KU));
+        tooltip.add(Localization.translate("iu.windgenerator") + windStrength1 + " m/s " + Localization.translate("iu" +
+                ".windgenerator1") + ModUtils.getString(KU1));
+        tooltip.add(Localization.translate("gui.iu.tier")+": " + this.getLevel());
+
+        if (RotorUpgradeSystem.instance.hasInMap(stack)) {
+            final List<RotorUpgradeItemInform> lst = RotorUpgradeSystem.instance.getInformation(stack);
+            final int col = RotorUpgradeSystem.instance.getRemaining(stack);
+            if (!lst.isEmpty()) {
+                for (RotorUpgradeItemInform upgrade : lst) {
+                    tooltip.add(upgrade.getName());
+                }
+            }
+            if (col != 0) {
+                tooltip.add(Localization.translate("free_slot") + col + Localization.translate(
+                        "free_slot1"));
+            } else {
+                tooltip.add(Localization.translate("not_free_slot"));
+
+            }
+
+
         }
-
-        if (type != null) {
-            tooltip.add(Localization.translate("ic2.itemrotor.fitsin." + this.isAcceptedType(stack, type)));
-        }
-
-        int windStrength = 40;
-        int windStrength1 = 60;
-        double KU = windStrength * this.getEfficiency(stack) * 10.0F * ConfigUtil.getFloat(
-                MainConfig.get(),
-                "balance/energy/kineticgenerator/wind"
-        );
-        int eu = (int) (KU * 0.25D * (double) ConfigUtil.getFloat(MainConfig.get(), "balance/energy/generator/Kinetic"));
-        double KU1 = windStrength1 * this.getEfficiency(stack) * 10.0F * ConfigUtil.getFloat(
-                MainConfig.get(),
-                "balance/energy/kineticgenerator/wind"
-        );
-        int eu1 = (int) (KU1 * 0.25D * (double) ConfigUtil.getFloat(MainConfig.get(), "balance/energy/generator/Kinetic"));
-
-        tooltip.add(Localization.translate("iu.windgenerator") + windStrength + " " + Localization.translate("iu.windgenerator1") + eu);
-        tooltip.add(Localization.translate("iu.windgenerator") + windStrength1 + " " + Localization.translate("iu.windgenerator1") + eu1);
-
 
     }
 
@@ -123,16 +159,20 @@ public class ItemAdvancedWindRotor extends ItemGradualInt implements IKineticRot
         return this.efficiency;
     }
 
-    public int getMinWindStrength(ItemStack stack) {
-        return this.minWindStrength;
+    @Override
+    public int getLevel() {
+        return this.level;
     }
 
-    public int getMaxWindStrength(ItemStack stack) {
-        return this.maxWindStrength;
+    @Override
+    public int getIndex() {
+        return this.index;
     }
 
-    public boolean isAcceptedType(ItemStack stack, GearboxType type) {
-        return type == GearboxType.WIND || this.water;
+    @Override
+    public int getSourceTier() {
+        return tier;
     }
+
 
 }

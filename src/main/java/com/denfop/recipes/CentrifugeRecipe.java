@@ -2,15 +2,32 @@ package com.denfop.recipes;
 
 import com.denfop.IUItem;
 import com.denfop.Ic2Items;
+import ic2.api.recipe.IRecipeInput;
 import ic2.api.recipe.IRecipeInputFactory;
+import ic2.api.recipe.MachineRecipe;
 import ic2.api.recipe.Recipes;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
+import java.util.Collection;
+import java.util.List;
+
 public class CentrifugeRecipe {
 
     public static void init() {
+        final Iterable<? extends MachineRecipe<IRecipeInput, Collection<ItemStack>>> recipe1 = Recipes.centrifuge.getRecipes();
+        for (final MachineRecipe<IRecipeInput, Collection<ItemStack>> recipe2 : recipe1) {
+            List<ItemStack> list = (List<ItemStack>) recipe2.getOutput();
+            for(int i =0; i<list.size();i++){
+                if (list.get(i).isItemEqual(Ic2Items.smallSilverDust)) {
+                    list.remove(i);
+                    list.add(new ItemStack(IUItem.smalldust, 1, 14));
+                }
+            }
+
+
+        }
         addcentrifuge(IUItem.reactorDepletedamericiumDual, new ItemStack(IUItem.radiationresources, 2));
         addcentrifuge(IUItem.reactorDepletedamericiumQuad, new ItemStack(IUItem.radiationresources, 4));
         addcentrifuge(IUItem.reactorDepletedamericiumSimple, new ItemStack(IUItem.radiationresources, 1));
@@ -63,6 +80,7 @@ public class CentrifugeRecipe {
         addcentrifuge(10, new ItemStack(Ic2Items.smallLeadDust.getItem(), 1, 0));
         addcentrifuge(11, new ItemStack(IUItem.smalldust, 1, 7));
         addcentrifuge(12, new ItemStack(IUItem.smalldust, 1, 10));
+        addcentrifuge(14, null);
         addcentrifuge(15, null);
         addcentrifuge(16, null);
         addcentrifuge(17, new ItemStack(IUItem.smalldust, 1, 9));
@@ -79,6 +97,7 @@ public class CentrifugeRecipe {
         addcentrifuge1(10, new ItemStack(Ic2Items.smallLeadDust.getItem(), 1, 0));
         addcentrifuge1(11, new ItemStack(IUItem.smalldust, 1, 7));
         addcentrifuge1(12, new ItemStack(IUItem.smalldust, 1, 10));
+        addcentrifuge1(14, null);
         addcentrifuge1(15, null);
         addcentrifuge1(16, null);
         addcentrifuge1(17, new ItemStack(IUItem.smalldust, 1, 9));

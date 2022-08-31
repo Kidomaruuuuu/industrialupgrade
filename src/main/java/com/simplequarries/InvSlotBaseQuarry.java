@@ -22,6 +22,7 @@ public class InvSlotBaseQuarry extends InvSlot {
     @Override
     public void put(final int index, final ItemStack content) {
         super.put(index, content);
+        this.tile.energyconsume = this.tile.constenergyconsume;
         this.tile.comb_mac_enabled = false;
         this.tile.mac_enabled = false;
         this.tile.col = 1;
@@ -42,7 +43,7 @@ public class InvSlotBaseQuarry extends InvSlot {
                         break;
                     case DEPTH:
                         if (tile.col == 1) {
-                            tile.col = module.efficiency * module.efficiency;
+                            tile.col = module.efficiency;
                             tile.energyconsume += tile.consume * (module.cost);
                         }
                         break;
@@ -83,6 +84,7 @@ public class InvSlotBaseQuarry extends InvSlot {
 
     public void update() {
         this.tile.comb_mac_enabled = false;
+        this.tile.energyconsume = this.tile.constenergyconsume;
         this.tile.mac_enabled = false;
         this.tile.col = 1;
         this.tile.chance = 0;
@@ -102,7 +104,7 @@ public class InvSlotBaseQuarry extends InvSlot {
                         break;
                     case DEPTH:
                         if (tile.col == 1) {
-                            tile.col = module.efficiency * module.efficiency;
+                            tile.col = module.efficiency;
                             tile.energyconsume += tile.consume * (module.cost);
                         }
                         break;

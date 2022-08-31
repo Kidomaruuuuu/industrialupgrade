@@ -1,5 +1,6 @@
 package com.denfop;
 
+import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.blocks.BlockHeavyOre;
 import com.denfop.blocks.BlockOre;
 import com.denfop.blocks.BlockPreciousOre;
@@ -11,11 +12,13 @@ import com.denfop.items.ItemBlueprint;
 import com.denfop.items.ItemCell;
 import com.denfop.items.ItemCoreWind;
 import com.denfop.items.ItemExcitedNucleus;
+import com.denfop.items.ItemRotorsUpgrade;
 import com.denfop.items.ItemWindRod;
 import com.denfop.items.ItemsTemplates;
 import com.denfop.items.bags.ItemLeadBox;
 import com.denfop.items.book.ItemBook;
 import com.denfop.items.energy.ItemKatana;
+import com.denfop.items.energy.ItemWindMeter;
 import com.denfop.items.machines.ItemsAdminPanel;
 import com.denfop.items.machines.ItemsAdvRefiner;
 import com.denfop.items.machines.ItemsQuarryVein;
@@ -37,8 +40,10 @@ import net.minecraftforge.fluids.Fluid;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class IUItem {
 
@@ -75,7 +80,9 @@ public class IUItem {
     public static ItemStack compressor;
     public static ItemStack iridium;
     public static List<String> list = new ArrayList<>();
+    public static List<String> list1 = new ArrayList<>();
     public static List<String> list_space_upgrades = new ArrayList<>();
+    public static Set<Map.Entry<ItemStack, BaseMachineRecipe>> machineRecipe = new HashSet<>();
     public static ItemStack compressiridium;
     public static ItemStack spectral;
     public static ItemStack reactorDepletedprotonSimple;
@@ -380,6 +387,9 @@ public class IUItem {
     public static IUItemBase spectral_box;
     public static IUItemBase adv_spectral_box;
     public static Block blastfurnace;
+    public static ItemRotorsUpgrade rotors_upgrade;
+    public static IUItemBase rotorupgrade_schemes;
+    public static ItemWindMeter windmeter;
 
     public static void register_mineral() {
         name_mineral = new ArrayList<>();

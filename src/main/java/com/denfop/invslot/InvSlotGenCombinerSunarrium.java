@@ -29,6 +29,10 @@ public class InvSlotGenCombinerSunarrium extends InvSlot {
     public void put(final int index, final ItemStack content) {
         super.put(index, content);
         this.tile.lst = this.coefday();
+
+        this.tile.coef_day =  this.tile.lst.get(0);
+        this.tile.coef_night = this.tile.lst.get(1);
+        this.tile.update_night = this.tile.lst.get(2);
     }
 
     public List<Double> coefday() {

@@ -1,12 +1,12 @@
 package com.denfop.tiles.panels.entity;
 
 
-import aroma1997.uncomplication.enet.SunCoef;
 import cofh.redstoneflux.api.IEnergyProvider;
 import cofh.redstoneflux.api.IEnergyReceiver;
 import com.denfop.Config;
 import com.denfop.api.IAdvEnergyNet;
 import com.denfop.api.energy.IAdvEnergySource;
+import com.denfop.api.energy.SunCoef;
 import com.denfop.container.ContainerSolarPanels;
 import com.denfop.gui.GuiSolarPanels;
 import com.denfop.invslot.InvSlotPanel;
@@ -57,6 +57,7 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IAdvEne
         INetworkUpdateListener {
 
 
+    private final List<String> list_player = new ArrayList<>();
     public double coef;
     public List<IEnergyTile> list;
     public EnumSolarPanels solarpanels;
@@ -107,7 +108,6 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IAdvEne
     protected double perenergy;
     protected SunCoef sunCoef;
     List<TransferRFEnergy> transferRFEnergyList = new ArrayList<>();
-    private final List<String> list_player = new ArrayList<>();
 
     public TileEntitySolarPanel(
             final int tier, final double gDay,
@@ -140,7 +140,10 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IAdvEne
         this.perenergy = 0;
         this.tick = 0;
     }
-
+    @Override
+    public int getInventoryStackLimit() {
+        return 1;
+    }
     public TileEntitySolarPanel(EnumSolarPanels solarpanels) {
         this(solarpanels.tier, solarpanels.genday, solarpanels.producing, solarpanels.maxstorage, solarpanels);
 

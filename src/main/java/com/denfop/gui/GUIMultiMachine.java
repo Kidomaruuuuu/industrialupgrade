@@ -1,51 +1,63 @@
 package com.denfop.gui;
 
 import com.denfop.Constants;
+import com.denfop.api.gui.Component;
+import com.denfop.api.gui.EnumTypeComponent;
+import com.denfop.api.gui.GuiComponent;
 import com.denfop.api.recipe.InvSlotMultiRecipes;
+import com.denfop.componets.ComponentProcessRender;
 import com.denfop.container.ContainerMultiMachine;
-import com.denfop.container.ContainerMultiMetalFormer;
-import com.denfop.tiles.base.TileEntityMultiMachine;
-import com.denfop.utils.ModUtils;
-import ic2.core.GuiIC2;
-import ic2.core.block.wiring.CableType;
 import ic2.core.gui.GuiElement;
-import ic2.core.gui.VanillaButton;
 import ic2.core.init.Localization;
-import ic2.core.ref.ItemName;
 import ic2.core.slot.SlotInvSlot;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-public class GuiMultiMachine extends GuiIC2<ContainerMultiMachine> {
+public class GuiMultiMachine extends GuiIU<ContainerMultiMachine> {
 
     private final ContainerMultiMachine container;
+    private final GuiComponent process;
 
     public GuiMultiMachine(ContainerMultiMachine container1) {
-        super(container1);
+        super(container1, container1.base.getMachine().getComponent());
         this.container = container1;
-        if (container1 instanceof ContainerMultiMetalFormer) {
-            this.addElement((new VanillaButton(this, 7, 22, 20, 20, this.createEventSender(0))).withIcon(() -> {
-                switch (container1.base.getMode()) {
-                    case 1:
-                        return ItemName.forge_hammer.getItemStack();
-                    case 2:
-                        return ItemName.cutter.getItemStack();
-                    default:
-                        return ItemName.cable.getItemStack(CableType.copper);
+        this.process = new GuiComponent(this, 0, 0, EnumTypeComponent.MULTI_PROCESS,
+                new Component<>(new ComponentProcessRender(container1.base.multi_process, container1.base.getTypeMachine()))
+        );
+        this.addComponent(new GuiComponent(this, 8, 48, EnumTypeComponent.ENERGY_CLASSIC,
+                new Component<>(this.container.base.energy)
+        ));
+        this.addComponent(new GuiComponent(this, 17, 48, EnumTypeComponent.ENERGY_RF_CLASSIC,
+                new Component<>(this.container.base.energy2)
+        ));
+        this.addComponent(new GuiComponent(this, 27, 47, EnumTypeComponent.COLD,
+                new Component<>(this.container.base.cold)
+        ));
+        this.addComponent(new GuiComponent(this, 34, 47, EnumTypeComponent.EXP,
+                new Component<>(this.container.base.exp)
+        ));
+    }
+
+    @Override
+    protected void drawForegroundLayer(final int mouseX, final int mouseY) {
+        super.drawForegroundLayer(mouseX, mouseY);
+        this.drawForeground(mouseX, mouseY);
+        int i = 0;
+        for (Slot slot : this.container.inventorySlots) {
+            if (slot instanceof SlotInvSlot) {
+                int xX = slot.xPos;
+                int yY = slot.yPos;
+                SlotInvSlot slotInv = (SlotInvSlot) slot;
+                if (slotInv.invSlot instanceof InvSlotMultiRecipes) {
+                    this.process.setIndex(i);
+                    this.process.setX(xX);
+                    this.process.setY(yY + 19);
+                    this.process.drawForeground(mouseX, mouseY);
+                    i++;
                 }
-            }).withTooltip(() -> {
-                switch (container1.base.getMode()) {
-                    case 0:
-                        return Localization.translate("ic2.MetalFormer.gui.switch.Extruding");
-                    case 1:
-                        return Localization.translate("ic2.MetalFormer.gui.switch.Rolling");
-                    case 2:
-                        return Localization.translate("ic2.MetalFormer.gui.switch.Cutting");
-                    default:
-                        return null;
-                }
-            }));
+
+            }
         }
     }
 
@@ -60,107 +72,26 @@ public class GuiMultiMachine extends GuiIC2<ContainerMultiMachine> {
         this.mc.getTextureManager().bindTexture(new ResourceLocation("ic2", "textures/gui/infobutton.png"));
         this.drawTexturedRect(3.0D, 3.0D, 10.0D, 10.0D, 0.0D, 0.0D);
         this.mc.getTextureManager().bindTexture(getTexture());
-        TileEntityMultiMachine tile = this.container.base;
         int xoffset = (this.width - this.xSize) / 2;
         int yoffset = (this.height - this.ySize) / 2;
-        int chargeLevel = (int) (14.0F * tile.getChargeLevel2());
-        int chargeLevel1 = (int) (14.0F * tile.getChargeLevel1());
-        int heat = (int) (14.0F * tile.getComponent().getFillRatio());
+        this.drawBackground();
         int i = 0;
-        for (Slot slot : this.container.inventorySlots) {
-            if (slot instanceof SlotInvSlot) {
-                int xX = xoffset + slot.xPos;
-                int yY = yoffset + slot.yPos;
-                SlotInvSlot slotInv = (SlotInvSlot) slot;
-                if (slotInv.invSlot instanceof InvSlotMultiRecipes) {
-                    int down = 24 * (tile.getMachine().meta / 3);
-                    drawTexturedModalRect(xX, yY + 19, 176, 14 + down, 16, 24);
-                    int progress = (int) (24.0F * tile.getProgress(i));
-                    if (progress >= 0) {
-                        drawTexturedModalRect(xX, yY + 19, 192, 14 + down, 16, progress + 1);
-                    }
-                    i++;
-
-                }
-                drawTexturedModalRect(xX - 1, yY - 1, 238, 0, 18, 18);
-            }
-        }
-
-        if (heat >= 0) {
-            drawTexturedModalRect(
-                    xoffset + 27, yoffset + 47 + 14 - heat, 216, 14 - heat, 4,
-                    heat
-            );
-
-        }
-        if (tile.exp != null) {
-            int exp = (int) (14.0F * tile.exp.getFillRatio());
-            if (exp >= 0) {
-                drawTexturedModalRect(
-                        xoffset + 34, yoffset + 47 + 14 - exp, 223, 14 - exp, 4,
-                        exp
-                );
-            }
-        }
-
-        if (chargeLevel >= 0) {
-            drawTexturedModalRect(
-                    xoffset + 5, yoffset + 47 + 14 - chargeLevel, 176, 14 - chargeLevel, 14,
-                    chargeLevel
-            );
-        }
-        if (chargeLevel1 >= 0) {
-            drawTexturedModalRect(
-                    xoffset + 5 + 9, yoffset + 47 + 14 - chargeLevel1, 176 + 14, 14 - chargeLevel1, 14,
-                    chargeLevel1
-            );
-        }
-        this.drawXCenteredString(this.xSize / 2, 6, Localization.translate(this.container.base.getName()), 4210752, false);
-        String tooltip1 = ModUtils.getString(this.container.base.energy2) + "/" + ModUtils.getString(this.container.base.maxEnergy2) + " RF";
-        String tooltip2 =
-                ModUtils.getString(this.container.base.energy.getEnergy()) + "/" + ModUtils.getString(Math.max(
-                        this.container.base.energy.getEnergy(),
-                        this.container.base.energy.getCapacity()
-                )) + " " +
-                        "EU";
-
-        GuiTooltipHelper.drawAreaTooltip(this, x - this.guiLeft, y - this.guiTop, tooltip2, 5, 47, 19, 61);
-        GuiTooltipHelper.drawAreaTooltip(this, x - this.guiLeft, y - this.guiTop, tooltip1, 14, 47, 26, 61);
-        String tooltip =
-                ModUtils.getString(this.container.base
-                        .getComponent()
-                        .getEnergy()) + "°C" + "/" + ModUtils.getString(this.container.base.getComponent().getCapacity()) + "°C";
-
-        GuiTooltipHelper.drawAreaTooltip(this, x - this.guiLeft, y - this.guiTop, tooltip, 27, 47, 30, 61);
-        if (tile.exp != null) {
-            String tooltip4 = "EXP: " +
-                    ModUtils.getString(this.container.base
-                            .exp
-                            .getEnergy()) + "/" + ModUtils.getString(this.container.base.exp.getCapacity());
-
-            GuiTooltipHelper.drawAreaTooltip(this, x - this.guiLeft, y - this.guiTop, tooltip4, 34, 47, 37, 61);
-        }
-        i = 0;
         for (Slot slot : this.container.inventorySlots) {
             if (slot instanceof SlotInvSlot) {
                 int xX = slot.xPos;
                 int yY = slot.yPos;
-                SlotInvSlot slotInv = (SlotInvSlot) slot;
-                if (slotInv.invSlot instanceof InvSlotMultiRecipes) {
-
-                    double progress = (24.0F * this.container.base.getProgress(i));
-                    if (progress > 0) {
-                        GuiTooltipHelper.drawAreaTooltip(this, x - this.guiLeft, y - this.guiTop,
-                                ModUtils.getString(this.container.base.getProgress(i) * 100) + "%", xX, yY + 19, xX + 16,
-                                yY + 19 + 25
-                        );
-                    }
+                SlotInvSlot slotInv = (SlotInvSlot)slot;
+                if (slotInv.invSlot instanceof com.denfop.api.recipe.InvSlotMultiRecipes) {
+                    this.process.setIndex(i);
+                    this.process.setX(xX);
+                    this.process.setY(yY + 19);
+                    this.process.drawBackground(xoffset, yoffset);
                     i++;
                 }
-
             }
         }
-
+        this.mc.getTextureManager().bindTexture(getTexture());
+        this.drawXCenteredString(this.xSize / 2, 6, Localization.translate(this.container.base.getName()), 4210752, false);
         for (final GuiElement<?> guiElement : this.elements) {
             if (guiElement.isEnabled()) {
                 guiElement.drawBackground(x - this.guiLeft, y - this.guiTop);
@@ -172,18 +103,7 @@ public class GuiMultiMachine extends GuiIC2<ContainerMultiMachine> {
 
 
     public ResourceLocation getTexture() {
-        TileEntityMultiMachine tile = this.container.base;
-        String type = "";
-        if (tile.progress.length == 2) {
-            type = "_adv";
-        }
-        if (tile.progress.length == 3) {
-            type = "_imp";
-        }
-        if (tile.progress.length == 4) {
-            type = "_per";
-        }
-        return new ResourceLocation(Constants.MOD_ID, "textures/gui/GUIMachine" + type + ".png");
+        return new ResourceLocation(Constants.MOD_ID, "textures/gui/guimachine_main.png");
     }
 
 }

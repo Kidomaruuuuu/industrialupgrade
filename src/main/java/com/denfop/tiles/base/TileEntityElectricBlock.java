@@ -59,7 +59,7 @@ import java.util.Random;
 
 public class TileEntityElectricBlock extends TileEntityInventory implements IHasGui,
         INetworkClientTileEntityEventListener, IEnergyHandler, IEnergyReceiver,
-        IEnergyStorage, IEnergyProvider, IStorage {
+         IEnergyProvider, IStorage {
 
     public static EnumElectricBlock electricblock;
     public final double tier;
@@ -94,7 +94,7 @@ public class TileEntityElectricBlock extends TileEntityInventory implements IHas
 
         this.energy2 = 0.0D;
         this.tier = tier1;
-        this.output = output1;
+        this.output = EnergyNet.instance.getPowerFromTier((int) tier);
         this.player = null;
         this.maxStorage2 = maxStorage1 * 4;
         this.chargepad = chargepad;
@@ -144,7 +144,7 @@ public class TileEntityElectricBlock extends TileEntityInventory implements IHas
     public void addInformation(final ItemStack itemStack, final List<String> info, final ITooltipFlag advanced) {
 
 
-        info.add(Localization.translate("ic2.item.tooltip.Output") + " " + ModUtils.getString(this.getOutput()) + " EU/t ");
+        info.add(Localization.translate("ic2.item.tooltip.Output") + " " + ModUtils.getString(EnergyNet.instance.getPowerFromTier(this.energy.getSourceTier())) + " EU/t ");
         info.add(Localization.translate("ic2.item.tooltip.Capacity") + " " + ModUtils.getString(this.energy.getCapacity()) + " EU ");
         info.add(Localization.translate("ic2.item.tooltip.Capacity") + " " + ModUtils.getString(this.maxStorage2) + " RF ");
         NBTTagCompound nbttagcompound = ModUtils.nbt(itemStack);
@@ -688,22 +688,12 @@ public class TileEntityElectricBlock extends TileEntityInventory implements IHas
         return this.maxStorage2;
     }
 
-    public int getOutput() {
-        return (int) (this.output + this.output_plus);
-    }
 
-    public double getOutputEnergyUnitsPerTick() {
-        return this.output + this.output_plus;
-    }
 
-    @Override
-    public int getStored() {
-        return (int) this.energy.getEnergy();
-    }
 
-    public void setStored(int energy1) {
 
-    }
+
+
 
     public int addEnergy(int amount) {
         this.energy.addEnergy(amount);
@@ -811,6 +801,7 @@ public class TileEntityElectricBlock extends TileEntityInventory implements IHas
         this.energy2 = Util.limit(nbttagcompound.getDouble("energy2"), 0.0D,
                 this.maxStorage2
         );
+        this.rfeu = nbttagcompound.getBoolean("rfeu");
 
     }
 
@@ -828,15 +819,13 @@ public class TileEntityElectricBlock extends TileEntityInventory implements IHas
         super.writeToNBT(nbttagcompound);
         nbttagcompound.setDouble("energy2", this.energy2);
         nbttagcompound.setString("UUID", this.UUID);
-
+        nbttagcompound.setBoolean("rfeu", this.rfeu);
 
         return nbttagcompound;
     }
 
 
-    public boolean isTeleporterCompatible(EnumFacing side) {
-        return true;
-    }
+
 
     public void onGuiClosed(EntityPlayer player) {
     }

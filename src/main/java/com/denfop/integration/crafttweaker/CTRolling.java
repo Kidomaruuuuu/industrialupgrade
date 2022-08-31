@@ -25,7 +25,7 @@ import java.util.List;
 @ZenClass("mods.industrialupgrade.rolling")
 @ModOnly("industrialupgrade")
 @ZenRegister
-public class CTRolling {
+public class  CTRolling {
 
     @ZenMethod
     public static void addRecipe(IItemStack output, IIngredient container) {

@@ -76,7 +76,15 @@ public class TileEntityGenerationMicrochip extends TileEntityBaseGenerationMicro
                 new ItemStack(IUItem.basecircuit, 1, 1),
                 (short) 4000, true
         );
-
+        add(
+                "ingotAluminum",
+                new ItemStack(Items.REDSTONE, 1),
+                new ItemStack(Items.GOLD_INGOT),
+                new ItemStack(IUItem.iuingot, 1, 7),
+                Ic2Items.copperIngot,
+                new ItemStack(IUItem.basecircuit, 1, 1),
+                (short) 4000, true
+        );
         add(
                 new ItemStack(IUItem.iuingot, 1, 18),
                 new ItemStack(Items.REDSTONE, 1),
@@ -145,6 +153,71 @@ public class TileEntityGenerationMicrochip extends TileEntityBaseGenerationMicro
                 true
         );
 
+    }
+
+    private static void add(String first, ItemStack second, ItemStack three,
+                            ItemStack four, ItemStack five,
+                            ItemStack output, short temperatures, boolean check) {
+        IRecipeInput first1;
+        IRecipeInput second1;
+        IRecipeInput three1;
+        IRecipeInput four1;
+        IRecipeInput five1;
+
+        NBTTagCompound nbt = new NBTTagCompound();
+        nbt.setShort("temperature", temperatures);
+        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
+        if (check) {
+            first1 = input.forOreDict(first);
+            if (OreDictionary.getOreIDs(second).length > 0 && !OreDictionary
+                    .getOreName(OreDictionary.getOreIDs(second)[0])
+                    .isEmpty() && second.getItem() instanceof ItemIngots) {
+                second1 = input.forOreDict(OreDictionary.getOreName(OreDictionary.getOreIDs(second)[0]));
+            } else {
+                second1 = input.forStack(second);
+            }
+            if (OreDictionary.getOreIDs(three).length > 0 && !OreDictionary
+                    .getOreName(OreDictionary.getOreIDs(three)[0])
+                    .isEmpty() && three.getItem() instanceof ItemIngots) {
+                three1 = input.forOreDict(OreDictionary.getOreName(OreDictionary.getOreIDs(three)[0]));
+            } else {
+                three1 = input.forStack(three);
+            }
+            if (OreDictionary.getOreIDs(four).length > 0 && !OreDictionary
+                    .getOreName(OreDictionary.getOreIDs(four)[0])
+                    .isEmpty() && four.getItem() instanceof ItemIngots) {
+                four1 = input.forOreDict(OreDictionary.getOreName(OreDictionary.getOreIDs(four)[0]));
+            } else {
+                four1 = input.forStack(four);
+            }
+            if (OreDictionary.getOreIDs(five).length > 0 && !OreDictionary
+                    .getOreName(OreDictionary.getOreIDs(five)[0])
+                    .isEmpty() && five.getItem() instanceof ItemIngots) {
+                five1 = input.forOreDict(OreDictionary.getOreName(OreDictionary.getOreIDs(five)[0]));
+            } else {
+                five1 = input.forStack(five);
+            }
+            Recipes.recipes.addRecipe(
+                    "microchip",
+                    new BaseMachineRecipe(
+                            new Input(first1, second1, three1, four1, five1),
+                            new RecipeOutput(nbt, output)
+                    )
+            );
+        } else {
+            Recipes.recipes.addRecipe("microchip", new BaseMachineRecipe(
+                    new Input(
+                            input.forOreDict(first),
+                            input.forStack(second),
+                            input.forStack(three),
+                            input.forStack(four),
+                            input.forStack(five)
+                    ),
+                    new RecipeOutput(nbt, output)
+            ));
+
+
+        }
     }
 
     public static void add(
@@ -246,6 +319,7 @@ public class TileEntityGenerationMicrochip extends TileEntityBaseGenerationMicro
             if (OreDictionary.getOreIDs(first).length > 0 && !OreDictionary
                     .getOreName(OreDictionary.getOreIDs(first)[0])
                     .isEmpty() && first.getItem() instanceof ItemIngots) {
+
                 first1 = input.forOreDict(OreDictionary.getOreName(OreDictionary.getOreIDs(first)[0]));
             } else {
                 first1 = input.forStack(first);

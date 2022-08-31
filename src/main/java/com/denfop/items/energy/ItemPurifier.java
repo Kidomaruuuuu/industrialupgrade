@@ -180,16 +180,16 @@ public class ItemPurifier extends BaseElectricItem implements IModelRegister, IU
                 ItemStack stack_modulesize = ItemStack.EMPTY;
                 ItemStack stack_modulestorage = ItemStack.EMPTY;
                 ItemStack panel = ItemStack.EMPTY;
-                if (base.rf) {
+                if (base.energy2.isRf()) {
                     stack_rf = new ItemStack(IUItem.module7, 1, 4);
                 }
-                if (base.quickly) {
+                if (base.multi_process.quickly) {
                     stack_quickly = new ItemStack(IUItem.module_quickly);
                 }
-                if (base.modulesize) {
+                if (base.multi_process.modulesize) {
                     stack_modulesize = new ItemStack(IUItem.module_stack);
                 }
-                if (base.modulestorage) {
+                if (base.multi_process.modulestorage) {
                     stack_modulestorage = new ItemStack(IUItem.module_storage);
                 }
                 if (base.solartype != null) {
@@ -199,23 +199,23 @@ public class ItemPurifier extends BaseElectricItem implements IModelRegister, IU
                     final EntityItem item = new EntityItem(world);
                     if (!stack_rf.isEmpty()) {
                         item.setItem(stack_rf);
-                        base.module--;
-                        base.rf = false;
+                        base.multi_process.shrinkModule(1);
+                        base.energy2.setRf(false);
                     } else if (!stack_quickly.isEmpty()) {
                         item.setItem(stack_quickly);
-                        base.module--;
-                        base.quickly = false;
+                        base.multi_process.shrinkModule(1);
+                        base.multi_process.setQuickly(false);
                     } else if (!stack_modulesize.isEmpty()) {
                         item.setItem(stack_modulesize);
-                        base.modulesize = false;
-                        base.module--;
+                        base.multi_process.setModulesize(false);
+                        base.multi_process.shrinkModule(1);
                     } else if (!panel.isEmpty()) {
                         item.setItem(panel);
                         base.solartype = null;
                     } else if (!stack_modulestorage.isEmpty()) {
                         item.setItem(stack_modulestorage);
-                        base.modulestorage = false;
-                        base.module--;
+                        base.multi_process.setModulestorage(false);
+                        base.multi_process.shrinkModule(1);
                     }
                     if (!player.getEntityWorld().isRemote) {
                         item.setLocationAndAngles(player.posX, player.posY, player.posZ, 0.0F, 0.0F);
@@ -237,29 +237,29 @@ public class ItemPurifier extends BaseElectricItem implements IModelRegister, IU
             } else {
                 TileEntityMultiMachine base = (TileEntityMultiMachine) tile;
                 List<ItemStack> stack_list = new ArrayList<>();
-                if (base.rf) {
+                if (base.energy2.isRf()) {
                     stack_list.add(new ItemStack(IUItem.module7, 1, 4));
-                    base.rf = false;
-                    base.module--;
+                    base.energy2.setRf(false);
+                    base.multi_process.shrinkModule(1);
                 }
-                if (base.quickly) {
+                if (base.multi_process.quickly) {
                     stack_list.add(new ItemStack(IUItem.module_quickly));
-                    base.quickly = false;
-                    base.module--;
+                    base.multi_process.setQuickly(false);
+                    base.multi_process.shrinkModule(1);
                 }
-                if (base.modulesize) {
+                if (base.multi_process.modulesize) {
                     stack_list.add(new ItemStack(IUItem.module_stack));
-                    base.modulesize = false;
-                    base.module--;
+                    base.multi_process.setModulesize(false);
+                    base.multi_process.shrinkModule(1);
                 }
                 if (base.solartype != null) {
                     stack_list.add(new ItemStack(IUItem.module6, 1, base.solartype.meta));
                     base.solartype = null;
                 }
-                if (base.modulestorage) {
+                if (base.multi_process.modulestorage) {
                     stack_list.add(new ItemStack(IUItem.module_storage));
-                    base.modulestorage = false;
-                    base.module--;
+                    base.multi_process.setModulestorage(false);
+                    base.multi_process.shrinkModule(1);
 
                 }
                 for (ItemStack stack : stack_list) {

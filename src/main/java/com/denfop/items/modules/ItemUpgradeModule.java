@@ -7,6 +7,7 @@ import com.denfop.api.upgrade.UpgradeItemInform;
 import com.denfop.items.EnumInfoUpgradeModules;
 import ic2.core.block.state.IIdProvider;
 import ic2.core.init.BlocksItems;
+import ic2.core.init.Localization;
 import ic2.core.item.ItemMulti;
 import ic2.core.ref.ItemName;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -40,14 +41,16 @@ public class ItemUpgradeModule extends ItemMulti<ItemUpgradeModule.Types> implem
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void addInformation(
             final ItemStack stack,
             @Nullable final World worldIn,
             final List<String> tooltip,
             @Nonnull final ITooltipFlag flagIn
     ) {
-        tooltip.add(new UpgradeItemInform(getType(stack.getItemDamage()), 1).getName());
-
+        final UpgradeItemInform upgrade = new UpgradeItemInform(getType(stack.getItemDamage()), 1);
+        tooltip.add(upgrade.getName());
+        tooltip.add(Localization.translate("iu.upgrade_item.info")+upgrade.upgrade.max);
         super.addInformation(stack, worldIn, tooltip, flagIn);
     }
 

@@ -2,7 +2,6 @@ package com.denfop.invslot;
 
 import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlot;
-import ic2.core.util.StackUtil;
 import net.minecraft.item.ItemFishingRod;
 import net.minecraft.item.ItemStack;
 
@@ -19,9 +18,6 @@ public class InvSlotFisher extends InvSlot {
         return stack1.isEmpty() && stack2.isEmpty() || stack1.getItem() == stack2.getItem() && (!stack1.getHasSubtypes() && !stack1.isItemStackDamageable() || stack1.getItemDamage() == stack2.getItemDamage());
     }
 
-    public static boolean isStackEqualStrict(ItemStack stack1, ItemStack stack2) {
-        return isStackEqual(stack1, stack2) && ItemStack.areItemStackTagsEqual(stack1, stack2);
-    }
 
     public boolean accepts(ItemStack itemStack) {
         return itemStack.getItem() instanceof ItemFishingRod;
@@ -36,36 +32,18 @@ public class InvSlotFisher extends InvSlot {
     }
 
     public void consume(int amount) {
-        consume(amount, false, false);
+        consume(amount, false);
     }
 
-    public void consume(int amount, boolean simulate, boolean consumeContainers) {
-        ItemStack ret = null;
+    public void consume(int amount, boolean simulate) {
         for (int i = 0; i < size(); i++) {
             ItemStack stack = get(i);
-            if (stack != null && stack.getCount() >= 1 &&
-
-                    accepts(stack) && (ret == null ||
-                    isStackEqualStrict(stack, ret)) && (stack.getCount() == 1 || consumeContainers ||
-                    !stack.getItem().hasContainerItem(stack))) {
+            if (!stack.isEmpty() && amount > 0) {
                 int currentAmount = Math.min(amount, stack.getCount());
-                amount -= currentAmount;
                 if (!simulate) {
-                    if (stack.getCount() == currentAmount) {
-                        if (!consumeContainers && stack.getItem().hasContainerItem(stack)) {
-                            put(i, stack.getItem().getContainerItem(stack));
-                        } else {
-                            put(i, null);
-                        }
-                    } else {
-                        stack.setCount(stack.getCount() - currentAmount);
-                    }
+                    stack.shrink(currentAmount);
                 }
-                if (ret == null) {
-                    ret = StackUtil.copyWithSize(stack, currentAmount);
-                } else {
-                    ret.setCount(ret.getCount() + currentAmount);
-                }
+                amount -= currentAmount;
                 if (amount == 0) {
                     break;
                 }

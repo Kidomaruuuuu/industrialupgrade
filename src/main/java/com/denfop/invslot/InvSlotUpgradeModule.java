@@ -25,7 +25,10 @@ public class InvSlotUpgradeModule extends InvSlot {
         int speed = 0;
         int experience = 0;
         this.tile.costenergy = this.tile.defaultconsume;
+        int fireAspect = 0;
+
         for (int i = 0; i < this.size(); i++) {
+            this.tile.lootContext[i] = null;
             if (!this.get(i).isEmpty()) {
                 EnumSpawnerModules module = EnumSpawnerModules.getFromID(this.get(i).getItemDamage());
                 EnumSpawnerType type = module.type;
@@ -54,6 +57,10 @@ public class InvSlotUpgradeModule extends InvSlot {
                             this.tile.costenergy += (module.percent * this.tile.costenergy) / 100;
                         }
                         break;
+                    case FIRE:
+                        fireAspect+=1;
+                        this.tile.costenergy += module.percent * this.tile.costenergy / 100;
+                        break;
                 }
             }
         }
@@ -61,13 +68,8 @@ public class InvSlotUpgradeModule extends InvSlot {
         this.tile.spawn = Math.min(4, spawn);
         this.tile.speed = Math.min(80, speed);
         this.tile.experience = Math.min(100, experience);
-        int fireAspect = this.tile.getEnchant(20);
-        int loot = this.tile.getEnchant(21);
-        if (!this.tile.getWorld().isRemote) {
-            this.tile.player.fireAspect = fireAspect;
-            this.tile.player.loot = loot;
-            this.tile.player.loot += this.tile.chance;
-        }
+        this.tile.fireAspect = Math.min(1, fireAspect);
+
     }
 
     @Override
@@ -78,7 +80,9 @@ public class InvSlotUpgradeModule extends InvSlot {
         int speed = 0;
         int experience = 0;
         this.tile.costenergy = this.tile.defaultconsume;
+        int fireAspect = 0;
         for (int i = 0; i < this.size(); i++) {
+            this.tile.lootContext[i] = null;
             if (!this.get(i).isEmpty()) {
                 EnumSpawnerModules module = EnumSpawnerModules.getFromID(this.get(i).getItemDamage());
                 EnumSpawnerType type = module.type;
@@ -107,6 +111,10 @@ public class InvSlotUpgradeModule extends InvSlot {
                             this.tile.costenergy += (module.percent * this.tile.costenergy) / 100;
                         }
                         break;
+                    case FIRE:
+                        fireAspect+=1;
+                        this.tile.costenergy += module.percent * this.tile.costenergy / 100;
+                        break;
                 }
             }
         }
@@ -114,13 +122,8 @@ public class InvSlotUpgradeModule extends InvSlot {
         this.tile.spawn = Math.min(4, spawn);
         this.tile.speed = Math.min(80, speed);
         this.tile.experience = Math.min(100, experience);
-        int fireAspect = this.tile.getEnchant(20);
-        int loot = this.tile.getEnchant(21);
-        if (!this.tile.getWorld().isRemote) {
-            this.tile.player.fireAspect = fireAspect;
-            this.tile.player.loot = loot;
-            this.tile.player.loot += this.tile.chance;
-        }
+        this.tile.fireAspect = Math.min(1, fireAspect);
+
     }
 
     public boolean accepts(ItemStack itemStack) {

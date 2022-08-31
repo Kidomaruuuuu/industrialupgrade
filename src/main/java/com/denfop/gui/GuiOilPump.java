@@ -1,6 +1,7 @@
 package com.denfop.gui;
 
 import com.denfop.Constants;
+import com.denfop.api.vein.Type;
 import com.denfop.container.ContainerOilPump;
 import ic2.core.GuiIC2;
 import ic2.core.gui.TankGauge;
@@ -27,21 +28,25 @@ public class GuiOilPump extends GuiIC2<ContainerOilPump> {
         TankGauge.createNormal(this, 96, 22, container.base.fluidTank).drawForeground(par1, par2);
 
         String tooltip;
-        if (this.container.base.find && this.container.base.count > 0 & this.container.base.maxcount > 0) {
+
+            if (this.container.base.find && this.container.base.count > 0 && this.container.base.maxcount > 0 && this.container.base.type == Type.OIL.ordinal()) {
 
 
-            tooltip =
-                    Localization.translate("iu.fluidneft") + ": " + this.container.base
-                            .count + "/" + this.container.base.maxcount
-                            + Localization.translate("ic2.generic.text.mb");
-        } else {
-            tooltip = Localization.translate("iu.notfindoil");
+                tooltip =
+                        Localization.translate("iu.fluidneft") + ": " + this.container.base
+                                .count + "/" + this.container.base.maxcount
+                                + Localization.translate("ic2.generic.text.mb");
+                new AdvArea(this, 43, 39, 52, 53).withTooltip(tooltip).drawForeground(par1, par2);
 
-        }
+            } else {
+                tooltip = Localization.translate("iu.notfindoil");
+
+            }
+
         new AdvArea(this, 43, 39, 52, 53).withTooltip(tooltip).drawForeground(par1, par2);
 
         int temp = 0;
-        if (this.container.base.find && this.container.base.maxcount > 0) {
+        if (this.container.base.find && this.container.base.maxcount > 0&& this.container.base.type == Type.OIL.ordinal()) {
 
             temp = 14 * this.container.base
                     .count / this.container.base.maxcount;
@@ -49,8 +54,9 @@ public class GuiOilPump extends GuiIC2<ContainerOilPump> {
         }
         temp = Math.min(14, temp);
         this.mc.getTextureManager().bindTexture(getTexture());
+
         if (temp > 0) {
-            drawTexturedModalRect(43, +39 + 14 - temp, 177, 130 - temp, 10, temp);
+            drawTexturedModalRect(43, 39 + 14 - temp, 177, 130 - temp, 10, temp);
 
         }
     }

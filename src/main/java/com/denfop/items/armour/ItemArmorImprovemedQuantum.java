@@ -12,7 +12,6 @@ import com.denfop.api.upgrade.IUpgradeItem;
 import com.denfop.api.upgrade.UpgradeSystem;
 import com.denfop.api.upgrade.event.EventItemLoad;
 import com.denfop.items.EnumInfoUpgradeModules;
-import com.denfop.items.energy.HandHeldUpgradeItem;
 import com.denfop.items.energy.ItemBattery;
 import com.denfop.utils.KeyboardClient;
 import com.denfop.utils.ModUtils;
@@ -23,21 +22,17 @@ import ic2.api.item.IItemHudInfo;
 import ic2.api.item.IMetalArmor;
 import ic2.core.IC2;
 import ic2.core.IC2Potion;
-import ic2.core.IHasGui;
 import ic2.core.init.BlocksItems;
 import ic2.core.init.Localization;
 import ic2.core.init.MainConfig;
 import ic2.core.item.BaseElectricItem;
-import ic2.core.item.IHandHeldInventory;
 import ic2.core.item.ItemTinCan;
 import ic2.core.item.armor.ItemArmorElectric;
-import ic2.core.network.NetworkManager;
 import ic2.core.ref.ItemName;
 import ic2.core.slot.ArmorSlot;
 import ic2.core.util.ConfigUtil;
 import ic2.core.util.LogCategory;
 import ic2.core.util.StackUtil;
-import ic2.core.util.Util;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
@@ -237,10 +232,10 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
 
 
             if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-                info.add(Localization.translate("iu.changemode_fly") + Keyboard.getKeyName(KeyboardClient.flymode.getKeyCode()));
-                info.add(Localization.translate("iu.vertical") + Keyboard.getKeyName(KeyboardClient.verticalmode.getKeyCode()));
-                info.add(Localization.translate("iu.magnet_mode") + Keyboard.getKeyName(KeyboardClient.changemode.getKeyCode()) + " + " + Keyboard.getKeyName(
-                        Keyboard.KEY_LSHIFT));
+                info.add(Localization.translate("iu.changemode_fly") + Keyboard.getKeyName(Math.abs(KeyboardClient.flymode.getKeyCode())));
+                info.add(Localization.translate("iu.vertical") + Keyboard.getKeyName(Math.abs(KeyboardClient.verticalmode.getKeyCode())));
+                info.add(Localization.translate("iu.magnet_mode") + Keyboard.getKeyName(Math.abs(KeyboardClient.changemode.getKeyCode())) + " + " + Keyboard.getKeyName(Math.abs(
+                        Keyboard.KEY_LSHIFT)));
 
             }
 
@@ -717,7 +712,7 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
 
                         nbtData.setBoolean("vertical", vertical);
                         if (vertical) {
-                            IC2.platform.messagePlayer(player,Localization.translate("iu.flymode_armor.info2"));
+                            IC2.platform.messagePlayer(player, Localization.translate("iu.flymode_armor.info2"));
 
                         } else {
                             IC2.platform.messagePlayer(player, Localization.translate("iu.flymode_armor.info3"));
@@ -809,7 +804,7 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
                         if (jetpack) {
                             IC2.platform.messagePlayer(player, Localization.translate("iu.flymode_armor.info"));
                         } else {
-                            IC2.platform.messagePlayer(player,  Localization.translate("iu.flymode_armor.info1"));
+                            IC2.platform.messagePlayer(player, Localization.translate("iu.flymode_armor.info1"));
 
                         }
                     }
@@ -1060,7 +1055,6 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
 
 
     }
-
 
 
 }

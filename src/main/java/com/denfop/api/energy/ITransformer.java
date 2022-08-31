@@ -3,6 +3,7 @@ package com.denfop.api.energy;
 import com.denfop.tiles.base.TileEntityTransformer;
 
 public interface ITransformer {
+
     TileEntityTransformer.Mode getMode();
 
     boolean isStepUp();
@@ -10,4 +11,5 @@ public interface ITransformer {
     double getinputflow();
 
     double getoutputflow();
+
 }

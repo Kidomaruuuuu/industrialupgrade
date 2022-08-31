@@ -42,6 +42,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirt;
 import net.minecraft.block.BlockDirt.DirtType;
 import net.minecraft.block.BlockHorizontal;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -312,7 +313,7 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
 
 
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            par3List.add(Localization.translate("iu.changemode_key") + Keyboard.getKeyName(KeyboardClient.changemode.getKeyCode()) + Localization.translate(
+            par3List.add(Localization.translate("iu.changemode_key") + Keyboard.getKeyName(Math.abs(KeyboardClient.changemode.getKeyCode())) + Localization.translate(
                     "iu.changemode_rcm"));
 
         }
@@ -446,42 +447,42 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
                         ItemStack stack_modulesize = ItemStack.EMPTY;
                         ItemStack panel = ItemStack.EMPTY;
                         ItemStack stack_modulestorage = ItemStack.EMPTY;
-                        if (base.rf) {
+                        if (base.energy2.isRf()) {
                             stack_rf = new ItemStack(IUItem.module7, 1, 4);
                         }
-                        if (base.quickly) {
+                        if (base.multi_process.quickly) {
                             stack_quickly = new ItemStack(IUItem.module_quickly);
                         }
-                        if (base.modulesize) {
+                        if (base.multi_process.modulesize) {
                             stack_modulesize = new ItemStack(IUItem.module_stack);
                         }
                         if (base.solartype != null) {
                             panel = new ItemStack(IUItem.module6, 1, base.solartype.meta);
                         }
-                        if (base.modulestorage) {
+                        if (base.multi_process.modulestorage) {
                             stack_modulestorage = new ItemStack(IUItem.module_storage);
                         }
                         if (!stack_rf.isEmpty() || !stack_quickly.isEmpty() || !stack_modulesize.isEmpty() || !panel.isEmpty()) {
                             final EntityItem item = new EntityItem(world);
                             if (!stack_rf.isEmpty()) {
                                 item.setItem(stack_rf);
-                                base.module--;
-                                base.rf = false;
+                                base.multi_process.shrinkModule(1);
+                                base.energy2.setRf(false);
                             } else if (!stack_quickly.isEmpty()) {
                                 item.setItem(stack_quickly);
-                                base.module--;
-                                base.quickly = false;
+                                base.multi_process.shrinkModule(1);
+                                base.multi_process.setQuickly(false);
                             } else if (!stack_modulesize.isEmpty()) {
                                 item.setItem(stack_modulesize);
-                                base.modulesize = false;
-                                base.module--;
+                                base.multi_process.setModulesize(false);
+                                base.multi_process.shrinkModule(1);
                             } else if (!panel.isEmpty()) {
                                 item.setItem(panel);
                                 base.solartype = null;
                             } else if (!stack_modulestorage.isEmpty()) {
                                 item.setItem(stack_modulestorage);
-                                base.modulestorage = false;
-                                base.module--;
+                                base.multi_process.setModulestorage(false);
+                                base.multi_process.shrinkModule(1);
                             }
                             if (!player.getEntityWorld().isRemote) {
                                 item.setLocationAndAngles(player.posX, player.posY, player.posZ, 0.0F, 0.0F);
@@ -503,29 +504,29 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
                     } else {
                         TileEntityMultiMachine base = (TileEntityMultiMachine) tile;
                         List<ItemStack> stack_list = new ArrayList<>();
-                        if (base.rf) {
+                        if (base.energy2.isRf()) {
                             stack_list.add(new ItemStack(IUItem.module7, 1, 4));
-                            base.rf = false;
-                            base.module--;
+                            base.energy2.setRf(false);
+                            base.multi_process.shrinkModule(1);
                         }
-                        if (base.quickly) {
+                        if (base.multi_process.quickly) {
                             stack_list.add(new ItemStack(IUItem.module_quickly));
-                            base.quickly = false;
-                            base.module--;
+                            base.multi_process.setQuickly(false);
+                            base.multi_process.shrinkModule(1);
                         }
-                        if (base.modulesize) {
+                        if (base.multi_process.modulesize) {
                             stack_list.add(new ItemStack(IUItem.module_stack));
-                            base.modulesize = false;
-                            base.module--;
+                            base.multi_process.setModulesize(false);
+                            base.multi_process.shrinkModule(1);
                         }
                         if (base.solartype != null) {
                             stack_list.add(new ItemStack(IUItem.module6, 1, base.solartype.meta));
                             base.solartype = null;
                         }
-                        if (base.modulestorage) {
+                        if (base.multi_process.modulestorage) {
                             stack_list.add(new ItemStack(IUItem.module_storage));
-                            base.modulestorage = false;
-                            base.module--;
+                            base.multi_process.setModulestorage(false);
+                            base.multi_process.shrinkModule(1);
 
                         }
                         for (ItemStack stack : stack_list) {
@@ -677,7 +678,8 @@ public class ItemGraviTool extends ItemTool implements IElectricItem, IModelRegi
             }
             IBlockState state = Util.getBlockState(world, pos);
             Block block = state.getBlock();
-            if (side != EnumFacing.DOWN && world.isAirBlock(pos.up())) {
+            IBlockState state1 = Util.getBlockState(world, pos.up());
+            if (side != EnumFacing.DOWN && state1.getMaterial() == Material.AIR) {
                 if (block == Blocks.GRASS || block == Blocks.GRASS_PATH) {
                     return this.setHoedBlock(stack, player, world, pos, Blocks.FARMLAND.getDefaultState());
                 }

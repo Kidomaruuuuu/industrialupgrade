@@ -74,12 +74,12 @@ public class CTFQuarry {
 
 
             if (OreDictionary.getOreIDs((ItemStack) output.getInternal()).length == 0) {
-                if (!IUCore.get_ingot.contains((ItemStack) output.getInternal())) {
-                    IUCore.get_ingot.add((ItemStack) output.getInternal());
+                if (!IUCore.list_furnace_adding.contains((ItemStack) output.getInternal())) {
+                    IUCore.list_furnace_adding.add((ItemStack) output.getInternal());
                 } else {
                     int i = OreDictionary.getOreIDs((ItemStack) output.getInternal())[0];
-                    if (!IUCore.get_ingot.contains(OreDictionary.getOres(OreDictionary.getOreName(i)).get(0))) {
-                        IUCore.get_ingot.add(OreDictionary.getOres(OreDictionary.getOreName(i)).get(0));
+                    if (!IUCore.list_furnace_adding.contains(OreDictionary.getOres(OreDictionary.getOreName(i)).get(0))) {
+                        IUCore.list_furnace_adding.add(OreDictionary.getOres(OreDictionary.getOreName(i)).get(0));
                     }
                 }
             }
@@ -125,10 +125,10 @@ public class CTFQuarry {
 
         public void apply() {
             if (OreDictionary.getOreIDs((ItemStack) input.getInternal()).length == 0) {
-                IUCore.get_ingot.remove((ItemStack) input.getInternal());
+                IUCore.list_furnace_removing.add((ItemStack) input.getInternal());
             } else {
                 int i = OreDictionary.getOreIDs((ItemStack) input.getInternal())[0];
-                IUCore.get_ingot.remove(OreDictionary.getOres(OreDictionary.getOreName(i)).get(0));
+                IUCore.list_furnace_removing.add(OreDictionary.getOres(OreDictionary.getOreName(i)).get(0));
             }
         }
 

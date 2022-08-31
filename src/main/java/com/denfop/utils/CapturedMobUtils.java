@@ -30,8 +30,9 @@ public final class CapturedMobUtils {
     private final ResourceLocation entityId;
     @Nullable
     private final String customName;
+    private final String resource;
     private int color;
-
+    private String loottable = "";
     private CapturedMobUtils(@Nonnull EntityLivingBase entity) {
         ResourceLocation id = EntityList.getKey(entity);
         this.entityId = id == null ? PIG : id;
@@ -44,15 +45,19 @@ public final class CapturedMobUtils {
             }
         }
         this.color = -1;
+        StringBuilder builder = new StringBuilder(this.entityId.toString());
+
         if (entity instanceof EntitySheep) {
             this.color = ((EntitySheep) entity).getFleeceColor().getMetadata();
+            builder.append("_").append(((EntitySheep) entity).getFleeceColor().getName());
+
         }
         if (name != null && name.length() > 0) {
             this.customName = name;
         } else {
             this.customName = null;
         }
-
+        this.resource = builder.toString();
     }
 
     private CapturedMobUtils(@Nonnull NBTTagCompound nbt) {
@@ -64,31 +69,37 @@ public final class CapturedMobUtils {
             this.entityNbt = null;
         }
 
-        String id = null;
-        if (nbt.hasKey("entityId")) {
-            id = nbt.getString("entityId");
-        }
+        String id;
 
-        this.entityId = id != null && !id.isEmpty() ? new ResourceLocation(id) : PIG;
-        if (nbt.hasKey("customName")) {
-            this.customName = nbt.getString("customName");
-        } else {
-            this.customName = null;
-        }
+        id = nbt.getString("entityId");
+
+
+        this.entityId = !id.isEmpty() ? new ResourceLocation(id) : PIG;
+        StringBuilder builder = new StringBuilder(this.entityId.toString());
+        this.customName = nbt.getString("customName");
         color = nbt.getInteger("color");
-
+        if (color >= 0) {
+             builder.append("_").append(EnumDyeColor.byMetadata(color));
+        }
+        this.resource = builder.toString();
     }
 
     private CapturedMobUtils(@Nonnull ResourceLocation entityId) {
         this.entityNbt = null;
         this.entityId = entityId;
         this.customName = null;
+        this.resource = this.entityId.toString();
+
     }
 
     @Nullable
     public static CapturedMobUtils create(@Nullable Entity entity) {
         return entity instanceof EntityLivingBase && entity.isEntityAlive() && !entity.world.isRemote && !(entity instanceof EntityPlayer) && !isBlacklisted(
                 entity) ? new CapturedMobUtils((EntityLivingBase) entity) : null;
+    }
+
+    public String getResource() {
+        return resource;
     }
 
     @Nullable

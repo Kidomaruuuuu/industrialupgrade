@@ -113,7 +113,7 @@ public enum BlockTransformer implements ITeBlock {
     @Override
     public boolean hasActive() {
         // TODO Auto-generated method stub
-        return true;
+        return false;
     }
 
     @Override
@@ -141,7 +141,7 @@ public enum BlockTransformer implements ITeBlock {
     @Override
     @Nonnull
     public TeBlock.DefaultDrop getDefaultDrop() {
-        return TeBlock.DefaultDrop.AdvMachine;
+        return TeBlock.DefaultDrop.Self;
     }
 
     @Override

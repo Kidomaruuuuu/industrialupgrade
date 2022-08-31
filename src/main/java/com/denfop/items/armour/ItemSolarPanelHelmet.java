@@ -328,7 +328,7 @@ public class ItemSolarPanelHelmet extends ItemArmorElectric implements IElectric
                 ItemStack stack = player.inventory.mainInventory.get(slot);
                 ItemFood can = (ItemFood) stack.getItem();
                 stack = can.onItemUseFinish(stack, worldObj, player);
-                if (stack.stackSize <= 0) {
+                if (stack.getCount() <= 0) {
                     player.inventory.mainInventory.set(slot, new ItemStack(Items.AIR));
                 }
                 ElectricItem.manager.use(itemStack, 1000.0D, null);

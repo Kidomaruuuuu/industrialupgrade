@@ -53,9 +53,7 @@ public class WorldCollector extends TileEntityElectricMachine implements IUpdate
         int tier = this.upgradeSlot.getTier(this.defaultTier);
         this.energy.setSinkTier(tier);
         this.energy.setCapacity(this.upgradeSlot.getEnergyStorage(
-                this.defaultEnergyStorage,
-                this.defaultOperationLength,
-                this.defaultEnergyConsume
+                this.defaultEnergyStorage
         ));
 
 

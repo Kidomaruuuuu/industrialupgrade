@@ -2,6 +2,7 @@ package com.denfop.gui;
 
 import com.denfop.Constants;
 import com.denfop.container.ContainerHeatMachine;
+import com.denfop.utils.ListInformationUtils;
 import com.denfop.utils.ModUtils;
 import ic2.core.GuiIC2;
 import ic2.core.IC2;
@@ -12,6 +13,9 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class GuiHeatMachine extends GuiIC2<ContainerHeatMachine> {
 
@@ -43,9 +47,24 @@ public class GuiHeatMachine extends GuiIC2<ContainerHeatMachine> {
         }
 
     }
+    private void handleUpgradeTooltip(int mouseX, int mouseY) {
+        if (mouseX >= 3 && mouseX <= 15 && mouseY >= 3 && mouseY <= 15) {
+            List<String> text = new ArrayList<>();
+            text.add(Localization.translate("iu.heat_storage.info_main"));
+            List<String> compatibleUpgrades = ListInformationUtils.heating;
+            Iterator<String> var5 = compatibleUpgrades.iterator();
+            String itemstack;
+            while (var5.hasNext()) {
+                itemstack = var5.next();
+                text.add(itemstack);
+            }
 
+            this.drawTooltip(mouseX, mouseY, text);
+        }
+    }
     protected void drawForegroundLayer(int par1, int par2) {
         super.drawForegroundLayer(par1, par2);
+        handleUpgradeTooltip(par1, par2);
         this.fontRenderer.drawString(this.name, (this.xSize - this.fontRenderer.getStringWidth(this.name)) / 2, 6, 4210752);
         String temp = (int) this.container.base.heat.storage + "°C" + "/" + (int) this.container.base.maxtemperature + "°C";
         new AdvArea(this, 53, 42, 83, 53).withTooltip(temp).drawForeground(par1, par2);
@@ -68,6 +87,10 @@ public class GuiHeatMachine extends GuiIC2<ContainerHeatMachine> {
         int xOffset = (this.width - this.xSize) / 2;
         int yOffset = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(xOffset, yOffset, 0, 0, this.xSize, this.ySize);
+        this.mc.getTextureManager()
+                .bindTexture(new ResourceLocation(IC2.RESOURCE_DOMAIN, "textures/gui/infobutton.png"));
+        drawTexturedModalRect(xOffset + 3, yOffset + 3, 0, 0, 10, 10);
+        this.mc.getTextureManager().bindTexture(getTexture());
         int temperature = 0;
         if (this.container.base.maxtemperature > 0) {
             temperature = (int) (30 * this.container.base.heat.getEnergy() / this.container.base.maxtemperature);

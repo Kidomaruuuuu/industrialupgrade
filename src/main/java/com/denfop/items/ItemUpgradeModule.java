@@ -178,19 +178,19 @@ public class ItemUpgradeModule extends ItemMulti<ItemUpgradeModule.Types> implem
                 list.add(Localization.translate(
                         "ic2.tooltip.upgrade.overclocker.time",
                         decimalformat.format(100.0D
-                                * Math.pow(getProcessTimeMultiplier(stack, null), stack.stackSize))
+                                * Math.pow(getProcessTimeMultiplier(stack, null), stack.getCount()))
                 ));
                 list.add(Localization.translate(
                         "ic2.tooltip.upgrade.overclocker.power",
                         decimalformat.format(100.0D
-                                * Math.pow(getEnergyDemandMultiplier(stack, null), stack.stackSize))
+                                * Math.pow(getEnergyDemandMultiplier(stack, null), stack.getCount()))
                 ));
                 break;
             case transformer:
             case transformer1:
                 list.add(Localization.translate(
                         "ic2.tooltip.upgrade.transformer",
-                        this.getExtraTier(stack, null) * stack.stackSize
+                        this.getExtraTier(stack, null) * stack.getCount()
                 ));
                 break;
 

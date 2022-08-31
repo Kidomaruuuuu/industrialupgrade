@@ -1,5 +1,6 @@
 package com.denfop.tiles.mechanism.blastfurnace.block;
 
+import com.denfop.IUItem;
 import com.denfop.Ic2Items;
 import com.denfop.componets.HeatComponent;
 import com.denfop.container.ContainerBlastFurnace;
@@ -15,7 +16,9 @@ import ic2.core.IHasGui;
 import ic2.core.block.TileEntityInventory;
 import ic2.core.block.comp.Fluids;
 import ic2.core.block.invslot.InvSlot;
+import ic2.core.init.Localization;
 import ic2.core.ref.FluidName;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -35,7 +38,6 @@ public class TileEntityBlastFurnaceMain extends TileEntityInventory implements I
     public final FluidTank tank;
     public FluidTank tank1 = null;
     public HeatComponent component = null;
-    private boolean full;
     public IBlastHeat blastHeat;
     public IBlastInputFluid blastInputFluid;
     public IBlastInputItem blastInputItem;
@@ -43,6 +45,7 @@ public class TileEntityBlastFurnaceMain extends TileEntityInventory implements I
     public List<EntityPlayer> entityPlayerList;
     public double progress = 0;
     public int bar = 1;
+    private boolean full;
 
     public TileEntityBlastFurnaceMain() {
         this.full = false;
@@ -52,10 +55,33 @@ public class TileEntityBlastFurnaceMain extends TileEntityInventory implements I
         );
         this.entityPlayerList = new ArrayList<>();
     }
-
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
+        super.addInformation(stack, tooltip, advanced);
+        tooltip.add(Localization.translate("iu.blastfurnace.info1"));
+        tooltip.add(Localization.translate("iu.blastfurnace.info3") + Localization.translate(new ItemStack(
+                IUItem.blastfurnace,
+                1,
+                0
+        ).getUnlocalizedName()));
+        tooltip.add(Localization.translate("iu.blastfurnace.info4"));
+        tooltip.add(Localization.translate("iu.blastfurnace.info5") +  Localization.translate(Ic2Items.ForgeHammer.getUnlocalizedName()));
+        tooltip.add(Localization.translate("iu.blastfurnace.info6"));
+    }
     @Override
     public boolean getFull() {
         return full;
+    }
+
+    @Override
+    public void setFull(final boolean full) {
+        if (!full) {
+            if (!this.entityPlayerList.isEmpty()) {
+                this.entityPlayerList.forEach(EntityPlayer::closeScreen);
+            }
+        }
+        this.full = full;
     }
 
     @Override
@@ -106,8 +132,9 @@ public class TileEntityBlastFurnaceMain extends TileEntityInventory implements I
                         if (progress == 0) {
                             this.setActive(true);
                         }
-                        if(!this.getActive())
+                        if (!this.getActive()) {
                             this.setActive(true);
+                        }
                         progress += 1 + (0.25 * (bar1 - 1));
                         tank.drain(Math.min(bar1 * 2, this.tank.getFluidAmount()), true);
                         if (progress >= 3600 && this.getOutputItem().getOutput().add(Ic2Items.advIronIngot)) {
@@ -136,8 +163,9 @@ public class TileEntityBlastFurnaceMain extends TileEntityInventory implements I
             } else if (this.getActive()) {
                 this.setActive(false);
             }
-                if(this.component.getEnergy() > 0)
-                    this.component.useEnergy(1);
+            if (this.component.getEnergy() > 0) {
+                this.component.useEnergy(1);
+            }
         } catch (Exception ignored) {
         }
     }
@@ -145,21 +173,6 @@ public class TileEntityBlastFurnaceMain extends TileEntityInventory implements I
     @Override
     public IBlastHeat getHeat() {
         return blastHeat;
-    }
-
-    @Override
-    public IBlastInputFluid getInputFluid() {
-        return blastInputFluid;
-    }
-
-    @Override
-    public IBlastInputItem getInputItem() {
-        return blastInputItem;
-    }
-
-    @Override
-    public IBlastOutputItem getOutputItem() {
-        return blastOutputItem;
     }
 
     @Override
@@ -173,6 +186,11 @@ public class TileEntityBlastFurnaceMain extends TileEntityInventory implements I
     }
 
     @Override
+    public IBlastInputFluid getInputFluid() {
+        return blastInputFluid;
+    }
+
+    @Override
     public void setInputFluid(final IBlastInputFluid blastInputFluid) {
         this.blastInputFluid = blastInputFluid;
         if (this.blastInputFluid == null) {
@@ -183,23 +201,23 @@ public class TileEntityBlastFurnaceMain extends TileEntityInventory implements I
     }
 
     @Override
+    public IBlastInputItem getInputItem() {
+        return blastInputItem;
+    }
+
+    @Override
     public void setInputItem(final IBlastInputItem blastInputItem) {
         this.blastInputItem = blastInputItem;
     }
 
     @Override
-    public void setOutputItem(final IBlastOutputItem blastOutputItem) {
-        this.blastOutputItem = blastOutputItem;
+    public IBlastOutputItem getOutputItem() {
+        return blastOutputItem;
     }
 
     @Override
-    public void setFull(final boolean full) {
-        if (!full) {
-            if (!this.entityPlayerList.isEmpty()) {
-                this.entityPlayerList.forEach(EntityPlayer::closeScreen);
-            }
-        }
-        this.full = full;
+    public void setOutputItem(final IBlastOutputItem blastOutputItem) {
+        this.blastOutputItem = blastOutputItem;
     }
 
     @Override
@@ -229,6 +247,15 @@ public class TileEntityBlastFurnaceMain extends TileEntityInventory implements I
             final float hitZ
     ) {
         if (!this.full) {
+            if(player.getHeldItem(hand).isEmpty())
+            return false;
+            if(player.getHeldItem(hand).isItemEqual(Ic2Items.ForgeHammer)) {
+                update_block();
+                if (!this.full)
+                    return false;
+                else
+                    return super.onActivated(player, hand, side, hitX, hitY, hitZ);
+            }
             return false;
         }
 

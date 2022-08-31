@@ -13,6 +13,8 @@ import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.block.comp.Fluids;
 import ic2.core.block.invslot.InvSlotConsumableLiquidByList;
+import ic2.core.init.Localization;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -21,7 +23,10 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.mutable.MutableObject;
+import org.lwjgl.input.Keyboard;
 
 import java.util.List;
 
@@ -82,7 +87,18 @@ public abstract class TileEntityBaseObsidianGenerator extends TileEntityElectric
         this.progress = nbttagcompound.getShort("progress");
 
     }
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate("iu.machines_work_energy_type_eu"));
+            tooltip.add(Localization.translate("iu.machines_work_length") + this.defaultOperationLength);
+        }
+        super.addInformation(stack,tooltip,advanced);
 
+    }
     public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound) {
         super.writeToNBT(nbttagcompound);
         nbttagcompound.setShort("progress", this.progress);
@@ -117,14 +133,13 @@ public abstract class TileEntityBaseObsidianGenerator extends TileEntityElectric
 
     public void updateEntityServer() {
         super.updateEntityServer();
-        boolean needsInvUpdate = false;
         MutableObject<ItemStack> output1 = new MutableObject<>();
         if (this.fluidSlot1.transferToTank(
                 this.fluidTank1,
                 output1,
                 true
         ) && (output1.getValue() == null || this.outputSlot1.canAdd(output1.getValue()))) {
-            needsInvUpdate = this.fluidSlot1.transferToTank(this.fluidTank1, output1, false);
+           this.fluidSlot1.transferToTank(this.fluidTank1, output1, false);
             if (output1.getValue() != null) {
                 this.outputSlot1.add(output1.getValue());
             }
@@ -134,7 +149,7 @@ public abstract class TileEntityBaseObsidianGenerator extends TileEntityElectric
                 output1,
                 true
         ) && (output1.getValue() == null || this.outputSlot1.canAdd(output1.getValue()))) {
-            needsInvUpdate = this.fluidSlot2.transferToTank(this.fluidTank2, output1, false);
+            this.fluidSlot2.transferToTank(this.fluidTank2, output1, false);
             if (output1.getValue() != null) {
                 this.outputSlot1.add(output1.getValue());
             }
@@ -157,7 +172,6 @@ public abstract class TileEntityBaseObsidianGenerator extends TileEntityElectric
             if (this.progress >= this.operationLength) {
                 this.guiProgress = 0;
                 operate(output);
-                needsInvUpdate = true;
                 this.progress = 0;
                 IC2.network.get(true).initiateTileEntityEvent(this, 2, true);
             }
@@ -172,31 +186,24 @@ public abstract class TileEntityBaseObsidianGenerator extends TileEntityElectric
                 setActive(false);
             }
         }
-        if (needsInvUpdate && this.upgradeSlot.tickNoMark()) {
+        if (this.upgradeSlot.tickNoMark()) {
             setOverclockRates();
         }
 
     }
 
     public void setOverclockRates() {
-        double previousProgress = (double) this.progress / (double) this.operationLength;
-        double stackOpLen = (this.defaultOperationLength + this.upgradeSlot.extraProcessTime) * 64.0D
-                * this.upgradeSlot.processTimeMultiplier;
-        this.operationsPerTick = (int) Math.min(Math.ceil(64.0D / stackOpLen), 2.147483647E9D);
-        this.operationLength = (int) Math.round(stackOpLen * this.operationsPerTick / 64.0D);
-        this.energyConsume = applyModifier(this.defaultEnergyConsume, this.upgradeSlot.extraEnergyDemand,
-                this.upgradeSlot.energyDemandMultiplier
-        );
-        this.energy.setSinkTier(applyModifier(this.defaultTier, this.upgradeSlot.extraTier, 1.0D));
-        this.energy.setCapacity(applyModifier(
-                this.defaultEnergyStorage,
-                this.upgradeSlot.extraEnergyStorage + this.operationLength * this.energyConsume,
-                this.upgradeSlot.energyStorageMultiplier
+        this.operationsPerTick = this.upgradeSlot.getOperationsPerTick(this.defaultOperationLength);
+        this.operationLength = this.upgradeSlot.getOperationLength(this.defaultOperationLength);
+        this.energyConsume = this.upgradeSlot.getEnergyDemand(this.defaultEnergyConsume);
+        int tier = this.upgradeSlot.getTier(this.defaultTier);
+        this.energy.setSinkTier(tier);
+        this.energy.setCapacity(this.upgradeSlot.getEnergyStorage(
+                this.defaultEnergyStorage
         ));
         if (this.operationLength < 1) {
             this.operationLength = 1;
         }
-        this.progress = (short) (int) Math.floor(previousProgress * this.operationLength + 0.1D);
     }
 
     public void operate(RecipeOutput output) {

@@ -29,7 +29,7 @@ public class TileEntityBaseHeatMachine extends TileEntityElectricMachine impleme
     public FluidTank fluidTank;
     public Fluids fluids = null;
     public InvSlotConsumableLiquid fluidSlot;
-
+    public int coef = 1;
     public TileEntityBaseHeatMachine(boolean hasFluid) {
         super(hasFluid ? 0D : 10000D, 14, 1);
         this.hasFluid = hasFluid;
@@ -81,6 +81,11 @@ public class TileEntityBaseHeatMachine extends TileEntityElectricMachine impleme
 
     }
 
+    @Override
+    protected void onLoaded() {
+        super.onLoaded();
+        this.coef = (int) Math.max(Math.ceil(this.heat.storage / 2000),1);
+    }
 
     @Override
     public void onNetworkEvent(final EntityPlayer entityPlayer, final int i) {
@@ -134,16 +139,17 @@ public class TileEntityBaseHeatMachine extends TileEntityElectricMachine impleme
         if (temp >= this.maxtemperature) {
             return false;
         }
+        if(this.heat.allow)
         if (this.hasFluid) {
             if (this.getFluidTank().getFluidAmount() >= 1) {
-                this.heat.addEnergy(5);
-                this.getFluidTank().drain(1, true);
+                this.heat.addEnergy(5 );
+                this.getFluidTank().drain(this.coef, true);
                 return true;
             }
         } else {
-            if (this.energy.getEnergy() >= 50) {
+            if (this.energy.getEnergy() >= 30* this.coef) {
                 this.heat.addEnergy(5);
-                this.energy.useEnergy(50);
+                this.energy.useEnergy(30*  this.coef);
                 return true;
             }
         }

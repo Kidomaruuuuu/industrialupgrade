@@ -6,6 +6,7 @@ import com.denfop.api.heat.IHeatEmitter;
 import com.denfop.api.heat.IHeatSink;
 import com.denfop.api.heat.IHeatSource;
 import com.denfop.api.heat.IHeatTile;
+import com.denfop.tiles.mechanism.dual.heat.TileEntityAlloySmelter;
 import ic2.api.info.ILocatable;
 import ic2.core.IC2;
 import net.minecraft.tileentity.TileEntity;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class HeatNetLocal {
+public class  HeatNetLocal {
 
     private static EnumFacing[] directions;
 
@@ -133,9 +134,16 @@ public class HeatNetLocal {
             heatPaths = this.discover(heatSource);
             this.heatSourceToHeatPathMap.put(heatSource, heatPaths);
         }
-        if (amount > 0) {
+        boolean allowed = heatSource.isAllowed();
+        boolean need = false;
+        if (amount > 0 || !allowed) {
             for (final HeatPath heatPath : heatPaths) {
                 final IHeatSink heatSink = heatPath.target;
+                if(heatSink.needTemperature())
+                    if(!allowed) {
+                        heatSource.setAllowed(true);
+                    }
+                need |=heatSink.needTemperature();
                 double demandedHeat = heatSink.getDemandedHeat();
                 if (demandedHeat <= 0.0) {
                     continue;
@@ -147,17 +155,19 @@ public class HeatNetLocal {
                 }
                 heatSink.injectHeat(heatPath.targetDirection, adding, 0);
                 heatPath.totalHeatConducted = (long) adding;
-
-
-                for (IHeatConductor energyConductor3 : heatPath.conductors) {
-                    if (heatSource.getOfferedHeat() >= energyConductor3.getConductorBreakdownEnergy()) {
-                        energyConductor3.removeConductor();
-                    }
+                if (adding > heatPath.min) {
+                    heatPath.conductors.forEach(conductor -> {
+                        if (conductor.getConductorBreakdownEnergy() - 1 < heatPath.min) {
+                            conductor.removeConductor();
+                        }
+                    });
                 }
+
 
             }
         }
-
+        if(!need)
+            heatSource.setAllowed(false);
         return amount;
     }
 
@@ -214,6 +224,9 @@ public class HeatNetLocal {
                     }
                     final IHeatConductor heatConductor = (IHeatConductor) tileEntity;
                     heatPath.conductors.add(heatConductor);
+                    if (heatConductor.getConductorBreakdownEnergy() - 1 < heatPath.getMin()) {
+                        heatPath.setMin(heatConductor.getConductorBreakdownEnergy() - 1);
+                    }
 
                     heatBlockLink = reachedTileEntities.get(tileEntity);
                     if (heatBlockLink != null) {
@@ -327,7 +340,7 @@ public class HeatNetLocal {
         for (IHeatSource entry : this.sources) {
             if (entry != null) {
                 final double offered = entry.getOfferedHeat();
-                if (offered > 0) {
+                if (offered > 0 || !entry.isAllowed()) {
                     for (double packetAmount = 1, i = 0; i < packetAmount; ++i) {
                         final double removed = offered - this.emitHeatFrom(entry, offered);
                         if (removed <= 0) {
@@ -389,12 +402,21 @@ public class HeatNetLocal {
         final IHeatSink target;
         final EnumFacing targetDirection;
         long totalHeatConducted;
+        double min = Double.MAX_VALUE;
 
         HeatPath(IHeatSink sink, EnumFacing facing) {
             this.target = sink;
             this.conductors = new HashSet<>();
             this.totalHeatConducted = 0L;
             this.targetDirection = facing;
+        }
+
+        public double getMin() {
+            return min;
+        }
+
+        public void setMin(final double min) {
+            this.min = min;
         }
 
     }

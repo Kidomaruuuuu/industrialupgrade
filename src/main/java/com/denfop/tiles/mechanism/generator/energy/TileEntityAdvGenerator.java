@@ -1,5 +1,8 @@
 package com.denfop.tiles.mechanism.generator.energy;
 
+import com.denfop.api.gui.IType;
+import com.denfop.componets.AdvEnergy;
+import com.denfop.componets.EnumTypeStyle;
 import com.denfop.container.ContainerGenerator;
 import com.denfop.gui.GuiGenerator;
 import ic2.core.ContainerBase;
@@ -9,15 +12,21 @@ import ic2.core.init.Localization;
 import ic2.core.init.MainConfig;
 import ic2.core.util.ConfigUtil;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
-public class TileEntityAdvGenerator extends TileEntityBaseGenerator {
+import java.util.List;
+
+public class TileEntityAdvGenerator extends TileEntityBaseGenerator implements IType {
 
     public final InvSlotConsumableFuel fuelSlot = new InvSlotConsumableFuel(this, "fuel", 1, false);
     public final String name;
+    private final double coef;
 
 
     public int itemFuelTime = 0;
@@ -28,6 +37,7 @@ public class TileEntityAdvGenerator extends TileEntityBaseGenerator {
                 1,
                 maxstorage
         );
+        this.coef = coef;
         this.name = name;
     }
 
@@ -36,6 +46,24 @@ public class TileEntityAdvGenerator extends TileEntityBaseGenerator {
         super.updateEntityClient();
         if (this.getActive()) {
             TileEntityIronFurnace.showFlames(this.getWorld(), this.pos, this.getFacing());
+        }
+
+    }
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.info_upgrade_energy")+this.coef);
+        }
+        if (this.hasComponent(AdvEnergy.class)) {
+            AdvEnergy energy = this.getComponent(AdvEnergy.class);
+            if (!energy.getSourceDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSourceTier()));
+            } else if (!energy.getSinkDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSinkTier()));
+            }
         }
 
     }
@@ -103,6 +131,13 @@ public class TileEntityAdvGenerator extends TileEntityBaseGenerator {
         super.writeToNBT(nbt);
         nbt.setInteger("itemFuelTime", this.itemFuelTime);
         return nbt;
+    }
+
+
+
+    @Override
+    public EnumTypeStyle getStyle() {
+        return EnumTypeStyle.DEFAULT;
     }
 
 }

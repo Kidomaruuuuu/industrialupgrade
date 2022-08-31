@@ -79,7 +79,7 @@ public class InvSlotCombinerSEG extends InvSlot {
         double maxEnergy = 0;
         for (int i = 0; i < size(); i++) {
             if (!get(i).isEmpty()) {
-                maxEnergy += 10000 * Math.min(get(i).stackSize, 4);
+                maxEnergy += 10000 * Math.min(get(i).getCount(), 4);
             }
 
         }

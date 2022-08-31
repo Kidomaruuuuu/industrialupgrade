@@ -18,7 +18,7 @@ import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 
-public class GenHydCategory extends Gui implements IRecipeCategory<GenHydWrapper> {
+public class  GenHydCategory extends Gui implements IRecipeCategory<GenHydWrapper> {
 
     private final IDrawableStatic bg;
 

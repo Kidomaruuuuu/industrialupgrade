@@ -28,41 +28,8 @@ public class TileEntityTripleCombRecycler extends TileEntityMultiMachine {
         }
     }
 
-    public void operate(int slotId, MachineRecipe output, int size) {
-        for (int i = 0; i < this.operationsPerTick; i++) {
-            operateOnce(slotId, output.getRecipe().output.items, size);
-            if (this.inputSlots.get(slotId).isEmpty() || !this.outputSlot.canAdd(output.getRecipe().output.items)) {
-                this.getOutput(slotId);
-                break;
-            }
 
-        }
-    }
 
-    public MachineRecipe getOutput(int slotId) {
-
-        if (this.inputSlots.isEmpty(slotId)) {
-            this.output[slotId] = null;
-            return null;
-        }
-        this.output[slotId] = this.inputSlots.process(slotId);
-        if (output[slotId] == null) {
-            final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
-            output[slotId] = new MachineRecipe(new BaseMachineRecipe(
-                    new Input(input.forStack(this.inputSlots.get(slotId))),
-                    new RecipeOutput(
-                            null,
-                            Ic2Items.scrap
-                    )
-            ), Collections.singletonList(1));
-
-        }
-        if (this.outputSlot.canAdd(output[slotId].getRecipe().output.items)) {
-            return output[slotId];
-        }
-
-        return null;
-    }
 
     @Override
     public EnumMultiMachine getMachine() {

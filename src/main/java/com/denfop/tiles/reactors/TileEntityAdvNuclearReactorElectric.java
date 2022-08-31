@@ -1,5 +1,6 @@
 package com.denfop.tiles.reactors;
 
+import com.denfop.componets.EnumTypeStyle;
 import ic2.api.energy.event.EnergyTileLoadEvent;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
 import ic2.api.energy.tile.IEnergyTile;
@@ -149,5 +150,10 @@ public class TileEntityAdvNuclearReactorElectric extends TileEntityBaseNuclearRe
         }
     }
 
+
+    @Override
+    public EnumTypeStyle getStyle() {
+        return EnumTypeStyle.ADVANCED;
+    }
 
 }

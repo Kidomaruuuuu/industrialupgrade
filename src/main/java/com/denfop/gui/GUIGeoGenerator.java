@@ -14,13 +14,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
-public class GuiGeoGenerator extends GuiIC2<ContainerGeoGenerator> {
+public class GuiGeoGenerator extends GuiIU<ContainerGeoGenerator> {
 
     public ContainerGeoGenerator container;
     public String name;
 
     public GuiGeoGenerator(ContainerGeoGenerator container1) {
-        super(container1);
+        super(container1,container1.base.getStyle());
         this.container = container1;
         this.name = Localization.translate((container.base).getName());
         this.addElement(TankGauge.createNormal(this, 70, 20, (container.base).fluidTank));
@@ -60,7 +60,7 @@ public class GuiGeoGenerator extends GuiIC2<ContainerGeoGenerator> {
             this.mc.getTextureManager().bindTexture(new ResourceLocation("ic2", "textures/gui/infobutton.png"));
             this.drawTexturedRect(3.0D, 3.0D, 10.0D, 10.0D, 0.0D, 0.0D);
         }
-
+        this.drawBackground();
         x -= this.guiLeft;
         y -= this.guiTop;
         for (final GuiElement<?> guiElement : this.elements) {

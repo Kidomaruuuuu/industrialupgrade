@@ -3,7 +3,6 @@ package com.denfop.integration.jei.bf;
 import com.denfop.Constants;
 import com.denfop.IUItem;
 import com.denfop.Ic2Items;
-import com.denfop.blocks.mechanism.BlockBaseMachine2;
 import com.denfop.blocks.mechanism.BlockBlastFurnace;
 import ic2.core.init.Localization;
 import mezz.jei.api.IGuiHelper;
@@ -41,7 +40,7 @@ public class BlastFCategory extends Gui implements IRecipeCategory<BlastFWrapper
     @Nonnull
     @Override
     public String getUid() {
-        return BlockBlastFurnace.blast_furnace_main.getName()+"1";
+        return BlockBlastFurnace.blast_furnace_main.getName() + "1";
     }
 
     @Nonnull
@@ -85,14 +84,14 @@ public class BlastFCategory extends Gui implements IRecipeCategory<BlastFWrapper
             @Nonnull final IIngredients ingredients
     ) {
         IGuiItemStackGroup isg = layout.getItemStacks();
-        isg.init(0, true, 50, 34-6);
+        isg.init(0, true, 50, 34 - 6);
 
         isg.set(0, new ItemStack(Items.IRON_INGOT));
 
         IGuiFluidStackGroup fff = layout.getFluidStacks();
 
         fff.init(1, true, 5, 4, 12, 47, 10000, true, null);
-        fff.set(1, new FluidStack(FluidRegistry.WATER,1000));
+        fff.set(1, new FluidStack(FluidRegistry.WATER, 1000));
 
         isg.init(2, false, 110, 28);
         isg.set(2, Ic2Items.advIronIngot);

@@ -21,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -54,6 +55,12 @@ public abstract class TileEntityMatterGenerator extends TileEntityInventory impl
 
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.matter_solid_work_info") + (int)Config.SolidMatterStorage);
+        }
         if (this.hasComponent(AdvEnergy.class)) {
             AdvEnergy energy = this.getComponent(AdvEnergy.class);
             if (!energy.getSourceDirs().isEmpty()) {

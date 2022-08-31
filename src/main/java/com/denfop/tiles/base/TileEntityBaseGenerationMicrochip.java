@@ -4,12 +4,14 @@ import com.denfop.IUCore;
 import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.audio.AudioSource;
+import com.denfop.componets.AdvEnergy;
 import com.denfop.componets.HeatComponent;
 import com.denfop.container.ContainerBaseGenerationChipMachine;
+import com.denfop.invslot.InvSlotUpgrade;
+import com.denfop.tiles.mechanism.triple.heat.TileEntityAdvAlloySmelter;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
-import ic2.core.block.invslot.InvSlotUpgrade;
 import ic2.core.init.Localization;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
@@ -88,7 +90,8 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
         }
         inputSlotA.load();
         this.getOutput();
-
+        if(this.output == null)
+            ( this).heat.need = false;
     }
 
     public void onUnloaded() {
@@ -114,6 +117,9 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             tooltip.add(Localization.translate("iu.heatmachine.info"));
+            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate("iu.machines_work_energy_type_eu"));
+            tooltip.add(Localization.translate("iu.machines_work_length") + this.defaultOperationLength);
+
         }
         super.addInformation(stack, tooltip, advanced);
     }
@@ -125,8 +131,15 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
 
             if (output.getRecipe().output.metadata.getShort("temperature") == 0 || output.getRecipe().output.metadata.getInteger(
                     "temperature") > this.heat.getEnergy()) {
+                if(!( this).heat.need)
+                    ( this).heat.need = true;
                 return;
-            }
+
+            } else
+            if(( this).heat.need)
+                ( this).heat.need = false;
+            ( this).heat.storage--;
+
             if (!this.getActive()) {
                 setActive(true);
             }
@@ -164,6 +177,9 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
             }
 
         }
+
+            if (output == null )
+                this.heat.useEnergy(1);
         if ((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark()) {
             setOverclockRates();
         }
@@ -172,24 +188,16 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
     }
 
     public void setOverclockRates() {
-        double previousProgress = (double) this.progress / (double) this.operationLength;
-        double stackOpLen = (this.defaultOperationLength + this.upgradeSlot.extraProcessTime) * 64.0D
-                * this.upgradeSlot.processTimeMultiplier;
-        this.operationsPerTick = (int) Math.min(Math.ceil(64.0D / stackOpLen), 2.147483647E9D);
-        this.operationLength = (int) Math.round(stackOpLen * this.operationsPerTick / 64.0D);
-        this.energyConsume = applyModifier(this.defaultEnergyConsume, this.upgradeSlot.extraEnergyDemand,
-                this.upgradeSlot.energyDemandMultiplier
-        );
-        this.energy.setSinkTier(applyModifier(this.defaultTier, this.upgradeSlot.extraTier, 1.0D));
-        this.energy.setCapacity(applyModifier(
-                this.defaultEnergyStorage,
-                this.upgradeSlot.extraEnergyStorage + this.operationLength * this.energyConsume,
-                this.upgradeSlot.energyStorageMultiplier
-        ));
+        this.operationsPerTick = this.upgradeSlot.getOperationsPerTick(this.defaultOperationLength);
+        this.operationLength = this.upgradeSlot.getOperationLength(this.defaultOperationLength);
+        this.energyConsume = this.upgradeSlot.getEnergyDemand(this.defaultEnergyConsume);
+        int tier = this.upgradeSlot.getTier(this.defaultTier);
+        this.energy.setSinkTier(tier);
+        this.energy.setCapacity(this.upgradeSlot.getEnergyStorage(
+                this.defaultEnergyStorage));
         if (this.operationLength < 1) {
             this.operationLength = 1;
         }
-        this.progress = (short) (int) Math.floor(previousProgress * this.operationLength + 0.1D);
     }
 
     public void operate(MachineRecipe output) {

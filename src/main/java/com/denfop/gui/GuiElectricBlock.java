@@ -4,6 +4,7 @@ import com.denfop.Constants;
 import com.denfop.container.ContainerElectricBlock;
 import com.denfop.utils.ListInformationUtils;
 import com.denfop.utils.ModUtils;
+import ic2.api.energy.EnergyNet;
 import ic2.core.GuiIC2;
 import ic2.core.IC2;
 import ic2.core.gui.Area;
@@ -70,8 +71,8 @@ public class GuiElectricBlock extends GuiIC2<ContainerElectricBlock> {
 
         String output = Localization.translate(
                 "ic2.EUStorage.gui.info.output",
-                ModUtils.getString(this.container.base.getOutput())
-        );
+                ModUtils.getString(EnergyNet.instance.getPowerFromTier(this.container.base.energy.getSourceTier())
+        ));
         this.fontRenderer.drawString(output, 85, 70, 4210752);
         this.fontRenderer.drawString(
                 TextFormatting.BOLD + "" + TextFormatting.AQUA + Localization.translate("button.rg"),

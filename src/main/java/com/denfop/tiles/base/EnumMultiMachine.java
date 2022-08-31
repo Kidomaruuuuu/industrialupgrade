@@ -1,6 +1,7 @@
 package com.denfop.tiles.base;
 
 import com.denfop.IUItem;
+import com.denfop.api.gui.EnumTypeComponent;
 import com.denfop.tiles.mechanism.EnumTypeMachines;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
@@ -147,42 +148,7 @@ public enum EnumMultiMachine {
             IUItem.machines_base
     ),
 
-    DOUBLE_METAL_FORMER(
-            "Metal Former Double",
-            10,
-            200,
-            2,
-            IUItem.machines_base,
-            13,
-            1,
-            12,
-            EnumTypeMachines.METALFOMER,
-            IUItem.machines_base
-    ),
-    TRIPLE_METAL_FORMER(
-            "Metal Former Triple",
-            10,
-            200,
-            3,
-            IUItem.machines_base,
-            14,
-            2,
-            13,
-            EnumTypeMachines.METALFOMER,
-            IUItem.machines_base
-    ),
-    QUAD_METAL_FORMER(
-            "Metal Former Quad",
-            10,
-            200,
-            4,
-            IUItem.machines_base,
-            15,
-            -1,
-            14,
-            EnumTypeMachines.METALFOMER,
-            IUItem.machines_base
-    ),
+
 
     DOUBLE_RECYCLER(
             "Double Recycler",
@@ -194,7 +160,7 @@ public enum EnumMultiMachine {
             1,
             0,
             EnumTypeMachines.RECYCLER,
-            IUItem.machines_base1
+            IUItem.machines_base1,1,4
     ),
     TRIPLE_RECYCLER(
             "Triple Recycler",
@@ -206,9 +172,10 @@ public enum EnumMultiMachine {
             2,
             1,
             EnumTypeMachines.RECYCLER,
-            IUItem.machines_base1
+            IUItem.machines_base1,1,3
     ),
-    QUAD_RECYCLER("Quad Recycler", 1, 45, 4, IUItem.machines_base1, 3, -1, 2, EnumTypeMachines.RECYCLER, IUItem.machines_base1),
+    QUAD_RECYCLER("Quad Recycler", 1, 45, 4, IUItem.machines_base1, 3, -1, 2, EnumTypeMachines.RECYCLER, IUItem.machines_base1,
+            1,2),
 
     DOUBLE_COMB_RECYCLER(
             "Double Combined  Recycler",
@@ -454,7 +421,6 @@ public enum EnumMultiMachine {
             EnumTypeMachines.ELECTRICFURNACE, IUItem.simplemachine
     ),
 
-    METAL_FORMER("Metal Former", 10, 200, 1, IUItem.machines_base, 12, 0, 4, EnumTypeMachines.METALFOMER, IUItem.simplemachine),
 
     RECYCLER("Recycler", 1, 45, 1, IUItem.machines_base1, 0, 0, 5, EnumTypeMachines.RECYCLER, IUItem.simplemachine),
     ;
@@ -469,7 +435,8 @@ public enum EnumMultiMachine {
     public final EnumTypeMachines type;
     public final String recipe;
     public final Block block;
-
+    private final int min;
+    private final int max;
     EnumMultiMachine(
             String name,
             int usagePerTick,
@@ -491,8 +458,33 @@ public enum EnumMultiMachine {
         this.type = type;
         this.recipe = type.recipe;
         this.block = block;
+        this.min= 0;
+        this.max= 0;
     }
+    EnumMultiMachine(
+            String name,
+            int usagePerTick,
+            int lenghtOperation,
+            int sizeWorkingSlot,
+            Block block_new,
+            int meta_new,
+            int upgrade, int meta, EnumTypeMachines type, Block block, int min, int max
+    ) {
 
+        this.name = name;
+        this.usagePerTick = usagePerTick;
+        this.lenghtOperation = lenghtOperation;
+        this.sizeWorkingSlot = sizeWorkingSlot;
+        this.block_new = block_new;
+        this.meta_new = meta_new;
+        this.upgrade = upgrade;
+        this.meta = meta;
+        this.type = type;
+        this.recipe = type.recipe;
+        this.block = block;
+        this.min = min;
+        this.max = max;
+    }
     public static void write() {
         IUItem.map_upgrades = new HashMap<>();
         for (EnumMultiMachine multiMachine : values()) {
@@ -532,4 +524,24 @@ public enum EnumMultiMachine {
         IUItem.upgrades_panels = list2;
     }
 
+    public int getMin() {
+        return min;
+    }
+
+    public int getMax() {
+        return max;
+    }
+
+    public EnumTypeComponent getComponent() {
+        switch (this.sizeWorkingSlot){
+            case 2:
+                return EnumTypeComponent.ADVANCED;
+            case 3:
+                return EnumTypeComponent.IMPROVED;
+            case 4:
+                return EnumTypeComponent.PERFECT;
+            default:
+                return EnumTypeComponent.DEFAULT;
+        }
+    }
 }

@@ -6,12 +6,14 @@ import com.denfop.IUItem;
 import com.denfop.Ic2Items;
 import com.denfop.api.audio.EnumTypeAudio;
 import com.denfop.api.audio.IAudioFixer;
+import com.denfop.api.gui.IType;
 import com.denfop.api.recipe.InvSlotOutput;
 import com.denfop.api.vein.Type;
 import com.denfop.api.vein.Vein;
 import com.denfop.api.vein.VeinSystem;
 import com.denfop.audio.AudioSource;
 import com.denfop.audio.PositionSpec;
+import com.denfop.componets.EnumTypeStyle;
 import com.denfop.componets.QEComponent;
 import com.denfop.container.ContainerQuantumQuarry;
 import com.denfop.gui.GuiQuantumQuarry;
@@ -46,7 +48,7 @@ import java.util.Random;
 import java.util.Set;
 
 public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements IHasGui, IAudioFixer,
-        IUpgradableBlock {
+        IUpgradableBlock, IType {
 
     public final Random rand = new Random();
     public final int energyconsume;
@@ -101,6 +103,7 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             tooltip.add(Localization.translate("iu.quarry_energy.info"));
+            tooltip.add(Localization.translate("iu.machines_work_energy")+ this.energyconsume+Localization.translate("iu.machines_work_energy_type_qe"));
         }
         super.addInformation(stack, tooltip, advanced);
 
@@ -371,6 +374,11 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
         return EnumSet.of(
                 UpgradableProperty.ItemProducing
         );
+    }
+
+    @Override
+    public EnumTypeStyle getStyle() {
+        return EnumTypeStyle.DEFAULT;
     }
 
 }

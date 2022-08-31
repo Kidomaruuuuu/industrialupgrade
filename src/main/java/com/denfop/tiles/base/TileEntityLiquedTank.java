@@ -59,14 +59,14 @@ public class TileEntityLiquedTank extends TileEntityInventory implements IHasGui
         this.containerslot1 = new InvSlotConsumableLiquidByList(this,
                 "containerslot1", InvSlot.Access.I, 1, InvSlot.InvSide.TOP, InvSlotConsumableLiquid.OpType.Drain
         );
-        this.upgradeSlot = new com.denfop.invslot.InvSlotUpgrade(this, "upgrade", 4);
-        this.texture = new ResourceLocation(
+         this.texture = new ResourceLocation(
                 Constants.TEXTURES,
                 "textures/models/" + texturename + ".png"
         );
         this.fluids = this.addComponent(new Fluids(this));
         this.fluidTank = this.fluids.addTank("fluidTank", tanksize * 1000);
         this.outputSlot = new InvSlotOutput(this, "output", 1);
+        this.upgradeSlot = new com.denfop.invslot.InvSlotUpgrade(this, "upgrade", 4);
 
     }
 
@@ -190,7 +190,7 @@ public class TileEntityLiquedTank extends TileEntityInventory implements IHasGui
                 }
             }
         }
-        if (this.upgradeSlot.tickNoMark() && needsInvUpdate ) {
+        if (this.upgradeSlot.tickNoMark() && needsInvUpdate) {
             this.setUpgradestat();
         }
 

@@ -5,12 +5,12 @@ import com.denfop.blocks.FluidName;
 import com.denfop.invslot.InvSlotConsumableLiquid;
 import com.denfop.invslot.InvSlotConsumableLiquidByListRemake;
 import com.denfop.invslot.InvSlotConsumableLiquidByTank;
+import com.denfop.invslot.InvSlotUpgrade;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.IC2;
 import ic2.core.block.comp.Fluids;
 import ic2.core.block.invslot.InvSlot;
-import ic2.core.block.invslot.InvSlotUpgrade;
 import ic2.core.init.Localization;
 import ic2.core.ref.TeBlock;
 import ic2.core.util.StackUtil;
@@ -118,13 +118,14 @@ public abstract class TileEntityBaseLiquedMachine extends TileEntityElectricMach
                 super.addInformation(stack, tooltip, advanced);
                 return;
             }
-            if(fluidStackList.size() == 1){
+            if (fluidStackList.size() == 1) {
                 tooltip.add(Localization.translate("iu.fluid.info") + fluidStackList.get(0).getLocalizedName());
-                tooltip.add(Localization.translate("iu.fluid.info1") +  fluidStackList.get(0).amount / 1000 + " B");
-            }else{
+                tooltip.add(Localization.translate("iu.fluid.info1") + fluidStackList.get(0).amount / 1000 + " B");
+            } else {
                 tooltip.add(Localization.translate("iu.fluid.info2"));
-                for(FluidStack fluidStack : fluidStackList)
+                for (FluidStack fluidStack : fluidStackList) {
                     tooltip.add(fluidStack.getLocalizedName() + " " + fluidStack.amount / 1000 + " B");
+                }
 
             }
             super.addInformation(stack, tooltip, advanced);
@@ -141,9 +142,9 @@ public abstract class TileEntityBaseLiquedMachine extends TileEntityElectricMach
             NBTTagCompound nbt = StackUtil.getOrCreateNbtData(stack);
 
             int size = nbt.getInteger("size");
-            for(int i =0; i < size;i++) {
+            for (int i = 0; i < size; i++) {
                 FluidStack fluidStack =
-                        FluidStack.loadFluidStackFromNBT((NBTTagCompound) stack.getTagCompound().getTag("fluid"+i));
+                        FluidStack.loadFluidStackFromNBT((NBTTagCompound) stack.getTagCompound().getTag("fluid" + i));
                 if (fluidStack != null) {
                     this.fluidTank[i].fill(fluidStack, true);
                 }
@@ -151,19 +152,21 @@ public abstract class TileEntityBaseLiquedMachine extends TileEntityElectricMach
             IC2.network.get(true).updateTileEntityField(this, "fluidTank");
         }
     }
+
     protected ItemStack adjustDrop(ItemStack drop, boolean wrench) {
         drop = super.adjustDrop(drop, wrench);
         if (wrench || this.teBlock.getDefaultDrop() == TeBlock.DefaultDrop.Self) {
             NBTTagCompound nbt = StackUtil.getOrCreateNbtData(drop);
-            nbt.setInteger("size",this.fluidTank.length);
-            for(int i =0; i < this.fluidTank.length;i++) {
+            nbt.setInteger("size", this.fluidTank.length);
+            for (int i = 0; i < this.fluidTank.length; i++) {
                 if (this.fluidTank[i].getFluidAmount() > 0) {
-                    nbt.setTag("fluid"+i, this.fluidTank[i].getFluid().writeToNBT(new NBTTagCompound()));
+                    nbt.setTag("fluid" + i, this.fluidTank[i].getFluid().writeToNBT(new NBTTagCompound()));
                 }
             }
         }
         return drop;
     }
+
     @Override
     public NBTTagCompound writeToNBT(final NBTTagCompound nbttagcompound) {
         super.writeToNBT(nbttagcompound);
@@ -239,7 +242,7 @@ public abstract class TileEntityBaseLiquedMachine extends TileEntityElectricMach
             IC2.network.get(true).updateTileEntityField(this, "fluidTank");
         }
 
-        if (needsInvUpdate && this.upgradeSlot.tickNoMark()) {
+        if (this.upgradeSlot.tickNoMark()) {
             setUpgradestat();
         }
 

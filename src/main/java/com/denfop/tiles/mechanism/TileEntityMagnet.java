@@ -2,6 +2,7 @@ package com.denfop.tiles.mechanism;
 
 import com.denfop.IUCore;
 import com.denfop.audio.AudioSource;
+import com.denfop.componets.AdvEnergy;
 import com.denfop.container.ContainerMagnet;
 import com.denfop.gui.GuiMagnet;
 import com.denfop.tiles.base.TileEntityAntiMagnet;
@@ -9,7 +10,9 @@ import com.denfop.tiles.base.TileEntityElectricMachine;
 import ic2.core.ContainerBase;
 import ic2.core.ExplosionIC2;
 import ic2.core.IC2;
+import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -38,7 +41,19 @@ public class TileEntityMagnet extends TileEntityElectricMachine {
         this.work = true;
 
     }
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
+        tooltip.add(Localization.translate("iu.magnet_work_info"));
+        if (this.hasComponent(AdvEnergy.class)) {
+            AdvEnergy energy = this.getComponent(AdvEnergy.class);
+            if (!energy.getSourceDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSourceTier()));
+            } else if (!energy.getSinkDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSinkTier()));
+            }
+        }
 
+    }
     @Override
     public void onPlaced(final ItemStack stack, final EntityLivingBase placer, final EnumFacing facing) {
         super.onPlaced(stack, placer, facing);

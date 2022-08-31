@@ -10,12 +10,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiPump extends GuiIC2<ContainerPump> {
+public class GuiPump extends GuiIU<ContainerPump> {
 
     public final ContainerPump container;
 
     public GuiPump(ContainerPump container1) {
-        super(container1);
+        super(container1,container1.base.getStyle());
         this.container = container1;
     }
 

@@ -17,7 +17,7 @@ import java.util.List;
 
 
 @SideOnly(Side.CLIENT)
-public class GuiModuleMachine extends GuiIC2<ContainerModuleMachine> {
+public class GuiModuleMachine extends GuiIU<ContainerModuleMachine> {
 
     public final ContainerModuleMachine container;
 
@@ -25,6 +25,8 @@ public class GuiModuleMachine extends GuiIC2<ContainerModuleMachine> {
         super(container1);
         this.container = container1;
         this.ySize = 178;
+        this.inventory.setX(7);
+        this.inventory.setY(96);
     }
 
     private static List<String> getInformation() {
@@ -36,12 +38,14 @@ public class GuiModuleMachine extends GuiIC2<ContainerModuleMachine> {
 
         return ret;
     }
+
     protected void drawBackgroundAndTitle(float partialTicks, int mouseX, int mouseY) {
         this.bindTexture();
         this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
         String name = Localization.translate(this.container.base.getName());
         this.drawXCenteredString(this.xSize / 2, 4, name, 4210752, false);
     }
+
     public void initGui() {
         super.initGui();
         this.buttonList.add(new GuiButton(0, (this.width - this.xSize) / 2 + 103, (this.height - this.ySize) / 2 + 21,

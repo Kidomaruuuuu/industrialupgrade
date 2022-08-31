@@ -3,6 +3,7 @@ package com.denfop.world;
 import com.denfop.IUItem;
 import com.denfop.blocks.BlockHeavyOre;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -78,14 +79,13 @@ public class WorldGenMinerals extends WorldGenerator {
                             || m > 0 && arrayOfBoolean[i1 - 1]) ? 1 : 0;
 
                     if (n != 0) {
-                        Material localMaterial = world.getBlockState(new BlockPos(x + j, y + m, z + k)).getMaterial();
-
+                        final IBlockState block_state1 = world.getBlockState(new BlockPos(x + j, y + m, z + k));
+                        Material localMaterial = block_state1.getMaterial();
 
                         if (m >= 4 && localMaterial.isLiquid()) {
                             return false;
                         }
-                        if (m < 4 && !localMaterial.isSolid() && world
-                                .getBlockState(new BlockPos(x + j, y + m, z + k))
+                        if (m < 4 && !localMaterial.isSolid() && block_state1
                                 .getBlock() != this.block) {
                             return false;
                         }
@@ -108,9 +108,13 @@ public class WorldGenMinerals extends WorldGenerator {
         for (int j = 0; j < 16; j++) {
             for (k = 0; k < 16; k++) {
                 for (m = 4; m < 8; m++) {
-                    if (arrayOfBoolean[(j * 16 + k) * 8 + m]
-                            && (world.getBlockState(new BlockPos(x + j, y + m - 1, z + k)).getBlock() == Blocks.DIRT || world
-                            .getBlockState(new BlockPos(x + j, y + m - 1, z + k))
+                    IBlockState block_states = null;
+                    boolean need = arrayOfBoolean[(j * 16 + k) * 8 + m];
+                    if (need) {
+                        block_states = world.getBlockState(new BlockPos(x + j, y + m - 1, z + k));
+                    }
+                    if (need
+                            && (block_states.getBlock() == Blocks.DIRT || block_states
                             .getBlock() == Blocks.WATER)
                             && world.getSkylightSubtracted() > 0) {
                         world.setBlockState(new BlockPos(x + j, y + m - 1, z + k), Blocks.GRASS.getDefaultState());

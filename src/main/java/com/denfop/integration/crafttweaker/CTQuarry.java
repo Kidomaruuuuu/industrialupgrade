@@ -74,12 +74,12 @@ public class CTQuarry {
 
 
             if (OreDictionary.getOreIDs((ItemStack) output.getInternal()).length == 0) {
-                if (!IUCore.list.contains((ItemStack) output.getInternal())) {
-                    IUCore.list.add((ItemStack) output.getInternal());
+                if (!IUCore.list_adding.contains((ItemStack) output.getInternal())) {
+                    IUCore.list_adding.add((ItemStack) output.getInternal());
                 } else {
                     int i = OreDictionary.getOreIDs((ItemStack) output.getInternal())[0];
-                    if (!IUCore.list.contains(OreDictionary.getOres(OreDictionary.getOreName(i)).get(0))) {
-                        IUCore.list.add(OreDictionary.getOres(OreDictionary.getOreName(i)).get(0));
+                    if (!IUCore.list_adding.contains(OreDictionary.getOres(OreDictionary.getOreName(i)).get(0))) {
+                        IUCore.list_adding.add(OreDictionary.getOres(OreDictionary.getOreName(i)).get(0));
                     }
                 }
             }
@@ -125,10 +125,10 @@ public class CTQuarry {
 
         public void apply() {
             if (OreDictionary.getOreIDs((ItemStack) input.getInternal()).length == 0) {
-                IUCore.list.remove((ItemStack) input.getInternal());
+                IUCore.list_removing.add((ItemStack) input.getInternal());
             } else {
                 int i = OreDictionary.getOreIDs((ItemStack) input.getInternal())[0];
-                IUCore.list.remove(OreDictionary.getOres(OreDictionary.getOreName(i)).get(0));
+                IUCore.list_removing.add(OreDictionary.getOres(OreDictionary.getOreName(i)).get(0));
             }
         }
 

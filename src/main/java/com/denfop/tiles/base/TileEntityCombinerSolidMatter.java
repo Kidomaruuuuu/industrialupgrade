@@ -125,6 +125,10 @@ public class TileEntityCombinerSolidMatter extends TileEntityInventory implement
 
     }
 
+    @Override
+    public int getInventoryStackLimit() {
+        return 1;
+    }
 
     protected void updateEntityServer() {
         super.updateEntityServer();

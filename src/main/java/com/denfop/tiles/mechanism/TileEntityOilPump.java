@@ -5,8 +5,10 @@ import com.denfop.api.vein.Type;
 import com.denfop.api.vein.Vein;
 import com.denfop.api.vein.VeinSystem;
 import com.denfop.blocks.FluidName;
+import com.denfop.componets.EnumTypeStyle;
 import com.denfop.container.ContainerOilPump;
 import com.denfop.gui.GuiOilPump;
+import com.denfop.invslot.InvSlotUpgrade;
 import com.denfop.tiles.base.IManufacturerBlock;
 import com.denfop.tiles.base.TileEntityElectricLiquidTankInventory;
 import ic2.api.upgrade.IUpgradableBlock;
@@ -17,7 +19,6 @@ import ic2.core.block.comp.Fluids;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.block.invslot.InvSlotConsumableLiquid;
 import ic2.core.block.invslot.InvSlotConsumableLiquidByList;
-import ic2.core.block.invslot.InvSlotUpgrade;
 import ic2.core.init.Localization;
 import ic2.core.ref.TeBlock;
 import ic2.core.util.StackUtil;
@@ -36,6 +37,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.mutable.MutableObject;
+import org.lwjgl.input.Keyboard;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -54,7 +56,8 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
     public boolean find;
     public int count;
     public int maxcount;
-    private Vein vein;
+    public Vein vein;
+    public int type;
 
     public TileEntityOilPump() {
         super(50000, 14, 20, Fluids.fluidPredicate(FluidName.fluidneft.getInstance()));
@@ -86,9 +89,17 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
     public void removeLevel(final int level) {
         this.level -= level;
     }
+
     @SideOnly(Side.CLIENT)
     @Override
     public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.machines_work_energy") + 10 + Localization.translate("iu" +
+                    ".machines_work_energy_type_eu"));
+        }
         if (stack.hasTagCompound() && stack.getTagCompound().hasKey("fluid")) {
             FluidStack fluidStack = FluidStack.loadFluidStackFromNBT((NBTTagCompound) stack.getTagCompound().getTag("fluid"));
 
@@ -98,6 +109,7 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
         }
         super.addInformation(stack, tooltip, advanced);
     }
+
     @Override
     public NBTTagCompound writeToNBT(final NBTTagCompound nbttagcompound) {
         super.writeToNBT(nbttagcompound);
@@ -155,8 +167,9 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
         IC2.network.get(true).updateTileEntityField(this, "count");
         IC2.network.get(true).updateTileEntityField(this, "find");
         IC2.network.get(true).updateTileEntityField(this, "maxcount");
-
+        IC2.network.get(true).updateTileEntityField(this, "type");
     }
+
     protected ItemStack adjustDrop(ItemStack drop, boolean wrench) {
         drop = super.adjustDrop(drop, wrench);
         if (wrench || this.teBlock.getDefaultDrop() == TeBlock.DefaultDrop.Self) {
@@ -167,6 +180,7 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
         }
         return drop;
     }
+
     @Override
     public void onPlaced(final ItemStack stack, final EntityLivingBase placer, final EnumFacing facing) {
         super.onPlaced(stack, placer, facing);
@@ -175,6 +189,7 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
             this.find = this.vein.get();
             this.count = this.vein.getCol();
             this.maxcount = this.vein.getMaxCol();
+            this.type = this.vein.getType().ordinal();
         }
         if (stack.hasTagCompound() && stack.getTagCompound().hasKey("fluid")) {
             FluidStack fluidStack = FluidStack.loadFluidStackFromNBT((NBTTagCompound) stack.getTagCompound().getTag("fluid"));
@@ -197,6 +212,7 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
             }
             this.count = this.vein.getCol();
             this.maxcount = this.vein.getMaxCol();
+            this.type = this.vein.getType().ordinal();
         }
         updateTileEntityField();
     }
@@ -338,5 +354,6 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
                 UpgradableProperty.ItemConsuming, UpgradableProperty.ItemProducing, UpgradableProperty.FluidProducing
         );
     }
+
 
 }

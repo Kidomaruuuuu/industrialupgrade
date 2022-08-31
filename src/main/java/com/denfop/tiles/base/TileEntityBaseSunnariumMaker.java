@@ -101,6 +101,11 @@ public abstract class TileEntityBaseSunnariumMaker extends TileEntityElectricMac
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             tooltip.add(Localization.translate("iu.solarium_energy_sink.info"));
+            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate("iu.machines_work_energy_type_eu"));
+            tooltip.add(Localization.translate("iu.machines_work_energy") + 5 + Localization.translate(
+                    "iu.machines_work_energy_type_se"));
+            tooltip.add(Localization.translate("iu.machines_work_length") + this.defaultOperationLength);
+
         }
         super.addInformation(stack, tooltip, advanced);
 
@@ -173,24 +178,17 @@ public abstract class TileEntityBaseSunnariumMaker extends TileEntityElectricMac
     }
 
     public void setOverclockRates() {
-        double previousProgress = (double) this.progress / (double) this.operationLength;
-        double stackOpLen = (this.defaultOperationLength + this.upgradeSlot.extraProcessTime) * 64.0D
-                * this.upgradeSlot.processTimeMultiplier;
-        this.operationsPerTick = (int) Math.min(Math.ceil(64.0D / stackOpLen), 2.147483647E9D);
-        this.operationLength = (int) Math.round(stackOpLen * this.operationsPerTick / 64.0D);
-        this.energyConsume = applyModifier(this.defaultEnergyConsume, this.upgradeSlot.extraEnergyDemand,
-                this.upgradeSlot.energyDemandMultiplier
-        );
-        this.energy.setSinkTier(applyModifier(this.defaultTier, this.upgradeSlot.extraTier, 1.0D));
-        this.energy.setCapacity(applyModifier(
-                this.defaultEnergyStorage,
-                this.upgradeSlot.extraEnergyStorage + this.operationLength * this.energyConsume,
-                this.upgradeSlot.energyStorageMultiplier
+        this.operationsPerTick = this.upgradeSlot.getOperationsPerTick(this.defaultOperationLength);
+        this.operationLength = this.upgradeSlot.getOperationLength(this.defaultOperationLength);
+        this.energyConsume = this.upgradeSlot.getEnergyDemand(this.defaultEnergyConsume);
+        int tier = this.upgradeSlot.getTier(this.defaultTier);
+        this.energy.setSinkTier(tier);
+        this.energy.setCapacity(this.upgradeSlot.getEnergyStorage(
+                this.defaultEnergyStorage
         ));
         if (this.operationLength < 1) {
             this.operationLength = 1;
         }
-        this.progress = (short) (int) Math.floor(previousProgress * this.operationLength + 0.1D);
     }
 
     public void operate(MachineRecipe output) {

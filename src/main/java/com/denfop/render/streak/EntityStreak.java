@@ -23,7 +23,7 @@ public class EntityStreak extends Entity {
         super(world);
         setSize(0.1F, 0.1F);
         this.parent = parent;
-        setLocationAndAngles(this.parent.posX, this.parent.boundingBox.minY, this.parent.posZ, this.parent.rotationYaw,
+        setLocationAndAngles(this.parent.posX, this.parent.getEntityBoundingBox().minY, this.parent.posZ, this.parent.rotationYaw,
                 this.parent.rotationPitch
         );
         this.lastUpdate = world.getWorldTime();

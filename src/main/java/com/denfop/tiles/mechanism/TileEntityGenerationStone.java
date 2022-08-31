@@ -34,6 +34,11 @@ public class TileEntityGenerationStone extends TileEntityBaseGenStone {
         this.inputSlotA = new InvSlotRecipes(this, "genstone", this);
     }
 
+    @Override
+    public int getSizeInventory() {
+        return 1;
+    }
+
     public static void init() {
         final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
         addGen(input.forStack(new ItemStack(Items.LAVA_BUCKET), 1), input.forStack(

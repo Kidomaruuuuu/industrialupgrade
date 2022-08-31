@@ -59,6 +59,9 @@ public class ContainerBaseQuarry extends ContainerFullInv<TileEntityBaseQuarry> 
         ret.add("min_y");
         ret.add("max_y");
         ret.add("exp");
+        ret.add("vein_need");
+        ret.add("need_work");
+        ret.add("default_pos");
         return ret;
     }
 

@@ -11,20 +11,20 @@ public enum EnumWindSide {
     NW(EnumHorizonSide.NW),
     NE(EnumHorizonSide.EN),
     SW(EnumHorizonSide.SW),
-    SE(EnumHorizonSide.ES)
-    ;
+    SE(EnumHorizonSide.ES);
     private final List<EnumHorizonSide> list;
 
 
-    EnumWindSide(EnumHorizonSide list){
+    EnumWindSide(EnumHorizonSide list) {
         this.list = Collections.singletonList(list);
+    }
+
+    public static EnumWindSide getValue(int index) {
+        EnumWindSide[] enumHorizonSides = values();
+        return enumHorizonSides[index];
     }
 
     public List<EnumHorizonSide> getList() {
         return list;
-    }
-    public static EnumWindSide getValue(int index){
-        EnumWindSide[] enumHorizonSides = values();
-        return enumHorizonSides[index];
     }
 }

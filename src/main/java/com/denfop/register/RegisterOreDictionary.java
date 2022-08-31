@@ -1,10 +1,12 @@
 package com.denfop.register;
 
 import com.denfop.IUItem;
+import com.denfop.Ic2Items;
 import com.denfop.integration.exnihilo.ExNihiloIntegration;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -146,7 +148,10 @@ public class RegisterOreDictionary {
         list.add("Germanium");//15
         return list;
     }
-
+    public static void deleteOre(String name, ItemStack stack){
+        final NonNullList<ItemStack> list = OreDictionary.getOres(name);
+        list.removeIf(stack1 -> stack1.isItemEqual(stack));
+    }
     public static void oredict() {
         writelist();
         writelist1();
@@ -154,8 +159,24 @@ public class RegisterOreDictionary {
         OreDictionary.registerOre("oreThorium", IUItem.toriyore);
         OreDictionary.registerOre("gemThorium", new ItemStack(IUItem.toriy, 1, 0));
         OreDictionary.registerOre("ingotUranium", new ItemStack(IUItem.itemiu, 1, 2));
+        OreDictionary.getOres("ingotUranium").remove(0);
         OreDictionary.registerOre("oreRedstone", Blocks.REDSTONE_ORE);
         OreDictionary.registerOre("oreRedstone", Blocks.LIT_REDSTONE_ORE);
+        OreDictionary.registerOre("casingBronze", Ic2Items.casingbronze);
+        OreDictionary.registerOre("casingIron", Ic2Items.casingiron);
+        OreDictionary.registerOre("casingSteel", Ic2Items.casingadviron);
+        OreDictionary.registerOre("crystalProton", IUItem.proton);
+        OreDictionary.registerOre("crystalPhoton", IUItem.photoniy);
+        OreDictionary.registerOre("crystalingotPhoton", IUItem.photoniy_ingot);
+        OreDictionary.registerOre("ingotNeutron", IUItem.neutroniumingot);
+        OreDictionary.registerOre("casingLead", Ic2Items.casinglead);
+
+        deleteOre("ingotSilver",Ic2Items.silverIngot);
+        deleteOre("crushedPurifiedSilver",Ic2Items.purifiedCrushedSilverOre);
+        deleteOre("crushedSilver",Ic2Items.crushedSilverOre);
+        deleteOre("dustTinySilver",Ic2Items.smallSilverDust);
+        deleteOre("dustSilver",Ic2Items.silverDust);
+        deleteOre("blockSilver",Ic2Items.silverBlock);
         for (int j = 0; j < list_item1.size(); j++) {
             for (int i = 0; i < list_string1.size(); i++) {
 

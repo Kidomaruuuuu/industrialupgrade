@@ -1,6 +1,8 @@
 package com.denfop.api.recipe;
 
 import com.denfop.api.Recipes;
+import com.denfop.api.gui.EnumTypeSlot;
+import com.denfop.api.gui.ITypeSlot;
 import com.denfop.tiles.base.TileEntityConverterSolidMatter;
 import ic2.api.upgrade.IUpgradeItem;
 import ic2.core.block.TileEntityInventory;
@@ -11,7 +13,7 @@ import net.minecraftforge.fluids.FluidTank;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InvSlotRecipes extends InvSlot {
+public class InvSlotRecipes extends InvSlot implements ITypeSlot {
 
     private final IBaseRecipe recipe;
     private final IUpdateTick tile;
@@ -63,7 +65,7 @@ public class InvSlotRecipes extends InvSlot {
     }
 
     public void consume(int number, int amount) {
-        this.consume(number, amount, false, false);
+        this.consume(number, amount, false);
     }
 
     public boolean continue_process(MachineRecipe recipe) {
@@ -74,22 +76,14 @@ public class InvSlotRecipes extends InvSlot {
         }
     }
 
-    public void consume(int number, int amount, boolean simulate, boolean consumeContainers) {
+    public void consume(int number, int amount, boolean simulate) {
 
 
         ItemStack stack = this.get(number);
         if (!stack.isEmpty() && stack.getCount() >= 1) {
             int currentAmount = Math.min(amount, stack.getCount());
             if (!simulate) {
-                if (stack.getCount() == currentAmount) {
-                    if (!consumeContainers && stack.getItem().hasContainerItem(stack)) {
-                        this.put(number, stack.getItem().getContainerItem(stack));
-                    } else {
-                        this.put(number, ItemStack.EMPTY);
-                    }
-                } else {
-                    stack.setCount(stack.getCount() - currentAmount);
-                }
+                stack.shrink(currentAmount);
             }
 
 
@@ -102,6 +96,7 @@ public class InvSlotRecipes extends InvSlot {
     public ItemStack get(final int index) {
         return super.get(index);
     }
+
 
     public MachineRecipe process() {
         for (int i = 0; i < this.size(); i++) {
@@ -165,5 +160,16 @@ public class InvSlotRecipes extends InvSlot {
             return Recipes.recipes.getRecipeOutputMachineFluid(this.recipe, this.recipe_list, false, list, this.tank);
         }
     }
+    @Override
+    public EnumTypeSlot getTypeSlot(int slotid) {
+        switch (recipe.getName()){
+            case "rotor_assembler":
+                if (slotid == 4) {
+                    return EnumTypeSlot.ROD_PART1;
+                }
+                return EnumTypeSlot.ROD_PART;
+        }
 
+        return null;
+    }
 }

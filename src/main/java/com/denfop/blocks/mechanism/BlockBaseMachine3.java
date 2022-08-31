@@ -20,7 +20,7 @@ import com.denfop.tiles.mechanism.TileEntityRocketAssembler;
 import com.denfop.tiles.mechanism.TileEntityRocketLaunchPad;
 import com.denfop.tiles.mechanism.TileEntityRodManufacturer;
 import com.denfop.tiles.mechanism.TileEntityRotorAssembler;
-import com.denfop.tiles.mechanism.TileEntityRotorMofifier;
+import com.denfop.tiles.mechanism.TileEntityRotorModifier;
 import com.denfop.tiles.mechanism.TileEntitySatelliteAssembler;
 import com.denfop.tiles.mechanism.TileEntitySoilAnalyzer;
 import com.denfop.tiles.mechanism.TileEntityTunerWireless;
@@ -29,6 +29,10 @@ import com.denfop.tiles.mechanism.generator.things.fluid.TileEntityAirCollector;
 import com.denfop.tiles.mechanism.generator.things.fluid.TileEntityWaterGenerator;
 import com.denfop.tiles.mechanism.heat.TileEntityElectricHeat;
 import com.denfop.tiles.mechanism.heat.TileEntityFluidHeat;
+import com.denfop.tiles.mechanism.wind.TileEntityAdvWindGenerator;
+import com.denfop.tiles.mechanism.wind.TileEntityImpWindGenerator;
+import com.denfop.tiles.mechanism.wind.TileEntityPerWindGenerator;
+import com.denfop.tiles.mechanism.wind.TileEntitySimpleWindGenerator;
 import ic2.api.item.ITeBlockSpecialItem;
 import ic2.core.block.ITeBlock;
 import ic2.core.block.TileEntityBlock;
@@ -64,7 +68,7 @@ public enum BlockBaseMachine3 implements ITeBlock, ITeBlockSpecialItem {
     rocket_assembler(TileEntityRocketAssembler.class, 15),
     rocket_launch_pad(TileEntityRocketLaunchPad.class, 16),
     rotor_assembler(TileEntityRotorAssembler.class, 17),
-    rotor_modifier(TileEntityRotorMofifier.class, 18),
+    rotor_modifier(TileEntityRotorModifier.class, 18),
     satellite_assembler(TileEntitySatelliteAssembler.class, 19),
     soil_analyzer(TileEntitySoilAnalyzer.class, 20),
     rods_manufacturer(TileEntityRodManufacturer.class, 21),
@@ -74,6 +78,10 @@ public enum BlockBaseMachine3 implements ITeBlock, ITeBlockSpecialItem {
     creator_schedules(TileEntityCreatorSchedules.class, 25),
     gas_combiner(TileEntityGasCombiner.class, 26),
     analyzer_chest(TileEntityAnalyzerChest.class, 27),
+    simple_wind_generator(TileEntitySimpleWindGenerator.class, 28),
+    adv_wind_generator(TileEntityAdvWindGenerator.class, 29),
+    imp_wind_generator(TileEntityImpWindGenerator.class, 30),
+    per_wind_generator(TileEntityPerWindGenerator.class, 31),
     ;
 
 

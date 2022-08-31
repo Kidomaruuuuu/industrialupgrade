@@ -73,6 +73,8 @@ public class TileEntityQuantumGenerator extends TileEntityInventory implements I
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             tooltip.add(Localization.translate("iu.quantumgenerator.info"));
             tooltip.add(Localization.translate("iu.quantumgenerator.info1"));
+            tooltip.add(Localization.translate("gui.SuperSolarPanel.generating")+": "+this.genmax+Localization.translate("iu.machines_work_energy_type_qe"));
+
         }
     }
 

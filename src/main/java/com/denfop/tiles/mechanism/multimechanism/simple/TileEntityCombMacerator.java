@@ -7,6 +7,7 @@ import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.tiles.base.EnumMultiMachine;
 import com.denfop.tiles.base.TileEntityMultiMachine;
+import com.denfop.tiles.mechanism.EnumTypeMachines;
 import ic2.api.recipe.IRecipeInputFactory;
 import ic2.core.init.Localization;
 import net.minecraft.item.ItemStack;
@@ -52,7 +53,7 @@ public class TileEntityCombMacerator extends TileEntityMultiMachine {
         stack = OreDictionary.getOres(output).get(0).copy();
 
 
-        stack.stackSize = 3;
+        stack.setCount(3);
         IUCore.get_comb_crushed.add(stack);
         final IRecipeInputFactory input1 = ic2.api.recipe.Recipes.inputFactory;
         Recipes.recipes.addRecipe(
@@ -67,23 +68,7 @@ public class TileEntityCombMacerator extends TileEntityMultiMachine {
 
     }
 
-    public void operateOnce(int slotId, List<ItemStack> processResult, int size) {
 
-        for (int i = 0; i < size; i++) {
-            if (!random) {
-                this.inputSlots.consume(slotId);
-                this.outputSlot.add(processResult);
-            } else {
-                Random rand = new Random();
-                if (rand.nextInt(max + 1) <= min) {
-                    this.inputSlots.consume(slotId);
-                    this.outputSlot.add(processResult);
-                }
-            }
-
-        }
-
-    }
 
     @Override
     public EnumMultiMachine getMachine() {

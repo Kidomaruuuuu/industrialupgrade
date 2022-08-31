@@ -8,4 +8,6 @@ public interface ICoolSink extends ICoolAcceptor {
 
     double injectCool(EnumFacing var1, double var2, double var4);
 
+    boolean needCooling();
+
 }

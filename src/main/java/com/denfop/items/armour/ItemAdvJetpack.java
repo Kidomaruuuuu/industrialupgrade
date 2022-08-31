@@ -129,7 +129,7 @@ public class ItemAdvJetpack extends ItemArmorElectric implements IElectricItem, 
 
 
             if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-                tooltip.add(Localization.translate("iu.changemode_fly") + Keyboard.getKeyName(KeyboardClient.flymode.getKeyCode()));
+                tooltip.add(Localization.translate("iu.changemode_fly") + Keyboard.getKeyName(Math.abs(KeyboardClient.flymode.getKeyCode())));
             }
         }
     }
@@ -383,7 +383,7 @@ public class ItemAdvJetpack extends ItemArmorElectric implements IElectricItem, 
                     if (jetpack) {
                         IC2.platform.messagePlayer(player, Localization.translate("iu.flymode_armor.info"));
                     } else {
-                        IC2.platform.messagePlayer(player,  Localization.translate("iu.flymode_armor.info1"));
+                        IC2.platform.messagePlayer(player, Localization.translate("iu.flymode_armor.info1"));
 
                     }
                 }

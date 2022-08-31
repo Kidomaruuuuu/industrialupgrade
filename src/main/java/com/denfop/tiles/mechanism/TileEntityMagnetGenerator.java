@@ -5,9 +5,11 @@ import com.denfop.container.ContainerMagnetGenerator;
 import com.denfop.gui.GuiMagnetGenerator;
 import com.denfop.tiles.base.TileEntityElectricMachine;
 import ic2.core.ContainerBase;
+import ic2.core.init.Localization;
 import ic2.core.ref.TeBlock;
 import ic2.core.util.StackUtil;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -15,6 +17,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.List;
 
 public class TileEntityMagnetGenerator extends TileEntityElectricMachine {
 
@@ -28,6 +32,13 @@ public class TileEntityMagnetGenerator extends TileEntityElectricMachine {
                 3456000,
                 14
         ));
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
+        tooltip.add(Localization.translate("iu.magnet_generator.info"));
+        super.addInformation(stack, tooltip, advanced);
     }
 
     public void readFromNBT(NBTTagCompound nbttagcompound) {
@@ -68,8 +79,10 @@ public class TileEntityMagnetGenerator extends TileEntityElectricMachine {
 
         super.updateEntityServer();
         if (timer == 0) {
-            initiate(2);
-            setActive(false);
+            if(this.getActive()) {
+                initiate(2);
+                setActive(false);
+            }
             return;
         }
         if (this.world.provider.getWorldTime() % 20 == 0) {
@@ -80,11 +93,7 @@ public class TileEntityMagnetGenerator extends TileEntityElectricMachine {
             setActive(true);
             initiate(0);
         }
-        if (getWorld().provider.getWorldTime() % 60 == 0) {
-            if (getActive()) {
-                initiate(2);
-            }
-        }
+
     }
 
     public String getStartSoundFile() {

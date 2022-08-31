@@ -15,6 +15,7 @@ import ic2.api.energy.tile.IMetaDelegate;
 import ic2.core.block.TileEntityBlock;
 import ic2.core.block.comp.TileEntityComponent;
 import ic2.core.block.invslot.InvSlot;
+import ic2.core.network.GrowingBuffer;
 import ic2.core.util.Util;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -108,7 +109,6 @@ public class AdvEnergy extends TileEntityComponent {
             boolean meta
     ) {
         super(parent);
-
         this.multiSource = false;
         this.sourcePackets = 1;
         this.capacity = capacity;
@@ -121,6 +121,7 @@ public class AdvEnergy extends TileEntityComponent {
         this.perenergy = 0;
         this.tick = 0;
         this.meta = meta;
+
     }
 
 
@@ -223,7 +224,11 @@ public class AdvEnergy extends TileEntityComponent {
     }
 
     public void onContainerUpdate(EntityPlayerMP player) {
-
+        GrowingBuffer buffer = new GrowingBuffer(16);
+        buffer.writeDouble(this.capacity);
+        buffer.writeDouble(this.storage);
+        buffer.flip();
+        this.setNetworkUpdate(player, buffer);
     }
 
     public void onNetworkUpdate(DataInput is) throws IOException {

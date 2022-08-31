@@ -10,7 +10,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
-public class GuiGenerator extends GuiIC2<ContainerGenerator> {
+public class GuiGenerator extends GuiIU<ContainerGenerator> {
 
     private static final ResourceLocation background;
 
@@ -22,7 +22,7 @@ public class GuiGenerator extends GuiIC2<ContainerGenerator> {
     public String name;
 
     public GuiGenerator(ContainerGenerator container1) {
-        super(container1);
+        super(container1,container1.base.getStyle());
         this.container = container1;
         this.name = Localization.translate(this.container.base.getName());
     }
@@ -56,6 +56,7 @@ public class GuiGenerator extends GuiIC2<ContainerGenerator> {
 
         i1 = this.container.base.gaugeStorageScaled(24);
         this.drawTexturedModalRect(j + 94, k + 35, 176, 14, i1, 17);
+        this.drawBackground();
     }
 
 }

@@ -53,6 +53,7 @@ public class ItemSpawnerModules extends ItemMulti<ItemSpawnerModules.Types> impl
         spawner_module5(5),
         spawner_module6(6),
         spawner_module7(7),
+        spawner_module8(8),
         ;
 
         private final String name;

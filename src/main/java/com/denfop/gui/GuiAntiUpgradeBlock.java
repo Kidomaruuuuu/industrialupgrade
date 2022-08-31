@@ -4,6 +4,7 @@ import com.denfop.Constants;
 import com.denfop.api.upgrade.UpgradeModificator;
 import com.denfop.api.upgrade.UpgradeSystem;
 import com.denfop.container.ContainerAntiUpgrade;
+import com.denfop.utils.ListInformationUtils;
 import com.denfop.utils.ModUtils;
 import ic2.core.GuiIC2;
 import ic2.core.IC2;
@@ -18,6 +19,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class GuiAntiUpgradeBlock extends GuiIC2<ContainerAntiUpgrade> {
@@ -28,7 +31,21 @@ public class GuiAntiUpgradeBlock extends GuiIC2<ContainerAntiUpgrade> {
         super(container1);
         this.container = container1;
     }
+    private void handleUpgradeTooltip(int mouseX, int mouseY) {
+        if (mouseX >= 3 && mouseX <= 15 && mouseY >= 3 && mouseY <= 15) {
+            List<String> text = new ArrayList<>();
+            text.add(Localization.translate("iu.anti_modification.info"));
+            List<String> compatibleUpgrades = ListInformationUtils.anti_upgrade_block;
+            Iterator<String> var5 = compatibleUpgrades.iterator();
+            String itemstack;
+            while (var5.hasNext()) {
+                itemstack = var5.next();
+                text.add(itemstack);
+            }
 
+            this.drawTooltip(mouseX, mouseY, text);
+        }
+    }
     protected void mouseClicked(int i, int j, int k) throws IOException {
         super.mouseClicked(i, j, k);
         int xMin = (this.width - this.xSize) / 2;
@@ -74,6 +91,7 @@ public class GuiAntiUpgradeBlock extends GuiIC2<ContainerAntiUpgrade> {
     @Override
     protected void drawForegroundLayer(final int mouseX, final int mouseY) {
         super.drawForegroundLayer(mouseX, mouseY);
+        handleUpgradeTooltip(mouseX, mouseY);
         String tooltip2 =
                 ModUtils.getString(Math.min(
                         this.container.base.energy.getEnergy(),
@@ -100,7 +118,10 @@ public class GuiAntiUpgradeBlock extends GuiIC2<ContainerAntiUpgrade> {
         this.mc.getTextureManager().bindTexture(getTexture());
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         final int progress = Math.min(29 * this.container.base.progress / 100, 29);
-
+        this.mc.getTextureManager()
+                .bindTexture(new ResourceLocation(IC2.RESOURCE_DOMAIN, "textures/gui/infobutton.png"));
+        drawTexturedModalRect(xoffset + 3, yoffset + 3, 0, 0, 10, 10);
+        this.mc.getTextureManager().bindTexture(getTexture());
         int chargeLevel = (int) (14.0F * this.container.base.getChargeLevel());
         if (chargeLevel > 0) {
             drawTexturedModalRect(xoffset + 25, yoffset + 57 + 14 - chargeLevel, 176, 14 - chargeLevel,

@@ -1,6 +1,8 @@
 package com.denfop.tiles.mechanism;
 
+import com.denfop.api.gui.IType;
 import com.denfop.api.recipe.InvSlotOutput;
+import com.denfop.componets.EnumTypeStyle;
 import com.denfop.container.ContainerPump;
 import com.denfop.gui.GuiPump;
 import com.denfop.invslot.InvSlotUpgrade;
@@ -19,6 +21,7 @@ import ic2.core.block.invslot.InvSlotConsumableLiquid.OpType;
 import ic2.core.init.Localization;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -31,13 +34,14 @@ import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.mutable.MutableObject;
+import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-public class TileEntityPump extends TileEntityElectricLiquidTankInventory implements IHasGui, IUpgradableBlock {
+public class TileEntityPump extends TileEntityElectricLiquidTankInventory implements IHasGui, IUpgradableBlock, IType {
 
     public final int defaultTier;
     public final int defaultEnergyStorage;
@@ -55,7 +59,7 @@ public class TileEntityPump extends TileEntityElectricLiquidTankInventory implem
     private AudioSource audioSource;
 
     public TileEntityPump(String name, int size, int operationLength) {
-        super(20, operationLength, size);
+        super(20, 1, size);
         this.containerSlot = new InvSlotConsumableLiquid(this, "containerSlot", Access.I, 1, InvSide.TOP, OpType.Fill);
         this.outputSlot = new InvSlotOutput(this, "output", 1);
         this.upgradeSlot = new com.denfop.invslot.InvSlotUpgrade(this, "upgrade", 4);
@@ -66,7 +70,18 @@ public class TileEntityPump extends TileEntityElectricLiquidTankInventory implem
         this.defaultEnergyStorage = this.operationLength;
 
     }
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate("iu.machines_work_energy_type_eu"));
+            tooltip.add(Localization.translate("iu.machines_work_length") + this.defaultOperationLength);
+        }
+        super.addInformation(stack,tooltip,advanced);
 
+    }
     private static int applyModifier(int base, int extra, double multiplier) {
         double ret = (double) Math.round(((double) base + (double) extra) * multiplier);
         return ret > 2.147483647E9D ? 2147483647 : (int) ret;
@@ -309,6 +324,12 @@ public class TileEntityPump extends TileEntityElectricLiquidTankInventory implem
                 UpgradableProperty.ItemProducing,
                 UpgradableProperty.FluidProducing
         );
+    }
+
+
+    @Override
+    public EnumTypeStyle getStyle() {
+        return null;
     }
 
 }

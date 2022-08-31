@@ -40,7 +40,7 @@ public class EventUpdate {
         if (!this.playerNotified && this.thread.isComplete()) {
             this.playerNotified = true;
             MinecraftForge.EVENT_BUS.unregister(this);
-            if (this.thread.getVersion().equals(Constants.MOD_VERSION) || Constants.MOD_VERSION.contains("build")) {
+            if (this.thread.getVersion().equals(Constants.MOD_VERSION)) {
 
                 return;
             }

@@ -43,7 +43,7 @@ public class ElectricItemManager implements IElectricItemManager {
 
     public static void addChargeVariants(Item item, List<ItemStack> list) {
         list.add(getCharged(item, 0.0D));
-        list.add(getCharged(item, 1.0D / 0.0));
+        list.add(getCharged(item, Double.MAX_VALUE));
     }
 
     public double charge(ItemStack stack, double amount, int tier, boolean ignoreTransferLimit, boolean simulate) {
@@ -139,7 +139,7 @@ public class ElectricItemManager implements IElectricItemManager {
     }
 
     public double getMaxCharge(ItemStack stack) {
-        return ElectricItem.manager.getCharge(stack) + ElectricItem.manager.charge(stack, 1.0D / 0.0, 2147483647, true, true);
+        return ((IElectricItem) stack.getItem()).getMaxCharge(stack);
     }
 
     public boolean canUse(ItemStack stack, double amount) {
@@ -179,13 +179,12 @@ public class ElectricItemManager implements IElectricItemManager {
                 tier = 2147483647;
             }
 
-            double transfer = this.getCharge(target);
+            double transfer = Math.min(this.getCharge(target), this.getCharge(source));
             if (!(transfer <= 0.0D)) {
                 transfer = ElectricItem.manager.charge(target, transfer, tier, true, false);
-                if (!(transfer <= 0.0D)) {
-                    ElectricItem.manager.discharge(source, transfer, 2147483647, true, true, false);
-                    transferred = true;
-                }
+                ElectricItem.manager.discharge(source, transfer, 2147483647, true, false, false);
+                transferred = true;
+
             }
         }
 

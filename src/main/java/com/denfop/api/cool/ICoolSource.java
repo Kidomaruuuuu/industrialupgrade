@@ -6,4 +6,8 @@ public interface ICoolSource extends ICoolEmitter {
 
     void drawCool(double var1);
 
+    boolean isAllowed();
+
+    void  setAllowed(boolean allowed);
+
 }

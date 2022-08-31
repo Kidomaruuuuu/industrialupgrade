@@ -3,15 +3,31 @@ package com.denfop.recipes;
 import com.denfop.IUItem;
 import com.denfop.Ic2Items;
 import com.denfop.utils.ModUtils;
+import ic2.api.recipe.IRecipeInput;
 import ic2.api.recipe.IRecipeInputFactory;
+import ic2.api.recipe.MachineRecipe;
 import ic2.api.recipe.Recipes;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 public class OreWashingRecipe {
 
     public static void init() {
+        final Iterable<? extends MachineRecipe<IRecipeInput, Collection<ItemStack>>> recipe1 = Recipes.oreWashing.getRecipes();
+        final Iterator<? extends MachineRecipe<IRecipeInput, Collection<ItemStack>>> iter1 = recipe1.iterator();
+        while (iter1.hasNext()) {
+            MachineRecipe<IRecipeInput, Collection<ItemStack>> recipe2 = iter1.next();
+            List<ItemStack> list = (List<ItemStack>) recipe2.getOutput();
+            if (list.get(0).isItemEqual(Ic2Items.purifiedCrushedSilverOre)) {
+                iter1.remove();
+            }
+
+        }
         addrecipe(0, null);
         addrecipe(1, new ItemStack(Blocks.SAND));
         addrecipe(2, new ItemStack(Ic2Items.smallLeadDust.getItem(), 2, 10));
@@ -23,6 +39,7 @@ public class OreWashingRecipe {
         addrecipe(10, new ItemStack(Ic2Items.smallLeadDust.getItem(), 2, 0));
         addrecipe(11, new ItemStack(Ic2Items.smallLeadDust.getItem(), 2, 10));
         addrecipe(12, new ItemStack(IUItem.smalldust, 2, 10));
+        addrecipe(14, new ItemStack(IUItem.smalldust, 2, 14));
         addrecipe(15, new ItemStack(Ic2Items.smallLeadDust.getItem(), 2, 10));
         addrecipe(16, null);
         addrecipe(17, new ItemStack(IUItem.smalldust, 2, 9));

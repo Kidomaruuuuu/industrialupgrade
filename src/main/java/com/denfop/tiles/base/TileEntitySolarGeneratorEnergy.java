@@ -2,6 +2,7 @@ package com.denfop.tiles.base;
 
 import com.denfop.IUItem;
 import com.denfop.api.recipe.InvSlotOutput;
+import com.denfop.componets.AdvEnergy;
 import com.denfop.componets.SEComponent;
 import com.denfop.container.ContainerSolarGeneratorEnergy;
 import com.denfop.gui.GuiSolarGeneratorEnergy;
@@ -55,6 +56,10 @@ public class TileEntitySolarGeneratorEnergy extends TileEntityInventory implemen
     }
 
     @Override
+    public int getSizeInventory() {
+        return 1;
+    }
+    @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
         if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
@@ -62,6 +67,8 @@ public class TileEntitySolarGeneratorEnergy extends TileEntityInventory implemen
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             tooltip.add(Localization.translate("iu.solarium_energy.info"));
+            tooltip.add(Localization.translate("iu.info_upgrade_energy")+this.cof);
+
         }
         super.addInformation(stack, tooltip, advanced);
 
@@ -126,7 +133,7 @@ public class TileEntitySolarGeneratorEnergy extends TileEntityInventory implemen
         if (this.skyIsVisible) {
             energy(tick);
             if (this.sunenergy.getEnergy() >= 4500) {
-                if (this.outputSlot.get().stackSize < 64 || this.outputSlot.isEmpty()) {
+                if (this.outputSlot.get().getCount() < 64 || this.outputSlot.isEmpty()) {
                     if (this.outputSlot.add(itemstack)) {
                         this.sunenergy.addEnergy(-4500);
                     }

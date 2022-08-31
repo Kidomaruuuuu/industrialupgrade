@@ -73,13 +73,14 @@ public class ItemEntityModule extends ItemMulti<ItemEntityModule.Types> implemen
             entity.writeToNBT(root);
             root.setString("nameEntity", entity.getName());
             root.setInteger("id_mob", entity.getEntityId());
-
+            System.out.println(entityId);
+            System.out.println(EntityList.getKey(entity));
 
             CapturedMobUtils capturedMobUtils = CapturedMobUtils.create(entity);
-
+           if(capturedMobUtils == null)
+               return false;
             entity.setDead();
-            stack.setCount(stack.getCount() - 1);
-            assert capturedMobUtils != null;
+            stack.shrink(1);
             ItemStack stack1 = capturedMobUtils.toStack(this, 1, 1);
 
 
@@ -104,7 +105,7 @@ public class ItemEntityModule extends ItemMulti<ItemEntityModule.Types> implemen
                 ItemStack stack1 = stack.copy();
                 NBTTagCompound root = new NBTTagCompound();
                 root.setString("name", entity.getDisplayName().getFormattedText());
-                stack.setCount(stack.getCount() - 1);
+                stack.shrink(1);
 
                 double var8 = 0.7D;
                 double var10 = (double) player.getEntityWorld().rand.nextFloat() * var8 + (1.0D - var8) * 0.5D;

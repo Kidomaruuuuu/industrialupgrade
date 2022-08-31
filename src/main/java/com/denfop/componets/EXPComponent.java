@@ -12,6 +12,7 @@ import ic2.core.IC2;
 import ic2.core.block.TileEntityBlock;
 import ic2.core.block.comp.TileEntityComponent;
 import ic2.core.block.invslot.InvSlot;
+import ic2.core.network.GrowingBuffer;
 import ic2.core.util.LogCategory;
 import ic2.core.util.Util;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -178,7 +179,11 @@ public class EXPComponent extends TileEntityComponent {
     }
 
     public void onContainerUpdate(EntityPlayerMP player) {
-
+        GrowingBuffer buffer = new GrowingBuffer(16);
+        buffer.writeDouble(this.capacity);
+        buffer.writeDouble(this.storage);
+        buffer.flip();
+        this.setNetworkUpdate(player, buffer);
     }
 
     public void onNetworkUpdate(DataInput is) throws IOException {

@@ -6,7 +6,9 @@ import com.denfop.container.ContainerElectrolyzer;
 import com.denfop.gui.GuiElectrolyzer;
 import com.denfop.invslot.InvSlotElectrolyzer;
 import ic2.core.ContainerBase;
+import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
@@ -14,6 +16,9 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
+
+import java.util.List;
 
 public class TileEntityElectrolyzer extends TileEntityBaseLiquedMachine implements IManufacturerBlock {
 
@@ -78,7 +83,18 @@ public class TileEntityElectrolyzer extends TileEntityBaseLiquedMachine implemen
         return new GuiElectrolyzer(new ContainerElectrolyzer(entityPlayer, this));
 
     }
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.machines_work_energy") + 25 + Localization.translate("iu" +
+                    ".machines_work_energy_type_eu"));
+                    }
+        super.addInformation(stack,tooltip,advanced);
 
+    }
     public void updateEntityServer() {
         super.updateEntityServer();
 

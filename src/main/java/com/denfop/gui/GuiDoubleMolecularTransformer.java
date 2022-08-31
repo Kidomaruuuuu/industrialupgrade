@@ -95,16 +95,16 @@ public class GuiDoubleMolecularTransformer extends GuiIC2<ContainerBaseDoubleMol
                 size2 = this.container.base.output.getRecipe().input.getInputs().get(1).getInputs().get(0).getCount();
                 col = size;
                 col1 = size2;
-                size = (int) Math.floor((float) this.container.base.inputSlot.get().stackSize / size);
-                size2 = (int) Math.floor((float) this.container.base.inputSlot.get(1).stackSize / size2);
+                size = (int) Math.floor((float) this.container.base.inputSlot.get().getCount() / size);
+                size2 = (int) Math.floor((float) this.container.base.inputSlot.get(1).getCount() / size2);
                 size = Math.min(size, size2);
 
                 int size1 = !this.container.base.outputSlot.get().isEmpty()
-                        ? 64 - this.container.base.outputSlot.get().stackSize
+                        ? 64 - this.container.base.outputSlot.get().getCount()
                         : 64;
                 size = Math.min(size1, size);
                 size = Math.min(size, output2.getMaxStackSize());
-                if (this.container.base.outputSlot.get().isEmpty() || this.container.base.outputSlot.get().stackSize < 64) {
+                if (this.container.base.outputSlot.get().isEmpty() || this.container.base.outputSlot.get().getCount() < 64) {
                     this.mc.getTextureManager().bindTexture(getTexture());
                     drawTexturedModalRect(this.guiLeft + 23, this.guiTop + 48, 221, 7, 10, (int) chargeLevel);
                     this.mc.getTextureManager().bindTexture(getTexture());
@@ -118,7 +118,7 @@ public class GuiDoubleMolecularTransformer extends GuiIC2<ContainerBaseDoubleMol
                             this.guiLeft + 60, this.guiTop + 36, 4210752
                     );
 
-                    this.fontRenderer.drawString(output + output2.stackSize * size + "x" + output3.getRecipe().output.items
+                    this.fontRenderer.drawString(output + output2.getCount() * size + "x" + output3.getRecipe().output.items
                                     .get(0)
                                     .getDisplayName()
                             , this.guiLeft + 60,

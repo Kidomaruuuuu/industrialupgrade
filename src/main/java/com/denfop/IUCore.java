@@ -1,10 +1,10 @@
 package com.denfop;
 
-import aroma1997.uncomplication.enet.transformer.EnergyNetGlobal;
 import com.denfop.api.IElectricBlock;
 import com.denfop.api.IStorage;
 import com.denfop.api.Recipes;
 import com.denfop.api.cool.CoolNet;
+import com.denfop.api.energy.EnergyNetGlobal;
 import com.denfop.api.exp.EXPNet;
 import com.denfop.api.heat.HeatNet;
 import com.denfop.api.qe.QENet;
@@ -17,6 +17,7 @@ import com.denfop.api.upgrade.BaseUpgradeSystem;
 import com.denfop.api.upgrade.UpgradeSystem;
 import com.denfop.api.vein.VeinSystem;
 import com.denfop.api.windsystem.WindSystem;
+import com.denfop.api.windsystem.upgrade.RotorUpgradeSystem;
 import com.denfop.audio.AudioManager;
 import com.denfop.blocks.BlockIUFluid;
 import com.denfop.blocks.mechanism.BlockAdminPanel;
@@ -61,7 +62,6 @@ import com.denfop.blocks.mechanism.BlockTank;
 import com.denfop.blocks.mechanism.BlockTransformer;
 import com.denfop.blocks.mechanism.BlockUpgradeBlock;
 import com.denfop.cool.CoolNetGlobal;
-import com.denfop.events.TickHandler;
 import com.denfop.events.TickHandlerIU;
 import com.denfop.exp.EXPNetGlobal;
 import com.denfop.heat.HeatNetGlobal;
@@ -102,8 +102,10 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.storage.loot.LootTable;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -157,7 +159,11 @@ public final class IUCore {
     public static final List<ItemStack> get_comb_crushed = new ArrayList<>();
     public static final List<RecipeInputStack> get_all_list = new ArrayList<>();
     public static final List<ItemStack> fish_rodding = new ArrayList<>();
-
+    public static final List<ItemStack> list_adding = new ArrayList<>();
+    public static final List<ItemStack> list_removing = new ArrayList<>();
+    public static final List<ItemStack> list_furnace_adding = new ArrayList<>();
+    public static final List<ItemStack> list_furnace_removing = new ArrayList<>();
+    public static boolean dynamicTrees = false;
     public static Logger log;
     @SidedProxy(clientSide = "com.denfop.proxy.ClientProxy", serverSide = "com.denfop.proxy.CommonProxy")
     public static CommonProxy proxy;
@@ -290,11 +296,8 @@ public final class IUCore {
     }
 
     public static void initENet() {
-        if (Config.newsystem) {
-            EnergyNet.instance = EnergyNetGlobal.initialize();
-        } else {
-            EnergyNet.instance = aroma1997.uncomplication.enet.old.EnergyNetGlobal.initialize();
-        }
+
+        EnergyNet.instance = EnergyNetGlobal.initialize();
         HeatNet.instance = HeatNetGlobal.initialize();
         CoolNet.instance = CoolNetGlobal.initialize();
         QENet.instance = QENetGlobal.initialize();
@@ -304,6 +307,7 @@ public final class IUCore {
         new VeinSystem();
         new RadiationSystem();
         new WindSystem();
+
     }
 
     @SubscribeEvent
@@ -321,15 +325,15 @@ public final class IUCore {
         IUCore.log = event.getModLog();
         Config.loadNormalConfig(event.getSuggestedConfigurationFile());
         UpgradeSystem.system = new BaseUpgradeSystem();
+        new RotorUpgradeSystem();
         Recipes.recipes = new ListRecipes();
         proxy.regrecipemanager();
         MinecraftForge.EVENT_BUS.register(new TickHandlerIU());
-        if (Config.experiment) {
-            new TickHandler();
-        }
+
 
         IUCore.audioManager.initialize();
         Keys.instance = IUCore.keyboard;
+
         proxy.preInit(event);
         NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
     }
@@ -399,7 +403,25 @@ public final class IUCore {
         }
     }
 
+    public static Map<String,LootTable> lootTables = new HashMap<>();
+    @SubscribeEvent
+    public void load_table(final LootTableLoadEvent event) {
+         if(event.getName().toString().contains("entities")) {
+             StringBuilder builder = new StringBuilder(event.getName().toString());
+             int index = builder.indexOf("/");
+             int index1 = builder.indexOf(":");
+             builder.delete(index1+1,index+1);
+             if(builder.toString().contains("sheep")){
+                 index = builder.indexOf("/");
+                 if(index >= 0)
+                 builder.replace(index,index+1,"_");
+             }
 
+             lootTables.put(builder.toString(),event.getTable());
+
+        }
+
+    }
     @Mod.EventHandler
     public void postInit(final FMLPostInitializationEvent event) {
         proxy.postInit(event);
@@ -412,7 +434,7 @@ public final class IUCore {
         addInList1(new ItemStack(Items.COAL));
         addInList1(new ItemStack(Items.GLOWSTONE_DUST));
         addInList1(new ItemStack(Items.QUARTZ));
-
+        dynamicTrees = Loader.isModLoaded("dynamictrees");
         addOre("oreCoal");
         addOre("oreIron");
         addOre("oreGold");
@@ -422,6 +444,7 @@ public final class IUCore {
         addOre1("oreIron");
         addOre1("oreGold");
         addOre1("oreIridium");
+        addOre1("crystalCertusQuartz");
         addOre("oreIridium");
         get_ore.add(new ItemStack(Blocks.REDSTONE_ORE));
         get_ore.add(new ItemStack(Blocks.LIT_REDSTONE_ORE));
@@ -489,7 +512,8 @@ public final class IUCore {
                 this.get_ingot.add(stack);
             }
         }
-
+        IUCore.list_adding.forEach(stack ->  addOre1(stack));
+        IUCore.list_removing.forEach(stack ->  removeOre(stack));
         IUCore.list.forEach(stack -> {
 
             get_all_list.add(new RecipeInputStack(stack));
@@ -499,6 +523,8 @@ public final class IUCore {
 
             get_all_list.add(new RecipeInputStack(stack));
         });
+        IUCore.list_furnace_adding.forEach(stack ->  addOre2(stack));
+        IUCore.list_furnace_removing.forEach(stack ->  removeOre2(stack));
         get_all_list.removeIf(stack -> IUCore.get_comb_crushed.contains(stack));
         IUCore.get_comb_crushed.forEach(stack -> {
 
@@ -511,17 +537,8 @@ public final class IUCore {
         });
 
 
-        final Iterable<? extends MachineRecipe<IRecipeInput, Collection<ItemStack>>> recipe = ic2.api.recipe.Recipes.compressor.getRecipes();
-        final Iterator<? extends MachineRecipe<IRecipeInput, Collection<ItemStack>>> iter = recipe.iterator();
-        List<MachineRecipe<IRecipeInput, Collection<ItemStack>>> lst = new ArrayList<>();
-        while (iter.hasNext()) {
-            MachineRecipe<IRecipeInput, Collection<ItemStack>> recipe1 = iter.next();
-            List<ItemStack> list = (List<ItemStack>) recipe1.getOutput();
-            if (list.get(0).isItemEqual(Ic2Items.iridiumOre)) {
-                iter.remove();
-                break;
-            }
-        }
+
+
         fish_rodding.add(new ItemStack(Items.FISH));
         fish_rodding.add(new ItemStack(Items.FISH, 1, 1));
         fish_rodding.add(new ItemStack(Items.FISH, 1, 2));
@@ -547,8 +564,8 @@ public final class IUCore {
         final Iterator<? extends MachineRecipe<IRecipeInput, Collection<ItemStack>>> iter2 = recipe2.iterator();
         List<MachineRecipe<IRecipeInput, Collection<ItemStack>>> lst2 = new ArrayList<>();
         while (iter2.hasNext()) {
-            MachineRecipe<IRecipeInput, Collection<ItemStack>> recipe1 = iter2.next();
-            List<ItemStack> list = (List<ItemStack>) recipe1.getOutput();
+            MachineRecipe<IRecipeInput, Collection<ItemStack>> recipe3 = iter2.next();
+            List<ItemStack> list = (List<ItemStack>) recipe3.getOutput();
             if (list.get(0).isItemEqual(Ic2Items.advIronIngot)) {
                 list.get(1).shrink(list.get(1).getCount());
             }
@@ -625,7 +642,18 @@ public final class IUCore {
             }
         }
     }
-
+    public void addOre1(ItemStack name) {
+        list.add(name);
+    }
+    public void removeOre(ItemStack name) {
+        list.removeIf(stack -> stack.isItemEqual(name));
+    }
+    public void addOre2(ItemStack name) {
+        get_ingot.add(name);
+    }
+    public void removeOre2(ItemStack name) {
+        get_ingot.removeIf(stack -> stack.isItemEqual(name));
+    }
     public void removeOre(String name) {
         if (OreDictionary.getOres(name).size() >= 1) {
             if (list.contains(OreDictionary.getOres(name).get(0))) {

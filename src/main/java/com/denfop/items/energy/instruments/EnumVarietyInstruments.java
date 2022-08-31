@@ -6,7 +6,8 @@ public enum EnumVarietyInstruments {
     NANO(2, Config.nano_transfer, Config.nano_maxEnergy, 30, 15, Config.ultraLowPower, 0, Config.nano_energyPerOperation,
             Config.nano_energyPerbigHolePowerOperation, Config.energyPerbigHolePowerOperation, 0
     ),
-    QUANTUM(3,
+    QUANTUM(
+            3,
             Config.quantum_transfer,
             Config.quantum_maxEnergy,
             40,

@@ -14,12 +14,12 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public class GuiQuantumQuarry extends GuiIC2<ContainerQuantumQuarry> {
+public class GuiQuantumQuarry extends GuiIU<ContainerQuantumQuarry> {
 
     public final ContainerQuantumQuarry container;
 
     public GuiQuantumQuarry(ContainerQuantumQuarry container1) {
-        super(container1);
+        super(container1,container1.base.getStyle());
         this.container = container1;
     }
 
@@ -63,6 +63,8 @@ public class GuiQuantumQuarry extends GuiIC2<ContainerQuantumQuarry> {
         this.mc.getTextureManager()
                 .bindTexture(new ResourceLocation(IC2.RESOURCE_DOMAIN, "textures/gui/infobutton.png"));
         drawTexturedModalRect(h + 3, k + 3, 0, 0, 10, 10);
+        this.mc.getTextureManager().bindTexture(getTexture());
+        this.drawBackground();
         this.mc.getTextureManager().bindTexture(getTexture());
         int chargeLevel = (int) (48.0F * this.container.base.energy.getEnergy()
                 / this.container.base.energy.getCapacity());

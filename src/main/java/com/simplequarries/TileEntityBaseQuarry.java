@@ -6,6 +6,7 @@ import com.denfop.Ic2Items;
 import com.denfop.api.Recipes;
 import com.denfop.api.audio.EnumTypeAudio;
 import com.denfop.api.audio.IAudioFixer;
+import com.denfop.api.gui.IType;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.InvSlotOutput;
 import com.denfop.api.vein.Type;
@@ -16,6 +17,7 @@ import com.denfop.audio.PositionSpec;
 import com.denfop.componets.AdvEnergy;
 import com.denfop.componets.CoolComponent;
 import com.denfop.componets.EXPComponent;
+import com.denfop.componets.EnumTypeStyle;
 import com.denfop.componets.QEComponent;
 import com.denfop.items.modules.EnumQuarryModules;
 import com.denfop.items.modules.EnumQuarryType;
@@ -32,12 +34,14 @@ import ic2.core.block.TileEntityInventory;
 import ic2.core.init.Localization;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MaterialLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -45,6 +49,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
@@ -57,7 +62,7 @@ import java.util.Set;
 
 public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui, IAudioFixer,
         INetworkClientTileEntityEventListener,
-        IUpgradableBlock {
+        IUpgradableBlock, IType {
 
     public final String name;
     public final int index;
@@ -75,6 +80,7 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
     public BlockPos blockpos = null;
     public FakePlayerSpawner player;
     public boolean work;
+    public boolean need_work = true;
     public List<ItemStack> list = new ArrayList<>();
     public QEComponent energy1;
     public boolean analyzer;
@@ -90,6 +96,7 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
     public EnumTypeAudio typeAudio = EnumTypeAudio.OFF;
     public EnumTypeAudio[] valuesAudio = EnumTypeAudio.values();
     public boolean vein_need = false;
+    public BlockPos default_pos;
 
     public TileEntityBaseQuarry(String name, double coef, int index) {
         this.name = name;
@@ -165,6 +172,7 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
         this.blockpos = new BlockPos(x, y, z);
         this.work = nbttagcompound.getBoolean("work");
         this.vein_need = nbttagcompound.getBoolean("vein_need");
+        this.need_work = nbttagcompound.getBoolean("need_work");
 
     }
 
@@ -179,6 +187,8 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
         nbttagcompound.setInteger("max_y", this.max_y);
         nbttagcompound.setBoolean("work", work);
         nbttagcompound.setBoolean("vein_need", vein_need);
+        nbttagcompound.setBoolean("need_work", need_work);
+
         return nbttagcompound;
     }
 
@@ -200,6 +210,9 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
     protected void onLoaded() {
         super.onLoaded();
         this.input.update();
+        int chunkx = this.getWorld().getChunkFromBlockCoords(this.pos).x * 16;
+        int chunkz = this.getWorld().getChunkFromBlockCoords(this.pos).z * 16;
+        this.default_pos = new BlockPos(chunkx, this.min_y, chunkz);
         this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
         if (this.vein != null) {
             if (this.vein.getType() != Type.VEIN) {
@@ -226,7 +239,22 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
         }
         return false;
     }
+    public List<ItemStack> getWrenchDrops(EntityPlayer player, int fortune) {
+        List<ItemStack> ret = super.getWrenchDrops(player, fortune);
+        ItemStack colling = ItemStack.EMPTY;
 
+        if (this.cold.upgrade) {
+            colling = new ItemStack(IUItem.coolupgrade, 1, this.cold.meta);
+
+        }
+        if (!colling.isEmpty()) {
+
+            ret.add(colling);
+            this.cold.upgrade = false;
+            this.cold.meta = 0;
+        }
+        return ret;
+    }
     protected void onUnloaded() {
         super.onUnloaded();
         if (IC2.platform.isRendering() && this.audioSource != null) {
@@ -239,13 +267,17 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
 
     protected void updateEntityServer() {
         super.updateEntityServer();
-        if (!this.work) {
+        if (!this.work || !this.need_work) {
             return;
         }
         if (this.cold.getEnergy() >= 100) {
             return;
         }
-        this.energyconsume = this.constenergyconsume;
+        if (this.player == null) {
+            this.player = new FakePlayerSpawner(getWorld());
+        }
+
+
         if (this.blockpos == null) {
             int chunkx = this.getWorld().getChunkFromBlockCoords(this.pos).x * 16;
             int chunkz = this.getWorld().getChunkFromBlockCoords(this.pos).z * 16;
@@ -268,6 +300,10 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
                 }
             }
         } else {
+            ItemStack stack1 = new ItemStack(Items.ENCHANTED_BOOK);
+            if (this.chance != 0) {
+                stack1.addEnchantment(Enchantments.FORTUNE, this.chance);
+            }
             for (int i = 0; i < this.speed; i++) {
                 if (this.energy.canUseEnergy(this.energyconsume)) {
                     this.energy.useEnergy(this.energyconsume);
@@ -316,40 +352,20 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
                                         }
                                         return;
                                     }
+                                    if (!(ForgeHooks.onBlockBreakEvent(world, world.getWorldInfo().getGameType(),
+                                            player, pos) == -1)) {
 
-                                    if (this.player == null) {
-                                        this.player = new FakePlayerSpawner(getWorld());
-                                    }
-                                    ItemStack stack1 = new ItemStack(Items.ENCHANTED_BOOK);
-                                    if (this.chance != 0) {
-                                        stack1.addEnchantment(Enchantments.FORTUNE, this.chance);
-                                    }
 
 
                                     block.onBlockHarvested(this.world, this.blockpos, state, player);
-
-                                    if (block.removedByPlayer(state, world, this.blockpos, player, true)) {
-                                        int exp = block.getExpDrop(state, world, this.blockpos, this.chance);
-                                        block.onBlockDestroyedByPlayer(world, this.blockpos, state);
-                                        block.harvestBlock(world, player, this.blockpos, state, null, stack1);
-                                        this.exp.addEnergy(exp);
-                                        List<EntityItem> items = player.getEntityWorld().getEntitiesWithinAABB(
-                                                EntityItem.class,
-                                                new AxisAlignedBB(
-                                                        this.blockpos.getX() - 1,
-                                                        this.blockpos.getY() - 1,
-                                                        this.blockpos.getZ() - 1,
-                                                        this.blockpos.getX() + 1,
-                                                        this.blockpos.getY() + 1,
-                                                        this.blockpos.getZ() + 1
-                                                )
-                                        );
+                                    final List<ItemStack> drops = block.getDrops(world, this.blockpos, state, this.chance);
                                         int chance = 0;
                                         if (this.energy1.canUseEnergy(80)) {
                                             chance = this.getWorld().rand.nextInt(101);
                                             this.energy1.useEnergy(80);
                                         }
-                                        for (EntityItem item : items) {
+                                        boolean need = false;
+                                        for (ItemStack item : drops) {
                                             if (!this.furnace) {
 
                                                 if (this.mac_enabled) {
@@ -357,53 +373,53 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
                                                     BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
                                                             "macerator",
                                                             false,
-                                                            item.getItem()
+                                                            item
                                                     );
                                                     if (recipe != null) {
                                                         stack4 = recipe.getOutput().items.get(0);
                                                     } else {
-                                                        stack4 = item.getItem();
+                                                        stack4 = item;
                                                     }
                                                     if (this.outputSlot.add(stack4)) {
+                                                        need = true;
                                                         if (chance > 85) {
                                                             this.outputSlot.add(stack4);
                                                         }
-                                                        item.setDead();
                                                     }
                                                 } else if (this.comb_mac_enabled) {
                                                     ItemStack stack4;
                                                     BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
                                                             "comb_macerator",
                                                             false,
-                                                            item.getItem()
+                                                            item
                                                     );
                                                     if (recipe != null) {
                                                         stack4 = recipe.getOutput().items.get(0);
                                                     } else {
-                                                        stack4 = item.getItem();
+                                                        stack4 = item;
                                                     }
                                                     if (this.outputSlot.add(stack4)) {
+                                                        need = true;
                                                         if (chance > 85) {
                                                             this.outputSlot.add(stack4);
                                                         }
-                                                        item.setDead();
                                                     }
                                                 } else {
-                                                    if (this.outputSlot.add(item.getItem())) {
+                                                    if (this.outputSlot.add(item)) {
+                                                        need = true;
                                                         if (chance > 85) {
-                                                            this.outputSlot.add(item.getItem());
+                                                            this.outputSlot.add(item);
                                                         }
-                                                        item.setDead();
                                                     }
                                                 }
                                             } else {
-                                                ItemStack stack4 = item.getItem();
+                                                ItemStack stack4 = item;
                                                 ItemStack stack5 = ItemStack.EMPTY;
                                                 if (this.mac_enabled) {
                                                     BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
                                                             "macerator",
                                                             false,
-                                                            item.getItem()
+                                                            item
                                                     );
                                                     if (recipe != null) {
                                                         stack5 = recipe.getOutput().items.get(0).copy();
@@ -414,7 +430,7 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
                                                     BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
                                                             "comb_macerator",
                                                             false,
-                                                            item.getItem()
+                                                            item
                                                     );
                                                     if (recipe != null) {
                                                         stack5 = recipe.getOutput().items.get(0).copy();
@@ -435,35 +451,39 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
 
                                                 if (recipe != null) {
                                                     stack4 = recipe.getOutput().items.get(0).copy();
-                                                } else {
-                                                    stack4 = item.getItem();
                                                 }
 
                                                 if (!stack5.isEmpty()) {
                                                     stack4.setCount(stack5.getCount());
                                                 } else if (!stack4.isEmpty()) {
-                                                    stack4.setCount(item.getItem().getCount());
+                                                    stack4.setCount(item.getCount());
                                                 }
                                                 if (stack4.isEmpty()) {
-                                                    if (this.outputSlot.add(item.getItem())) {
+
+                                                    if (this.outputSlot.add(item)) {
+                                                        need = true;
                                                         if (chance > 85) {
-                                                            this.outputSlot.add(item.getItem());
+                                                            this.outputSlot.add(item);
                                                         }
                                                     }
                                                 } else {
                                                     if (this.outputSlot.add(stack4)) {
+                                                        need = true;
                                                         if (chance > 85) {
                                                             this.outputSlot.add(stack4);
                                                         }
                                                     }
                                                 }
-                                                item.setDead();
+
                                             }
 
                                         }
-
+                                        if(need){
+                                            block.removedByPlayer(state, world, this.blockpos, player, true);
+                                            int exp = block.getExpDrop(state, world, this.blockpos, this.chance);
+                                            this.exp.addEnergy(exp);
+                                        }
                                     }
-
                                 }
                             }
                         }
@@ -636,7 +656,15 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
             case 5:
                 vein_need = !vein_need;
                 break;
+            case 6:
+                need_work = !need_work;
+                break;
         }
+    }
+
+    @Override
+    public EnumTypeStyle getStyle() {
+        return EnumTypeStyle.DEFAULT;
     }
 
 }

@@ -16,10 +16,13 @@ import ic2.api.energy.EnergyNet;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
+import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityBlaze;
+import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.entity.monster.EntityWitherSkeleton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemEnchantedBook;
@@ -29,17 +32,21 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.world.WorldServer;
+import net.minecraft.world.storage.loot.LootContext;
+import net.minecraft.world.storage.loot.LootTable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 public class TileEntityAutoSpawner extends TileEntityElectricMachine
         implements IEnergyReceiver, IEnergyHandler, IUpgradableBlock {
 
     public final InvSlotModules module_slot;
-    public final InvSlotBook book_slot;
     public final int maxprogress;
     public final InvSlotUpgradeModule module_upgrade;
     public final int tempcostenergy;
@@ -56,18 +63,20 @@ public class TileEntityAutoSpawner extends TileEntityElectricMachine
     public int spawn;
     public int experience;
     public EntityLiving[] mobUtils = new EntityLiving[4];
+    public LootTable[] loot_Tables = new LootTable[4];
+    public LootContext.Builder[] lootContext = new LootContext.Builder[4];
+    public int fireAspect;
 
     public TileEntityAutoSpawner() {
         super(150000, 14, 27);
         this.module_slot = new InvSlotModules(this);
-        this.book_slot = new InvSlotBook(this);
         this.module_upgrade = new InvSlotUpgradeModule(this);
         this.progress = new int[module_slot.size()];
         this.maxEnergy2 = 50000 * Config.coefficientrf;
         this.maxprogress = 100;
         this.tempprogress = 100;
-        this.tempcostenergy = 900;
-        this.costenergy = 900;
+        this.tempcostenergy = 1500;
+        this.costenergy = 1500;
         this.speed = 0;
         this.chance = 0;
         this.spawn = 1;
@@ -76,10 +85,26 @@ public class TileEntityAutoSpawner extends TileEntityElectricMachine
         this.exp = this.addComponent(EXPComponent.asBasicSource(this, 15000, 14));
 
     }
-
+    @Override
+    public int getSizeInventory() {
+        return 1;
+    }
     public int receiveEnergy(EnumFacing from, int maxReceive, boolean simulate) {
 
         return receiveEnergy(maxReceive, simulate);
+
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.machines_work_energy")+this.defaultconsume+Localization.translate("iu.machines_work_energy_type_eu"));
+        }
+        super.addInformation(stack, tooltip, advanced);
 
     }
 
@@ -162,7 +187,7 @@ public class TileEntityAutoSpawner extends TileEntityElectricMachine
                     for (int j = 0; j < this.spawn; j++) {
 
 
-                        dropItemFromEntity(entity, DamageSource.causePlayerDamage(player));
+                        dropItemFromEntity(entity, DamageSource.causePlayerDamage(player), this.loot_Tables[i], i);
                         int exp = Math.max(entity.getExperiencePoints(this.player), 1);
                         this.exp.addEnergy((exp + this.experience * exp / 100D));
 
@@ -175,59 +200,56 @@ public class TileEntityAutoSpawner extends TileEntityElectricMachine
         }
     }
 
-    private void dropItemFromEntity(EntityLiving entity, DamageSource source) {
+    private void dropItemFromEntity(EntityLiving entity, DamageSource source, LootTable table, int index) {
         if (entity.isNonBoss()) {
             if (!this.world.isRemote) {
-                int i = this.player.loot;
+                int i = this.chance;
+                LootContext.Builder lootcontext$builder = this.lootContext[index];
+                if(table == null)
+                    return;
+                if (lootcontext$builder == null) {
+                    lootcontext$builder = this.lootContext[index] = (new LootContext.Builder((WorldServer) this.world))
+                            .withLootedEntity(entity)
+                            .withDamageSource(source).withLuck(i);
+                }
+                List<ItemStack> list = table.generateLootForPools(
+                        this.getWorld().rand,
+                        lootcontext$builder.build()
+                );
 
-                entity.captureDrops = true;
-                entity.capturedDrops.clear();
-
-
-                boolean flag = entity.recentlyHit > 0;
-                entity.dropLoot(flag, i, source);
-
-
-                entity.captureDrops = false;
-
-                if (!net.minecraftforge.common.ForgeHooks.onLivingDrops(
-                        entity,
-                        source,
-                        entity.capturedDrops,
-                        i,
-                        entity.recentlyHit > 0
-                )) {
-                    if (entity instanceof EntityBlaze) {
-                        final EntityItem item = new EntityItem(world);
-                        item.setItem(new ItemStack(Items.BLAZE_ROD));
-                        entity.capturedDrops.add(item);
+                if (entity instanceof EntityBlaze) {
+                    list.add(new ItemStack(Items.BLAZE_ROD,  this.getWorld().rand.nextInt(i + 1) + 1));
+                } else if (entity instanceof EntitySlime) {
+                    if (((EntitySlime) entity).isSmallSlime()) {
+                        list.add(new ItemStack(Items.SLIME_BALL,  this.getWorld().rand.nextInt(i + 1) + 1));
                     }
-                    for (EntityItem item : entity.capturedDrops) {
-
-                        if (item.isDead) {
-                            continue;
-                        }
-                        ItemStack drop = item.getItem();
-                        ItemStack smelt = null;
-                        if (this.player.fireAspect > 0) {
-
-                            smelt = FurnaceRecipes.instance().getSmeltingResult(drop);
-                            if (!smelt.isEmpty()) {
-                                smelt.setCount(drop.getCount());
-                            }
-                        }
-                        if (smelt == null || smelt.isEmpty()) {
-                            this.outputSlot.add(drop);
-
-
-                        } else {
-                            this.outputSlot.add(smelt);
-
-                        }
-                        item.setDead();
-
+                }else if (entity instanceof EntityWitherSkeleton) {
+                    if(this.world.rand.nextInt(101) >= 100 - (chance + 2)){
+                        list.add(new ItemStack(Items.SKULL,  1,1));
                     }
                 }
+                for (ItemStack item : list) {
+
+
+                    ItemStack smelt = ItemStack.EMPTY;
+                    if (this.fireAspect > 0) {
+
+                        smelt = FurnaceRecipes.instance().getSmeltingResult(item);
+                        if (!smelt.isEmpty()) {
+                            smelt.setCount(item.getCount());
+                        }
+                    }
+                    if (smelt.isEmpty()) {
+                        this.outputSlot.add(item);
+
+
+                    } else {
+                        this.outputSlot.add(smelt);
+
+                    }
+
+                }
+
             }
         }
     }
@@ -238,24 +260,7 @@ public class TileEntityAutoSpawner extends TileEntityElectricMachine
 
     }
 
-    public int getEnchant(int enchantID) {
-        for (int i = 0; i < this.book_slot.size(); i++) {
-            if (this.book_slot.get(i) == null) {
-                continue;
-            }
-            ItemStack stack = this.book_slot.get(i);
-            if (stack.getItem() instanceof ItemEnchantedBook) {
-                NBTTagList bookNBT = ItemEnchantedBook.getEnchantments(this.book_slot.get(i));
-                if (bookNBT.tagCount() == 1) {
-                    short id = bookNBT.getCompoundTagAt(0).getShort("id");
-                    if (id == enchantID) {
-                        return bookNBT.getCompoundTagAt(0).getShort("lvl");
-                    }
-                }
-            }
-        }
-        return 0;
-    }
+
 
 
     @Override

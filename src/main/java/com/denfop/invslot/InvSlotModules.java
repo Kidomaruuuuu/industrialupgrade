@@ -1,6 +1,7 @@
 package com.denfop.invslot;
 
 
+import com.denfop.IUCore;
 import com.denfop.items.modules.ItemEntityModule;
 import com.denfop.tiles.base.TileEntityAutoSpawner;
 import com.denfop.utils.CapturedMobUtils;
@@ -37,8 +38,12 @@ public class InvSlotModules extends InvSlot {
                 final CapturedMobUtils captured = CapturedMobUtils.create(this.get(i));
                 assert captured != null;
                 this.tile.mobUtils[i] = (EntityLiving) captured.getEntity(tile.getWorld(), true);
+                this.tile.loot_Tables[i] = IUCore.lootTables.get(captured.getResource());
+
             } else {
                 this.tile.mobUtils[i] = null;
+                this.tile.loot_Tables[i] = null;
+                this.tile.lootContext[i] = null;
             }
         }
     }
@@ -51,8 +56,11 @@ public class InvSlotModules extends InvSlot {
                 final CapturedMobUtils captured = CapturedMobUtils.create(this.get(i));
                 assert captured != null;
                 this.tile.mobUtils[i] = (EntityLiving) captured.getEntity(tile.getWorld(), true);
+                this.tile.loot_Tables[i] = IUCore.lootTables.get(captured.getResource());
             } else {
                 this.tile.mobUtils[i] = null;
+                this.tile.loot_Tables[i] = null;
+                this.tile.lootContext[i] = null;
             }
         }
     }

@@ -403,6 +403,7 @@ public final class Config {
     public static boolean coolingsystem = true;
     public static int tickupdateenergysystem;
     public static int ticktransferenergy;
+    public static boolean enablelosing;
 
 
     public static void loadNormalConfig(final File configFile) {
@@ -613,7 +614,11 @@ public final class Config {
                     "Enable explosion from mechanisms is on (if enable transformer mode) ",
                     true
             ).getBoolean(true);
-
+            enablelosing = config.get(
+                    "Transformer mode",
+                    "Enable losing in cables is on (if enable transformer mode) ",
+                    true
+            ).getBoolean(true);
             spectralsaberactive1 = config.get("Quantum Saber", "QuantumSaber Damage Active", 40).getInt(40);
             spectralsabernotactive1 = config.get("Quantum Saber", "QuantumSaber Damage Not Active", 8).getInt(8);
             maxCharge1 = config.get("Quantum Saber", "SpectralSaber max Charge", 200000).getInt(200000);

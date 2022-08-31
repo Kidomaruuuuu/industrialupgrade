@@ -11,14 +11,14 @@ public enum EnumQuarryModules {
     LUCKY_I(6, EnumQuarryType.LUCKY, 1, 2),
     LUCKY_II(7, EnumQuarryType.LUCKY, 2, 4),
     LUCKY_III(8, EnumQuarryType.LUCKY, 3, 6),
-    DEPTH_I(9, EnumQuarryType.DEPTH, 3, Math.pow(1.1, 1)),
-    DEPTH_II(10, EnumQuarryType.DEPTH, 5, Math.pow(1.1, 2)),
-    DEPTH_III(11, EnumQuarryType.DEPTH, 7, Math.pow(1.1, 3)),
+    DEPTH_I(9, EnumQuarryType.DEPTH, 3, Math.pow(4, 1)),
+    DEPTH_II(10, EnumQuarryType.DEPTH, 5, Math.pow(4, 2)),
+    DEPTH_III(11, EnumQuarryType.DEPTH, 7, Math.pow(4, 3)),
 
     BLACKLIST(12, EnumQuarryType.BLACKLIST, 1, 0),
     WHITELIST(13, EnumQuarryType.WHITELIST, 1, 0),
-    MACERATOR(14, EnumQuarryType.MACERATOR, 1, 4),
-    COMBMAC(15, EnumQuarryType.COMB_MAC, 1, 4);
+    MACERATOR(14, EnumQuarryType.MACERATOR, 1, 5),
+    COMBMAC(15, EnumQuarryType.COMB_MAC, 1, 5);
     public final int meta;
     public final EnumQuarryType type;
     public final int efficiency;

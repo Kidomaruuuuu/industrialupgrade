@@ -113,7 +113,7 @@ public class TileEntityTEConverter extends TileEntityInventory implements IHasGu
 
             return super.getCapability(capability, side);
         }
-        return super.getCapability(capability, side);
+        return capability == CapabilityEnergy.ENERGY ? CapabilityEnergy.ENERGY.cast(this) : super.getCapability(capability, side);
     }
 
     public boolean canExtract() {

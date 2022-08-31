@@ -5,11 +5,14 @@ import com.denfop.blocks.mechanism.BlockMoreMachine;
 import com.denfop.blocks.mechanism.BlockMoreMachine1;
 import com.denfop.blocks.mechanism.BlockMoreMachine2;
 import com.denfop.blocks.mechanism.BlockMoreMachine3;
+import com.denfop.tiles.base.EnumMultiMachine;
 import ic2.core.init.Localization;
 import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ListInformationUtils {
 
@@ -21,7 +24,14 @@ public class ListInformationUtils {
     public static final List<String> mechanism_info = new ArrayList<>();
     public static final List<String> mechanism_info1 = new ArrayList<>();
     public static final List<String> mechanism_info2 = new ArrayList<>();
-
+    public static final List<String> cooling = new ArrayList<>();
+    public static final List<String> heating = new ArrayList<>();
+    public static final List<String> wind_generator = new ArrayList<>();
+    public static final List<String> blast_furnace = new ArrayList<>();
+    public static final List<String> anti_upgrade_block = new ArrayList<>();
+    public static final List<String> quarry = new ArrayList<>();
+    public static final List<String> quarryvein = new ArrayList<>();
+    public static final Map<Integer, List<String>> integerListMap = new HashMap<>();
     public static int tick = 0;
     public static int index = 0;
     public static int index1 = 0;
@@ -52,6 +62,7 @@ public class ListInformationUtils {
         mechanism_info2.add(Localization.translate(new ItemStack(IUItem.basemachine, 1, 12).getUnlocalizedName()));
         mechanism_info2.add(Localization.translate(new ItemStack(IUItem.machines, 1, 6).getUnlocalizedName()));
 
+
         quarryinform.add(Localization.translate("iu.quarryinformation1"));
         quarryinform.add(Localization.translate("iu.quarryinformation2"));
         quarryinform.add(Localization.translate("iu.quarryinformation3"));
@@ -61,6 +72,7 @@ public class ListInformationUtils {
         quarryinform.add(Localization.translate("iu.quarryinformation7"));
         quarryinform.add(Localization.translate("iu.quarryinformation8"));
         quarryinform.add(Localization.translate("iu.quarryinformation9"));
+
         fisherinform.add(Localization.translate("iu.fisherinformation1"));
         fisherinform.add(Localization.translate("iu.fisherinformation2"));
         fisherinform.add(Localization.translate("iu.fisherinformation3"));
@@ -88,6 +100,71 @@ public class ListInformationUtils {
         analyzeinform.add(Localization.translate("iu.analyzerinformation5"));
         analyzeinform.add(Localization.translate("iu.analyzerinformation6"));
         analyzeinform.add(Localization.translate("iu.analyzerinformation7"));
+
+
+        heating.add(Localization.translate("iu.heat_storage.info"));
+        heating.add(Localization.translate("iu.heat_storage.info1"));
+        heating.add(Localization.translate("iu.heat_storage.info2"));
+        cooling.add(Localization.translate("iu.cool_storage.info"));
+        cooling.add(Localization.translate("iu.cool_storage.info1"));
+        cooling.add(Localization.translate("iu.cool_storage.info2"));
+
+        wind_generator.add(Localization.translate("iu.wind_generator.info1"));
+        wind_generator.add(Localization.translate("iu.wind_generator.info2"));
+        wind_generator.add(Localization.translate("iu.wind_generator.info3"));
+        wind_generator.add(Localization.translate("iu.wind_generator.info4"));
+        wind_generator.add(Localization.translate("iu.wind_generator.info5"));
+        wind_generator.add(Localization.translate("iu.wind_generator.info6"));
+        wind_generator.add(Localization.translate("iu.wind_generator.info7"));
+
+        blast_furnace.add(Localization.translate("iu.blast_furnace_recipe.info1"));
+        blast_furnace.add(Localization.translate("iu.blast_furnace_recipe.info2"));
+        blast_furnace.add(Localization.translate("iu.blast_furnace_recipe.info3"));
+        blast_furnace.add(Localization.translate("iu.blast_furnace_recipe.info4"));
+        blast_furnace.add(Localization.translate("iu.blast_furnace_recipe.info5"));
+        blast_furnace.add(Localization.translate("iu.blast_furnace_recipe.info6"));
+        blast_furnace.add(Localization.translate("iu.blast_furnace_recipe.info7"));
+
+        anti_upgrade_block.add(Localization.translate("iu.anti_modification.info1"));
+        anti_upgrade_block.add(Localization.translate("iu.anti_modification.info2"));
+        for(int i=1; i< 9;i++)
+        quarry.add(Localization.translate("iu.simplyquarries_info"+i));
+        for(int i=1; i< 4;i++)
+            quarryvein.add(Localization.translate("iu.quarryvein_info"+i));
+
+
+       for(EnumMultiMachine machines : EnumMultiMachine.values()){
+          switch (machines.sizeWorkingSlot){
+              case 1:
+              case 2:
+                  if(integerListMap.containsKey(0)){
+                      integerListMap.get(0).add(new ItemStack(machines.block,1,machines.meta).getDisplayName());
+                  }else{
+                      List<String> stringList = new ArrayList<>();
+                      stringList.add(new ItemStack(machines.block,1,machines.meta).getDisplayName());
+                      integerListMap.put(0,stringList);
+                  }
+                  break;
+              case 3:
+                  if(integerListMap.containsKey(1)){
+                      integerListMap.get(1).add(new ItemStack(machines.block,1,machines.meta).getDisplayName());
+                  }else{
+                      List<String> stringList = new ArrayList<>();
+                      stringList.add(new ItemStack(machines.block,1,machines.meta).getDisplayName());
+                      integerListMap.put(1,stringList);
+                  }
+                  break;
+              case 4:
+                  if(integerListMap.containsKey(2)){
+                      integerListMap.get(2).add(new ItemStack(machines.block,1,machines.meta).getDisplayName());
+                  }else{
+                      List<String> stringList = new ArrayList<>();
+                      stringList.add(new ItemStack(machines.block,1,machines.meta).getDisplayName());
+                      integerListMap.put(2,stringList);
+                  }
+                  break;
+          }
+       }
     }
 
 }

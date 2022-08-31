@@ -2,7 +2,7 @@ package com.denfop.blocks.mechanism;
 
 import com.denfop.Constants;
 import com.denfop.IUCore;
-import com.denfop.tiles.base.TileEntityUpgradeBlock;
+import com.denfop.tiles.mechanism.dual.TileEntityUpgradeBlock;
 import ic2.api.item.ITeBlockSpecialItem;
 import ic2.core.block.ITeBlock;
 import ic2.core.block.TileEntityBlock;

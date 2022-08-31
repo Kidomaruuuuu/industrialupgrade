@@ -222,8 +222,7 @@ public abstract class TileEntityTransformer extends TileEntityInventory implemen
 
         static final TileEntityTransformer.Mode[] VALUES = values();
 
-        Mode() {
-        }
+
     }
 
 }

@@ -1,28 +1,29 @@
 package com.denfop.tiles.mechanism.blastfurnace.api;
 
-public interface IBlastMain  {
+public interface IBlastMain {
 
     boolean getFull();
+
+    void setFull(boolean full);
 
     void update_block();
 
     IBlastHeat getHeat();
 
-    IBlastInputFluid getInputFluid();
-
-    IBlastInputItem getInputItem();
-
-    IBlastOutputItem getOutputItem();
-
     void setHeat(IBlastHeat blastHeat);
+
+    IBlastInputFluid getInputFluid();
 
     void setInputFluid(IBlastInputFluid blastInputFluid);
 
+    IBlastInputItem getInputItem();
+
     void setInputItem(IBlastInputItem blastInputItem);
+
+    IBlastOutputItem getOutputItem();
 
     void setOutputItem(IBlastOutputItem blastOutputItem);
 
-    void setFull(boolean full);
-
     double getProgress();
+
 }

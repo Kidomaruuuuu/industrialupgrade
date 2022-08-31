@@ -51,7 +51,7 @@ public class TileEntityConverterSolidMatter extends TileEntityElectricMachine
     public int operationLength;
     public int operationsPerTick;
     public MachineRecipe output;
-    public boolean required;
+    public boolean required = false;
     public double[] outputmatter = new double[9];
 
     public TileEntityConverterSolidMatter() {
@@ -80,7 +80,7 @@ public class TileEntityConverterSolidMatter extends TileEntityElectricMachine
         for (int i = 0; i < IUItem.name_mineral.size(); i++) {
             addrecipe(new ItemStack(IUItem.iuingot, 1, i), 2, 0, 0, 0, 0, 6, 0, 0);
         }
-
+        IUItem.machineRecipe = Recipes.recipes.getRecipeStack("converter");
     }
 
     public static void addrecipe(
@@ -191,6 +191,8 @@ public class TileEntityConverterSolidMatter extends TileEntityElectricMachine
 
     public void getrequiredmatter(RecipeOutput output) {
         if (output == null) {
+            System.out.println(output);
+            this.required = false;
             return;
         }
 
@@ -232,7 +234,8 @@ public class TileEntityConverterSolidMatter extends TileEntityElectricMachine
             }
 
             this.getrequiredmatter(this.output.getRecipe().getOutput());
-        }
+        }else
+            this.getrequiredmatter(null);
         this.MatterSlot.getmatter();
 
     }
@@ -399,6 +402,11 @@ public class TileEntityConverterSolidMatter extends TileEntityElectricMachine
             for (int i = 0; i < this.quantitysolid.length; i++) {
                 outputmatter[i] = this.output.getRecipe().output.metadata.getDouble(("quantitysolid_" + i));
             }
+        }
+        if (this.output == null) {
+            getrequiredmatter(null);
+        } else {
+            getrequiredmatter(this.output.getRecipe().getOutput());
         }
         this.MatterSlot.getmatter();
     }

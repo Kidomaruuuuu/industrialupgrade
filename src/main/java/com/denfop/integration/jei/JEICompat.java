@@ -1,6 +1,7 @@
 package com.denfop.integration.jei;
 
 import com.denfop.IUItem;
+import com.denfop.Ic2Items;
 import com.denfop.blocks.mechanism.BlockAdvRefiner;
 import com.denfop.blocks.mechanism.BlockBaseMachine;
 import com.denfop.blocks.mechanism.BlockBaseMachine1;
@@ -39,6 +40,7 @@ import com.denfop.gui.GuiOilRefiner;
 import com.denfop.gui.GuiPainting;
 import com.denfop.gui.GuiPlasticCreator;
 import com.denfop.gui.GuiPlasticPlateCreator;
+import com.denfop.gui.GuiRodManufacturer;
 import com.denfop.gui.GuiSunnariumMaker;
 import com.denfop.gui.GuiSunnariumPanelMaker;
 import com.denfop.gui.GuiSynthesis;
@@ -169,6 +171,15 @@ import com.denfop.integration.jei.refiner.RefinerRecipeWrapper;
 import com.denfop.integration.jei.rolling.RollingCategory;
 import com.denfop.integration.jei.rolling.RollingHandler;
 import com.denfop.integration.jei.rolling.RollingWrapper;
+import com.denfop.integration.jei.rotorrods.RotorsRodCategory;
+import com.denfop.integration.jei.rotorrods.RotorsRodHandler;
+import com.denfop.integration.jei.rotorrods.RotorsRodWrapper;
+import com.denfop.integration.jei.rotors.RotorsCategory;
+import com.denfop.integration.jei.rotors.RotorsHandler;
+import com.denfop.integration.jei.rotors.RotorsWrapper;
+import com.denfop.integration.jei.rotorsupgrade.RotorUpgradeCategory;
+import com.denfop.integration.jei.rotorsupgrade.RotorUpgradeHandler;
+import com.denfop.integration.jei.rotorsupgrade.RotorUpgradeWrapper;
 import com.denfop.integration.jei.scrap.ScrapCategory;
 import com.denfop.integration.jei.scrap.ScrapHandler;
 import com.denfop.integration.jei.scrap.ScrapRecipeWrapper;
@@ -196,6 +207,8 @@ import com.denfop.integration.jei.vein.VeinWrapper;
 import com.denfop.integration.jei.watergenerator.GenWaterCategory;
 import com.denfop.integration.jei.watergenerator.GenWaterHandler;
 import com.denfop.integration.jei.watergenerator.GenWaterWrapper;
+import crafttweaker.mods.jei.JEI;
+import crafttweaker.mods.jei.JEIAddonPlugin;
 import ic2.api.recipe.Recipes;
 import ic2.core.block.ITeBlock;
 import ic2.core.block.TeBlockRegistry;
@@ -205,14 +218,22 @@ import ic2.jeiIntegration.recipe.machine.IORecipeCategory;
 import ic2.jeiIntegration.recipe.machine.MetalFormerCategory;
 import ic2.jeiIntegration.recipe.machine.RecyclerCategory;
 import mezz.jei.api.IGuiHelper;
+import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
+import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nonnull;
+import java.util.Collections;
+
 @JEIPlugin
 public final class JEICompat implements IModPlugin {
+
+    private IIngredientRegistry itemRegistry;
 
     @Override
     public void registerCategories(IRecipeCategoryRegistration registry) {
@@ -227,6 +248,7 @@ public final class JEICompat implements IModPlugin {
         registry.addRecipeCategories(new SunnariumCategory(registry.getJeiHelpers().getGuiHelper()));
         registry.addRecipeCategories(new BFCategory(registry.getJeiHelpers().getGuiHelper()));
         registry.addRecipeCategories(new BlastFCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new RotorsRodCategory(registry.getJeiHelpers().getGuiHelper()));
 
 
         registry.addRecipeCategories(new PlasticCreatorCategory(registry.getJeiHelpers().getGuiHelper()));
@@ -242,6 +264,7 @@ public final class JEICompat implements IModPlugin {
         registry.addRecipeCategories(new AntiUpgradeBlockCategory(registry.getJeiHelpers().getGuiHelper()));
         registry.addRecipeCategories(new VeinCategory(registry.getJeiHelpers().getGuiHelper()));
         registry.addRecipeCategories(new OilPumpCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new RotorUpgradeCategory(registry.getJeiHelpers().getGuiHelper()));
 
 
         registry.addRecipeCategories(new GenStarCategory(registry.getJeiHelpers().getGuiHelper()));
@@ -257,6 +280,8 @@ public final class JEICompat implements IModPlugin {
 
         registry.addRecipeCategories(new GenObsCategory(registry.getJeiHelpers().getGuiHelper()));
         registry.addRecipeCategories(new FishMCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new RotorsCategory(registry.getJeiHelpers().getGuiHelper()));
+
 
         registry.addRecipeCategories(new RefinerCategory(registry.getJeiHelpers().getGuiHelper()));
         registry.addRecipeCategories(new AdvRefinerCategory(registry.getJeiHelpers().getGuiHelper()));
@@ -278,6 +303,7 @@ public final class JEICompat implements IModPlugin {
     }
 
     public void register(IModRegistry registry) {
+        itemRegistry = registry.getIngredientRegistry();
         registry.addRecipeClickArea(GuiMolecularTransformer.class, 23, 48, 10, 15, BlockMolecular.molecular.getName());
         registry.addRecipes(
                 MolecularTransformerHandler.getRecipes(),
@@ -327,6 +353,36 @@ public final class JEICompat implements IModPlugin {
         registry.addRecipeCatalyst(
                 new ItemStack(IUItem.machines, 1, 4),
                 new AlloySmelterCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.addRecipeClickArea(
+                GuiRodManufacturer.class, 80, 35, 22, 14,
+                BlockBaseMachine3.rods_manufacturer.getName()
+        );
+        registry.addRecipes(
+                RotorsRodHandler.getRecipes(),
+                new RotorsRodCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes(RotorsRodHandler.class, RotorsRodWrapper::new,
+                BlockBaseMachine3.rods_manufacturer.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.basemachine2, 1, 21),
+                new RotorsRodCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.addRecipes(
+                RotorsHandler.getRecipes(),
+                new RotorsCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes(RotorsHandler.class, RotorsWrapper::new,
+                BlockBaseMachine3.rotor_assembler.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.basemachine2, 1, 17),
+                new RotorsCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
         );
 
         registry.addRecipeClickArea(
@@ -485,15 +541,15 @@ public final class JEICompat implements IModPlugin {
 
         registry.addRecipes(
                 BlastFHandler.getRecipes(),
-                new  BlastFCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+                new BlastFCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
         );
 
-        registry.handleRecipes( BlastFHandler.class,  BlastFWrapper::new,
-                BlockBlastFurnace.blast_furnace_main.getName()+"1"
+        registry.handleRecipes(BlastFHandler.class, BlastFWrapper::new,
+                BlockBlastFurnace.blast_furnace_main.getName() + "1"
         );
         registry.addRecipeCatalyst(
                 new ItemStack(IUItem.blastfurnace, 1, 0),
-                new  BlastFCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+                new BlastFCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
         );
 
 
@@ -794,6 +850,33 @@ public final class JEICompat implements IModPlugin {
                 new GenHydCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
         );
 
+        //
+        registry.addRecipes(
+                GenPetrolHandler.getRecipes(),
+                new GenPetrolCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes(GenPetrolHandler.class, GenPetrolWrapper::new,
+                BlockBaseMachine2.gen_pet.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.basemachine1, 1, 5),
+                new GenPetrolCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+        registry.addRecipes(
+                GenDieselHandler.getRecipes(),
+                new GenDieselCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes(GenDieselHandler.class, GenDieselWrapper::new,
+                BlockBaseMachine2.gen_disel.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.basemachine1, 1, 4),
+                new GenDieselCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+        //
+
         registry.addRecipes(
                 GenNeuHandler.getRecipes(),
                 new GenNeuCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
@@ -841,7 +924,20 @@ public final class JEICompat implements IModPlugin {
                 new ItemStack(IUItem.oilrefiner, 1, 0),
                 new RefinerCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
         );
+//
+        registry.addRecipes(
+                RotorUpgradeHandler.getRecipes(),
+                new RotorUpgradeCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
 
+        registry.handleRecipes(RotorUpgradeHandler.class, RotorUpgradeWrapper::new,
+                BlockBaseMachine3.rotor_modifier.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.basemachine2, 1, 18),
+                new RotorUpgradeCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+        //
         registry.addRecipeClickArea(
                 GuiAdvOilRefiner.class, 33, 15, 22, 35,
                 BlockAdvRefiner.adv_refiner.getName()
@@ -1195,48 +1291,7 @@ public final class JEICompat implements IModPlugin {
         registry.addRecipeCatalyst(getBlockStack(BlockMoreMachine.triple_furnace), "minecraft.smelting");
         registry.addRecipeCatalyst(getBlockStack(BlockMoreMachine.quad_furnace), "minecraft.smelting");
         registry.addRecipeCatalyst(getBlockStack(BlockSimpleMachine.furnace_iu), "minecraft.smelting");
-        this.addMachineRecipes(registry, new MetalFormerCategory(Recipes.metalformerExtruding, 0,
-                registry.getJeiHelpers().getGuiHelper()
-        ), BlockMoreMachine.double_metalformer);
-        this.addMachineRecipes(
-                registry,
-                new MetalFormerCategory(Recipes.metalformerRolling, 1, registry.getJeiHelpers().getGuiHelper()),
-                BlockMoreMachine.double_metalformer
-        );
-        this.addMachineRecipes(
-                registry,
-                new MetalFormerCategory(Recipes.metalformerCutting, 2, registry.getJeiHelpers().getGuiHelper()),
-                BlockMoreMachine.double_metalformer
-        );
-        this.addMachineRecipes(registry, new MetalFormerCategory(Recipes.metalformerExtruding, 0,
-                registry.getJeiHelpers().getGuiHelper()
-        ), BlockMoreMachine.triple_metalformer);
-        this.addMachineRecipes(registry, new MetalFormerCategory(Recipes.metalformerExtruding, 0,
-                registry.getJeiHelpers().getGuiHelper()
-        ), BlockSimpleMachine.metalformer_iu);
-        this.addMachineRecipes(
-                registry,
-                new MetalFormerCategory(Recipes.metalformerRolling, 1, registry.getJeiHelpers().getGuiHelper()),
-                BlockMoreMachine.triple_metalformer
-        );
-        this.addMachineRecipes(
-                registry,
-                new MetalFormerCategory(Recipes.metalformerCutting, 2, registry.getJeiHelpers().getGuiHelper()),
-                BlockMoreMachine.triple_metalformer
-        );
-        this.addMachineRecipes(registry, new MetalFormerCategory(Recipes.metalformerExtruding, 0,
-                registry.getJeiHelpers().getGuiHelper()
-        ), BlockMoreMachine.quad_metalformer);
-        this.addMachineRecipes(
-                registry,
-                new MetalFormerCategory(Recipes.metalformerRolling, 1, registry.getJeiHelpers().getGuiHelper()),
-                BlockMoreMachine.quad_metalformer
-        );
-        this.addMachineRecipes(
-                registry,
-                new MetalFormerCategory(Recipes.metalformerCutting, 2, registry.getJeiHelpers().getGuiHelper()),
-                BlockMoreMachine.quad_metalformer
-        );
+
         final IGuiHelper guiHelper = registry.getJeiHelpers().getGuiHelper();
         this.addMachineRecipes(registry, new RecyclerCategory(guiHelper), BlockMoreMachine1.double_recycler);
         this.addMachineRecipes(registry, new RecyclerCategory(guiHelper), BlockMoreMachine1.triple_recycler);
@@ -1246,32 +1301,51 @@ public final class JEICompat implements IModPlugin {
         this.addMachineRecipes(registry, new RecyclerCategory(guiHelper), BlockMoreMachine1.quad_comb_recycler);
         this.addMachineRecipes(registry, new RecyclerCategory(guiHelper), BlockSimpleMachine.recycler_iu);
 
-        registry.addRecipes(
-                GenPetrolHandler.getRecipes(),
-                new GenPetrolCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
-        );
 
-        registry.handleRecipes(
-                GenPetrolHandler.class, GenPetrolWrapper::new,
-                BlockBaseMachine2.gen_pet.getName()
-        );
-        registry.addRecipeCatalyst(
-                new ItemStack(IUItem.basemachine1, 1, 5),
-                new GenPetrolCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
-        );
-        registry.addRecipes(
-                GenDieselHandler.getRecipes(),
-                new GenDieselCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
-        );
+    }
+    public void onRuntimeAvailable(@Nonnull IJeiRuntime iJeiRuntime) {
+        if (this.itemRegistry != null) {
+             this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.WindKineticGenerator));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.blastfurnace));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.windmeter));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.steelrotor));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.steelrotorblade));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.carbonrotor));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.carbonrotorblade));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.woodrotor));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.woodrotorblade));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.ironrotor));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.ironrotorblade));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.bronzerotorblade));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.bronzerotor));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.mfeUnit));
 
-        registry.handleRecipes(
-                GenDieselHandler.class, GenDieselWrapper::new,
-                BlockBaseMachine2.gen_disel.getName()
-        );
-        registry.addRecipeCatalyst(
-                new ItemStack(IUItem.basemachine1, 1, 4),
-                new GenDieselCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
-        );
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.mfeUnit));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.mfsukit));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.mfsUnit));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.batBox));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.cesuUnit));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.lvTransformer));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.mvTransformer));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.hvTransformer));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.evTransformer));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.ChargepadbatBox));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.ChargepadcesuUnit));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.ChargepadmfeUnit));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.ChargepadmfsUnit));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.electrolyzer));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.tank));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.tank1));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.tank2));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.tank3));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.silverBlock));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.silverDust));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.silverIngot));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.crushedSilverOre));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.purifiedCrushedSilverOre));
+
+        }
+
     }
 
     public ItemStack getBlockStack(ITeBlock block) {

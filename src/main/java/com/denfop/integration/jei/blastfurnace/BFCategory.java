@@ -2,7 +2,6 @@ package com.denfop.integration.jei.blastfurnace;
 
 import com.denfop.Constants;
 import com.denfop.IUItem;
-import com.denfop.blocks.mechanism.BlockBaseMachine3;
 import com.denfop.blocks.mechanism.BlockBlastFurnace;
 import ic2.core.init.Localization;
 import mezz.jei.api.IGuiHelper;
@@ -76,35 +75,40 @@ public class BFCategory extends Gui implements IRecipeCategory<BFWrapper> {
         final ItemStack output = new ItemStack(IUItem.blastfurnace, 1, 3);
         final ItemStack water = new ItemStack(IUItem.blastfurnace, 1, 4);
 
-        for(int i =0; i < 9;i++){
+        for (int i = 0; i < 9; i++) {
             int x = i % 3;
             int y = i / 3;
             isg.init(i, true, 17 + x * 16, 100 + y * 14);
             isg.set(i, part);
         }
-        for(int i =0; i < 9;i++){
+        for (int i = 0; i < 9; i++) {
             int x = i % 3;
             int y = i / 3;
             ItemStack k = part;
-            if(i == 1)
+            if (i == 1) {
                 k = water;
-            if(i == 3)
+            }
+            if (i == 3) {
                 k = heat;
-            if(i == 5)
+            }
+            if (i == 5) {
                 k = output;
-            if(i == 7)
+            }
+            if (i == 7) {
                 k = main;
+            }
             isg.init(i + 9, true, 17 + x * 16, 52 + y * 14);
-            isg.set(i+ 9, k);
+            isg.set(i + 9, k);
         }
-        for(int i =0; i < 9;i++){
+        for (int i = 0; i < 9; i++) {
             int x = i % 3;
             int y = i / 3;
             ItemStack k = part;
-            if(i == 4)
+            if (i == 4) {
                 k = input;
+            }
             isg.init(i + 18, true, 17 + x * 16, 4 + y * 14);
-            isg.set(i+ 18, k);
+            isg.set(i + 18, k);
         }
     }
 

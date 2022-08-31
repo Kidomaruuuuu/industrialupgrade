@@ -25,6 +25,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
 import java.util.List;
 
@@ -57,7 +58,6 @@ public abstract class TileEntityBaseGenerator extends TileEntityInventory implem
                 tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSinkTier()));
             }
         }
-
     }
 
     public void readFromNBT(NBTTagCompound nbttagcompound) {

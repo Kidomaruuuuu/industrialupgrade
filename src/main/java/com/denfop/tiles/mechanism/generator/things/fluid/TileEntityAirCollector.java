@@ -15,7 +15,9 @@ import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.block.comp.Fluids;
 import ic2.core.block.invslot.InvSlot;
+import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -26,6 +28,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -63,7 +66,17 @@ public class TileEntityAirCollector extends TileEntityElectricMachine implements
         this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
         this.level = 0;
     }
-
+    @SideOnly(Side.CLIENT)
+    public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.machines_work_energy") + 5 + Localization.translate("iu" +
+                    ".machines_work_energy_type_eu"));
+        }
+        super.addInformation(stack, tooltip, advanced);
+    }
     protected List<ItemStack> getWrenchDrops(EntityPlayer player, int fortune) {
         List<ItemStack> ret = super.getWrenchDrops(player, fortune);
         if (this.level != 0) {

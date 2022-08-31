@@ -10,7 +10,6 @@ import ic2.core.block.type.ResourceBlock;
 import ic2.core.block.wiring.CableType;
 import ic2.core.item.ItemIC2Boat;
 import ic2.core.item.ItemMug;
-import ic2.core.item.block.ItemPipe;
 import ic2.core.item.tfbp.Tfbp;
 import ic2.core.item.type.BlockCuttingBladeType;
 import ic2.core.item.type.CasingResourceType;
@@ -56,6 +55,8 @@ public final class Ic2Items {
     public static ItemStack basaltBlock = BlockName.resource.getItemStack(ResourceBlock.basalt);
     public static ItemStack bronzeBlock = BlockName.resource.getItemStack(ResourceBlock.bronze_block);
     public static ItemStack copperBlock = BlockName.resource.getItemStack(ResourceBlock.copper_block);
+    public static ItemStack silverBlock = BlockName.resource.getItemStack(ResourceBlock.silver_block);
+
     public static ItemStack tinBlock = BlockName.resource.getItemStack(ResourceBlock.tin_block);
     public static ItemStack uraniumBlock = BlockName.resource.getItemStack(ResourceBlock.uranium_block);
     public static ItemStack leadBlock = BlockName.resource.getItemStack(ResourceBlock.lead_block);
@@ -69,6 +70,7 @@ public final class Ic2Items {
     public static ItemStack semifluidGenerator = BlockName.te.getItemStack(TeBlock.semifluid_generator);
     public static ItemStack stirlingGenerator = BlockName.te.getItemStack(TeBlock.stirling_generator);
     public static ItemStack kineticGenerator = BlockName.te.getItemStack(TeBlock.kinetic_generator);
+
     public static ItemStack nuclearReactor = BlockName.te.getItemStack(TeBlock.nuclear_reactor);
     public static ItemStack reactorChamber = BlockName.te.getItemStack(TeBlock.reactor_chamber);
     public static ItemStack reactorFluidPort = BlockName.te.getItemStack(TeBlock.reactor_fluid_port);
@@ -153,6 +155,8 @@ public final class Ic2Items {
     public static ItemStack woodrotorblade = ItemName.crafting.getItemStack(CraftingItemType.wood_rotor_blade);
     public static ItemStack ironrotorblade = ItemName.crafting.getItemStack(CraftingItemType.iron_rotor_blade);
     public static ItemStack steelrotorblade = ItemName.crafting.getItemStack(CraftingItemType.steel_rotor_blade);
+    public static ItemStack bronzerotorblade = ItemName.crafting.getItemStack(CraftingItemType.bronze_rotor_blade);
+    public static ItemStack bronzerotor = ItemName.rotor_bronze.getItemStack();
     public static ItemStack carbonrotorblade = ItemName.crafting.getItemStack(CraftingItemType.carbon_rotor_blade);
     public static ItemStack steamturbine = ItemName.crafting.getItemStack(CraftingItemType.steam_turbine);
     public static ItemStack steamturbineblade = ItemName.crafting.getItemStack(CraftingItemType.steam_turbine_blade);

@@ -7,12 +7,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
@@ -121,9 +123,10 @@ public class EntityRendererStreak extends Render<EntityStreak> {
                         Tessellator tessellator = Tessellator.getInstance();
                         GlStateManager.pushMatrix();
                         GlStateManager.translate(grad1, posY, posZ);
-                        int ii = entity.getBrightnessForRender();
-                        int j = ii % 65536;
-                        int k = ii / 65536;
+                        int light = entity.world.getCombinedLight(new BlockPos(entity.posX, entity.posY, entity.posZ), 0);
+                        int blockLight = light % 65536;
+                        int skyLight = light / 65536;
+                        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) blockLight, (float) skyLight);
                         GL11.glDisable(GL11.GL_LIGHTING);
                         GlStateManager.disableLighting();
                         GlStateManager.enableDepth();

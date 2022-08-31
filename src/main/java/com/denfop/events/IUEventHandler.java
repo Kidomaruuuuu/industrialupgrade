@@ -3,7 +3,6 @@ package com.denfop.events;
 
 import com.denfop.IUItem;
 import com.denfop.api.IItemSoon;
-import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.api.upgrade.IUpgradeItem;
@@ -42,6 +41,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class IUEventHandler {
@@ -104,7 +104,7 @@ public class IUEventHandler {
             player.fallDistance = 0;
         } else {
             boolean edit = player.getEntityData().getBoolean("edit_fly");
-            if(!edit) {
+            if (!edit) {
                 int flyspeed = (UpgradeSystem.system.hasModules(
                         EnumInfoUpgradeModules.FLYSPEED,
                         stack
@@ -117,7 +117,7 @@ public class IUEventHandler {
                 if (player.getEntityWorld().isRemote) {
                     player.capabilities.setFlySpeed((float) ((float) 0.1 + 0.05 * flyspeed));
                 }
-            }else{
+            } else {
                 if (player.getEntityWorld().isRemote) {
                     player.capabilities.setFlySpeed(player.getEntityData().getFloat("fly_speed"));
                 }
@@ -239,12 +239,25 @@ public class IUEventHandler {
         }
         if (item.equals(
                 IUItem.module_quickly) || item.equals(
-                IUItem.module_stack) || item.equals(IUItem.module_storage) || item.equals(IUItem.coolupgrade)) {
+                IUItem.module_stack) || item.equals(IUItem.module_storage)) {
             event.getToolTip().add(Localization.translate("using_kit"));
             if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
                 event.getToolTip().add(ListInformationUtils.mechanism_info.get(ListInformationUtils.index));
             } else {
                 for (String name : ListInformationUtils.mechanism_info) {
+                    event.getToolTip().add(name);
+                }
+            }
+
+        }
+        if(item.equals(
+                IUItem.coolupgrade)) {
+            event.getToolTip().add(Localization.translate("using_kit"));
+            final List<String> list = ListInformationUtils.integerListMap.get(stack.getItemDamage());
+            if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                event.getToolTip().add(list.get(ListInformationUtils.index % list.size()));
+            } else {
+                for (String name : list) {
                     event.getToolTip().add(name);
                 }
             }
@@ -278,6 +291,10 @@ public class IUEventHandler {
         if (stack.getItem().equals(IUItem.quarrymodule)) {
             event.getToolTip().add(Localization.translate("iu.quarrymodule"));
         }
+        if (stack.getItem().equals(IUItem.expmodule)) {
+            event.getToolTip().add(Localization.translate("iu.expierence_module.info"));
+        }
+
         if (stack.getItem() instanceof ItemEntityModule) {
             int meta = stack.getItemDamage();
             if (meta == 0) {
@@ -324,33 +341,31 @@ public class IUEventHandler {
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public void addInfo(ItemTooltipEvent event) {
-        if (Recipes.recipes.getRecipe("converter") == null) {
-            return;
-        }
+
         ItemStack stack = event.getItemStack();
-        final BaseMachineRecipe output = Recipes.recipes.getRecipeOutput(Recipes.recipes.getRecipe("converter"),
-                Recipes.recipes.getRecipeList("converter"), false, stack
-        );
 
 
-        if (output != null) {
-            if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-                event.getToolTip().add(Localization.translate("press.lshift"));
-            }
-            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-                event.getToolTip().add(Localization.translate("clonning"));
-                final RecipeOutput output1 = output.output;
-                for (int i = 0; i < this.name.length; i++) {
-                    if (output1.metadata.getDouble(("quantitysolid_" + i)) != 0) {
-                        event
-                                .getToolTip()
-                                .add(name[i] + Localization.translate(mattertype[i]) + ": " + output1.metadata.getDouble(
-                                        ("quantitysolid_" + i)) + Localization.translate("matternumber"));
+        for (Map.Entry<ItemStack, BaseMachineRecipe> entry : IUItem.machineRecipe) {
+            if (entry.getKey().isItemEqual(stack)) {
+                if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                    event.getToolTip().add(Localization.translate("press.lshift"));
+                }
+                if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                    event.getToolTip().add(Localization.translate("clonning"));
+
+                    final RecipeOutput output1 = entry.getValue().output;
+                    for (int i = 0; i < this.name.length; i++) {
+                        if (output1.metadata.getDouble(("quantitysolid_" + i)) != 0) {
+                            event
+                                    .getToolTip()
+                                    .add(name[i] + Localization.translate(mattertype[i]) + ": " + output1.metadata.getDouble(
+                                            ("quantitysolid_" + i)) + Localization.translate("matternumber"));
+                        }
                     }
                 }
+                return;
             }
         }
-
     }
 
 }

@@ -5,7 +5,6 @@ import com.denfop.items.ItemSolidMatter;
 import com.denfop.tiles.base.TileEntityConverterSolidMatter;
 import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlot;
-import ic2.core.util.StackUtil;
 import net.minecraft.item.ItemStack;
 
 public class InvSlotConverterSolidMatter extends InvSlot {
@@ -13,14 +12,6 @@ public class InvSlotConverterSolidMatter extends InvSlot {
     public InvSlotConverterSolidMatter(TileEntityInventory base1, String string) {
         super(base1, string, InvSlot.Access.I, 7, InvSlot.InvSide.TOP);
 
-    }
-
-    public static boolean isStackEqual(ItemStack stack1, ItemStack stack2) {
-        return stack1 == null && stack2 == null || stack1 != null && stack2 != null && stack1.getItem() == stack2.getItem() && (!stack1.getHasSubtypes() && !stack1.isItemStackDamageable() || stack1.getItemDamage() == stack2.getItemDamage());
-    }
-
-    public static boolean isStackEqualStrict(ItemStack stack1, ItemStack stack2) {
-        return isStackEqual(stack1, stack2) && ItemStack.areItemStackTagsEqual(stack1, stack2);
     }
 
     @Override
@@ -56,36 +47,17 @@ public class InvSlotConverterSolidMatter extends InvSlot {
     }
 
     public void consume(int content, int amount) {
-        consume(content, amount, false, false);
+        consume(content, amount, false);
     }
 
-    public void consume(int content, int amount, boolean simulate, boolean consumeContainers) {
-        ItemStack ret = ItemStack.EMPTY;
+    public void consume(int content, int amount, boolean simulate) {
 
         ItemStack stack = get(content);
-        if (!stack.isEmpty() && stack.getCount() >= 1 &&
-
-                accepts(stack) && (ret.isEmpty() ||
-                isStackEqualStrict(stack, ret)) && (stack.getCount() == 1 || consumeContainers ||
-                !stack.getItem().hasContainerItem(stack))) {
+        if (!stack.isEmpty() && amount > 0) {
             int currentAmount = Math.min(amount, stack.getCount());
             if (!simulate) {
-                if (stack.getCount() == currentAmount) {
-                    if (!consumeContainers && stack.getItem().hasContainerItem(stack)) {
-                        put(content, stack.getItem().getContainerItem(stack));
-                    } else {
-                        put(content, ItemStack.EMPTY);
-                    }
-                } else {
-                    stack.setCount(stack.getCount() - currentAmount);
-                }
+                stack.shrink(currentAmount);
             }
-            if (ret.isEmpty()) {
-                StackUtil.copyWithSize(stack, currentAmount);
-            } else {
-                ret.setCount(ret.getCount() + currentAmount);
-            }
-
         }
 
     }

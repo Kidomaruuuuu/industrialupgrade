@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 public class WavefrontObject implements IModelCustom {
 
     private static final Pattern vertexPattern = Pattern.compile(
-            "(v( (\\-){0,1}\\d+\\.\\d+){3,4} *\\n)|(v( (\\-){0,1}\\d+\\.\\d+){3,4} *$)");
+            "(v( (\\-) {0,1}\\d+\\.\\d+){3,4} *\\n)|(v( (\\-){0,1}\\d+\\.\\d+){3,4} *$)");
     private static final Pattern vertexNormalPattern = Pattern.compile(
             "(vn( (\\-){0,1}\\d+\\.\\d+){3,4} *\\n)|(vn( (\\-){0,1}\\d+\\.\\d+){3,4} *$)");
     private static final Pattern textureCoordinatePattern = Pattern.compile(

@@ -4,5 +4,5 @@ public enum EnumSpawnerType {
     LUCKY,
     SPEED,
     EXPERIENCE,
-    SPAWN
+    SPAWN,FIRE
 }

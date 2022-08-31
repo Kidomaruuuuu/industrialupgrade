@@ -1,6 +1,8 @@
 package com.denfop.invslot;
 
 
+import com.denfop.api.gui.EnumTypeSlot;
+import com.denfop.api.gui.ITypeSlot;
 import com.denfop.items.modules.ItemQuarryModule;
 import com.denfop.tiles.mechanism.TileEntityModuleMachine;
 import ic2.core.block.TileEntityInventory;
@@ -8,7 +10,7 @@ import ic2.core.block.invslot.InvSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
-public class InvSlotModule extends InvSlot {
+public class InvSlotModule extends InvSlot implements ITypeSlot {
 
     private final int type;
     private final TileEntityModuleMachine tile;
@@ -70,6 +72,17 @@ public class InvSlotModule extends InvSlot {
 
     public void setStackSizeLimit(int stackSizeLimit) {
         this.stackSizeLimit = stackSizeLimit;
+    }
+
+    @Override
+    public EnumTypeSlot getTypeSlot() {
+        switch (this.type){
+            case 0:
+                return EnumTypeSlot.BLOCKS;
+            case 1:
+                return EnumTypeSlot.LIST;
+        }
+        return null;
     }
 
 }

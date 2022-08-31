@@ -103,16 +103,16 @@ public class MetalFormerRecipe {
         );
         //
 
-        Recipes.metalformerCutting.addRecipe(input1.forOreDict("ingotSteel"), null, false,
+        Recipes.metalformerCutting.addRecipe(input1.forOreDict("plateLead"), null, false,
                 new ItemStack(IUItem.coolpipes, 1, 0)
         );
-        Recipes.metalformerCutting.addRecipe(input1.forOreDict("plateLead"), null, false,
+        Recipes.metalformerCutting.addRecipe(input1.forOreDict("plateDenseIron"), null, false,
                 new ItemStack(IUItem.coolpipes, 1, 1)
         );
-        Recipes.metalformerCutting.addRecipe(input1.forOreDict("plateDenseIron"), null, false,
+        Recipes.metalformerCutting.addRecipe(input1.forOreDict("plateSteel"), null, false,
                 new ItemStack(IUItem.coolpipes, 1, 2)
         );
-        Recipes.metalformerCutting.addRecipe(input1.forOreDict("plateRedbrass"), null, false,
+        Recipes.metalformerCutting.addRecipe(input1.forOreDict("plateDenseSteel"), null, false,
                 new ItemStack(IUItem.coolpipes, 1, 3)
         );
         Recipes.metalformerCutting.addRecipe(input1.forOreDict("doubleplateRedbrass"), null, false,

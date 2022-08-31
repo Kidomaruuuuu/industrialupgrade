@@ -137,6 +137,50 @@
 	  "analyzer_chest": {
         "model": "industrialupgrade:basemachine/analyzer_chest"
       },
+	  "simple_wind_generator": {
+        "model": "ic2:generator/electric/kinetic_generator"
+      },
+	  "simple_wind_generator_active": {
+        "model": "ic2:generator/electric/kinetic_generator_active"
+      },
+	 
+	  "adv_wind_generator": {
+        "model": "industrialupgrade:basemachine/adv_kg"
+      },
+	  "adv_wind_generator_active": {
+        "model": "industrialupgrade:basemachine/adv_kg_active"
+      },
+	  "imp_wind_generator": {
+        "model": "industrialupgrade:basemachine/imp_kg"
+      },
+	  "imp_wind_generator_active": {
+        "model": "industrialupgrade:basemachine/imp_kg_active"
+      },
+	  "per_wind_generator": {
+        "model": "industrialupgrade:basemachine/per_kg"
+      },
+	  "per_wind_generator_active": {
+        "model": "industrialupgrade:basemachine/per_kg_active"
+      },
+	  
+	  "kinetic_generator_assembler_active": {
+        "model": "industrialupgrade:basemachine/kinetic_generator_assembler_active"
+      },
+	  "ender_assembler": {
+        "model": "industrialupgrade:basemachine/ender_assembler"
+      },
+	  "research_table": {
+        "model": "industrialupgrade:basemachine/research_table"
+      },
+	  "gas_combiner": {
+        "model": "industrialupgrade:basemachine/gas_combiner"
+      },
+	  "creator_schedules": {
+        "model": "industrialupgrade:basemachine/creator_schedules"
+      },
+	  "analyzer_chest": {
+        "model": "industrialupgrade:basemachine/analyzer_chest"
+      },
 	  
       "quantum_solar_panelrain": {
         "model": "industrialupgrade:quantum_solar_panelrain"

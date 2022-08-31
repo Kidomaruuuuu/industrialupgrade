@@ -2,9 +2,12 @@ package com.denfop.api.recipe;
 
 
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public interface IRecipes {
 
@@ -14,7 +17,15 @@ public interface IRecipes {
 
     List<BaseMachineRecipe> getRecipeList(String name);
 
+    Set<Map.Entry<ItemStack, BaseMachineRecipe>> getRecipeStack(String name);
+
     void addRecipeManager(String name, int size, boolean consume);
+
+    List<BaseFluidMachineRecipe> getFluidRecipes(String name);
+
+    BaseFluidMachineRecipe getFluidRecipe(List<FluidStack> fluidStacks, List<BaseFluidMachineRecipe> recipes);
+
+    void addRecipeManagerFluid(String name, int size, boolean consume);
 
     List<IRecipeInputStack> getMap_recipe_managers_itemStack(String name);
 

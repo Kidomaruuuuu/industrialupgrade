@@ -36,21 +36,18 @@ public class BFHandler {
         }
         for (BFHandler recipe : recipes) {
 
-                return recipe;
+            return recipe;
 
         }
         return null;
     }
 
     public static void initRecipes() {
-            addRecipe(
-            );
-
-
+        addRecipe(
+        );
 
 
     }
-
 
 
 }

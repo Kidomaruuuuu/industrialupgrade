@@ -5,14 +5,20 @@ import com.denfop.IUCore;
 import com.denfop.api.IModelRegister;
 import ic2.core.block.state.IIdProvider;
 import ic2.core.init.BlocksItems;
+import ic2.core.init.Localization;
 import ic2.core.item.ItemMulti;
 import ic2.core.ref.ItemName;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Locale;
 
 public class ItemWindRod extends ItemMulti<ItemWindRod.Types> implements IModelRegister {
@@ -24,6 +30,26 @@ public class ItemWindRod extends ItemMulti<ItemWindRod.Types> implements IModelR
         this.setCreativeTab(IUCore.ItemTab);
         BlocksItems.registerItem((Item) this, IUCore.getIdentifier(NAME)).setUnlocalizedName(NAME);
         IUCore.proxy.addIModelRegister(this);
+    }
+    public boolean getLevel(int level, int damage){
+       if(level == 9 && damage == 10)
+           return true;
+       else if(level == 10 && damage == 9)
+            return true;
+       else
+           return level - 1 == damage ;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(
+            final ItemStack stack,
+            @Nullable final World worldIn,
+            final List<String> tooltip,
+            final ITooltipFlag flagIn
+    ) {
+        tooltip.add(Localization.translate("wind.need_level3"));
+        super.addInformation(stack, worldIn, tooltip, flagIn);
     }
 
     @Override

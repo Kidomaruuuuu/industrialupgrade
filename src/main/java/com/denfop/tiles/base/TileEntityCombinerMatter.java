@@ -84,7 +84,10 @@ public class TileEntityCombinerMatter extends TileEntityElectricLiquidTankInvent
         this.energy = this.addComponent(AdvEnergy.asBasicSink(this, 0, 14).addManagedSlot(this.dischargeSlot));
 
     }
-
+    @Override
+    public int getInventoryStackLimit() {
+        return 4;
+    }
     private static int applyModifier(int base) {
         double ret = Math.round((base + 14) * 1.0);
         return (ret > 2.147483647E9D) ? Integer.MAX_VALUE : (int) ret;
@@ -106,7 +109,6 @@ public class TileEntityCombinerMatter extends TileEntityElectricLiquidTankInvent
 
     public void updateEntityServer() {
         super.updateEntityServer();
-        boolean needsInvUpdate = false;
 
         if (this.redstone.hasRedstoneInput() || this.energy.getEnergy() <= 0.0D) {
             if (this.getActive()) {
@@ -138,7 +140,7 @@ public class TileEntityCombinerMatter extends TileEntityElectricLiquidTankInvent
 
 
             if (this.energy.canUseEnergy(energycost)) {
-                needsInvUpdate = attemptGeneration();
+                attemptGeneration();
             }
             this.lastEnergy = this.energy.getEnergy();
 
@@ -152,7 +154,7 @@ public class TileEntityCombinerMatter extends TileEntityElectricLiquidTankInvent
                 }
             }
 
-            if (needsInvUpdate && this.upgradeSlot.tickNoMark()) {
+            if (this.upgradeSlot.tickNoMark()) {
                 setUpgradestat();
             }
 

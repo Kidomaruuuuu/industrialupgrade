@@ -653,12 +653,12 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
                 ItemStack output1 = this.output.getRecipe().output.items.get(0);
                 size = this.output.getRecipe().input.getInputs().get(0).getInputs().get(0).getCount();
                 size2 = this.output.getRecipe().input.getInputs().get(1).getInputs().get(0).getCount();
-                size = (int) Math.floor((float) this.inputSlot.get(0).stackSize / size);
-                size2 = (int) Math.floor((float) this.inputSlot.get(1).stackSize / size2);
+                size = (int) Math.floor((float) this.inputSlot.get(0).getCount() / size);
+                size2 = (int) Math.floor((float) this.inputSlot.get(1).getCount() / size2);
                 size = Math.min(size, size2);
                 int size1 = !this.outputSlot.isEmpty()
-                        ? (64 - this.outputSlot.get().stackSize) / output1.stackSize
-                        : 64 / output1.stackSize;
+                        ? (64 - this.outputSlot.get().getCount()) / output1.getCount()
+                        : 64 / output1.getCount();
                 size = Math.min(size1, size);
                 size = Math.min(output1.getMaxStackSize(), size);
                 this.size_recipe = size;
@@ -690,8 +690,8 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
 
                 this.progress = this.energy.getEnergy();
                 double k = this.progress;
-                this.guiProgress = (k / output.getRecipe().output.metadata.getDouble("energy"));
-                if (this.energy.getEnergy() >= output.getRecipe().output.metadata.getDouble("energy")) {
+                this.guiProgress = (k / this.energy.getCapacity());
+                if (this.energy.getEnergy() >= this.energy.getCapacity()) {
                     operate(output);
 
                     this.progress = 0;
@@ -738,12 +738,12 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
                     size2 = this.output.getRecipe().input.getInputs().get(0).getInputs().get(0).getCount();
 
                 }
-                size = (int) Math.floor((float) this.inputSlot.get(0).stackSize / size);
-                size2 = (int) Math.floor((float) this.inputSlot.get(1).stackSize / size2);
+                size = (int) Math.floor((float) this.inputSlot.get(0).getCount() / size);
+                size2 = (int) Math.floor((float) this.inputSlot.get(1).getCount() / size2);
                 size = Math.min(size, size2);
                 int size1 = !this.outputSlot.isEmpty()
-                        ? (64 - this.outputSlot.get().stackSize) / output1.stackSize
-                        : 64 / output1.stackSize;
+                        ? (64 - this.outputSlot.get().getCount()) / output1.getCount()
+                        : 64 / output1.getCount();
                 size = Math.min(size1, size);
                 size = Math.min(output1.getMaxStackSize(), size);
                 if (size != this.size_recipe) {
@@ -751,14 +751,14 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
                 }
                 this.progress = this.energy.getEnergy();
                 double k = this.progress;
-                double p = (k / (output.getRecipe().output.metadata.getDouble("energy") * size));
+                double p = (k / (this.energy.getCapacity()));
                 if (p <= 1) {
                     this.guiProgress = p;
                 }
                 if (p > 1) {
                     this.guiProgress = 1;
                 }
-                if (this.energy.getEnergy() >= (output.getRecipe().output.metadata.getDouble("energy") * size)) {
+                if (this.energy.getEnergy() >= this.energy.getCapacity()) {
                     operate(output, size);
 
                     this.progress = 0;

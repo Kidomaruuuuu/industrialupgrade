@@ -5,8 +5,10 @@ import com.denfop.IUItem;
 import com.denfop.api.vein.Type;
 import com.denfop.api.vein.Vein;
 import com.denfop.container.ContainerQuarryVein;
+import com.denfop.utils.ListInformationUtils;
 import com.denfop.utils.ModUtils;
 import ic2.core.GuiIC2;
+import ic2.core.IC2;
 import ic2.core.init.Localization;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -71,6 +73,18 @@ public class GuiQuarryVein extends GuiIC2<ContainerQuarryVein> {
             text.add(Localization.translate("iu.quarryveininformation"));
             List<String> compatibleUpgrades = getList();
             compatibleUpgrades.add("Y: " + y);
+            Iterator<String> var5 = compatibleUpgrades.iterator();
+            String itemstack;
+            while (var5.hasNext()) {
+                itemstack = var5.next();
+                text.add(itemstack);
+            }
+
+            this.drawTooltip(mouseX, mouseY, text);
+        }else  if (mouseX >= 3 && mouseX <= 15 && mouseY >= 3 && mouseY <= 15) {
+            List<String> text = new ArrayList<>();
+            text.add(Localization.translate("iu.quarryvein_info"));
+            List<String> compatibleUpgrades = ListInformationUtils.quarryvein;
             Iterator<String> var5 = compatibleUpgrades.iterator();
             String itemstack;
             while (var5.hasNext()) {
@@ -233,6 +247,10 @@ public class GuiQuarryVein extends GuiIC2<ContainerQuarryVein> {
             default:
                 break;
         }
+        this.mc.getTextureManager()
+                .bindTexture(new ResourceLocation(IC2.RESOURCE_DOMAIN, "textures/gui/infobutton.png"));
+        drawTexturedModalRect(h + 3, k + 3, 0, 0, 10, 10);
+        this.mc.getTextureManager().bindTexture(getTexture());
         int chargeLevel = (int) (48.0F * this.container.base.energy.getEnergy()
                 / this.container.base.energy.getCapacity());
 

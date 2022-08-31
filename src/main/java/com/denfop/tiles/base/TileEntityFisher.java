@@ -14,7 +14,9 @@ import ic2.api.item.IElectricItem;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
+import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityFishHook;
@@ -30,6 +32,7 @@ import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
 import java.lang.reflect.Field;
 import java.util.EnumSet;
@@ -83,7 +86,19 @@ public class TileEntityFisher extends TileEntityElectricMachine
     public void removeLevel(final int level) {
         this.level -= level;
     }
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.machines_work_energy")+this.energyconsume+Localization.translate("iu" +
+                    ".machines_work_energy_type_eu"));
+        }
+        super.addInformation(stack, tooltip, advanced);
 
+    }
     private boolean checkwater() {
         int x1 = this.pos.getX();
         int y1 = this.pos.getY() - 2;

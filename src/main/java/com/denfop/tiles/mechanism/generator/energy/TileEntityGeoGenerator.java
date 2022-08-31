@@ -1,6 +1,8 @@
 package com.denfop.tiles.mechanism.generator.energy;
 
+import com.denfop.api.gui.IType;
 import com.denfop.componets.AdvEnergy;
+import com.denfop.componets.EnumTypeStyle;
 import com.denfop.container.ContainerGeoGenerator;
 import com.denfop.gui.GuiGeoGenerator;
 import ic2.core.ContainerBase;
@@ -11,10 +13,13 @@ import ic2.core.block.invslot.InvSlotConsumableLiquid;
 import ic2.core.block.invslot.InvSlotConsumableLiquid.OpType;
 import ic2.core.block.invslot.InvSlotConsumableLiquidByTank;
 import ic2.core.block.invslot.InvSlotOutput;
+import ic2.core.init.Localization;
 import ic2.core.init.MainConfig;
 import ic2.core.util.ConfigUtil;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidEvent;
 import net.minecraftforge.fluids.FluidEvent.FluidSpilledEvent;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -22,14 +27,18 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
-public class TileEntityGeoGenerator extends TileEntityBaseGenerator {
+import java.util.List;
+
+public class TileEntityGeoGenerator extends TileEntityBaseGenerator implements IType {
 
     public final InvSlotConsumableLiquid fluidSlot;
     public final InvSlotOutput outputSlot;
 
     public final FluidTank fluidTank;
     public final Fluids fluids = this.addComponent(new Fluids(this));
+    private final double coef;
 
 
     public TileEntityGeoGenerator(int size, double coef) {
@@ -46,8 +55,30 @@ public class TileEntityGeoGenerator extends TileEntityBaseGenerator {
                 this.fluidTank
         );
         this.outputSlot = new InvSlotOutput(this, "output", 1);
+        this.coef=coef;
     }
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.info_upgrade_energy")+this.coef);
+        }
+        if (this.hasComponent(AdvEnergy.class)) {
+            AdvEnergy energy = this.getComponent(AdvEnergy.class);
+            if (!energy.getSourceDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSourceTier()));
+            } else if (!energy.getSinkDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSinkTier()));
+            }
+        }
 
+    }
+    @Override
+    public EnumTypeStyle getStyle() {
+        return EnumTypeStyle.DEFAULT;
+    }
     public AdvEnergy getEnergy() {
         return energy;
     }

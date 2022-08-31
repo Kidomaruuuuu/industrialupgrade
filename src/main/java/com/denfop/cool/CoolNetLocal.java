@@ -159,10 +159,19 @@ public class CoolNetLocal {
             coolPaths = this.discover(coolSource);
             this.coolSourceToCoolPathMap.put(coolSource, coolPaths);
         }
-        if (amount > 0) {
+        boolean allowed = coolSource.isAllowed();
+        boolean need = false;
+        if (amount > 0 || !allowed) {
             for (final CoolPath coolPath : coolPaths) {
                 final ICoolSink coolSink = coolPath.target;
                 double demandedCool = coolSink.getDemandedCool();
+                if(coolSink.needCooling()) {
+                    if (!allowed) {
+                        coolSource.setAllowed(true);
+                        allowed = true;
+                    }
+                    need = true;
+                }
                 if (demandedCool <= 0.0) {
                     continue;
                 }
@@ -173,16 +182,19 @@ public class CoolNetLocal {
                 }
                 coolSink.injectCool(coolPath.targetDirection, adding, 0);
                 coolPath.totalCoolConducted = (long) adding;
-
-                for (ICoolConductor energyConductor3 : coolPath.conductors) {
-                    if (coolSource.getOfferedCool() >= energyConductor3.getConductorBreakdownEnergy()) {
-                        energyConductor3.removeConductor();
-                    }
+                if (adding > coolPath.min) {
+                    coolPath.conductors.forEach(conductor -> {
+                        if (conductor.getConductorBreakdownEnergy() - 1 < coolPath.min) {
+                            conductor.removeConductor();
+                        }
+                    });
                 }
+
 
             }
         }
-
+        if(need != allowed)
+            coolSource.setAllowed(false);
         return amount;
     }
 
@@ -239,6 +251,9 @@ public class CoolNetLocal {
                     }
                     final ICoolConductor coolConductor = (ICoolConductor) tileEntity;
                     coolPath.conductors.add(coolConductor);
+                    if (coolConductor.getConductorBreakdownEnergy() - 1 < coolPath.getMin()) {
+                        coolPath.setMin(coolConductor.getConductorBreakdownEnergy() - 1);
+                    }
 
                     coolBlockLink = reachedTileEntities.get(tileEntity);
                     if (coolBlockLink != null) {
@@ -351,6 +366,8 @@ public class CoolNetLocal {
 
 
     public void onTickEnd() {
+        if(this.world.isRemote)
+            return;
         if (this.world.provider.getWorldTime() % 20 == 0) {
             if (this.waitingList.hasWork()) {
                 final List<ICoolTile> tiles = this.waitingList.getPathTiles();
@@ -366,7 +383,7 @@ public class CoolNetLocal {
         for (ICoolSource entry : this.sources) {
             if (entry != null) {
                 final double offered = entry.getOfferedCool();
-                if (offered > 0) {
+                if (offered > 0 || !entry.isAllowed()) {
                     for (double packetAmount = 1, i = 0; i < packetAmount; ++i) {
                         final double removed = offered - this.emitCoolFrom(entry, offered, offered);
                         if (removed <= 0) {
@@ -429,12 +446,21 @@ public class CoolNetLocal {
         final ICoolSink target;
         final EnumFacing targetDirection;
         long totalCoolConducted;
+        double min = Double.MAX_VALUE;
 
         CoolPath(ICoolSink sink, EnumFacing facing) {
             this.target = sink;
             this.conductors = new HashSet<>();
             this.totalCoolConducted = 0L;
             this.targetDirection = facing;
+        }
+
+        public double getMin() {
+            return min;
+        }
+
+        public void setMin(final double min) {
+            this.min = min;
         }
 
     }

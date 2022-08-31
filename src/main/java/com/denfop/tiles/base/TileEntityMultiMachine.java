@@ -7,28 +7,20 @@ import com.denfop.IUCore;
 import com.denfop.IUItem;
 import com.denfop.api.audio.EnumTypeAudio;
 import com.denfop.api.audio.IAudioFixer;
-import com.denfop.api.recipe.IMultiUpdateTick;
-import com.denfop.api.recipe.InvSlotMultiRecipes;
-import com.denfop.api.recipe.InvSlotOutput;
-import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.audio.AudioSource;
 import com.denfop.audio.PositionSpec;
 import com.denfop.componets.AdvEnergy;
 import com.denfop.componets.CoolComponent;
 import com.denfop.componets.EXPComponent;
+import com.denfop.componets.ProcessMultiComponent;
+import com.denfop.componets.RFComponent;
 import com.denfop.container.ContainerMultiMachine;
 import com.denfop.gui.GuiMultiMachine;
-import com.denfop.gui.GuiMultiMachine1;
-import com.denfop.gui.GuiMultiMachine2;
-import com.denfop.gui.GuiMultiMachine3;
-import com.denfop.gui.GuiMultiMachine4;
-import com.denfop.invslot.InvSlotUpgrade;
-import com.denfop.items.modules.ItemAdditionModule;
 import com.denfop.items.modules.ItemModuleTypePanel;
 import com.denfop.tiles.mechanism.EnumTypeMachines;
 import com.denfop.tiles.panels.entity.EnumSolarPanels;
 import com.denfop.tiles.panels.entity.TileEntitySolarPanel;
-import ic2.api.energy.EnergyNet;
+import ic2.api.network.INetworkClientTileEntityEventListener;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
@@ -53,105 +45,59 @@ import org.lwjgl.input.Keyboard;
 
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 public abstract class TileEntityMultiMachine extends TileEntityInventory implements IHasGui, IEnergyHandler, IEnergyReceiver,
-        IAudioFixer, IUpgradableBlock, IMultiUpdateTick {
+        IAudioFixer, IUpgradableBlock , INetworkClientTileEntityEventListener {
 
-    public final int min;
-    public final int max;
-    public final boolean random;
+
     public final int type;
-    public final int sizeWorkingSlot;
-    public final short[] progress;
-    public final double maxEnergy2;
-    public final int defaultEnergyConsume;
-    public final int defaultOperationLength;
-    public final int defaultTier;
-    public final int defaultEnergyStorage;
-    public final InvSlotOutput outputSlot;
-    public final InvSlotUpgrade upgradeSlot;
     public final AdvEnergy energy;
     public final InvSlotDischarge dischargeSlot;
-    protected final double[] guiProgress;
-    protected final CoolComponent cold;
+    public final CoolComponent cold;
+    public final ProcessMultiComponent multi_process;
     public EXPComponent exp;
     public EnumSolarPanels solartype;
-    public boolean rf;
-    public int module;
-    public boolean quickly;
-    public int[] col = new int[4];
-    public boolean modulesize = false;
-    public double energy2;
-    public int energyConsume;
-    public int operationLength;
-    public int operationsPerTick;
-    public InvSlotMultiRecipes inputSlots;
+    public RFComponent energy2;
     public AudioSource audioSource;
-    public boolean modulestorage;
-    public MachineRecipe[] output;
     public EnumTypeAudio typeAudio = EnumTypeAudio.OFF;
     public EnumTypeAudio[] valuesAudio = EnumTypeAudio.values();
     private int tick;
+    public final int sizeWorkingSlot;
 
     public TileEntityMultiMachine(int energyconsume, int OperationsPerTick, int type) {
-        this(1, energyconsume, OperationsPerTick, 0, 0, false, type);
+        this(1, energyconsume, OperationsPerTick, type);
     }
 
-    public TileEntityMultiMachine(
-            int energyconsume,
-            int OperationsPerTick,
-            int min,
-            int max,
-            boolean random,
-            int type
-    ) {
-        this(1, energyconsume, OperationsPerTick, min, max, random, type);
-    }
+
 
     public TileEntityMultiMachine(
             int aDefaultTier,
             int energyconsume,
             int OperationsPerTick,
-            int min,
-            int max,
-            boolean random,
             int type
     ) {
-        this.sizeWorkingSlot = getMachine().sizeWorkingSlot;
-        this.progress = new short[sizeWorkingSlot];
-        this.guiProgress = new double[sizeWorkingSlot];
-        double coefenergy = getcoef();
-        double speed = getspeed();
-        this.defaultEnergyConsume = this.energyConsume = (int) (energyconsume * coefenergy);
-        this.defaultOperationLength = this.operationLength = (int) (OperationsPerTick * 1D / speed);
-        this.defaultTier = aDefaultTier;
-        this.defaultEnergyStorage = energyconsume * OperationsPerTick;
-        this.outputSlot = new InvSlotOutput(this, "output", sizeWorkingSlot);
-        this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
+
+        this.sizeWorkingSlot = this.getMachine().sizeWorkingSlot;
         this.dischargeSlot = new InvSlotDischarge(this, InvSlot.Access.NONE, aDefaultTier, false, InvSlot.InvSide.ANY);
         this.energy = this.addComponent(AdvEnergy
-                .asBasicSink(this, (double) energyconsume * OperationsPerTick, aDefaultTier)
+                .asBasicSink(this, (double) energyconsume * OperationsPerTick, (int) Math.pow(2,this.sizeWorkingSlot-1))
                 .addManagedSlot(this.dischargeSlot));
-        this.maxEnergy2 = energyconsume * OperationsPerTick * 4;
-        this.rf = false;
-        this.quickly = false;
-        this.module = 0;
-        this.min = min;
-        this.max = max;
-        this.random = random;
+
+        this.energy2 = this.addComponent(new RFComponent(this, energyconsume * OperationsPerTick * 4, energy));
         this.type = type;
         this.solartype = null;
-        this.output = new MachineRecipe[sizeWorkingSlot];
         this.cold = this.addComponent(CoolComponent.asBasicSink(this, 100));
-        this.inputSlots = new InvSlotMultiRecipes(this, getMachine().type.recipe, this, sizeWorkingSlot);
+
+
         this.exp = null;
         if (this.getMachine().type == EnumTypeMachines.ELECTRICFURNACE) {
             this.exp = this.addComponent(EXPComponent.asBasicSource(this, 5000, 14));
         }
-
+        this.multi_process = this.addComponent(new ProcessMultiComponent(this,getMachine()));
     }
+
+
 
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
@@ -160,9 +106,12 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             tooltip.add(Localization.translate("iu.multimachine.info"));
+            tooltip.add(Localization.translate("iu.machines_work_energy") + this.multi_process.defaultEnergyConsume + Localization.translate("iu.machines_work_energy_type_eu"));
+            tooltip.add(Localization.translate("iu.machines_work_length") + this.multi_process.defaultOperationLength);
         }
         if (this.hasComponent(AdvEnergy.class)) {
             AdvEnergy energy = this.getComponent(AdvEnergy.class);
+
             if (!energy.getSourceDirs().isEmpty()) {
                 tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSourceTier()));
             } else if (!energy.getSinkDirs().isEmpty()) {
@@ -171,6 +120,7 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
         }
 
     }
+
 
     public EnumTypeAudio getType() {
         return typeAudio;
@@ -210,16 +160,16 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
         ItemStack stack_modulestorage = ItemStack.EMPTY;
         ItemStack panel = ItemStack.EMPTY;
         ItemStack colling = ItemStack.EMPTY;
-        if (rf) {
+        if (this.energy2.isRf()) {
             stack_rf = new ItemStack(IUItem.module7, 1, 4);
         }
-        if (quickly) {
+        if (this.multi_process.quickly) {
             stack_quickly = new ItemStack(IUItem.module_quickly);
         }
-        if (modulesize) {
+        if (this.multi_process.modulesize) {
             stack_modulesize = new ItemStack(IUItem.module_stack);
         }
-        if (modulestorage) {
+        if (this.multi_process.modulestorage) {
             stack_modulestorage = new ItemStack(IUItem.module_storage);
         }
         if (solartype != null) {
@@ -235,23 +185,23 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
         if (!stack_modulestorage.isEmpty() || !stack_rf.isEmpty() || !stack_quickly.isEmpty() || !stack_modulesize.isEmpty() || !panel.isEmpty() || !colling.isEmpty()) {
             if (!stack_rf.isEmpty()) {
                 ret.add(stack_rf);
-                module--;
-                rf = false;
+                this.multi_process.shrinkModule(1);
+                this.energy2.setRf(false);
             }
             if (!stack_modulestorage.isEmpty()) {
                 ret.add(stack_modulestorage);
-                module--;
-                modulestorage = false;
+                this.multi_process.shrinkModule(1);
+                this.multi_process.setModulesize(false);
             }
             if (!stack_quickly.isEmpty()) {
                 ret.add(stack_quickly);
-                module--;
-                quickly = false;
+                this.multi_process.shrinkModule(1);
+                this.multi_process.setQuickly(false);
             }
             if (!stack_modulesize.isEmpty()) {
                 ret.add(stack_modulesize);
-                modulesize = false;
-                module--;
+                this.multi_process.shrinkModule(1);
+                this.multi_process.setModulesize(false);
             }
             if (solartype != null) {
                 ret.add(panel);
@@ -268,24 +218,10 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
 
     public int receiveEnergy(EnumFacing from, int maxReceive, boolean simulate) {
 
-        if (this.rf) {
-            return receiveEnergy(maxReceive, simulate);
-        } else {
-            return 0;
-        }
+      return   this.energy2.receiveEnergy(from,maxReceive,simulate);
 
     }
 
-    public int receiveEnergy(int paramInt, boolean paramBoolean) {
-        int i = (int) Math.min(
-                this.maxEnergy2 - this.energy2,
-                Math.min(EnergyNet.instance.getPowerFromTier(this.energy.getSinkTier()) * 4, paramInt)
-        );
-        if (!paramBoolean) {
-            this.energy2 += i;
-        }
-        return i;
-    }
 
     public void updateVisibility(TileEntitySolarPanel type) {
         type.wetBiome = this.world.getBiome(this.pos).getRainfall() > 0.0F;
@@ -357,40 +293,9 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
                 entityPlayer.getHeldItem(hand).setCount(entityPlayer.getHeldItem(hand).getCount() - 1);
                 return true;
             }
-            if (entityPlayer.getHeldItem(hand).getItem() instanceof ItemAdditionModule && entityPlayer
-                    .getHeldItem(hand)
-                    .getItemDamage() == 4) {
-                if (!this.rf && this.module < 2) {
-                    this.rf = true;
-                    this.module++;
-                    entityPlayer.getHeldItem(hand).setCount(entityPlayer.getHeldItem(hand).getCount() - 1);
-                    return true;
-                }
-            }
-            if (entityPlayer.getHeldItem(hand).getItem().equals(IUItem.module_quickly)) {
-                if (!this.quickly && this.module < 2) {
-                    this.quickly = true;
-                    this.module++;
-                    entityPlayer.getHeldItem(hand).setCount(entityPlayer.getHeldItem(hand).getCount() - 1);
-                    return true;
-                }
-            }
-            if (entityPlayer.getHeldItem(hand).getItem().equals(IUItem.module_stack)) {
-                if (!this.modulesize && this.module < 2) {
-                    this.modulesize = true;
-                    this.module++;
-                    entityPlayer.getHeldItem(hand).setCount(entityPlayer.getHeldItem(hand).getCount() - 1);
-                    return true;
-                }
-            }
-            if (entityPlayer.getHeldItem(hand).getItem().equals(IUItem.module_storage)) {
-                if (!this.modulestorage && this.module < 2) {
-                    this.modulestorage = true;
-                    this.module++;
-                    entityPlayer.getHeldItem(hand).setCount(entityPlayer.getHeldItem(hand).getCount() - 1);
-                    return true;
-                }
-            }
+            if( this.multi_process.onActivated(entityPlayer.getHeldItem(hand)))
+                return true;
+
         }
         return super.onActivated(entityPlayer, hand, side, hitX, hitY, hitZ);
     }
@@ -401,49 +306,19 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
     }
 
     public int getEnergyStored(EnumFacing from) {
-        return (int) this.energy2;
+        return (int) this.energy2.getEnergy();
     }
 
     public int getMaxEnergyStored(EnumFacing from) {
-        return (int) this.maxEnergy2;
+        return (int) this.energy2.getCapacity();
     }
 
-    private double getspeed() {
-        switch (this.sizeWorkingSlot) {
-            case 2:
-                return 2.2;
-            case 3:
-                return 3.4;
-            case 4:
-                return 4.5;
-            default:
-                return 1;
-        }
-    }
 
-    private double getcoef() {
-        switch (this.sizeWorkingSlot) {
-            case 3:
-                return 0.9;
-            case 4:
-                return 0.8;
-            default:
-                return 1;
-        }
-    }
 
     public abstract EnumMultiMachine getMachine();
 
     public void readFromNBT(NBTTagCompound nbttagcompound) {
         super.readFromNBT(nbttagcompound);
-        for (int i = 0; i < sizeWorkingSlot; i++) {
-            this.progress[i] = nbttagcompound.getShort("progress" + i);
-        }
-        this.energy2 = nbttagcompound.getDouble("energy2");
-        this.rf = nbttagcompound.getBoolean("rf");
-        this.quickly = nbttagcompound.getBoolean("quickly");
-        this.modulesize = nbttagcompound.getBoolean("modulesize");
-        this.modulestorage = nbttagcompound.getBoolean("modulestorage");
         int id = nbttagcompound.getInteger("panelid");
         if (id != -1) {
             this.solartype = IUItem.map1.get(id);
@@ -452,17 +327,6 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
 
     public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound) {
         super.writeToNBT(nbttagcompound);
-        for (int i = 0; i < sizeWorkingSlot; i++) {
-            nbttagcompound.setShort("progress" + i, progress[i]);
-        }
-        nbttagcompound.setDouble("energy2", this.energy2);
-
-        nbttagcompound.setBoolean("rf", this.rf);
-        nbttagcompound.setBoolean("quickly", this.quickly);
-        nbttagcompound.setBoolean("modulesize", this.modulesize);
-        nbttagcompound.setBoolean("modulestorage", this.modulestorage);
-
-
         if (this.solartype != null) {
             nbttagcompound.setInteger("panelid", this.solartype.meta);
         } else {
@@ -470,43 +334,24 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
         }
         return nbttagcompound;
     }
-
+    public void onNetworkEvent(EntityPlayer player, int event) {
+        if (event == 0) {
+            this.multi_process.cycleMode();
+        }
+    }
 
     protected void onLoaded() {
         super.onLoaded();
-        if (IC2.platform.isSimulating()) {
-            this.setOverclockRates();
-            inputSlots.load();
-            this.getsOutputs();
-        }
 
     }
 
-    public MachineRecipe getRecipeOutput(int slotId) {
-        return this.output[slotId];
-    }
 
-    public void setRecipeOutput(MachineRecipe output, int slotId) {
-        this.output[slotId] = output;
-    }
-
-    public MachineRecipe getRecipeOutput() {
-        return this.output[0];
-    }
-
-    public void setRecipeOutput(MachineRecipe output) {
-        this.output[0] = output;
-    }
 
     public EnumTypeMachines getTypeMachine() {
         return this.getMachine().type;
     }
 
-    private void getsOutputs() {
-        for (int i = 0; i < this.sizeWorkingSlot; i++) {
-            this.output[i] = this.getOutput(i);
-        }
-    }
+
 
     protected void onUnloaded() {
         super.onUnloaded();
@@ -519,16 +364,14 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
 
     public void markDirty() {
         super.markDirty();
-        if (IC2.platform.isSimulating()) {
-            this.setOverclockRates();
-        }
+        IC2.platform.isSimulating();
 
     }
 
     protected void updateEntityServer() {
         super.updateEntityServer();
         if (solartype != null) {
-            if (this.energy.getEnergy() < this.energy.getCapacity() || (this.energy2 < this.maxEnergy2 && this.rf)) {
+            if (this.energy.getEnergy() < this.energy.getCapacity() || (energy2.getEnergy() < energy2.getCapacity() && this.energy2.isRf())) {
                 TileEntitySolarPanel panel = new TileEntitySolarPanel(solartype);
                 if (panel.getWorld() != this.getWorld()) {
                     panel.setWorld(this.getWorld());
@@ -546,262 +389,28 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
                 panel.gainFuel();
                 if (this.energy.getEnergy() < this.energy.getCapacity()) {
                     this.energy.addEnergy(Math.min(panel.generating, energy.getFreeEnergy()));
-                } else if (this.energy2 < this.maxEnergy2 && this.rf) {
-                    this.energy2 += Math.min(panel.generating, (this.maxEnergy2 - this.energy2) / Config.coefficientrf);
+                } else if (this.energy2.getEnergy() < energy2.getCapacity() && this.energy2.isRf()) {
+                    energy2.addEnergy(Math.min(panel.generating,
+                            (this.energy2.getCapacity() - this.energy2.getEnergy()) / Config.coefficientrf));
                 }
             }
-        }
-        int quickly = 1;
-
-        boolean isActive = false;
-        if (this.world.provider.getWorldTime() % 10 == 0) {
-            if (this.modulestorage && !this.inputSlots.isEmpty()) {
-                final ItemStack stack = this.inputSlots.get();
-                int size = 0;
-                int col = 0;
-                for (int i = 0; i < sizeWorkingSlot; i++) {
-                    ItemStack stack1 = this.inputSlots.get(i);
-
-                    if (stack1.isItemEqual(stack)) {
-                        size += stack1.getCount();
-                    }
-
-                    if (stack1.isItemEqual(stack) || stack1.isEmpty()) {
-                        col++;
-                    }
-                }
-                int count = size / col;
-                int count1 = size - (count * col);
-                for (int i = 0; i < sizeWorkingSlot; i++) {
-                    ItemStack stack1 = this.inputSlots.get(i);
-                    if ((stack1.isItemEqual(stack)) || stack1.isEmpty()) {
-                        ItemStack stack2 = stack.copy();
-                        int dop = 0;
-                        int prom = 64 - count;
-                        if (prom > 0) {
-                            if (count1 > prom) {
-                                dop += prom;
-                                count1 -= prom;
-                            } else {
-                                dop += count1;
-                                count1 = 0;
-                            }
-
-                        }
-
-                        stack2.setCount(count + dop);
-                        this.inputSlots.put(i, stack2);
-
-                    }
-
-                }
-
-
-            }
-        }
-
-        for (int i = 0; i < sizeWorkingSlot; i++) {
-            MachineRecipe output = this.output[i];
-
-            if (this.quickly) {
-                quickly = 100;
-            }
-            int size = 1;
-            if (this.output[i] != null && !this.inputSlots.get(i).isEmpty()) {
-                if (this.modulesize) {
-                    size = this.output[i].getRecipe().input.getInputs().get(0).getInputs().get(0).getCount();
-                    size = (int) Math.floor((float) this.inputSlots.get(i).getCount() / size);
-                    int size1 = 0;
-
-                    for (int ii = 0; ii < sizeWorkingSlot; ii++) {
-                        if (!this.outputSlot.get(ii).isEmpty()) {
-                            size1 += (64 - this.outputSlot.get(ii).getCount());
-                        } else {
-                            size1 += 64;
-                        }
-                    }
-                    if (output != null) {
-                        size1 = size1 / output.getRecipe().output.items.get(0).getCount();
-                    }
-                    size = Math.min(size1, size);
-                }
-            }
-            if (output != null && this.inputSlots.continue_proccess(
-                    this.outputSlot,
-                    i
-            ) && (this.energy.canUseEnergy(this.energyConsume * quickly * size) || this.energy2 >= Math.abs(this.energyConsume * 4 * quickly * size))) {
-                if (!this.getActive()) {
-                    setActive(true);
-                }
-                if (this.progress[i] == 0) {
-                    if (this.operationLength > this.defaultOperationLength * 0.1) {
-                        initiate(0);
-                    }
-                    col[i] = this.inputSlots.get(i).getCount();
-                }
-
-                this.cold.addEnergy(0.05);
-
-                if (this.inputSlots.get(i).getCount() != col[i] && this.modulesize) {
-                    this.progress[i] = (short) (col[i] * this.progress[i] / this.inputSlots.get(i).getCount());
-                    col[i] = this.inputSlots.get(i).getCount();
-                }
-                if (this.energy.getEnergy() >= this.energyConsume * quickly * size) {
-                    this.energy.useEnergy(this.energyConsume * quickly * size);
-                } else if (this.energy2 >= Math.abs(this.energyConsume * 4 * quickly * size)) {
-                    this.energy2 -= Math.abs(this.energyConsume * 4 * quickly * size);
-                } else {
-                    return;
-                }
-                isActive = true;
-                this.progress[i]++;
-
-                this.guiProgress[i] = (double) this.progress[i] / this.operationLength;
-
-                if (this.progress[i] >= this.operationLength || this.quickly) {
-                    this.guiProgress[i] = 0;
-                    this.progress[i] = 0;
-                    if (this.getMachine().type == EnumTypeMachines.ELECTRICFURNACE) {
-                        Random rand = new Random();
-
-                        int exp = rand.nextInt(3) + 1;
-                        this.exp.addEnergy(exp);
-                    }
-
-                    operate(i, output, size);
-                    if (this.operationLength > this.defaultOperationLength * 0.1 || (this.getType() != valuesAudio[2 % valuesAudio.length])) {
-                        initiate(2);
-                    }
-                }
-            } else {
-                if (this.progress[i] != 0 && getActive()) {
-                    if (this.operationLength > this.defaultOperationLength * 0.1 || (this.getType() != valuesAudio[1 % valuesAudio.length])) {
-                        initiate(1);
-                    }
-                }
-                if (output == null) {
-                    this.progress[i] = 0;
-                }
-
-            }
-
         }
         if (!getActive()) {
             this.tick++;
 
             if (this.tick % 120 == 0) {
-                this.cold.useEnergy(0.2);
+                this.cold.useEnergy(0.35);
                 this.tick = 0;
             }
         } else {
             tick = 0;
         }
-        if (getActive() != isActive) {
-            setActive(isActive);
-        }
-
-        final double fillratio = this.cold.getFillRatio();
-        if (fillratio >= 0.75 && fillratio < 1) {
-            this.operationLength = this.defaultOperationLength * 2;
-        }
-        if (fillratio >= 1) {
-            this.operationLength = Integer.MAX_VALUE;
-        }
-        if (fillratio >= 0.5 && fillratio < 0.75) {
-            this.operationLength = (int) (this.defaultOperationLength * 1.5);
-        }
-        if (fillratio < 0.5) {
-            this.operationLength = this.defaultOperationLength;
-        }
-
-
-        if ((!this.inputSlots.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark()) {
-            setOverclockRates();
-        }
 
     }
 
-    public void setOverclockRates() {
-        this.operationsPerTick = this.upgradeSlot.getOperationsPerTick(this.defaultOperationLength);
-        this.operationLength = this.upgradeSlot.getOperationLength(this.defaultOperationLength);
-
-        final double fillratio = this.cold.getFillRatio();
-        if (fillratio >= 0.75 && fillratio < 1) {
-            this.operationLength *= 2;
-        }
-        if (fillratio >= 1) {
-            this.operationLength = Integer.MAX_VALUE;
-        }
-        if (fillratio >= 0.5 && fillratio < 0.75) {
-            this.operationLength *= 1.5;
-        }
-
-        this.energyConsume = this.upgradeSlot.getEnergyDemand(this.defaultEnergyConsume);
-        int tier = this.upgradeSlot.getTier(this.defaultTier);
-        this.energy.setSinkTier(tier);
-        this.dischargeSlot.setTier(tier);
-        this.energy.setCapacity(this.upgradeSlot.getEnergyStorage(
-                this.defaultEnergyStorage,
-                this.defaultOperationLength,
-                this.defaultEnergyConsume
-        ));
 
 
-    }
 
-    public void operate(int slotId, MachineRecipe output, int size) {
-        for (int i = 0; i < this.operationsPerTick; i++) {
-
-            operateOnce(slotId, output.getRecipe().output.items, size);
-            if (this.inputSlots.get(slotId).isEmpty() || this.inputSlots
-                    .get(slotId)
-                    .getCount() < this.output[slotId].getRecipe().input
-                    .getInputs()
-                    .get(0)
-                    .getInputs()
-                    .get(0)
-                    .getCount() || !this.outputSlot.canAdd(output.getRecipe().output.items)) {
-                this.getOutput(slotId);
-                break;
-            }
-
-        }
-    }
-
-
-    public void operateOnce(int slotId, List<ItemStack> processResult, int size) {
-
-        for (int i = 0; i < size; i++) {
-            if (!random) {
-                this.inputSlots.consume(slotId);
-                this.outputSlot.add(processResult);
-                if (this.getMachine().type == EnumTypeMachines.ELECTRICFURNACE) {
-                    this.exp.addEnergy(this.getRecipeOutput(slotId).getRecipe().output.metadata.getFloat("experience"));
-                }
-            } else {
-                Random rand = new Random();
-                this.inputSlots.consume(slotId);
-                if (rand.nextInt(max + 1) <= min) {
-                    this.outputSlot.add(processResult);
-                }
-            }
-
-        }
-        this.cold.addEnergy(0.15);
-
-    }
-
-    public MachineRecipe getOutput(int slotId) {
-
-        if (this.inputSlots.isEmpty(slotId)) {
-            this.output[slotId] = null;
-            return null;
-        }
-        this.output[slotId] = this.inputSlots.process(slotId);
-
-
-        return this.output[slotId];
-    }
 
 
     public ContainerBase<? extends TileEntityMultiMachine> getGuiContainer(EntityPlayer player) {
@@ -810,22 +419,11 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
 
     @SideOnly(Side.CLIENT)
     public GuiScreen getGui(EntityPlayer player, boolean isAdmin) {
-        if (type == 0) {
+
             return new GuiMultiMachine(new ContainerMultiMachine(player, this, sizeWorkingSlot));
-        }
-        if (type == 1) {
-            return new GuiMultiMachine1(new ContainerMultiMachine(player, this, sizeWorkingSlot));
-        }
-        if (type == 2) {
-            return new GuiMultiMachine2(new ContainerMultiMachine(player, this, sizeWorkingSlot));
-        }
-        if (type == 3) {
-            return new GuiMultiMachine3(new ContainerMultiMachine(player, this, sizeWorkingSlot));
-        }
-        if (type == 4) {
-            return new GuiMultiMachine4(new ContainerMultiMachine(player, this, sizeWorkingSlot));
-        }
-        return null;
+
+
+
     }
 
     public String getStartSoundFile() {
@@ -852,7 +450,7 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
                     this.audioSource.stop();
                     boolean stop = true;
                     for (int i = 0; i < sizeWorkingSlot; i++) {
-                        if (this.output[i] != null) {
+                        if (this.multi_process.output[i] != null) {
                             stop = false;
                             break;
                         }
@@ -903,19 +501,6 @@ public abstract class TileEntityMultiMachine extends TileEntityInventory impleme
     }
 
     public void onGuiClosed(EntityPlayer player) {
-    }
-
-
-    public final float getChargeLevel1() {
-        return Math.min((float) this.energy2 / (float) this.maxEnergy2, 1);
-    }
-
-    public final float getChargeLevel2() {
-        return Math.min((float) this.energy.getEnergy() / (float) this.energy.getCapacity(), 1);
-    }
-
-    public double getProgress(int slotId) {
-        return this.guiProgress[slotId];
     }
 
     public int getMode() {

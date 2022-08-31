@@ -6,17 +6,14 @@ import com.denfop.tiles.mechanism.multimechanism.dual.TileEntityDoubleCompressor
 import com.denfop.tiles.mechanism.multimechanism.dual.TileEntityDoubleElectricFurnace;
 import com.denfop.tiles.mechanism.multimechanism.dual.TileEntityDoubleExtractor;
 import com.denfop.tiles.mechanism.multimechanism.dual.TileEntityDoubleMacerator;
-import com.denfop.tiles.mechanism.multimechanism.dual.TileEntityDoubleMetalFormer;
 import com.denfop.tiles.mechanism.multimechanism.quad.TileEntityQuadCompressor;
 import com.denfop.tiles.mechanism.multimechanism.quad.TileEntityQuadElectricFurnace;
 import com.denfop.tiles.mechanism.multimechanism.quad.TileEntityQuadExtractor;
 import com.denfop.tiles.mechanism.multimechanism.quad.TileEntityQuadMacerator;
-import com.denfop.tiles.mechanism.multimechanism.quad.TileEntityQuadMetalFormer;
 import com.denfop.tiles.mechanism.multimechanism.triple.TileEntityTripleCompressor;
 import com.denfop.tiles.mechanism.multimechanism.triple.TileEntityTripleElectricFurnace;
 import com.denfop.tiles.mechanism.multimechanism.triple.TileEntityTripleExtractor;
 import com.denfop.tiles.mechanism.multimechanism.triple.TileEntityTripleMacerator;
-import com.denfop.tiles.mechanism.multimechanism.triple.TileEntityTripleMetalFormer;
 import ic2.core.block.ITeBlock;
 import ic2.core.block.TileEntityBlock;
 import ic2.core.ref.TeBlock;
@@ -44,9 +41,7 @@ public enum BlockMoreMachine implements ITeBlock {
     double_extractor(TileEntityDoubleExtractor.class, 9),
     triple_extractor(TileEntityTripleExtractor.class, 10),
     quad_extractor(TileEntityQuadExtractor.class, 11),
-    double_metalformer(TileEntityDoubleMetalFormer.class, 12),
-    triple_metalformer(TileEntityTripleMetalFormer.class, 13),
-    quad_metalformer(TileEntityQuadMetalFormer.class, 14),
+
 
     ;
 

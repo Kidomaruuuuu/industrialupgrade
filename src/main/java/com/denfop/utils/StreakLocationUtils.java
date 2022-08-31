@@ -21,13 +21,13 @@ public class StreakLocationUtils {
 
     public void update(final EntityPlayer player) {
         this.posX = player.posX;
-        this.posY = player.boundingBox.minY;
+        this.posY = player.getEntityBoundingBox().minY;
         this.posZ = player.posZ;
         this.isSprinting = player.isSprinting();
         this.lastTick = player.getEntityWorld().getWorldTime();
         this.height = player.height;
         this.pos = player.getPosition();
-        this.renderYawOffset = player.rotationYaw;
+        this.renderYawOffset = player.renderYawOffset;
     }
 
     public boolean hasSameCoords(final StreakLocationUtils loc) {

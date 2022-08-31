@@ -5,7 +5,9 @@ import com.denfop.container.ContainerAntiUpgrade;
 import com.denfop.gui.GuiAntiUpgradeBlock;
 import com.denfop.invslot.InvSlotAntiUpgradeBlock;
 import ic2.api.network.INetworkClientTileEntityEventListener;
+import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -13,6 +15,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
 import java.util.List;
 
@@ -30,7 +33,17 @@ public class TileEntityAntiUpgradeBlock extends TileEntityElectricMachine implem
         this.input = new InvSlotAntiUpgradeBlock(this);
         this.index = 0;
     }
-
+    @SideOnly(Side.CLIENT)
+    public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.machines_work_energy") + 5 + Localization.translate("iu" +
+                    ".machines_work_energy_type_eu"));
+        }
+        super.addInformation(stack, tooltip, advanced);
+    }
     @SideOnly(Side.CLIENT)
     protected boolean shouldSideBeRendered(EnumFacing side, BlockPos otherPos) {
         return false;

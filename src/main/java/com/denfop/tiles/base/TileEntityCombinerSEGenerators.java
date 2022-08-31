@@ -39,6 +39,9 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
     public final SEComponent sunenergy;
     public final InvSlotGenCombinerSunarrium input;
     public final ItemStack itemstack = new ItemStack(IUItem.sunnarium, 1, 4);
+    public  double coef_day;
+    public  double coef_night;
+    public  double update_night;
     public int count;
     public List<Double> lst;
     public int coef = 0;
@@ -58,8 +61,15 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
         this.lst.add(0D);
         this.lst.add(0D);
         this.lst.add(0D);
+        this.coef_day = 0;
+        this.coef_night = 0;
+        this.update_night = 0;
     }
 
+    @Override
+    public int getInventoryStackLimit() {
+        return 4;
+    }
 
     @SideOnly(Side.CLIENT)
     protected boolean shouldSideBeRendered(EnumFacing side, BlockPos otherPos) {
@@ -102,6 +112,9 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
         super.onLoaded();
         this.inputSlot.update();
         this.lst = this.input.coefday();
+        this.coef_day =  this.lst.get(0);
+        this.coef_night = this.lst.get(1);
+        this.update_night = this.lst.get(2);
         this.noSunWorld = this.world.provider.isNether();
         updateVisibility();
     }
@@ -132,10 +145,10 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
                 k = 5;
             }
 
-            this.sunenergy.addEnergy(k * this.coef * (1 + lst.get(0)));
+            this.sunenergy.addEnergy(k * this.coef * (1 + coef_day));
         }
 
-        if (lst.get(2) > 0 && !this.sunIsUp) {
+        if (this.update_night > 0 && !this.sunIsUp) {
             double tick1 = tick - 12000;
             if (tick1 <= 1000L) {
                 k = 5;
@@ -153,7 +166,7 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
                 k = 5;
             }
 
-            this.sunenergy.addEnergy(k * this.coef * (lst.get(2) - 1) * (1 + lst.get(1)));
+            this.sunenergy.addEnergy(k * this.coef * (this.update_night - 1) * (1 + this.coef_night));
 
         }
 

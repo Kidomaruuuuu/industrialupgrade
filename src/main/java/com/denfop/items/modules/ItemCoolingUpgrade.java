@@ -77,7 +77,7 @@ public class ItemCoolingUpgrade extends ItemMulti<ItemCoolingUpgrade.Types> impl
                     TileEntityMultiMachine multiMachine = (TileEntityMultiMachine) block;
                     final ItemStack stack = player.getHeldItem(hand);
                     CoolComponent coolComponent = block.getComponent(CoolComponent.class);
-                    if (multiMachine.sizeWorkingSlot <= this.getTypeUpgrade(stack).getLevel() && !coolComponent.upgrade) {
+                    if (multiMachine.multi_process.getSizeWorkingSlot() <= this.getTypeUpgrade(stack).getLevel() && !coolComponent.upgrade) {
                         coolComponent.upgrade = true;
                         coolComponent.meta = stack.getItemDamage();
                         stack.shrink(1);

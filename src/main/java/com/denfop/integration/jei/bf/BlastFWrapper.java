@@ -16,19 +16,10 @@ import javax.annotation.Nonnull;
 public class BlastFWrapper implements IRecipeWrapper {
 
 
-
-
-
     public BlastFWrapper(BlastFHandler container) {
 
 
-
-
     }
-
-
-
-
 
 
     public void getIngredients(IIngredients ingredients) {
@@ -38,12 +29,11 @@ public class BlastFWrapper implements IRecipeWrapper {
     }
 
 
-
-
     public void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
         int temperature = 38 * 5000 / 5000;
         drawTexturedModalRect(62, 55, 177, 39, temperature + 1, 11);
     }
+
     public void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width, int height) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
@@ -66,4 +56,5 @@ public class BlastFWrapper implements IRecipeWrapper {
         ).endVertex();
         tessellator.draw();
     }
+
 }

@@ -2,6 +2,8 @@ package com.denfop.invslot;
 
 import com.denfop.IUCore;
 import com.denfop.IUItem;
+import com.denfop.api.gui.EnumTypeSlot;
+import com.denfop.api.gui.ITypeSlot;
 import com.denfop.items.modules.EnumQuarryModules;
 import com.denfop.items.modules.EnumQuarryType;
 import com.denfop.items.modules.ItemQuarryModule;
@@ -12,7 +14,7 @@ import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
 
-public class InvSlotQuantumQuarry extends InvSlot {
+public class InvSlotQuantumQuarry extends InvSlot implements ITypeSlot {
 
     public final int type;
     public final TileEntityBaseQuantumQuarry tile;
@@ -210,5 +212,17 @@ public class InvSlotQuantumQuarry extends InvSlot {
     public void setStackSizeLimit(int stackSizeLimit) {
         this.stackSizeLimit = stackSizeLimit;
     }
+    @Override
+    public EnumTypeSlot getTypeSlot(int slotid) {
+        switch (this.type){
+            case 0:
+                return EnumTypeSlot.QUARRY1;
+            case 1:
+                return EnumTypeSlot.LIST;
+            case 2:
+                return EnumTypeSlot.QUARRY;
+        }
 
+        return null;
+    }
 }

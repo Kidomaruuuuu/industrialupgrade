@@ -252,7 +252,7 @@ public class ItemArmorImprovemedNano extends ItemArmorElectric
 
 
             if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-                tooltip.add(Localization.translate("iu.changemode_fly") + Keyboard.getKeyName(KeyboardClient.flymode.getKeyCode()));
+                tooltip.add(Localization.translate("iu.changemode_fly") + Keyboard.getKeyName(Math.abs(KeyboardClient.flymode.getKeyCode())));
             }
         }
         ModUtils.mode(stack, tooltip);
@@ -642,7 +642,7 @@ public class ItemArmorImprovemedNano extends ItemArmorElectric
                         if (jetpack) {
                             IC2.platform.messagePlayer(player, Localization.translate("iu.flymode_armor.info"));
                         } else {
-                            IC2.platform.messagePlayer(player,  Localization.translate("iu.flymode_armor.info1"));
+                            IC2.platform.messagePlayer(player, Localization.translate("iu.flymode_armor.info1"));
 
                         }
                     }

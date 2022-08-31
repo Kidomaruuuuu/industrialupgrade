@@ -2,6 +2,11 @@ package com.denfop.gui;
 
 
 import com.denfop.Constants;
+import com.denfop.api.gui.Component;
+import com.denfop.api.gui.EnumTypeComponent;
+import com.denfop.api.gui.GuiComponent;
+import com.denfop.componets.ComponentRenderInventory;
+import com.denfop.componets.EnumTypeComponentSlot;
 import com.denfop.container.ContainerMultiMatter;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.IUpgradeItem;
@@ -25,20 +30,20 @@ import java.util.List;
 import java.util.Set;
 
 @SideOnly(Side.CLIENT)
-public class GuiMultiMatter extends GuiIC2<ContainerMultiMatter> {
+public class GuiMultiMatter extends GuiIU<ContainerMultiMatter> {
 
     public final ContainerMultiMatter container;
     public final String progressLabel;
     public final String amplifierLabel;
 
     public GuiMultiMatter(ContainerMultiMatter container1) {
-        super(container1);
+        super(container1,container1.base.getStyle());
         this.container = container1;
         this.progressLabel = Localization.translate("ic2.Matter.gui.info.progress");
         this.amplifierLabel = Localization.translate("ic2.Matter.gui.info.amplifier");
         addElement(TankGauge.createNormal(this, 96, 22, container.base.fluidTank));
         this.xSize = 200;
-    }
+       }
 
     private static List<ItemStack> getCompatibleUpgrades(IUpgradableBlock block) {
         List<ItemStack> ret = new ArrayList<>();
@@ -104,8 +109,18 @@ public class GuiMultiMatter extends GuiIC2<ContainerMultiMatter> {
             this.drawTexturedModalRect(+181, +5, 203, 5, 11, 11);
 
         }
+        this.drawForeground(par1, par2);
     }
 
+    @Override
+    protected void drawGuiContainerBackgroundLayer(final float partialTicks, final int mouseX, final int mouseY) {
+        super.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
+        int j = (this.width - this.xSize) / 2;
+        int k = (this.height - this.ySize) / 2;
+        String name = Localization.translate(this.container.base.getName());
+        this.drawXCenteredString(this.xSize / 2, 6, name, 4210752, false);
+
+    }
 
     public ResourceLocation getTexture() {
 

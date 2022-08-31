@@ -26,7 +26,7 @@ public class ContainerModuleMachine extends ContainerFullInv<TileEntityModuleMac
         for (int j = 0; j < 9; ++j) {
 
             addSlotToContainer(new SlotInvSlot(tileEntity1.inputslot,
-                    18 +j, 9 + 18 * j, 72
+                    18 + j, 9 + 18 * j, 72
             ));
         }
         addSlotToContainer(new SlotInvSlot((tileEntity1).inputslotA, 0, 81,

@@ -86,7 +86,10 @@ public class TileEntitySintezator extends TileEntityInventory implements IEnergy
         this.solartype = 0;
         this.type = EnumType.DEFAULT;
     }
-
+    @Override
+    public int getInventoryStackLimit() {
+        return 1;
+    }
     @Override
     protected ItemStack getPickBlock(final EntityPlayer player, final RayTraceResult target) {
         return new ItemStack(IUItem.blocksintezator);

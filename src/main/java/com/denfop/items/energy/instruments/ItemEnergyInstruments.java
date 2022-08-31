@@ -1,6 +1,5 @@
 package com.denfop.items.energy.instruments;
 
-import com.denfop.Config;
 import com.denfop.Constants;
 import com.denfop.IUCore;
 import com.denfop.api.IModelRegister;
@@ -200,9 +199,10 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                             )
                     );
                     ((EntityPlayerMP) entity).addExhaustion(-0.025F);
-                    if ( !black_list || (ModUtils.getore(block, block.getMetaFromState(state)) && check_list(block,
+                    if (!black_list || (ModUtils.getore(block, block.getMetaFromState(state)) && check_list(block,
                             block.getMetaFromState(state)
-                            , stack, UpgradeSystem.system.getBlackList(stack))) ) {
+                            , stack, UpgradeSystem.system.getBlackList(stack)
+                    ))) {
                         for (EntityItem item : items) {
                             if (!entity.getEntityWorld().isRemote) {
                                 ItemStack stack1 = item.getItem();
@@ -307,7 +307,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
             if (entity.isEntityAlive()) {
                 List<UpgradeItemInform> upgradeItemInforms = UpgradeSystem.system.getInformation(stack);
                 float energy = energy(stack, upgradeItemInforms);
-                if (energy != 0.0F && state.getBlockHardness(world, pos) != 0.0F) {
+                if (energy != 0.0F) {
                     ElectricItem.manager.use(stack, energy, entity);
                 }
             }
@@ -438,7 +438,9 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
 
         if (entity instanceof EntityPlayer) {
             if (IUCore.keyboard.isBlackListModeViewKeyDown((EntityPlayer) entity)) {
-                if (IC2.platform.isSimulating() && !itemStack.isEmpty() && ((EntityPlayer) entity).getHeldItem(EnumHand.MAIN_HAND).isItemEqual(itemStack)) {
+                if (IC2.platform.isSimulating() && !itemStack.isEmpty() && ((EntityPlayer) entity)
+                        .getHeldItem(EnumHand.MAIN_HAND)
+                        .isItemEqual(itemStack)) {
                     IC2.platform.launchGui((EntityPlayer) entity, this.getInventory((EntityPlayer) entity, itemStack));
 
                 }
@@ -541,13 +543,15 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 
 
-            par3List.add(Localization.translate("iu.changemode_key") + Keyboard.getKeyName(KeyboardClient.changemode.getKeyCode()) + Localization.translate(
+            par3List.add(Localization.translate("iu.changemode_key") + Keyboard.getKeyName(Math.abs(KeyboardClient.changemode.getKeyCode())) + Localization.translate(
                     "iu.changemode_rcm"));
-            par3List.add(Localization.translate("iu.blacklist_key") + Keyboard.getKeyName(KeyboardClient.blackmode.getKeyCode()) + Localization.translate(
+
+                par3List.add(Localization.translate("iu.blacklist_key") + Keyboard.getKeyName(Math.abs(KeyboardClient.blackmode.getKeyCode())) + Localization.translate(
+                        "iu.changemode_rcm"));
+
+            par3List.add(Localization.translate("iu.savemode_key") + Keyboard.getKeyName(Math.abs(KeyboardClient.savemode.getKeyCode())) + Localization.translate(
                     "iu.changemode_rcm"));
-            par3List.add(Localization.translate("iu.savemode_key") + Keyboard.getKeyName(KeyboardClient.savemode.getKeyCode()) + Localization.translate(
-                    "iu.changemode_rcm"));
-            par3List.add(Localization.translate("iu.blacklist_gui") + Keyboard.getKeyName(KeyboardClient.blacklistviewmode.getKeyCode()));
+            par3List.add(Localization.translate("iu.blacklist_gui") + Keyboard.getKeyName(Math.abs(KeyboardClient.blacklistviewmode.getKeyCode())));
 
         }
 
@@ -607,7 +611,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
             final boolean mac,
             final boolean generator,
             final int random,
-            final boolean black_list,List<String> blackList
+            final boolean black_list, List<String> blackList
     ) {
         int Y = pos.getY();
         int X = pos.getX();
@@ -626,10 +630,24 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
 
                         if (!player.capabilities.isCreativeMode) {
                             onBlockDestroyed(stack, world, state, pos1, player, energy, smelter, comb, mac, generator, random,
-                                    black_list,blackList
+                                    black_list, blackList
                             );
                         }
-                        chopTree(pos1, player, world, stack, list, energy, smelter, comb, mac, generator, random, black_list,blackList);
+                        chopTree(
+                                pos1,
+                                player,
+                                world,
+                                stack,
+                                list,
+                                energy,
+                                smelter,
+                                comb,
+                                mac,
+                                generator,
+                                random,
+                                black_list,
+                                blackList
+                        );
                     }
                 }
             }
@@ -715,7 +733,6 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
         float energy = energy(stack, upgradeItemInforms);
 
 
-
         boolean save = nbt.getBoolean("save");
         if (!player.capabilities.isCreativeMode) {
             for (int xPos = x - xRange; xPos <= x + xRange; xPos++) {
@@ -740,7 +757,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                             ) {
                                 if (state.getBlockHardness(world, pos_block) > 0.0F) {
                                     onBlockDestroyed(stack, world, state, pos_block,
-                                            player, energy, smelter, comb, mac, generator, random, black_list,blackList
+                                            player, energy, smelter, comb, mac, generator, random, black_list, blackList
                                     );
                                 }
                                 if (!silktouch) {
@@ -779,7 +796,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                         onBlockDestroyed(stack, world, state, pos,
                                 player, energy,
                                 smelter, comb, mac, generator, random,
-                                black_list,blackList
+                                black_list, blackList
                         );
                     }
                     if (!silktouch) {
@@ -793,7 +810,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                         return onBlockDestroyed(stack, world, state, pos,
                                 player, energy,
                                 smelter, comb, mac, generator, random,
-                                black_list,blackList
+                                black_list, blackList
                         );
                     }
                 }
@@ -814,7 +831,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                         onBlockDestroyed(stack, world, state, pos,
                                 player, energy,
                                 smelter, comb, mac, generator, random,
-                                black_list,blackList
+                                black_list, blackList
                         );
                     }
                     if (!silktouch) {
@@ -828,7 +845,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                         return onBlockDestroyed(stack, world, state, pos,
                                 player, energy,
                                 smelter, comb, mac, generator, random,
-                                black_list,blackList
+                                black_list, blackList
                         );
                     }
                 }
@@ -864,7 +881,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                         UpgradeSystem.system.getModules(EnumInfoUpgradeModules.AOE_DIG, stack, upgradeItemInforms).number : 0);
 
                 return break_block(world, block, mop, aoe, player, pos, stack, upgradeItemInforms, smelter, comb, mac, generator,
-                        random, black_list,list
+                        random, black_list, list
                 );
             case BIGHOLES:
 
@@ -883,7 +900,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                                 mac,
                                 generator,
                                 random,
-                                black_list,list
+                                black_list, list
                         );
                     }
                 }
@@ -894,7 +911,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                         mac,
                         generator,
                         random,
-                        black_list,list
+                        black_list, list
                 );
             case MEGAHOLES:
                 if (block.equals(Blocks.AIR)) {
@@ -912,7 +929,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                                 mac,
                                 generator,
                                 random,
-                                black_list,list
+                                black_list, list
                         );
                     }
                 }
@@ -922,7 +939,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                         mac,
                         generator,
                         random,
-                        black_list,list
+                        black_list, list
                 );
             case ULTRAHOLES:
 
@@ -939,7 +956,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                                 mac,
                                 generator,
                                 random,
-                                black_list,list
+                                black_list, list
                         );
                     }
                 }
@@ -949,7 +966,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                         mac,
                         generator,
                         random,
-                        black_list,list
+                        black_list, list
                 );
             case ORE:
                 if (block.equals(Blocks.AIR)) {
@@ -966,7 +983,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                             comb,
                             mac,
                             generator,
-                            random, black_list, energy,list
+                            random, black_list, energy, list
                     );
                     return break_block(world, block, mop, (byte) (0), player, pos, stack, upgradeItemInforms,
                             smelter,
@@ -974,7 +991,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                             mac,
                             generator,
                             random,
-                            black_list,list
+                            black_list, list
                     );
                 }
                 return break_block(world, block, mop, (byte) (0), player, pos, stack, upgradeItemInforms,
@@ -983,10 +1000,10 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                         mac,
                         generator,
                         random,
-                        black_list,list
+                        black_list, list
                 );
             case TREE:
-                if (isTree(player.getEntityWorld(), pos)) {
+                if (!IUCore.dynamicTrees && isTree(player.getEntityWorld(), pos)) {
                     player.getEntityWorld().playEvent(
                             2001,
                             pos,
@@ -1004,7 +1021,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                             comb,
                             mac,
                             generator,
-                            random, black_list,list
+                            random, black_list, list
                     );
                     return break_block(world, block, mop, (byte) (0), player, pos, stack, upgradeItemInforms,
                             smelter,
@@ -1012,7 +1029,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                             mac,
                             generator,
                             random,
-                            black_list,list
+                            black_list, list
                     );
                 }
                 return break_block(world, block, mop, (byte) (0), player, pos, stack, upgradeItemInforms,
@@ -1021,7 +1038,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                         mac,
                         generator,
                         random,
-                        black_list,list
+                        black_list, list
                 );
             case TUNNEL:
 
@@ -1032,7 +1049,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
 
                 return break_block_tunel(world, block, mop, player, pos, stack, upgradeItemInforms, smelter, comb, mac,
                         generator,
-                        random, black_list,list
+                        random, black_list, list
                 );
         }
         return player.getEntityWorld().getBlockState(pos).getBlock().equals(Blocks.SKULL);
@@ -1047,7 +1064,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
             final boolean mac,
             final boolean generator,
             final int random,
-            final boolean black_list,List<String> list
+            final boolean black_list, List<String> list
     ) {
         byte xRange = 6;
         byte yRange = 6;
@@ -1082,22 +1099,20 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
         float energy = energy(stack, upgradeItemInforms);
         byte dig_depth = (byte) (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.DIG_DEPTH, stack, upgradeItemInforms) ?
                 UpgradeSystem.system.getModules(EnumInfoUpgradeModules.DIG_DEPTH, stack, upgradeItemInforms).number : 0);
-         if(dig_depth > 0){
-            if( zRange > 0){
-                xRange=dig_depth;
+        if (dig_depth > 0) {
+            if (zRange > 0) {
+                xRange = dig_depth;
 
-            }
-            else if( xRange > 0){
-                zRange=dig_depth;
-            }
-            else {
-                zRange=dig_depth;
+            } else if (xRange > 0) {
+                zRange = dig_depth;
+            } else {
+                zRange = dig_depth;
             }
         }
         boolean save = nbt.getBoolean("save");
         if (!player.capabilities.isCreativeMode) {
             for (int xPos = x - xRange; xPos <= x + xRange; xPos++) {
-                for (int yPos = y - yRange ; yPos <= y + yRange; yPos++) {
+                for (int yPos = y - yRange; yPos <= y + yRange; yPos++) {
                     for (int zPos = z - zRange; zPos <= z + zRange; zPos++) {
                         if (ElectricItem.manager.canUse(stack, energy)) {
 
@@ -1119,7 +1134,8 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                                 if (state.getBlockHardness(world, pos_block) > 0.0F) {
                                     onBlockDestroyed(stack, world, state, pos_block,
                                             player, energy, smelter, comb, mac, generator, random, black_list
-                                            ,list);
+                                            , list
+                                    );
                                 }
                                 if (!silktouch) {
                                     ExperienceUtils.addPlayerXP(player, getExperience(state, world, pos_block, fortune, stack
@@ -1153,7 +1169,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                         onBlockDestroyed(stack, world, state, pos,
                                 player, energy,
                                 smelter, comb, mac, generator, random,
-                                black_list,list
+                                black_list, list
                         );
                     }
                     if (!silktouch) {
@@ -1167,7 +1183,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                         return onBlockDestroyed(stack, world, state, pos,
                                 player, energy,
                                 smelter, comb, mac, generator, random,
-                                black_list,list
+                                black_list, list
                         );
                     }
                 }
@@ -1188,7 +1204,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                         onBlockDestroyed(stack, world, state, pos,
                                 player, energy,
                                 smelter, comb, mac, generator, random,
-                                black_list,list
+                                black_list, list
                         );
                     }
                     if (!silktouch) {
@@ -1202,7 +1218,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                         return onBlockDestroyed(stack, world, state, pos,
                                 player, energy,
                                 smelter, comb, mac, generator, random,
-                                black_list,list
+                                black_list, list
                         );
                     }
                 }
@@ -1249,7 +1265,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                                         onBlockDestroyed(stack, world, state, pos_block,
                                                 player, energy,
                                                 smelter, comb, mac, generator, random,
-                                                black_list,list
+                                                black_list, list
                                         );
 
                                     }
@@ -1263,7 +1279,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                                     NBTTagCompound.setInteger("ore", ore);
                                     ore_break(world, pos_block, player, silktouch, fortune, lowPower, stack, block1,
                                             smelter, comb, mac, generator, random,
-                                            black_list, energy,list
+                                            black_list, energy, list
                                     );
                                 } else {
                                     break;
@@ -1345,7 +1361,8 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                     ((EntityPlayerMP) entity).addExhaustion(-0.025F);
                     if (!black_list || (ModUtils.getore(block, block.getMetaFromState(state)) && check_list(block,
                             block.getMetaFromState(state)
-                            , stack,blackList))  ) {
+                            , stack, blackList
+                    ))) {
                         for (EntityItem item : items) {
                             if (!entity.getEntityWorld().isRemote) {
                                 ItemStack stack1 = item.getItem();
@@ -1438,7 +1455,7 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
             }
             if (entity.isEntityAlive()) {
 
-                if (energy != 0.0F && state.getBlockHardness(world, pos) != 0.0F) {
+                if (energy != 0.0F) {
                     ElectricItem.manager.use(stack, energy, entity);
                 }
             }
@@ -1478,7 +1495,6 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
         nbt.setInteger("toolMode", toolMode);
         itemstack.setTagCompound(nbt);
     }
-
 
 
     public float energy(ItemStack stack, final List<UpgradeItemInform> upgradeItemInforms) {
@@ -1525,14 +1541,14 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                     Item item = torchStack.getItem();
                     if (item instanceof net.minecraft.item.ItemBlock) {
                         int oldMeta = torchStack.getItemDamage();
-                        int oldSize = torchStack.stackSize;
+                        int oldSize = torchStack.getCount();
                         ItemStack stack = player.getHeldItem(hand).copy();
                         boolean result = torchStack.onItemUse(player, world, pos, hand, facing, hitX,
                                 hitY, hitZ
                         ) == EnumActionResult.SUCCESS;
                         if (player.capabilities.isCreativeMode) {
                             torchStack.setItemDamage(oldMeta);
-                            torchStack.stackSize = oldSize;
+                            torchStack.setCount(oldSize);
                         }
                         if (result) {
                             ForgeEventFactory.onPlayerDestroyItem(player, torchStack, null);

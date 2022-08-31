@@ -1,8 +1,12 @@
 package com.denfop.tiles.mechanism.generator.things.fluid;
 
+import com.denfop.api.recipe.InvSlotOutput;
 import com.denfop.blocks.FluidName;
 import com.denfop.container.ContainerHeliumGenerator;
 import com.denfop.gui.GuiHeliumGenerator;
+import com.denfop.invslot.InvSlotConsumableLiquid;
+import com.denfop.invslot.InvSlotConsumableLiquidByList;
+import com.denfop.invslot.InvSlotUpgrade;
 import com.denfop.tiles.base.TileEntityElectricMachine;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
@@ -14,11 +18,6 @@ import ic2.core.block.comp.Fluids;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.block.invslot.InvSlot.Access;
 import ic2.core.block.invslot.InvSlot.InvSide;
-import ic2.core.block.invslot.InvSlotConsumableLiquid;
-import ic2.core.block.invslot.InvSlotConsumableLiquid.OpType;
-import ic2.core.block.invslot.InvSlotConsumableLiquidByList;
-import ic2.core.block.invslot.InvSlotOutput;
-import ic2.core.block.invslot.InvSlotUpgrade;
 import ic2.core.init.MainConfig;
 import ic2.core.profile.NotClassic;
 import ic2.core.util.ConfigUtil;
@@ -52,14 +51,14 @@ public class TileEntityHeliumGenerator extends TileEntityElectricMachine impleme
 
         this.energycost = 1000;
         this.outputSlot = new InvSlotOutput(this, "output", 1);
-        this.containerslot = new InvSlotConsumableLiquidByList(this, "container", Access.I, 1, InvSide.TOP, OpType.Fill,
+        this.containerslot = new InvSlotConsumableLiquidByList(this, "container", Access.I, 1, InvSide.TOP, InvSlotConsumableLiquid.OpType.Fill,
                 FluidName.fluidHelium.getInstance()
         );
-        this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
-        this.fluids = this.addComponent(new Fluids(this));
-        this.fluidTank = this.fluids.addTank("fluidTank", 20 * 1000, InvSlot.Access.O,InvSide.ANY,
+         this.fluids = this.addComponent(new Fluids(this));
+        this.fluidTank = this.fluids.addTank("fluidTank", 20 * 1000, InvSlot.Access.O, InvSide.ANY,
                 Fluids.fluidPredicate(FluidName.fluidHelium.getInstance())
         );
+        this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
 
     }
 

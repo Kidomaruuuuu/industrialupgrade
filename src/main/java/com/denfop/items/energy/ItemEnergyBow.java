@@ -128,7 +128,7 @@ public class ItemEnergyBow extends ItemBow implements IElectricItem, IUpgradeIte
         if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             tooltip.add(Localization.translate("press.lshift"));
         } else {
-            tooltip.add(Localization.translate("iu.changemode_key") + Keyboard.getKeyName(KeyboardClient.changemode.getKeyCode()) + Localization.translate(
+            tooltip.add(Localization.translate("iu.changemode_key") + Keyboard.getKeyName(Math.abs(KeyboardClient.changemode.getKeyCode())) + Localization.translate(
                     "iu.changemode_rcm"));
         }
         super.addInformation(stack, p_77624_2_, tooltip, p_77624_4_);

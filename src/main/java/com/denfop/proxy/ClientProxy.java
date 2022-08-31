@@ -1,10 +1,12 @@
 package com.denfop.proxy;
 
 
+import com.denfop.Config;
 import com.denfop.Constants;
 import com.denfop.api.IFluidModelProvider;
 import com.denfop.api.IModelRegister;
 import com.denfop.blocks.FluidName;
+import com.denfop.events.TickHandler;
 import com.denfop.render.advoilrefiner.TileEntityAdvOilRefinerRender;
 import com.denfop.render.base.IUModelLoader;
 import com.denfop.render.oilquarry.TileEntityQuarryOilRender;
@@ -21,6 +23,7 @@ import com.denfop.render.transport.ModelExpCable;
 import com.denfop.render.transport.ModelPipes;
 import com.denfop.render.transport.ModelQCable;
 import com.denfop.render.transport.ModelSCable;
+import com.denfop.render.windgenerator.KineticGeneratorRenderer;
 import com.denfop.tiles.base.EnumMultiMachine;
 import com.denfop.tiles.base.TileEntityAdminSolarPanel;
 import com.denfop.tiles.base.TileEntityLiquedTank;
@@ -28,6 +31,7 @@ import com.denfop.tiles.base.TileEntityQuarryVein;
 import com.denfop.tiles.base.TileEntitySintezator;
 import com.denfop.tiles.mechanism.TileEntityAdvOilRefiner;
 import com.denfop.tiles.mechanism.TileEntityOilRefiner;
+import com.denfop.tiles.mechanism.wind.TileEntityWindGenerator;
 import ic2.core.IC2;
 import ic2.core.profile.ProfileManager;
 import ic2.core.util.LogCategory;
@@ -56,6 +60,9 @@ public class ClientProxy extends CommonProxy {
         super.preInit(event);
         for (IModelRegister register : modelList) {
             register.registerModels();
+        }
+        if (Config.experiment) {
+            new TickHandler();
         }
         OBJLoader.INSTANCE.addDomain(Constants.MOD_ID);
         FluidName[] var8 = FluidName.values;
@@ -162,6 +169,7 @@ public class ClientProxy extends CommonProxy {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityOilRefiner.class, new TileEntityOilRefinerRender());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAdvOilRefiner.class, new TileEntityAdvOilRefinerRender());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityLiquedTank.class, new TileEntityTankRender());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityWindGenerator.class, new KineticGeneratorRenderer());
 
 
     }

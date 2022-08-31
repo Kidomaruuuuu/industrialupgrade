@@ -6,6 +6,7 @@ import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.componets.AdvEnergy;
 import com.denfop.container.ContainerTripleElectricMachine;
 import com.denfop.invslot.InvSlotUpgrade;
+import com.denfop.tiles.mechanism.dual.heat.TileEntityAlloySmelter;
 import com.denfop.tiles.mechanism.triple.heat.TileEntityAdvAlloySmelter;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
@@ -87,6 +88,17 @@ public abstract class TileEntityTripleElectricMachine extends TileEntityStandart
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
                 tooltip.add(Localization.translate("iu.heatmachine.info"));
+                tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate("iu.machines_work_energy_type_eu"));
+                tooltip.add(Localization.translate("iu.machines_work_length") + this.defaultOperationLength);
+
+            }
+        }else{
+            if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                tooltip.add(Localization.translate("press.lshift"));
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate("iu.machines_work_energy_type_eu"));
+                tooltip.add(Localization.translate("iu.machines_work_length") + this.defaultOperationLength);
             }
         }
         if (this.hasComponent(AdvEnergy.class)) {
@@ -133,6 +145,10 @@ public abstract class TileEntityTripleElectricMachine extends TileEntityStandart
             this.setOverclockRates();
             inputSlotA.load();
             this.getOutput();
+            if (this.type.equals(EnumTripleElectricMachine.ADV_ALLOY_SMELTER))
+                if (output == null )
+                    ((TileEntityAdvAlloySmelter) this).heat.need = false;
+
         }
 
     }
@@ -162,9 +178,17 @@ public abstract class TileEntityTripleElectricMachine extends TileEntityStandart
             if (this.type.equals(EnumTripleElectricMachine.ADV_ALLOY_SMELTER)) {
                 if (this.output.getRecipe().output.metadata.getShort("temperature") == 0 || output.getRecipe().output.metadata.getInteger(
                         "temperature") > ((TileEntityAdvAlloySmelter) this).heat.getEnergy()) {
+                    if(!((TileEntityAdvAlloySmelter) this).heat.need)
+                        ((TileEntityAdvAlloySmelter) this).heat.need = true;
                     return;
-                }
+
+                } else
+                if(((TileEntityAdvAlloySmelter) this).heat.need)
+                    ((TileEntityAdvAlloySmelter) this).heat.need = false;
+                ((TileEntityAdvAlloySmelter) this).heat.storage--;
+
             }
+
             setActive(true);
             if (this.progress == 0) {
                 if (this.operationLength > this.defaultOperationLength * 0.1) {
@@ -200,6 +224,9 @@ public abstract class TileEntityTripleElectricMachine extends TileEntityStandart
             }
             setActive(false);
         }
+        if (this.type.equals(EnumTripleElectricMachine.ADV_ALLOY_SMELTER))
+            if (output == null )
+                ((TileEntityAdvAlloySmelter) this).heat.useEnergy(1);
         if ((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark()) {
             setOverclockRates();
         }
@@ -214,9 +241,7 @@ public abstract class TileEntityTripleElectricMachine extends TileEntityStandart
         int tier = this.upgradeSlot.getTier(this.defaultTier);
         this.energy.setSinkTier(tier);
         this.energy.setCapacity(this.upgradeSlot.getEnergyStorage(
-                this.defaultEnergyStorage,
-                this.defaultOperationLength,
-                this.defaultEnergyConsume
+                this.defaultEnergyStorage
         ));
         dischargeSlot.setTier(tier);
     }

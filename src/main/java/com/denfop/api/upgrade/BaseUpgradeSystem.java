@@ -399,7 +399,7 @@ public class BaseUpgradeSystem implements IUpgradeSystem {
         this.updateListFromNBT(item, stack);
         List<String> lst = new ArrayList<>();
         int size = nbt.getInteger("size");
-        ModUtils.nbt(stack).setInteger("size",size);
+        ModUtils.nbt(stack).setInteger("size", size);
         for (int j = 0; j < size; j++) {
             String l = "number_" + j;
             if (!nbt.getString(l).isEmpty()) {
@@ -416,7 +416,8 @@ public class BaseUpgradeSystem implements IUpgradeSystem {
         }
 
     }
-   public void updateBlackListFromStack( final ItemStack stack){
+
+    public void updateBlackListFromStack(final ItemStack stack) {
         List<String> lst = new ArrayList<>();
         NBTTagCompound nbt = ModUtils.nbt(stack);
         int size = nbt.getInteger("size");
@@ -434,6 +435,7 @@ public class BaseUpgradeSystem implements IUpgradeSystem {
             this.map_blackList.put(id, lst);
         }
     }
+
     @Override
     public void removeUpdate(final ItemStack stack, final World world, final int index) {
         final NBTTagCompound nbt = ModUtils.nbt(stack);

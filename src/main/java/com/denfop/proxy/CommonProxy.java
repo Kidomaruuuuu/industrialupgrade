@@ -60,7 +60,9 @@ import com.denfop.componets.AdvEnergy;
 import com.denfop.componets.CoolComponent;
 import com.denfop.componets.EXPComponent;
 import com.denfop.componets.HeatComponent;
+import com.denfop.componets.ProcessMultiComponent;
 import com.denfop.componets.QEComponent;
+import com.denfop.componets.RFComponent;
 import com.denfop.componets.SEComponent;
 import com.denfop.events.EventUpdate;
 import com.denfop.events.IUEventHandler;
@@ -97,16 +99,18 @@ import com.denfop.tiles.base.TileEntityMolecularTransformer;
 import com.denfop.tiles.base.TileEntityObsidianGenerator;
 import com.denfop.tiles.base.TileEntityPainting;
 import com.denfop.tiles.base.TileEntitySunnariumMaker;
-import com.denfop.tiles.base.TileEntityUpgradeBlock;
 import com.denfop.tiles.mechanism.TileEntityGenerationMicrochip;
 import com.denfop.tiles.mechanism.TileEntityGenerationStone;
 import com.denfop.tiles.mechanism.TileEntityHandlerHeavyOre;
 import com.denfop.tiles.mechanism.TileEntityPlasticCreator;
 import com.denfop.tiles.mechanism.TileEntityPlasticPlateCreator;
+import com.denfop.tiles.mechanism.TileEntityRodManufacturer;
+import com.denfop.tiles.mechanism.TileEntityRotorAssembler;
 import com.denfop.tiles.mechanism.TileEntitySunnariumPanelMaker;
 import com.denfop.tiles.mechanism.TileEntityWitherMaker;
 import com.denfop.tiles.mechanism.dual.TileEntityEnrichment;
 import com.denfop.tiles.mechanism.dual.TileEntitySynthesis;
+import com.denfop.tiles.mechanism.dual.TileEntityUpgradeBlock;
 import com.denfop.tiles.mechanism.dual.heat.TileEntityAlloySmelter;
 import com.denfop.tiles.mechanism.multimechanism.simple.TileEntityAssamplerScrap;
 import com.denfop.tiles.mechanism.multimechanism.simple.TileEntityCombMacerator;
@@ -157,6 +161,7 @@ public class CommonProxy implements IGuiHandler {
     public void preInit(FMLPreInitializationEvent event) {
         ElectricItem.rawManager = new ElectricItemManager();
         final BlocksItems init = new BlocksItems();
+
         init.init();
         Register.init();
         BlockSolarPanels.buildDummies();
@@ -259,6 +264,8 @@ public class CommonProxy implements IGuiHandler {
         TileEntityObsidianGenerator.init();
         TileEntityPlasticCreator.init();
         TileEntityPlasticPlateCreator.init();
+        TileEntityRotorAssembler.init();
+        TileEntityRodManufacturer.init();
     }
 
     public void init(FMLInitializationEvent event) {
@@ -268,10 +275,9 @@ public class CommonProxy implements IGuiHandler {
         }
         SpaceNet.instance = new BaseSpaceSystem();
         SpaceInit.init();
-        if (Config.experiment) {
-            ResearchSystem.instance = new BaseResearchSystem();
 
-        }
+        ResearchSystem.instance = new BaseResearchSystem();
+
 
     }
 
@@ -289,6 +295,10 @@ public class CommonProxy implements IGuiHandler {
         CoreBook.init();
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.mfeUnit));
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.mfsukit));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.windmeter));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.windmeter));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.WindKineticGenerator));
+
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.mfsUnit));
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.batBox));
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.cesuUnit));
@@ -304,16 +314,16 @@ public class CommonProxy implements IGuiHandler {
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.ChargepadcesuUnit));
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.ChargepadmfeUnit));
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.ChargepadmfsUnit));
-        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe( Ic2Items.transformerUpgrade));
-        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe( Ic2Items.teslaCoil));
-        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe( Ic2Items.replicator));
-        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe( Ic2Items.blastfurnace ));
-        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe( Ic2Items.jetpack ));
-        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe( Ic2Items.advminer ));
-        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe( Ic2Items.inductionFurnace ));
-        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe( Ic2Items.electrolyzer ));
-        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe( Ic2Items.advminer ));
-        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe( Ic2Items.miner ));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.transformerUpgrade));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.teslaCoil));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.replicator));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.blastfurnace));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.jetpack));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.advminer));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.inductionFurnace));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.electrolyzer));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.advminer));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.miner));
 
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.metalformer));
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.macerator));
@@ -348,7 +358,12 @@ public class CommonProxy implements IGuiHandler {
         if (Components.getId(HeatComponent.class) == null) {
             Components.register(HeatComponent.class, "HeatComponent");
         }
-
+        if (Components.getId(RFComponent.class) == null) {
+            Components.register(RFComponent.class, "RFComponent");
+        }
+        if (Components.getId(ProcessMultiComponent.class) == null) {
+            Components.register(ProcessMultiComponent.class, "ProcessMultiComponent");
+        }
 
         if (Loader.isModLoaded("mets")) {
             METSIntegration.init();
@@ -376,6 +391,7 @@ public class CommonProxy implements IGuiHandler {
         MaceratorRecipe.recipe();
         MetalFormerRecipe.init();
         OreWashingRecipe.init();
+
         writeRecipe(ic2.api.recipe.Recipes.macerator, "macerator");
         writeRecipe(ic2.api.recipe.Recipes.compressor, "compressor");
         writeRecipe(ic2.api.recipe.Recipes.extractor, "extractor");

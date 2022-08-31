@@ -12,6 +12,7 @@ import ic2.core.IC2;
 import ic2.core.block.TileEntityBlock;
 import ic2.core.block.comp.TileEntityComponent;
 import ic2.core.block.invslot.InvSlot;
+import ic2.core.network.GrowingBuffer;
 import ic2.core.util.LogCategory;
 import ic2.core.util.Util;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -32,6 +33,7 @@ public class CoolComponent extends TileEntityComponent {
     public static final boolean debugLoad = System.getProperty("ic2.comp.energy.debugload") != null;
     public final World world;
     public final boolean fullEnergy;
+    private double coef;
     public double capacity;
     public double storage;
     public int sinkTier;
@@ -47,7 +49,7 @@ public class CoolComponent extends TileEntityComponent {
     public boolean sendingSidabled;
     public boolean upgrade = false;
     public int meta = 0;
-
+    public boolean allow = true;
     public CoolComponent(TileEntityBlock parent, double capacity) {
         this(parent, capacity, Collections.emptySet(), Collections.emptySet(), 1);
     }
@@ -81,6 +83,7 @@ public class CoolComponent extends TileEntityComponent {
         this.sourceDirections = sourceDirections;
         this.fullEnergy = fullEnergy;
         this.world = parent.getWorld();
+        this.coef = 1;
     }
 
     public static CoolComponent asBasicSink(TileEntityBlock parent, double capacity) {
@@ -138,6 +141,17 @@ public class CoolComponent extends TileEntityComponent {
             }
 
             this.loaded = true;
+            switch (this.parent.getWorld().provider.getBiomeForCoords(this.parent.getPos()).getTempCategory()){
+                case COLD:
+                    coef = 0.5;
+                    break;
+                case WARM:
+                    coef = 1.5;
+                    break;
+                default:
+                    coef = 1;
+                    break;
+            }
         }
 
     }
@@ -150,10 +164,8 @@ public class CoolComponent extends TileEntityComponent {
 
             if (this.sinkDirections.isEmpty()) {
                 this.delegate = new CoolComponent.EnergyNetDelegateSource();
-            } else if (this.sourceDirections.isEmpty()) {
+            } else  {
                 this.delegate = new CoolComponent.EnergyNetDelegateSink();
-            } else {
-                this.delegate = new CoolComponent.EnergyNetDelegateDual();
             }
 
             this.delegate.setWorld(this.parent.getWorld());
@@ -183,7 +195,11 @@ public class CoolComponent extends TileEntityComponent {
     }
 
     public void onContainerUpdate(EntityPlayerMP player) {
-
+        GrowingBuffer buffer = new GrowingBuffer(16);
+        buffer.writeDouble(this.capacity);
+        buffer.writeDouble(this.storage);
+        buffer.flip();
+        this.setNetworkUpdate(player, buffer);
     }
 
     public void onNetworkUpdate(DataInput is) throws IOException {
@@ -229,7 +245,7 @@ public class CoolComponent extends TileEntityComponent {
 
     public double addEnergy(double amount) {
 
-        this.storage += amount;
+        this.storage += amount * this.coef;
         this.storage = Math.min(this.storage, this.capacity);
         this.storage = Math.max(this.storage, 0);
         if (this.upgrade) {
@@ -248,8 +264,10 @@ public class CoolComponent extends TileEntityComponent {
     }
 
     public boolean useEnergy(double amount) {
-        if (this.storage >= amount) {
-            this.storage -= amount;
+        if (this.storage >= amount / this.coef) {
+            this.storage -= amount / this.coef;
+            if(CoolComponent.this.storage <= 0.005)
+                CoolComponent.this.storage = 0;
             return true;
         } else {
             return false;
@@ -257,10 +275,17 @@ public class CoolComponent extends TileEntityComponent {
     }
 
     public double useEnergy(double amount, boolean simulate) {
-        double ret = Math.abs(Math.max(0.0D, amount - this.storage) - amount);
-        if (!simulate) {
-            this.storage -= ret;
+        if(this.storage <= 0) {
+            this.storage = 0;
+            return amount;
         }
+        double ret = Math.abs(Math.max(0.0D, amount - this.storage) - amount)  / this.coef;
+        if (!simulate) {
+            this.storage -= ret  / this.coef;
+            if(CoolComponent.this.storage <= 0.005)
+                CoolComponent.this.storage = 0;
+        }
+
         return ret;
     }
 
@@ -388,61 +413,7 @@ public class CoolComponent extends TileEntityComponent {
 
     }
 
-    private class EnergyNetDelegateDual extends CoolComponent.EnergyNetDelegate implements ICoolSink, ICoolSource {
 
-        private EnergyNetDelegateDual() {
-            super();
-        }
-
-        public boolean acceptsCoolFrom(ICoolEmitter emitter, EnumFacing dir) {
-            return CoolComponent.this.sinkDirections.contains(dir);
-        }
-
-        public boolean emitsCoolTo(ICoolAcceptor receiver, EnumFacing dir) {
-            return CoolComponent.this.sourceDirections.contains(dir);
-        }
-
-
-        public double getOfferedCool() {
-            return !CoolComponent.this.sendingSidabled && !CoolComponent.this.sourceDirections.isEmpty()
-                    ? CoolComponent.this.getSourceEnergy()
-                    : 0.0D;
-        }
-
-
-        public int getSourceTier() {
-            return CoolComponent.this.sourceTier;
-        }
-
-        @Override
-        public double getDemandedCool() {
-            return !CoolComponent.this.receivingDisabled && !CoolComponent.this.sinkDirections.isEmpty() && CoolComponent.this.storage < CoolComponent.this.capacity
-                    ? CoolComponent.this.capacity - CoolComponent.this.storage
-                    : 0.0D;
-
-        }
-
-        @Override
-        public double injectCool(final EnumFacing var1, final double var2, final double var4) {
-
-            CoolComponent.this.storage = var2;
-            return 0.0D;
-        }
-
-
-        public void drawCool(double amount) {
-        }
-
-        public boolean sendMultipleEnergyPackets() {
-            return CoolComponent.this.multiSource;
-        }
-
-        public int getMultipleEnergyPacketAmount() {
-            return CoolComponent.this.getPacketCount();
-        }
-
-
-    }
 
     private class EnergyNetDelegateSink extends CoolComponent.EnergyNetDelegate implements ICoolSink {
 
@@ -472,6 +443,11 @@ public class CoolComponent extends TileEntityComponent {
             return 0.0D;
         }
 
+        @Override
+        public boolean needCooling() {
+            return CoolComponent.this.storage > 0;
+        }
+
     }
 
     private class EnergyNetDelegateSource extends CoolComponent.EnergyNetDelegate implements ICoolSource {
@@ -495,6 +471,16 @@ public class CoolComponent extends TileEntityComponent {
         }
 
         public void drawCool(double amount) {
+        }
+
+        @Override
+        public boolean isAllowed() {
+            return CoolComponent.this.allow;
+        }
+
+        @Override
+        public void setAllowed(final boolean allowed) {
+            CoolComponent.this.allow = allowed;
         }
 
 

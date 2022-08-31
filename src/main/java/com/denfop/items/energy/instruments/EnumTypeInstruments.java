@@ -183,8 +183,13 @@ public enum EnumTypeInstruments {
             ),
             ImmutableSet.of("pickaxe", "shovel", "axe"),
             Arrays.asList(Items.DIAMOND_PICKAXE, Items.DIAMOND_SHOVEL, Items.DIAMOND_AXE),
-            Arrays.asList(EnumOperations.DEFAULT, EnumOperations.BIGHOLES,
-                    EnumOperations.MEGAHOLES, EnumOperations.ULTRAHOLES, EnumOperations.ORE, EnumOperations.TUNNEL, EnumOperations.TREE
+            Arrays.asList(EnumOperations.DEFAULT,
+                    EnumOperations.BIGHOLES,
+                    EnumOperations.MEGAHOLES,
+                    EnumOperations.ULTRAHOLES,
+                    EnumOperations.ORE,
+                    EnumOperations.TUNNEL,
+                    EnumOperations.TREE
             )
     );
 

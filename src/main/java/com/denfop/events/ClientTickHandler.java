@@ -12,6 +12,8 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -20,7 +22,7 @@ public class ClientTickHandler {
     public static final Minecraft mc = FMLClientHandler.instance().getClient();
     protected static final RenderItem itemRender = mc.getRenderItem();
 
-
+    @SideOnly(Side.CLIENT)
     public static void onTickRender() {
         final EntityPlayerSP entityClientPlayer = mc.player;
         if (mc.world != null && mc.inGameHasFocus && !mc.gameSettings.showDebugInfo) {
@@ -34,6 +36,16 @@ public class ClientTickHandler {
             mc.getTextureManager().bindTexture(new ResourceLocation(Constants.MOD_ID, "textures/gui/guilevel.png"));
             BaseLevelSystem system = ResearchSystem.instance.getLevel(entityClientPlayer);
             GL11.glScalef(2f, 2f, 2f);
+            if (system == null) {
+                GL11.glEnable(GL11.GL_LIGHTING);
+                GlStateManager.enableLighting();
+
+                RenderHelper.enableStandardItemLighting();
+                GL11.glColor4f(0.1F, 1, 0.1F, 1);
+
+                GL11.glPopMatrix();
+                return;
+            }
             mc.ingameGUI.drawString(mc.fontRenderer, system.getLevelPoint(EnumLeveling.BASE) + "",
                     8, 6, ModUtils.convertRGBcolorToInt(44, 192, 224)
             );

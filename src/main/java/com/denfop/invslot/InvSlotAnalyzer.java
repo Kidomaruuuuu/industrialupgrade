@@ -22,7 +22,7 @@ public class InvSlotAnalyzer extends InvSlot {
     private int stackSizeLimit;
 
     public InvSlotAnalyzer(TileEntityAnalyzer base1, String name, int count, int type) {
-        super(base1, name, InvSlot.Access.I, count, InvSlot.InvSide.TOP);
+        super(base1, name, InvSlot.Access.I, count, InvSide.ANY);
         this.type = type;
         this.stackSizeLimit = 1;
         this.tile = base1;

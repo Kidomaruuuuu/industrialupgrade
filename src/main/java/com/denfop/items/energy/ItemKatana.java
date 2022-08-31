@@ -105,6 +105,15 @@ public class ItemKatana extends ItemTool implements IElectricItem, IUpgradeItem,
     }
 
     @SideOnly(Side.CLIENT)
+    public static ModelResourceLocation getModelLocation1(String name, String extraName) {
+        final String loc = Constants.MOD_ID +
+                ':' +
+                "energy_tools" + "/" + name + extraName;
+
+        return new ModelResourceLocation(loc, null);
+    }
+
+    @SideOnly(Side.CLIENT)
     @Override
     public void addInformation(
             final ItemStack stack,
@@ -120,15 +129,6 @@ public class ItemKatana extends ItemTool implements IElectricItem, IUpgradeItem,
                     "iu.changemode_rcm1"));
         }
         super.addInformation(stack, worldIn, tooltip, flagIn);
-    }
-
-    @SideOnly(Side.CLIENT)
-    public static ModelResourceLocation getModelLocation1(String name, String extraName) {
-        final String loc = Constants.MOD_ID +
-                ':' +
-                "energy_tools" + "/" + name + extraName;
-
-        return new ModelResourceLocation(loc, null);
     }
 
     public int getItemEnchantability() {

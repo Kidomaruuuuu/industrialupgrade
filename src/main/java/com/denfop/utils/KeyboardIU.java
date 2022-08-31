@@ -39,6 +39,7 @@ public class KeyboardIU implements IKeyboard {
         return this.get(player, Key.BLACKLISTVIEWMODE);
     }
 
+
     public boolean isSaveModeKeyDown(EntityPlayer player) {
         return this.get(player, Key.SAVEMODE);
     }
@@ -65,6 +66,7 @@ public class KeyboardIU implements IKeyboard {
         FLYMODE,
         VERTICALMODE,
         SAVEMODE,
+        SHIFT,
         BLACKMODE;
 
         public static final KeyboardIU.Key[] keys = values();

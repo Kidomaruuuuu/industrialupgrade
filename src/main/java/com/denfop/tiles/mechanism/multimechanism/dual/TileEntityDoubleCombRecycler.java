@@ -16,22 +16,7 @@ public class TileEntityDoubleCombRecycler extends TileEntityMultiMachine {
     }
 
 
-    public MachineRecipe getOutput(int slotId) {
 
-        if (this.inputSlots.isEmpty(slotId)) {
-            this.output[slotId] = null;
-            return null;
-        }
-        this.output[slotId] = this.inputSlots.process(slotId);
-        if (output[slotId] == null) {
-            output[slotId] = this.inputSlots.recycler_output;
-        }
-        if (this.outputSlot.canAdd(output[slotId].getRecipe().output.items)) {
-            return output[slotId];
-        }
-
-        return null;
-    }
 
     public void initiate(int soundEvent) {
         if (this.getWorld().provider.getWorldTime() % 40 == 0) {
@@ -39,16 +24,7 @@ public class TileEntityDoubleCombRecycler extends TileEntityMultiMachine {
         }
     }
 
-    public void operate(int slotId, MachineRecipe output, int size) {
-        for (int i = 0; i < this.operationsPerTick; i++) {
-            operateOnce(slotId, output.getRecipe().output.items, size);
-            if (this.inputSlots.get(slotId).isEmpty() || !this.outputSlot.canAdd(output.getRecipe().output.items)) {
-                this.getOutput(slotId);
-                break;
-            }
 
-        }
-    }
 
     @Override
     public EnumMultiMachine getMachine() {

@@ -61,11 +61,8 @@ public class GuiCombinerMatter extends GuiIC2<ContainerCombinerMatter> {
     protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
         super.drawGuiContainerBackgroundLayer(f, x, y);
         this.mc.getTextureManager().bindTexture(getTexture());
-        this.mc.getTextureManager()
-                .bindTexture(new ResourceLocation(IC2.RESOURCE_DOMAIN, "textures/gui/infobutton.png"));
-        int xoffset = (this.width - this.xSize) / 2;
+         int xoffset = (this.width - this.xSize) / 2;
         int yoffset = (this.height - this.ySize) / 2;
-        drawTexturedModalRect(xoffset + 165, yoffset, 0, 0, 10, 10);
 
         this.mc.getTextureManager().bindTexture(getTexture());
         TankGauge.createNormal(this, 96, 22, container.base.fluidTank).drawBackground(xoffset, yoffset);

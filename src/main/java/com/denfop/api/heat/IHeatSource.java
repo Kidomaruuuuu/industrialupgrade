@@ -6,4 +6,7 @@ public interface IHeatSource extends IHeatEmitter {
 
     void drawHeat(double var1);
 
+    boolean isAllowed();
+
+    boolean setAllowed(boolean allowed);
 }

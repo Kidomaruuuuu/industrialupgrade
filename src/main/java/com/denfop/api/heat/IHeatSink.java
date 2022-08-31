@@ -8,4 +8,8 @@ public interface IHeatSink extends IHeatAcceptor {
 
     double injectHeat(EnumFacing var1, double var2, double var4);
 
+    boolean needTemperature();
+
+    boolean setNeedTemperature(boolean need);
+
 }

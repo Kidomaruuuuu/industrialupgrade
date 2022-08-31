@@ -18,21 +18,21 @@ import org.lwjgl.opengl.GL11;
 import java.io.IOException;
 
 @SideOnly(Side.CLIENT)
-public class GuiNuclearReactor extends GuiIC2<ContainerBaseNuclearReactor> {
+public class GuiNuclearReactor extends GuiIU<ContainerBaseNuclearReactor> {
 
     public final ContainerBaseNuclearReactor container;
-    public final String name;
     private final ResourceLocation background;
 
     public GuiNuclearReactor(ContainerBaseNuclearReactor container1) {
-        super(container1);
+        super(container1,container1.base.getStyle());
 
         this.background = new ResourceLocation(Constants.TEXTURES, container1.base.background);
 
         this.container = container1;
-        this.name = Localization.translate("iu.blockAdvRea.name");
         this.ySize = 243;
         this.xSize = 256;
+        this.inventory.setX(25);
+        this.inventory.setY(160);
     }
 
     protected void mouseClicked(int i, int j, int k) throws IOException {
@@ -78,8 +78,11 @@ public class GuiNuclearReactor extends GuiIC2<ContainerBaseNuclearReactor> {
         int yOffset = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(xOffset, yOffset, 0, 0, 212, this.ySize);
         int size = this.container.base.getReactorSize();
+        this.drawBackground();
+        this.mc.getTextureManager().bindTexture(this.background);
         int startX = xOffset + 26 - 18;
         int startY = yOffset + 25;
+
         if (this.container.base.sizeY == 7) {
             startY -= 18;
         }

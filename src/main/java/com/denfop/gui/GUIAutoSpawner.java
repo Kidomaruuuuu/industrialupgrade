@@ -67,22 +67,22 @@ public class GuiAutoSpawner extends GuiIC2<ContainerAutoSpawner> {
         this.fontRenderer.drawString(ModUtils.getString(ExperienceUtils.getLevelForExperience((int) this.container.base.exp.getEnergy())),
                 106, 70, ModUtils.convertRGBcolorToInt(13, 229, 34)
         );
-        this.addElement(new Area(
+        new Area(
                 this,
                 133,
                 74,
                 168 - 133,
                 77 - 74
         ).withTooltip("EU: " + ModUtils.getString(this.container.base.energy.getEnergy()) + "/" + ModUtils.getString(
-                this.container.base.energy.getCapacity())));
-        this.addElement(new Area(
+                this.container.base.energy.getCapacity())).drawForeground(par1, par2);
+       new Area(
                 this,
                 133,
                 87,
                 168 - 133,
                 90 - 87
         ).withTooltip("RF: " + ModUtils.getString(this.container.base.energy2) + "/" + ModUtils.getString(
-                this.container.base.maxEnergy2)));
+                this.container.base.maxEnergy2)).drawForeground(par1, par2);
         this.addElement(new Area(
                 this,
                 93,
@@ -97,11 +97,11 @@ public class GuiAutoSpawner extends GuiIC2<ContainerAutoSpawner> {
                     (100 * this.container.base.progress[i] / this.container.base.tempprogress),
                     100
             );
-            this.addElement(new Area(this, 177,
+           new Area(this, 177,
                     33 + i * 35,
                     3, 63 + (i * 35) - (33 + i * 35)
             ).withTooltip(Localization.translate("gui.MolecularTransformer.progress") +
-                    ": " + ModUtils.getString(progress1) + "%"));
+                    ": " + ModUtils.getString(progress1) + "%").drawForeground(par1, par2);
 
 
         }

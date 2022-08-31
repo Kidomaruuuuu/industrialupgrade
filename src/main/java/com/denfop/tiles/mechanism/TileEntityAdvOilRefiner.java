@@ -8,7 +8,9 @@ import com.denfop.tiles.base.IManufacturerBlock;
 import com.denfop.tiles.base.TileEntityBaseLiquedMachine;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
+import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -18,6 +20,9 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
+
+import java.util.List;
 
 public class TileEntityAdvOilRefiner extends TileEntityBaseLiquedMachine implements IManufacturerBlock {
 
@@ -29,7 +34,18 @@ public class TileEntityAdvOilRefiner extends TileEntityBaseLiquedMachine impleme
         );
 
     }
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.machines_work_energy") + 25 + Localization.translate("iu" +
+                    ".machines_work_energy_type_eu"));
+        }
+        super.addInformation(stack,tooltip,advanced);
 
+    }
     @Override
     protected ItemStack getPickBlock(final EntityPlayer player, final RayTraceResult target) {
         return new ItemStack(IUItem.oiladvrefiner, 1, 0);

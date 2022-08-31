@@ -1,6 +1,8 @@
 package com.denfop.tiles.base;
 
+import com.denfop.api.gui.IType;
 import com.denfop.api.recipe.InvSlotOutput;
+import com.denfop.componets.AdvEnergy;
 import com.denfop.container.ContainerMultiMatter;
 import com.denfop.gui.GuiMultiMatter;
 import com.denfop.invslot.InvSlotConsumableLiquid;
@@ -19,15 +21,16 @@ import ic2.core.IHasGui;
 import ic2.core.audio.AudioSource;
 import ic2.core.audio.PositionSpec;
 import ic2.core.block.comp.Fluids;
-import ic2.core.block.invslot.InvSlot;
 import ic2.core.block.invslot.InvSlot.Access;
 import ic2.core.block.invslot.InvSlot.InvSide;
 import ic2.core.block.invslot.InvSlotProcessable;
+import ic2.core.init.Localization;
 import ic2.core.init.MainConfig;
 import ic2.core.network.GuiSynced;
 import ic2.core.ref.FluidName;
 import ic2.core.util.ConfigUtil;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -35,6 +38,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -43,7 +47,7 @@ import java.util.Set;
 
 
 public abstract class TileEntityMultiMatter extends TileEntityElectricMachine implements IHasGui, IUpgradableBlock,
-        IExplosionPowerOverride, INetworkClientTileEntityEventListener {
+        IExplosionPowerOverride, INetworkClientTileEntityEventListener, IType {
 
     public final InvSlotUpgrade upgradeSlot;
     public final InvSlotProcessable<IRecipeInput, Integer, ItemStack> amplifierSlot;
@@ -52,7 +56,7 @@ public abstract class TileEntityMultiMatter extends TileEntityElectricMachine im
     @GuiSynced
     public final FluidTank fluidTank;
     protected final Fluids fluids;
-    private final float energycost;
+    public final float energycost;
     public boolean work;
     public int scrap = 0;
     public boolean redstonePowered = false;
@@ -73,7 +77,7 @@ public abstract class TileEntityMultiMatter extends TileEntityElectricMachine im
                 this.put(input);
             }
         };
-        this.energycost = storageEnergy;
+        this.energycost = storageEnergy * ConfigUtil.getFloat(MainConfig.get(), "balance/uuEnergyFactor");
         this.outputSlot = new InvSlotOutput(this, "output", 1);
         this.containerslot = new InvSlotConsumableLiquidByList(
                 this,
@@ -84,11 +88,12 @@ public abstract class TileEntityMultiMatter extends TileEntityElectricMachine im
                 InvSlotConsumableLiquid.OpType.Fill,
                 FluidName.uu_matter.getInstance()
         );
-        this.upgradeSlot = new com.denfop.invslot.InvSlotUpgrade(this, "upgrade", 4);
         this.fluids = this.addComponent(new Fluids(this));
         this.fluidTank = this.fluids.addTank("fluidTank", sizeTank * 1000,
                 Fluids.fluidPredicate(FluidName.uu_matter.getInstance())
         );
+        this.upgradeSlot = new com.denfop.invslot.InvSlotUpgrade(this, "upgrade", 4);
+
 
         this.work = true;
     }
@@ -97,7 +102,25 @@ public abstract class TileEntityMultiMatter extends TileEntityElectricMachine im
         double ret = (double) Math.round(((double) 3 + (double) extra));
         return ret > 2.147483647E9D ? 2147483647 : (int) ret;
     }
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.matter_work_info") + (int)this.energycost);
+         }
+        if (this.hasComponent(AdvEnergy.class)) {
+            AdvEnergy energy = this.getComponent(AdvEnergy.class);
 
+            if (!energy.getSourceDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSourceTier()));
+            } else if (!energy.getSinkDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSinkTier()));
+            }
+        }
+
+    }
     @Override
     public void onNetworkEvent(final EntityPlayer entityPlayer, final int i) {
         this.work = !this.work;
@@ -139,7 +162,6 @@ public abstract class TileEntityMultiMatter extends TileEntityElectricMachine im
     protected void updateEntityServer() {
         super.updateEntityServer();
         this.redstonePowered = false;
-        boolean needsInvUpdate = false;
         if (this.work && !(this.energy.getEnergy() <= 0.0D)) {
             if (this.scrap > 0) {
                 double bonus = Math.min(this.scrap, this.energy.getEnergy() - this.lastEnergy);
@@ -163,23 +185,23 @@ public abstract class TileEntityMultiMatter extends TileEntityElectricMachine im
                 }
             }
             if (this.energy.getEnergy() >= this.energycost) {
-                needsInvUpdate = this.attemptGeneration();
+               this.attemptGeneration();
             }
             if (!this.containerslot.isEmpty()) {
                 this.containerslot.processFromTank(this.fluidTank, this.outputSlot);
             }
 
             this.lastEnergy = this.energy.getEnergy();
-            if (needsInvUpdate && this.upgradeSlot.tickNoMark()) {
-                setUpgradestat();
-            }
+
         } else {
             this.setState(0);
             if (this.getActive()) {
                 this.setActive(false);
             }
         }
-
+        if (this.upgradeSlot.tickNoMark()) {
+            setUpgradestat();
+        }
     }
 
     public boolean attemptGeneration() {

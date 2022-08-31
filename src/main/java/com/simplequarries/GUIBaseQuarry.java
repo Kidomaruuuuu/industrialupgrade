@@ -2,6 +2,8 @@ package com.simplequarries;
 
 import com.denfop.IUItem;
 import com.denfop.gui.AdvArea;
+import com.denfop.gui.GuiIU;
+import com.denfop.utils.ListInformationUtils;
 import com.denfop.utils.ModUtils;
 import ic2.core.GuiIC2;
 import ic2.core.IC2;
@@ -17,16 +19,17 @@ import org.lwjgl.opengl.GL12;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 
-public class GuiBaseQuarry extends GuiIC2<ContainerBaseQuarry> {
+public class GuiBaseQuarry extends GuiIU<ContainerBaseQuarry> {
 
     public final ContainerBaseQuarry container;
 
     public GuiBaseQuarry(ContainerBaseQuarry container1) {
-        super(container1);
+        super(container1,container1.base.getStyle());
         this.container = container1;
         this.xSize = 229;
     }
@@ -37,6 +40,31 @@ public class GuiBaseQuarry extends GuiIC2<ContainerBaseQuarry> {
             text.add(Localization.translate("gui.SuperSolarPanel.storage") + ": " + ModUtils.getString(this.container.base.energy.getEnergy()) + "/" + ModUtils.getString(
                     this.container.base.energy.getCapacity()));
             List<String> compatibleUpgrades = getStringList();
+            Iterator<String> var5 = compatibleUpgrades.iterator();
+            String itemstack;
+            while (var5.hasNext()) {
+                itemstack = var5.next();
+                text.add(itemstack);
+            }
+
+            this.drawTooltip(mouseX, mouseY, text);
+        }else   if (mouseX >= 189 && mouseX <= 206 && mouseY >= 83 && mouseY <= 100) {
+            List<String> text = new ArrayList<>();
+            text.add(Localization.translate("button.rf"));
+            List<String> compatibleUpgrades = Collections.singletonList(Localization.translate(this.container.base.vein_need
+                    ? "iu.simplyquarries.info5"
+                    : "iu.simplyquarries.info4"));
+            Iterator<String> var5 = compatibleUpgrades.iterator();
+            String itemstack;
+            while (var5.hasNext()) {
+                itemstack = var5.next();
+                text.add(itemstack);
+            }
+            this.drawTooltip(mouseX, mouseY, text);
+        }else  if (mouseX >= 3 && mouseX <= 15 && mouseY >= 3 && mouseY <= 15) {
+            List<String> text = new ArrayList<>();
+            text.add(Localization.translate("iu.simplyquarries_info"));
+            List<String> compatibleUpgrades = ListInformationUtils.quarry;
             Iterator<String> var5 = compatibleUpgrades.iterator();
             String itemstack;
             while (var5.hasNext()) {
@@ -72,14 +100,26 @@ public class GuiBaseQuarry extends GuiIC2<ContainerBaseQuarry> {
         if (x >= 189 && x <= 206 && y >= 83 && y <= 100) {
             IC2.network.get(false).initiateClientTileEntityEvent(this.container.base, 5);
         }
+        if (x >= 209 && x <= 224 && y >= 86 && y <= 99) {
+            IC2.network.get(false).initiateClientTileEntityEvent(this.container.base, 6);
+        }
     }
 
     private List<String> getStringList() {
         List<String> lst = new ArrayList<>();
-        lst.add("Consume: " + this.container.base.energyconsume + "EU/t");
-        lst.add("X: " + this.container.base.blockpos.getX());
-        lst.add("Y: " + this.container.base.blockpos.getY());
-        lst.add("Z: " + this.container.base.blockpos.getZ());
+        if(this.container.base != null) {
+            lst.add("Consume: " + this.container.base.energyconsume + "EU/t");
+            if( this.container.base.blockpos != null) {
+                lst.add("X: " + this.container.base.blockpos.getX());
+                lst.add("Y: " + this.container.base.blockpos.getY());
+                lst.add("Z: " + this.container.base.blockpos.getZ());
+            }else{
+                lst.add("X: " + this.container.base.default_pos.getX());
+                lst.add("Y: " + this.container.base.default_pos.getY());
+                lst.add("Z: " + this.container.base.default_pos.getZ());
+
+            }
+        }
         return lst;
     }
 
@@ -107,10 +147,8 @@ public class GuiBaseQuarry extends GuiIC2<ContainerBaseQuarry> {
                 .withTooltip(tooltip)
                 .drawForeground(mouseX
                         , mouseY);
-        new AdvArea(this, 189, 83, 206, 100)
-                .withTooltip(Localization.translate("button.rf"))
-                .drawForeground(mouseX
-                        , mouseY);
+        new AdvArea(this, 209, 86, 224, 99).withTooltip(this.container.base.need_work ? Localization.translate("turn_off") :
+                Localization.translate("turn_on")).drawForeground(mouseX, mouseY);
         new AdvArea(this, 146, 5, 160, 23).withTooltip(Localization.translate("sq.add_experience")).drawForeground(mouseX
                 , mouseY);
 
@@ -130,7 +168,8 @@ public class GuiBaseQuarry extends GuiIC2<ContainerBaseQuarry> {
         this.mc.getTextureManager().bindTexture(getTexture());
         drawTexturedModalRect(h, k, 0, 0, this.xSize, 112);
         drawTexturedModalRect(h, k + 112, 0, 112, 176, this.ySize - 112);
-
+        this.mc.getTextureManager().bindTexture(getTexture());
+        this.drawBackground();
         this.mc.getTextureManager().bindTexture(getTexture());
         int chargeLevel = (int) (48.0F * this.container.base.energy.getEnergy()
                 / this.container.base.energy.getCapacity());
@@ -139,6 +178,8 @@ public class GuiBaseQuarry extends GuiIC2<ContainerBaseQuarry> {
         int chargeLevel1 = (int) (48.0F * this.container.base.energy1.getEnergy()
                 / this.container.base.energy1.getCapacity());
         int heat = (int) (14.0F * this.container.base.cold.getFillRatio());
+
+
         if (heat >= 0) {
             drawTexturedModalRect(
                     h + 140, k + 62 + 14 - heat, 194, 167 + 14 - heat, 4,
@@ -146,9 +187,13 @@ public class GuiBaseQuarry extends GuiIC2<ContainerBaseQuarry> {
             );
 
         }
+        if (this.container.base.need_work) {
+            this.drawTexturedModalRect(h + 209, k + 86, 233, 53, 239 - 224, 84 - 70);
+
+        }
         if (exp > 0) {
             drawTexturedModalRect(h + 172, k + 28 + 48 - exp, 194,
-                    119 + 48 - exp, 12, exp
+                    119 + 48 - exp, 4, exp
             );
         }
         if (chargeLevel1 > 0) {
@@ -168,6 +213,10 @@ public class GuiBaseQuarry extends GuiIC2<ContainerBaseQuarry> {
             );
             y1 += 18;
         }
+        this.mc.getTextureManager()
+                .bindTexture(new ResourceLocation(IC2.RESOURCE_DOMAIN, "textures/gui/infobutton.png"));
+        drawTexturedModalRect(h + 3, k + 3, 0, 0, 10, 10);
+        this.mc.getTextureManager().bindTexture(getTexture());
         RenderHelper.enableGUIStandardItemLighting();
         GL11.glPushMatrix();
         GL11.glColor4f(0.1F, 1, 0.1F, 1);

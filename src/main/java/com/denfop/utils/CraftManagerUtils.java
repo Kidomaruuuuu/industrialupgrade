@@ -20,6 +20,7 @@ public class CraftManagerUtils {
                         && !removed.isEmpty()
                         && removed.getItem() == recipe.getRecipeOutput().getItem()
                         && recipe.getRecipeOutput().getMetadata() == removed.getMetadata()) {
+
                     return recipe;
                 }
             }
