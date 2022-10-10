@@ -1,7 +1,7 @@
 package com.denfop.invslot;
 
 import com.denfop.IUItem;
-import ic2.core.block.TileEntityInventory;
+import com.denfop.tiles.base.TileEntityInventory;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.util.StackUtil;
 import net.minecraft.item.ItemStack;

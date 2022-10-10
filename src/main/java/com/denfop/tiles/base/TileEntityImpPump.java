@@ -8,8 +8,10 @@ public class TileEntityImpPump extends TileEntityPump {
     public TileEntityImpPump() {
         super("blockImpPump.name", 15, 10);
     }
+
     @Override
     public EnumTypeStyle getStyle() {
         return EnumTypeStyle.IMPROVED;
     }
+
 }

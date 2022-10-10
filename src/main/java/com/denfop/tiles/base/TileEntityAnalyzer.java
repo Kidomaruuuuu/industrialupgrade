@@ -100,10 +100,12 @@ public class TileEntityAnalyzer extends TileEntityElectricMachine implements INe
         this.chunkx = 0;
         this.chunkz = 0;
     }
+
     @Override
     public int getSizeInventory() {
         return 1;
     }
+
     public void update_chunk() {
         this.chunkx = this.getWorld().getChunkFromBlockCoords(this.pos).x * 16;
         this.chunkz = this.getWorld().getChunkFromBlockCoords(this.pos).z * 16;
@@ -113,6 +115,7 @@ public class TileEntityAnalyzer extends TileEntityElectricMachine implements INe
         this.xendChunk = chunkx + 16 + 16 * size;
         this.zendChunk = chunkz + 16 + 16 * size;
     }
+
     @SideOnly(Side.CLIENT)
     public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
         if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
@@ -124,6 +127,7 @@ public class TileEntityAnalyzer extends TileEntityElectricMachine implements INe
         }
         super.addInformation(stack, tooltip, advanced);
     }
+
     public double getProgress() {
 
         double temp = xChunk - xendChunk;
@@ -432,39 +436,40 @@ public class TileEntityAnalyzer extends TileEntityElectricMachine implements INe
                     .getWorld()
                     .getChunkFromBlockCoords(new BlockPos(tempx, 0, tempz))
                     .getPos());
-            if(vein != null)
-            if (vein.getType() == Type.VEIN) {
-                final ItemStack stack = new ItemStack(IUItem.heavyore, 1, vein.getMeta());
-                int id = OreDictionary.getOreIDs(stack)[0];
-                String name = OreDictionary.getOreName(id);
-                boolean has = false;
-                if (!this.listore.contains(name)) {
+            if (vein != null) {
+                if (vein.getType() == Type.VEIN) {
+                    final ItemStack stack = new ItemStack(IUItem.heavyore, 1, vein.getMeta());
+                    int id = OreDictionary.getOreIDs(stack)[0];
+                    String name = OreDictionary.getOreName(id);
+                    boolean has = false;
+                    if (!this.listore.contains(name)) {
 
-                    has = true;
-                    this.listore.add(name);
-                    this.listnumberore.add(vein.getCol());
+                        has = true;
+                        this.listore.add(name);
+                        this.listnumberore.add(vein.getCol());
 
-                    this.numberores = this.listore.size();
-
-
-                }
-                if (listore.contains(name) && !has) {
+                        this.numberores = this.listore.size();
 
 
-                    this.listnumberore.set(
-                            listore.indexOf(name),
-                            listnumberore.get(listore.indexOf(name)) + vein.getCol()
-                    );
-
-                    this.numberores = listore.size();
-                    this.listnumberore1 = new int[this.listnumberore.size()];
-                    for (int i = 0; i < this.listnumberore.size(); i++) {
-                        this.listnumberore1[i] = this.listnumberore.get(i);
                     }
+                    if (listore.contains(name) && !has) {
 
-                    this.sum = ModUtils.getsum1(this.listnumberore) - this.listnumberore.size();
+
+                        this.listnumberore.set(
+                                listore.indexOf(name),
+                                listnumberore.get(listore.indexOf(name)) + vein.getCol()
+                        );
+
+                        this.numberores = listore.size();
+                        this.listnumberore1 = new int[this.listnumberore.size()];
+                        for (int i = 0; i < this.listnumberore.size(); i++) {
+                            this.listnumberore1[i] = this.listnumberore.get(i);
+                        }
+
+                        this.sum = ModUtils.getsum1(this.listnumberore) - this.listnumberore.size();
 
 
+                    }
                 }
             }
             zcoord++;
@@ -672,17 +677,18 @@ public class TileEntityAnalyzer extends TileEntityElectricMachine implements INe
                         .getWorld()
                         .getChunkFromBlockCoords(new BlockPos(tempx, 0, tempz))
                         .getPos());
-                if(vein != null)
-                if (vein.getType() == Type.VEIN) {
-                    final ItemStack stack = new ItemStack(IUItem.heavyore, 1, vein.getMeta());
-                    int size = vein.getCol();
-                    for (int i = 0; i < size; i++) {
-                        if (target1.outputSlot.add(stack)) {
-                            vein.removeCol(1);
-                        } else {
-                            break;
-                        }
+                if (vein != null) {
+                    if (vein.getType() == Type.VEIN) {
+                        final ItemStack stack = new ItemStack(IUItem.heavyore, 1, vein.getMeta());
+                        int size = vein.getCol();
+                        for (int i = 0; i < size; i++) {
+                            if (target1.outputSlot.add(stack)) {
+                                vein.removeCol(1);
+                            } else {
+                                break;
+                            }
 
+                        }
                     }
                 }
                 this.zcoord++;

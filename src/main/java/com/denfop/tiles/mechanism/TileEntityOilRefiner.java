@@ -173,6 +173,7 @@ public class TileEntityOilRefiner extends TileEntityBaseLiquedMachine implements
 
 
     }
+
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
         if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
@@ -182,9 +183,10 @@ public class TileEntityOilRefiner extends TileEntityBaseLiquedMachine implements
             tooltip.add(Localization.translate("iu.machines_work_energy") + 25 + Localization.translate("iu" +
                     ".machines_work_energy_type_eu"));
         }
-        super.addInformation(stack,tooltip,advanced);
+        super.addInformation(stack, tooltip, advanced);
 
     }
+
     public String getStartSoundFile() {
         return "Machines/oilrefiner.ogg";
     }

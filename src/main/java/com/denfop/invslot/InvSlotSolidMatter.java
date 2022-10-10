@@ -18,7 +18,7 @@ public class InvSlotSolidMatter extends InvSlot {
     public InvSlotSolidMatter(TileEntityCombinerSolidMatter base1) {
         super(base1, "input5", InvSlot.Access.I, 9, InvSlot.InvSide.TOP);
         this.tile = base1;
-        this.stackSizeLimit = 1;
+        this.stackSizeLimit = 64;
     }
 
     public void update() {
@@ -45,8 +45,8 @@ public class InvSlotSolidMatter extends InvSlot {
         for (int i = 0; i < this.size(); i++) {
             if (!this.get(i).isEmpty()) {
                 this.tile.solid[i] = ItemSolidMatter.getsolidmatter(this.get(i).getItemDamage());
-                this.tile.solid_col[i] = 1;
-                this.tile.energy.addCapacity(Config.SolidMatterStorage );
+                this.tile.solid_col[i] = this.get(i).getCount();
+                this.tile.energy.addCapacity(Config.SolidMatterStorage * this.get(i).getCount());
             }
         }
     }
@@ -67,7 +67,7 @@ public class InvSlotSolidMatter extends InvSlot {
         double maxEnergy = 0;
         for (int i = 0; i < size(); i++) {
             if (!get(i).isEmpty()) {
-                maxEnergy += Config.SolidMatterStorage;
+                maxEnergy += (Config.SolidMatterStorage * this.get(i).getCount());
             }
 
         }

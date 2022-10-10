@@ -4,6 +4,7 @@ import com.denfop.IUItem;
 import com.denfop.Ic2Items;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
+import com.denfop.api.recipe.IHasRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.InvSlotOutput;
@@ -14,13 +15,12 @@ import com.denfop.componets.AdvEnergy;
 import com.denfop.container.ContainerRodManufacturer;
 import com.denfop.gui.GuiRodManufacturer;
 import com.denfop.invslot.InvSlotUpgrade;
+import com.denfop.tiles.base.TileEntityInventory;
 import ic2.api.recipe.IRecipeInputFactory;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
-import ic2.core.block.TileEntityInventory;
-import ic2.core.block.invslot.InvSlot;
 import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.util.ITooltipFlag;
@@ -32,11 +32,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
 import java.util.EnumSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-public class TileEntityRodManufacturer extends TileEntityInventory implements IUpgradableBlock, IHasGui, IUpdateTick {
+public class TileEntityRodManufacturer extends TileEntityInventory implements IUpgradableBlock, IHasGui, IUpdateTick,
+        IHasRecipe {
 
     public final InvSlotRecipes inputSlotA;
     public final AdvEnergy energy;
@@ -65,30 +65,7 @@ public class TileEntityRodManufacturer extends TileEntityInventory implements IU
         this.upgradeSlot = new com.denfop.invslot.InvSlotUpgrade(this, "upgrade", 4);
         this.inputSlotA = new InvSlotRecipes(this, "rod_assembler", this);
         inputSlotA.setStackSizeLimit(1);
-    }
-    public int getInventoryStackLimit() {
-
-        return 1;
-    }
-    public static void init() {
-        addRecipe("logWood", "plankWood", new ItemStack(IUItem.windrod, 1, 0));
-        addRecipe(new ItemStack(IUItem.windrod, 1, 0),"plateBronze", "casingBronze", new ItemStack(IUItem.windrod, 1, 1));
-        addRecipe(new ItemStack(IUItem.windrod, 1, 1),"plateIron", "casingIron", new ItemStack(IUItem.windrod, 1, 2));
-        addRecipe(new ItemStack(IUItem.windrod, 1, 2),"plateSteel", "casingSteel", new ItemStack(IUItem.windrod, 1, 3));
-        addRecipe(new ItemStack(IUItem.windrod, 1, 3),"plateCarbon", "plateCarbon", new ItemStack(IUItem.windrod, 1, 4));
-        addRecipe(new ItemStack(IUItem.windrod, 1, 4),"plateIridium", "casingIridium", new ItemStack(IUItem.windrod, 1, 5));
-        addRecipe(new ItemStack(IUItem.windrod, 1, 5), Ic2Items.iridiumOre, "doubleplateIridium", new ItemStack(IUItem.windrod, 1, 6));
-        addRecipe(new ItemStack(IUItem.windrod, 1, 6),"plateElectrum", "casingElectrum", new ItemStack(IUItem.windrod, 1, 7));
-
-        addRecipe(new ItemStack(IUItem.windrod, 1, 7),"crystalProton", "crystalPhoton", new ItemStack(IUItem.windrod, 1, 8));
-        addRecipe(new ItemStack(IUItem.windrod, 1, 8),"crystalPhoton", "crystalingotPhoton", new ItemStack(IUItem.windrod, 1,
-                10));
-        addRecipe(new ItemStack(IUItem.windrod, 1, 10),"ingotNeutron", "casingVitalium", new ItemStack(IUItem.windrod, 1, 9));
-        addRecipe(new ItemStack(IUItem.windrod, 1, 9),"plateSpinel", "casingSpinel", new ItemStack(IUItem.windrod, 1, 11));
-        addRecipe(new ItemStack(IUItem.windrod, 1, 11),"plateCobalt", "casingCobalt", new ItemStack(IUItem.windrod, 1, 12));
-        addRecipe(new ItemStack(IUItem.windrod, 1, 12),"plateMikhail", "casingMikhail", new ItemStack(IUItem.windrod, 1, 13));
-
-
+        Recipes.recipes.addInitRecipes(this);
     }
 
     public static void addRecipe(
@@ -128,6 +105,7 @@ public class TileEntityRodManufacturer extends TileEntityInventory implements IU
                 new RecipeOutput(null, output)
         ));
     }
+
     public static void addRecipe(ItemStack stack1, String input, String input1, ItemStack output) {
         final IRecipeInputFactory recipeInputFactory = ic2.api.recipe.Recipes.inputFactory;
         Recipes.recipes.addRecipe("rod_assembler", new BaseMachineRecipe(
@@ -144,6 +122,7 @@ public class TileEntityRodManufacturer extends TileEntityInventory implements IU
                 new RecipeOutput(null, output)
         ));
     }
+
     public static void addRecipe(ItemStack stack1, ItemStack input, String input1, ItemStack output) {
         final IRecipeInputFactory recipeInputFactory = ic2.api.recipe.Recipes.inputFactory;
         Recipes.recipes.addRecipe("rod_assembler", new BaseMachineRecipe(
@@ -160,9 +139,42 @@ public class TileEntityRodManufacturer extends TileEntityInventory implements IU
                 new RecipeOutput(null, output)
         ));
     }
+
     public static int applyModifier(int base, int extra, double multiplier) {
         double ret = Math.round((base + extra) * multiplier);
         return (ret > 2.147483647E9D) ? Integer.MAX_VALUE : (int) ret;
+    }
+
+    public void init() {
+        addRecipe("logWood", "plankWood", new ItemStack(IUItem.windrod, 1, 0));
+        addRecipe(new ItemStack(IUItem.windrod, 1, 0), "plateBronze", "casingBronze", new ItemStack(IUItem.windrod, 1, 1));
+        addRecipe(new ItemStack(IUItem.windrod, 1, 1), "plateIron", "casingIron", new ItemStack(IUItem.windrod, 1, 2));
+        addRecipe(new ItemStack(IUItem.windrod, 1, 2), "plateSteel", "casingSteel", new ItemStack(IUItem.windrod, 1, 3));
+        addRecipe(new ItemStack(IUItem.windrod, 1, 3), "plateCarbon", "plateCarbon", new ItemStack(IUItem.windrod, 1, 4));
+        addRecipe(new ItemStack(IUItem.windrod, 1, 4), "plateIridium", "casingIridium", new ItemStack(IUItem.windrod, 1, 5));
+        addRecipe(
+                new ItemStack(IUItem.windrod, 1, 5),
+                Ic2Items.iridiumOre,
+                "doubleplateIridium",
+                new ItemStack(IUItem.windrod, 1, 6)
+        );
+        addRecipe(new ItemStack(IUItem.windrod, 1, 6), "plateElectrum", "casingElectrum", new ItemStack(IUItem.windrod, 1, 7));
+
+        addRecipe(new ItemStack(IUItem.windrod, 1, 7), "crystalProton", "crystalPhoton", new ItemStack(IUItem.windrod, 1, 8));
+        addRecipe(new ItemStack(IUItem.windrod, 1, 8), "crystalPhoton", "crystalingotPhoton", new ItemStack(IUItem.windrod, 1,
+                10
+        ));
+        addRecipe(new ItemStack(IUItem.windrod, 1, 10), "ingotNeutron", "casingVitalium", new ItemStack(IUItem.windrod, 1, 9));
+        addRecipe(new ItemStack(IUItem.windrod, 1, 9), "plateSpinel", "casingSpinel", new ItemStack(IUItem.windrod, 1, 11));
+        addRecipe(new ItemStack(IUItem.windrod, 1, 11), "plateCobalt", "casingCobalt", new ItemStack(IUItem.windrod, 1, 12));
+        addRecipe(new ItemStack(IUItem.windrod, 1, 12), "plateMikhail", "casingMikhail", new ItemStack(IUItem.windrod, 1, 13));
+
+
+    }
+
+    public int getInventoryStackLimit() {
+
+        return 1;
     }
 
     public void readFromNBT(NBTTagCompound nbttagcompound) {
@@ -210,7 +222,7 @@ public class TileEntityRodManufacturer extends TileEntityInventory implements IU
         if (this.operationLength < 1) {
             this.operationLength = 1;
         }
-   }
+    }
 
     public void operate(MachineRecipe output) {
         for (int i = 0; i < this.operationsPerTick; i++) {
@@ -234,7 +246,8 @@ public class TileEntityRodManufacturer extends TileEntityInventory implements IU
             tooltip.add(Localization.translate("press.lshift"));
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate("iu.machines_work_energy_type_eu"));
+            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate(
+                    "iu.machines_work_energy_type_eu"));
             tooltip.add(Localization.translate("iu.machines_work_length") + this.defaultOperationLength);
         }
         if (this.hasComponent(AdvEnergy.class)) {
@@ -247,6 +260,7 @@ public class TileEntityRodManufacturer extends TileEntityInventory implements IU
         }
 
     }
+
     public void updateEntityServer() {
         super.updateEntityServer();
         MachineRecipe output = this.output;

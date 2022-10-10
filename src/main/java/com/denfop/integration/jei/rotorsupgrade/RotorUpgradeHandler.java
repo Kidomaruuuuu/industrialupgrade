@@ -34,7 +34,6 @@ public class RotorUpgradeHandler {
     }
 
 
-
     public static void initRecipes() {
         for (BaseMachineRecipe container : Recipes.recipes.getRecipeList("rotor_upgrade")) {
             addRecipe(
@@ -50,9 +49,6 @@ public class RotorUpgradeHandler {
     public ItemStack[] getInputs() { // Получатель входного предмета рецепта.
         return input;
     }
-
-
-
 
 
 }

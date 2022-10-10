@@ -4,6 +4,7 @@ import com.denfop.IUItem;
 import com.denfop.Ic2Items;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
+import com.denfop.api.recipe.IHasRecipe;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.api.recipe.RecipeOutput;
@@ -28,7 +29,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.List;
 
-public class TileEntityAlloySmelter extends TileEntityDoubleElectricMachine {
+public class TileEntityAlloySmelter extends TileEntityDoubleElectricMachine implements IHasRecipe {
 
 
     public final HeatComponent heat;
@@ -38,9 +39,19 @@ public class TileEntityAlloySmelter extends TileEntityDoubleElectricMachine {
         super(1, 300, 1, EnumDoubleElectricMachine.ALLOY_SMELTER);
         this.heat = this.addComponent(HeatComponent
                 .asBasicSink(this, 5000));
+        Recipes.recipes.addInitRecipes(this);
     }
 
-    public static void init() {
+    public static void addAlloysmelter(IRecipeInput container, IRecipeInput fill, ItemStack output, int temperature) {
+        final NBTTagCompound nbt = ModUtils.nbt();
+        nbt.setShort("temperature", (short) temperature);
+        Recipes.recipes.addRecipe("alloysmelter", new BaseMachineRecipe(
+                new Input(container, fill),
+                new RecipeOutput(nbt, output)
+        ));
+    }
+
+    public void init() {
 
         final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
         addAlloysmelter(
@@ -104,15 +115,6 @@ public class TileEntityAlloySmelter extends TileEntityDoubleElectricMachine {
         );
 
 
-    }
-
-    public static void addAlloysmelter(IRecipeInput container, IRecipeInput fill, ItemStack output, int temperature) {
-        final NBTTagCompound nbt = ModUtils.nbt();
-        nbt.setShort("temperature", (short) temperature);
-        Recipes.recipes.addRecipe("alloysmelter", new BaseMachineRecipe(
-                new Input(container, fill),
-                new RecipeOutput(nbt, output)
-        ));
     }
 
     protected List<ItemStack> getWrenchDrops(EntityPlayer player, int fortune) {

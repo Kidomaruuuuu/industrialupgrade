@@ -87,18 +87,21 @@ public abstract class TileEntityBaseObsidianGenerator extends TileEntityElectric
         this.progress = nbttagcompound.getShort("progress");
 
     }
+
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
         if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             tooltip.add(Localization.translate("press.lshift"));
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate("iu.machines_work_energy_type_eu"));
+            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate(
+                    "iu.machines_work_energy_type_eu"));
             tooltip.add(Localization.translate("iu.machines_work_length") + this.defaultOperationLength);
         }
-        super.addInformation(stack,tooltip,advanced);
+        super.addInformation(stack, tooltip, advanced);
 
     }
+
     public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound) {
         super.writeToNBT(nbttagcompound);
         nbttagcompound.setShort("progress", this.progress);
@@ -139,7 +142,7 @@ public abstract class TileEntityBaseObsidianGenerator extends TileEntityElectric
                 output1,
                 true
         ) && (output1.getValue() == null || this.outputSlot1.canAdd(output1.getValue()))) {
-           this.fluidSlot1.transferToTank(this.fluidTank1, output1, false);
+            this.fluidSlot1.transferToTank(this.fluidTank1, output1, false);
             if (output1.getValue() != null) {
                 this.outputSlot1.add(output1.getValue());
             }

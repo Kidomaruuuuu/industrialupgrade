@@ -3,10 +3,10 @@ package com.denfop.tiles.mechanism.blastfurnace.block;
 import com.denfop.IUItem;
 import com.denfop.Ic2Items;
 import com.denfop.api.recipe.InvSlotOutput;
+import com.denfop.tiles.base.TileEntityInventory;
 import com.denfop.tiles.mechanism.blastfurnace.api.BlastSystem;
 import com.denfop.tiles.mechanism.blastfurnace.api.IBlastInputFluid;
 import com.denfop.tiles.mechanism.blastfurnace.api.IBlastMain;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.block.comp.Fluids;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.block.invslot.InvSlotConsumableLiquidByList;
@@ -31,6 +31,16 @@ public class TileEntityFluidInput extends TileEntityInventory implements IBlastI
     IBlastMain blastMain;
     FluidTank tank;
     InvSlotOutput output;
+
+    public TileEntityFluidInput() {
+        final Fluids fluids = this.addComponent(new Fluids(this));
+        this.tank = fluids.addTank("tank", 10000, InvSlot.Access.I, InvSlot.InvSide.ANY,
+                Fluids.fluidPredicate(FluidRegistry.WATER)
+        );
+        this.fluidSlot = new InvSlotConsumableLiquidByList(this, "fluidSlot", 1, FluidRegistry.WATER);
+        output = new InvSlotOutput(this, "output1", 1);
+    }
+
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
@@ -42,16 +52,8 @@ public class TileEntityFluidInput extends TileEntityInventory implements IBlastI
                 0
         ).getUnlocalizedName()));
         tooltip.add(Localization.translate("iu.blastfurnace.info4"));
-        tooltip.add(Localization.translate("iu.blastfurnace.info5") +  Localization.translate(Ic2Items.ForgeHammer.getUnlocalizedName()));
+        tooltip.add(Localization.translate("iu.blastfurnace.info5") + Localization.translate(Ic2Items.ForgeHammer.getUnlocalizedName()));
         tooltip.add(Localization.translate("iu.blastfurnace.info6"));
-    }
-    public TileEntityFluidInput() {
-        final Fluids fluids = this.addComponent(new Fluids(this));
-        this.tank = fluids.addTank("tank", 10000, InvSlot.Access.I, InvSlot.InvSide.ANY,
-                Fluids.fluidPredicate(FluidRegistry.WATER)
-        );
-        this.fluidSlot = new InvSlotConsumableLiquidByList(this, "fluidSlot", 1, FluidRegistry.WATER);
-        output = new InvSlotOutput(this, "output1", 1);
     }
 
     @Override

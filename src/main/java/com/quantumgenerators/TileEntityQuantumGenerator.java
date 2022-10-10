@@ -4,11 +4,11 @@ import com.denfop.IUItem;
 import com.denfop.componets.QEComponent;
 import com.denfop.items.ItemCore;
 import com.denfop.items.energy.ItemPurifier;
+import com.denfop.tiles.base.TileEntityInventory;
 import ic2.api.energy.EnergyNet;
 import ic2.api.item.ElectricItem;
 import ic2.api.network.INetworkClientTileEntityEventListener;
 import ic2.core.IHasGui;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.util.ITooltipFlag;
@@ -73,7 +73,8 @@ public class TileEntityQuantumGenerator extends TileEntityInventory implements I
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             tooltip.add(Localization.translate("iu.quantumgenerator.info"));
             tooltip.add(Localization.translate("iu.quantumgenerator.info1"));
-            tooltip.add(Localization.translate("gui.SuperSolarPanel.generating")+": "+this.genmax+Localization.translate("iu.machines_work_energy_type_qe"));
+            tooltip.add(Localization.translate("gui.SuperSolarPanel.generating") + ": " + this.genmax + Localization.translate(
+                    "iu.machines_work_energy_type_qe"));
 
         }
     }

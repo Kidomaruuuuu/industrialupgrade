@@ -19,12 +19,35 @@ public class BaseLevelSystem implements ILevelSystem {
 
     }
 
+    public BaseLevelSystem(EntityPlayer player, NBTTagCompound tagCompound) {
+        this.player = player;
+        this.levels = new int[EnumLeveling.values().length];
+        this.levels_points = new int[EnumLeveling.values().length];
+        this.levels_next = new int[EnumLeveling.values().length];
+        this.init(tagCompound);
+
+    }
+
     private void init() {
         final NBTTagCompound nbt = player.getEntityData();
         for (EnumLeveling leveling : EnumLeveling.values()) {
             this.levels[leveling.ordinal()] = nbt.getInteger("iu.level." + leveling.name().toLowerCase());
             this.levels_points[leveling.ordinal()] = nbt.getInteger("iu.level_points." + leveling.name().toLowerCase());
             this.levels_next[leveling.ordinal()] = ((this.levels_points[leveling.ordinal()] * 40 + 20) - this.levels[leveling.ordinal()]);
+        }
+    }
+
+    private void init(NBTTagCompound tagCompound) {
+        for (EnumLeveling leveling : EnumLeveling.values()) {
+            this.levels[leveling.ordinal()] = tagCompound.getInteger("iu.level." + leveling.name().toLowerCase());
+            this.levels_points[leveling.ordinal()] = tagCompound.getInteger("iu.level_points." + leveling.name().toLowerCase());
+            this.levels_next[leveling.ordinal()] = ((this.levels_points[leveling.ordinal()] * 40 + 20) - this.levels[leveling.ordinal()]);
+        }
+        final NBTTagCompound nbt = player.getEntityData();
+        for (EnumLeveling leveling : EnumLeveling.values()) {
+            nbt.setInteger("iu.level." + leveling.name().toLowerCase(), this.levels[leveling.ordinal()]);
+            nbt.setInteger("iu.level_points." + leveling.name().toLowerCase(), this.levels_points[leveling.ordinal()]);
+
         }
     }
 
@@ -61,6 +84,10 @@ public class BaseLevelSystem implements ILevelSystem {
         }
     }
 
+    public NBTTagCompound write() {
+        return player.getEntityData();
+    }
+
     @Override
     public int getLevelPoint(final EnumLeveling enumLeveling) {
         return this.levels_points[enumLeveling.ordinal()];
@@ -84,6 +111,11 @@ public class BaseLevelSystem implements ILevelSystem {
         }
 
         this.addLevel(EnumLeveling.BASE, level);
+    }
+
+    @Override
+    public EntityPlayer getPlayer() {
+        return this.player;
     }
 
 

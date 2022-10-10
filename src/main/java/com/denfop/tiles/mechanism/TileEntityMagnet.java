@@ -41,6 +41,7 @@ public class TileEntityMagnet extends TileEntityElectricMachine {
         this.work = true;
 
     }
+
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
         tooltip.add(Localization.translate("iu.magnet_work_info"));
@@ -54,6 +55,7 @@ public class TileEntityMagnet extends TileEntityElectricMachine {
         }
 
     }
+
     @Override
     public void onPlaced(final ItemStack stack, final EntityLivingBase placer, final EnumFacing facing) {
         super.onPlaced(stack, placer, facing);

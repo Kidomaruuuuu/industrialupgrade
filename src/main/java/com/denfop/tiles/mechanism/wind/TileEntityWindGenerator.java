@@ -3,6 +3,8 @@ package com.denfop.tiles.mechanism.wind;
 import com.denfop.api.gui.IType;
 import com.denfop.api.windsystem.EnumLevelGenerators;
 import com.denfop.api.windsystem.EnumRotorSide;
+import com.denfop.api.windsystem.EnumTypeWind;
+import com.denfop.api.windsystem.EnumWindSide;
 import com.denfop.api.windsystem.IWindMechanism;
 import com.denfop.api.windsystem.IWindRotor;
 import com.denfop.api.windsystem.InvSlotWindRotor;
@@ -17,11 +19,12 @@ import com.denfop.componets.AdvEnergy;
 import com.denfop.componets.EnumTypeStyle;
 import com.denfop.container.ContainerWindGenerator;
 import com.denfop.gui.GuiWindGenerator;
+import com.denfop.invslot.InvSlotRotorBlades;
 import com.denfop.items.ItemWindRod;
+import com.denfop.tiles.base.TileEntityInventory;
 import ic2.api.network.INetworkClientTileEntityEventListener;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.init.Localization;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -37,7 +40,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.Sys;
 
 import java.util.List;
 
@@ -47,10 +49,19 @@ public class TileEntityWindGenerator extends TileEntityInventory implements IWin
 
     public final InvSlotWindRotor slot;
     public final AdvEnergy energy;
+    public final InvSlotRotorBlades slot_blades;
     private final EnumLevelGenerators levelGenerators;
-    private int tick;
     public double generation = 0;
+    public boolean need_repair;
+    public int mind_wind;
+    public boolean can_repair;
+    public int mind_speed;
+    public int timers;
+    public double wind_speed;
+    public EnumWindSide wind_side;
+    public EnumTypeWind enumTypeWind;
     boolean space = false;
+    private int tick;
     private boolean change_facing;
     private boolean min_level;
     private int addition_power;
@@ -62,10 +73,13 @@ public class TileEntityWindGenerator extends TileEntityInventory implements IWin
     private float angle;
     private long lastcheck;
     private boolean work;
+    private int time;
+    private boolean can_work;
 
     public TileEntityWindGenerator(EnumLevelGenerators levelGenerators) {
         this.levelGenerators = levelGenerators;
         this.slot = new InvSlotWindRotor(this);
+        this.slot_blades = new InvSlotRotorBlades(this);
         this.energy =
                 this.addComponent(AdvEnergy.asBasicSource(this, 500000 * (levelGenerators.ordinal() + 1),
                         1
@@ -82,8 +96,8 @@ public class TileEntityWindGenerator extends TileEntityInventory implements IWin
     @SideOnly(Side.CLIENT)
     public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
         super.addInformation(stack, tooltip, advanced);
-        tooltip.add(Localization.translate("wind.need_level") + this.levelGenerators.getMin() +" " +Localization.translate(
-                "wind.need_level1") +  this.levelGenerators.getMax()+" " + Localization.translate("wind.need_level2"));
+        tooltip.add(Localization.translate("wind.need_level") + this.levelGenerators.getMin() + " " + Localization.translate(
+                "wind.need_level1") + this.levelGenerators.getMax() + " " + Localization.translate("wind.need_level2"));
     }
 
     @Override
@@ -96,12 +110,12 @@ public class TileEntityWindGenerator extends TileEntityInventory implements IWin
             final float hitZ
     ) {
         ItemStack stack = player.getHeldItem(hand);
-        if(this.getRotor() != null && stack.getItem() instanceof ItemWindRod){
+        if (this.getRotor() != null && stack.getItem() instanceof ItemWindRod) {
             ItemStack rotor = this.slot.get();
-            if(((ItemWindRod)stack.getItem()).getLevel(this.getRotor().getLevel(),stack.getItemDamage())){
+            if (((ItemWindRod) stack.getItem()).getLevel(this.getRotor().getLevel(), stack.getItemDamage())) {
 
-                if(rotor.getItemDamage() >= rotor.getMaxDamage() * 0.25){
-                    this.slot.damage((int) -(rotor.getMaxDamage() * 0.25), false, 0);
+                if (rotor.getItemDamage() >= rotor.getMaxDamage() * 0.25) {
+                    this.slot.damage((int) -(rotor.getMaxDamage() * 0.25), 0);
                     stack.shrink(1);
                     return true;
                 }
@@ -149,39 +163,49 @@ public class TileEntityWindGenerator extends TileEntityInventory implements IWin
         IC2.network.get(true).updateTileEntityField(this, "facing");
         return fac;
     }
+
     public void update_generator() {
         this.work = true;
-        for (int i = this.pos.getX() - 8; i <= this.pos.getX() + 8; i++)
-            for (int j = this.pos.getY() - 8; j <= this.pos.getY() + 8; j++)
+        for (int i = this.pos.getX() - 8; i <= this.pos.getX() + 8; i++) {
+            for (int j = this.pos.getY() - 8; j <= this.pos.getY() + 8; j++) {
                 for (int k = this.pos.getZ() - 8; k <= this.pos.getZ() + 8; k++) {
 
-                    if(pos.getX() == i && pos.getY() == j && pos.getZ() == k)
+                    if (pos.getX() == i && pos.getY() == j && pos.getZ() == k) {
                         continue;
+                    }
                     final TileEntity tile = this.getWorld().getTileEntity(new BlockPos(i, j, k));
-                    if (tile instanceof TileEntityWindGenerator){
+                    if (tile instanceof TileEntityWindGenerator) {
                         this.work = false;
                         ((TileEntityWindGenerator) tile).work = false;
                     }
                 }
+            }
+        }
         IC2.network.get(true).updateTileEntityField(this, "work");
     }
+
     public void update_generator(BlockPos pos) {
         this.work = true;
-        for (int i = this.pos.getX() - 8; i <= this.pos.getX() + 8; i++)
-            for (int j = this.pos.getY() - 8; j <= this.pos.getY() + 8; j++)
+        for (int i = this.pos.getX() - 8; i <= this.pos.getX() + 8; i++) {
+            for (int j = this.pos.getY() - 8; j <= this.pos.getY() + 8; j++) {
                 for (int k = this.pos.getZ() - 8; k <= this.pos.getZ() + 8; k++) {
-                    if(this.pos.getX() == i && this.pos.getY() == j && this.pos.getZ() == k)
+                    if (this.pos.getX() == i && this.pos.getY() == j && this.pos.getZ() == k) {
                         continue;
-                    if(pos.getX() == i && pos.getY() == j && pos.getZ() == k)
+                    }
+                    if (pos.getX() == i && pos.getY() == j && pos.getZ() == k) {
                         continue;
+                    }
                     final TileEntity tile = this.getWorld().getTileEntity(new BlockPos(i, j, k));
-                    if (tile instanceof TileEntityWindGenerator){
+                    if (tile instanceof TileEntityWindGenerator) {
                         this.work = false;
                         ((TileEntityWindGenerator) tile).work = false;
                     }
                 }
+            }
+        }
         IC2.network.get(true).updateTileEntityField(this, "work");
     }
+
     @Override
     public EnumRotorSide getRotorSide() {
         return this.rotorSide;
@@ -221,13 +245,28 @@ public class TileEntityWindGenerator extends TileEntityInventory implements IWin
 
     protected void updateEntityServer() {
         super.updateEntityServer();
-        if(!this.work) {
-            if(generation != 0)
+        this.timers = WindSystem.windSystem.getTime();
+        this.wind_side = WindSystem.windSystem.getWindSide();
+        this.enumTypeWind = WindSystem.windSystem.getEnumTypeWind();
+        if (this.need_repair && this.getRotor() != null) {
+            this.slot_blades.work();
+        }
+        if (!this.work || !can_work) {
+            if (generation != 0) {
                 generation = 0;
+            }
             return;
         }
-        generation = 0;
-        if (this.world.provider.getWorldTime() % 20 == 0) {
+
+        if (this.can_repair) {
+            if (this.time != 0) {
+                if (this.world.provider.getWorldTime() % (this.time * 20L) == 0) {
+                    this.slot.damage(-1, 0);
+
+                }
+            }
+        }
+        if (this.world.provider.getWorldTime() % 30 == 0) {
             if (this.getRotor() != null) {
                 space = checkSpace();
                 IC2.network.get(true).updateTileEntityField(this, "space");
@@ -239,8 +278,9 @@ public class TileEntityWindGenerator extends TileEntityInventory implements IWin
             }
         }
         this.tick++;
-        if(this.tick >= 40)
+        if (this.tick >= 40) {
             this.tick = 40;
+        }
         if (space && (this.getRotor() != null && this.slot.get(0).getItemDamage() < this.slot.get(0).getMaxDamage() - 1)) {
             if (!this.getActive()) {
                 this.setActive(true);
@@ -256,11 +296,17 @@ public class TileEntityWindGenerator extends TileEntityInventory implements IWin
                 }
                 return;
             }
-
-            generation = WindSystem.windSystem.getPowerFromWindRotor(this.world, this.pos, this, this.getItemStack());
+            this.wind_speed = WindSystem.windSystem.getWind_Strength();
+            if (this.getMinWind() != 0) {
+                if (world.getWorldTime() % 40 == 0) {
+                    generation = WindSystem.windSystem.getPowerFromWindRotor(this.world, this.pos, this, this.getItemStack());
+                }
+            } else {
+                generation = WindSystem.windSystem.getPowerFromWindRotor(this.world, this.pos, this, this.getItemStack());
+            }
             this.energy.addEnergy(generation);
             if (this.world.getWorldTime() % 20 == 0) {
-                this.slot.damage(1, false, this.addition_strength);
+                this.slot.damage(1, this.addition_strength);
             }
         }
     }
@@ -281,22 +327,29 @@ public class TileEntityWindGenerator extends TileEntityInventory implements IWin
             IC2.network.get(true).updateTileEntityField(this, str);
         }
         update_generator();
-        if(this.getRotor() != null)
-        this.energy.setSourceTier(this.getRotor().getSourceTier());
-
+        if (this.getRotor() != null) {
+            this.energy.setSourceTier(this.getRotor().getSourceTier());
+        }
+        this.can_work = this.getWorld().provider.hasSkyLight() &&
+                !this.getWorld().provider.isNether();
+        this.timers = WindSystem.windSystem.getTime();
+        this.wind_side = WindSystem.windSystem.getWindSide();
+        this.enumTypeWind = WindSystem.windSystem.getEnumTypeWind();
     }
 
     @Override
     protected void onUnloaded() {
         MinecraftForge.EVENT_BUS.post(new WindGeneratorEvent(this, this.getWorld(), false));
-        for (int i = this.pos.getX() - 8; i <= this.pos.getX() + 8; i++)
-            for (int j = this.pos.getY() - 8; j <= this.pos.getY() + 8; j++)
+        for (int i = this.pos.getX() - 8; i <= this.pos.getX() + 8; i++) {
+            for (int j = this.pos.getY() - 8; j <= this.pos.getY() + 8; j++) {
                 for (int k = this.pos.getZ() - 8; k <= this.pos.getZ() + 8; k++) {
                     final TileEntity tile = this.getWorld().getTileEntity(new BlockPos(i, j, k));
-                    if (tile instanceof TileEntityWindGenerator){
-                        ((TileEntityWindGenerator) tile).update_generator( this.pos);
+                    if (tile instanceof TileEntityWindGenerator) {
+                        ((TileEntityWindGenerator) tile).update_generator(this.pos);
                     }
                 }
+            }
+        }
         super.onUnloaded();
     }
 
@@ -314,6 +367,7 @@ public class TileEntityWindGenerator extends TileEntityInventory implements IWin
         ret.add("slot");
         ret.add("space");
         ret.add("coefficient");
+        ret.add("wind_side");
         ret.add("angle");
 
         return ret;
@@ -321,11 +375,24 @@ public class TileEntityWindGenerator extends TileEntityInventory implements IWin
 
     @Override
     public float getAngle() {
-        if (this.speed != 0.0F && this.work  && (this.getRotor() != null && this.slot.get(0).getItemDamage() < this.slot.get(0).getMaxDamage() - 1)) {
+        if (this.getWorld().provider.getDimension() != 0) {
+            return 0;
+        }
+        if (this.speed != 0.0F && this.work && (this.getRotor() != null && this.slot.get(0).getItemDamage() < this.slot
+                .get(0)
+                .getMaxDamage() - 1)) {
             final long k = (System.currentTimeMillis() - this.lastcheck);
-            this.angle += (float) k * this.speed * this.getCoefficient();
+            if (this.mind_wind != 0) {
+                this.angle += (float) k * WindSystem.windSystem.getSpeed(Math.min(
+                        24.7 + this.mind_speed,
+                        WindSystem.windSystem.getSpeedFromPower(this.getPos(), this,
+                                this.generation
+                        )
+                ) * this.getCoefficient());
+            } else {
+                this.angle += (float) k * this.speed * this.getCoefficient();
+            }
             this.angle %= 360.0F;
-
         }
 
         this.lastcheck = System.currentTimeMillis();
@@ -357,6 +424,9 @@ public class TileEntityWindGenerator extends TileEntityInventory implements IWin
         this.addition_power = 0;
         this.addition_efficient = 0;
         this.addition_strength = 0;
+        this.time = 0;
+        this.mind_speed = 0;
+        this.mind_wind = 0;
         if (this.getRotor() != null) {
             final List<RotorUpgradeItemInform> list = RotorUpgradeSystem.instance.getInformation(
                     this.getItemStack());
@@ -378,9 +448,26 @@ public class TileEntityWindGenerator extends TileEntityInventory implements IWin
                         i), list);
                 this.addition_power += modules == null ? 0 : modules.number * modules.upgrade.getCoef();
             }
+            for (int i = 17; i < 20; i++) {
+                final RotorUpgradeItemInform modules = RotorUpgradeSystem.instance.getModules(EnumInfoRotorUpgradeModules.getFromID(
+                        i), list);
+                this.time = modules == null ? 0 : (int) modules.upgrade.getCoef();
+            }
+            for (int i = 11; i < 14; i++) {
+                final RotorUpgradeItemInform modules = RotorUpgradeSystem.instance.getModules(EnumInfoRotorUpgradeModules.getFromID(
+                        i), list);
+                this.mind_wind = modules == null ? 0 : (int) modules.upgrade.getCoef();
+            }
+            for (int i = 14; i < 17; i++) {
+                final RotorUpgradeItemInform modules = RotorUpgradeSystem.instance.getModules(EnumInfoRotorUpgradeModules.getFromID(
+                        i), list);
+                this.mind_speed = modules == null ? 0 : (int) modules.upgrade.getCoef();
+            }
         }
         IC2.network.get(true).updateTileEntityField(this, "change_facing");
         IC2.network.get(true).updateTileEntityField(this, "min_level");
+        IC2.network.get(true).updateTileEntityField(this, "mind_wind");
+        IC2.network.get(true).updateTileEntityField(this, "mind_speed");
 
         if (this.change_facing) {
             WindSystem.windSystem.getNewPositionOfMechanism(this);
@@ -413,6 +500,31 @@ public class TileEntityWindGenerator extends TileEntityInventory implements IWin
     }
 
     @Override
+    public int getTime() {
+        return this.time;
+    }
+
+    @Override
+    public boolean need_repair() {
+        return this.need_repair;
+    }
+
+    @Override
+    public boolean can_repair() {
+        return this.can_repair;
+    }
+
+    @Override
+    public int getMinWind() {
+        return this.mind_wind;
+    }
+
+    @Override
+    public int getMinWindSpeed() {
+        return this.mind_speed;
+    }
+
+    @Override
     public ContainerWindGenerator getGuiContainer(final EntityPlayer entityPlayer) {
         return new ContainerWindGenerator(this, entityPlayer);
     }
@@ -430,9 +542,9 @@ public class TileEntityWindGenerator extends TileEntityInventory implements IWin
 
     @Override
     public void onNetworkEvent(final EntityPlayer entityPlayer, final int i) {
-        if(this.tick >= 20){
-        WindSystem.windSystem.getNewFacing(this.getFacing(), this);
-        this.tick = 0;
+        if (this.tick >= 20) {
+            WindSystem.windSystem.getNewFacing(this.getFacing(), this);
+            this.tick = 0;
         }
     }
 

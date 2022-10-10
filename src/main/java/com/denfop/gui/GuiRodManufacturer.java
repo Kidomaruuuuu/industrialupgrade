@@ -5,10 +5,9 @@ import com.denfop.api.gui.Component;
 import com.denfop.api.gui.EnumTypeComponent;
 import com.denfop.api.gui.GuiComponent;
 import com.denfop.container.ContainerRodManufacturer;
-import ic2.core.GuiIC2;
 import net.minecraft.util.ResourceLocation;
 
-public class GuiRodManufacturer extends GuiIC2<ContainerRodManufacturer> {
+public class GuiRodManufacturer extends GuiIU<ContainerRodManufacturer> {
 
     private final GuiComponent component;
     ContainerRodManufacturer container;
@@ -16,7 +15,8 @@ public class GuiRodManufacturer extends GuiIC2<ContainerRodManufacturer> {
     public GuiRodManufacturer(ContainerRodManufacturer guiContainer) {
         super(guiContainer);
         this.container = guiContainer;
-        this.component = new GuiComponent(this,117,59, EnumTypeComponent.ENERGY, new Component<>(this.container.base.energy));
+        this.componentList.clear();
+        this.component = new GuiComponent(this, 117, 59, EnumTypeComponent.ENERGY, new Component<>(this.container.base.energy));
     }
 
     protected void drawForegroundLayer(int par1, int par2) {
@@ -28,7 +28,7 @@ public class GuiRodManufacturer extends GuiIC2<ContainerRodManufacturer> {
     protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
         super.drawGuiContainerBackgroundLayer(f, x, y);
         this.mc.getTextureManager().bindTexture(getTexture());
-         int progress = (int) (24.0F * this.container.base.getProgress());
+        int progress = (int) (24.0F * this.container.base.getProgress());
         int xoffset = (this.width - this.xSize) / 2;
         int yoffset = (this.height - this.ySize) / 2;
         if (progress > 0) {
@@ -36,7 +36,7 @@ public class GuiRodManufacturer extends GuiIC2<ContainerRodManufacturer> {
         }
         this.mc.getTextureManager().bindTexture(new ResourceLocation("ic2", "textures/gui/infobutton.png"));
         this.drawTexturedRect(3.0D, 3.0D, 10.0D, 10.0D, 0.0D, 0.0D);
-        this.component.drawBackground(xoffset,yoffset);
+        this.component.drawBackground(xoffset, yoffset);
 
     }
 

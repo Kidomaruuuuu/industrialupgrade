@@ -53,8 +53,8 @@ public abstract class TileEntityBaseGenStone extends TileEntityElectricMachine i
         this.defaultTier = aDefaultTier;
         this.defaultEnergyStorage = energyPerTick * length;
         this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
-        this.upgradeSlot.setStackSizeLimit(1);
         this.output = null;
+        this.upgradeSlot.setStackSizeLimit(2);
     }
 
     public static int applyModifier(int base, int extra, double multiplier) {
@@ -66,18 +66,21 @@ public abstract class TileEntityBaseGenStone extends TileEntityElectricMachine i
         super.readFromNBT(nbttagcompound);
         this.progress = nbttagcompound.getShort("progress");
     }
+
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
         if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             tooltip.add(Localization.translate("press.lshift"));
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate("iu.machines_work_energy_type_eu"));
+            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate(
+                    "iu.machines_work_energy_type_eu"));
             tooltip.add(Localization.translate("iu.machines_work_length") + this.defaultOperationLength);
         }
-        super.addInformation(stack,tooltip,advanced);
+        super.addInformation(stack, tooltip, advanced);
 
     }
+
     public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound) {
         super.writeToNBT(nbttagcompound);
         nbttagcompound.setShort("progress", this.progress);
@@ -162,13 +165,11 @@ public abstract class TileEntityBaseGenStone extends TileEntityElectricMachine i
     }
 
     public void operate(MachineRecipe output) {
-        for (int i = 0; i < this.operationsPerTick; i++) {
-            List<ItemStack> processResult = output.getRecipe().output.items;
-            operateOnce(output, processResult);
-            if (this.output == null) {
-                break;
-            }
-        }
+
+        List<ItemStack> processResult = output.getRecipe().output.items;
+        operateOnce(output, processResult);
+
+
     }
 
     public void operateOnce(MachineRecipe output, List<ItemStack> processResult) {

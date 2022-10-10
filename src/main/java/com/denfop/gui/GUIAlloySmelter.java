@@ -36,6 +36,12 @@ public class GuiAlloySmelter extends GuiIC2<ContainerDoubleElectricMachine> {
         new AdvArea(this, 58, 35, 69, 50)
                 .withTooltip(tooltip2)
                 .drawForeground(mouseX, mouseY);
+        new AdvArea(this, 80, 35, 101, 49)
+                .withTooltip(Localization.translate("gui.MolecularTransformer.progress") + ": " + (int) (Math.min(
+                        this.container.base.getProgress(),
+                        1D
+                ) * 100) + "%")
+                .drawForeground(mouseX, mouseY);
     }
 
     protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {

@@ -3,6 +3,7 @@ package com.denfop.tiles.mechanism.triple.heat;
 import com.denfop.IUItem;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
+import com.denfop.api.recipe.IHasRecipe;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.api.recipe.RecipeOutput;
@@ -25,7 +26,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-public class TileEntityAdvAlloySmelter extends TileEntityTripleElectricMachine {
+public class TileEntityAdvAlloySmelter extends TileEntityTripleElectricMachine implements IHasRecipe {
 
     public final HeatComponent heat;
     private boolean auto;
@@ -35,9 +36,21 @@ public class TileEntityAdvAlloySmelter extends TileEntityTripleElectricMachine {
         this.auto = false;
         this.heat = this.addComponent(HeatComponent
                 .asBasicSink(this, 5000));
+        Recipes.recipes.addInitRecipes(this);
     }
 
-    public static void init() {
+    public static void addAlloysmelter(String container, String fill, String fill1, ItemStack output, int temperature) {
+        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
+        final NBTTagCompound nbt = ModUtils.nbt();
+        nbt.setShort("temperature", (short) temperature);
+        Recipes.recipes.addRecipe("advalloysmelter", new BaseMachineRecipe(
+                new Input(input.forOreDict(container), input.forOreDict(fill), input.forOreDict(fill1)),
+                new RecipeOutput(nbt, output)
+        ));
+
+    }
+
+    public void init() {
         addAlloysmelter("ingotCopper", "ingotZinc", "ingotLead", new ItemStack(IUItem.alloysingot, 1, 3), 4500);
         addAlloysmelter("ingotAluminium", "ingotMagnesium", "ingotManganese", new ItemStack(IUItem.alloysingot, 1, 5), 4000);
         addAlloysmelter("ingotAluminum", "ingotMagnesium", "ingotManganese", new ItemStack(IUItem.alloysingot, 1, 5), 4000);
@@ -51,28 +64,17 @@ public class TileEntityAdvAlloySmelter extends TileEntityTripleElectricMachine {
                 new ItemStack(IUItem.alloysingot, 1, 0), 3000
         );
         addAlloysmelter("ingotAluminium",
-                "ingotVanady", "ingotCobalt",
+                "ingotVanadium", "ingotCobalt",
                 new ItemStack(IUItem.alloysingot, 1, 6), 4500
         );
         addAlloysmelter("ingotAluminum",
-                "ingotVanady", "ingotCobalt",
+                "ingotVanadium", "ingotCobalt",
                 new ItemStack(IUItem.alloysingot, 1, 6), 4500
         );
         addAlloysmelter("ingotChromium",
                 "ingotTungsten", "ingotNickel",
                 new ItemStack(IUItem.alloysingot, 1, 7), 5000
         );
-    }
-
-    public static void addAlloysmelter(String container, String fill, String fill1, ItemStack output, int temperature) {
-        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
-        final NBTTagCompound nbt = ModUtils.nbt();
-        nbt.setShort("temperature", (short) temperature);
-        Recipes.recipes.addRecipe("advalloysmelter", new BaseMachineRecipe(
-                new Input(input.forOreDict(container), input.forOreDict(fill), input.forOreDict(fill1)),
-                new RecipeOutput(nbt, output)
-        ));
-
     }
 
     protected List<ItemStack> getWrenchDrops(EntityPlayer player, int fortune) {

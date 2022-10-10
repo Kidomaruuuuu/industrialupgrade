@@ -6,6 +6,7 @@ import com.denfop.IUItem;
 import com.denfop.Ic2Items;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
+import com.denfop.api.recipe.IHasRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.InvSlotRecipes;
@@ -45,7 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TileEntityDoubleMolecular extends TileEntityElectricMachine implements
-        IEnergyReceiver, INetworkClientTileEntityEventListener, IUpdateTick {
+        IEnergyReceiver, INetworkClientTileEntityEventListener, IUpdateTick, IHasRecipe, IIsMolecular {
 
     public boolean need;
     public MachineRecipe output;
@@ -73,9 +74,30 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
         this.energy = this.addComponent(AdvEnergy.asBasicSink(this, 0, 14).addManagedSlot(this.dischargeSlot));
         this.output = null;
         this.need = false;
+        Recipes.recipes.addInitRecipes(this);
     }
 
-    public static void init() {
+    public static void addrecipe(ItemStack stack, ItemStack stack2, ItemStack stack1, double energy) {
+        NBTTagCompound nbt = new NBTTagCompound();
+        nbt.setDouble("energy", energy);
+        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
+        Recipes.recipes.addRecipe("doublemolecular", new BaseMachineRecipe(
+                new Input(input.forStack(stack), input.forStack(stack2)),
+                new RecipeOutput(nbt, stack1)
+        ));
+    }
+
+    public static void addrecipe(ItemStack stack, String stack2, ItemStack stack1, double energy) {
+        NBTTagCompound nbt = new NBTTagCompound();
+        nbt.setDouble("energy", energy);
+        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
+        Recipes.recipes.addRecipe("doublemolecular", new BaseMachineRecipe(
+                new Input(input.forStack(stack), input.forOreDict(stack2)),
+                new RecipeOutput(nbt, stack1)
+        ));
+    }
+
+    public void init() {
 
 
         addrecipe(
@@ -443,26 +465,6 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
         );
     }
 
-    public static void addrecipe(ItemStack stack, ItemStack stack2, ItemStack stack1, double energy) {
-        NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setDouble("energy", energy);
-        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
-        Recipes.recipes.addRecipe("doublemolecular", new BaseMachineRecipe(
-                new Input(input.forStack(stack), input.forStack(stack2)),
-                new RecipeOutput(nbt, stack1)
-        ));
-    }
-
-    public static void addrecipe(ItemStack stack, String stack2, ItemStack stack1, double energy) {
-        NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setDouble("energy", energy);
-        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
-        Recipes.recipes.addRecipe("doublemolecular", new BaseMachineRecipe(
-                new Input(input.forStack(stack), input.forOreDict(stack2)),
-                new RecipeOutput(nbt, stack1)
-        ));
-    }
-
     protected List<ItemStack> getWrenchDrops(EntityPlayer player, int fortune) {
         List<ItemStack> ret = super.getWrenchDrops(player, fortune);
         if (this.rf) {
@@ -548,6 +550,8 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
             inputSlot.load();
             this.setOverclockRates();
             this.onUpdate();
+            IC2.network.get(true).updateTileEntityField(this, "redstoneMode");
+
         }
 
     }
@@ -575,7 +579,6 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
                 this.redstoneMode = 0;
             }
             IC2.network.get(true).updateTileEntityField(this, "redstoneMode");
-            this.getWorld().notifyBlockUpdate(this.getPos(), this.getBlockState(), this.getBlockState(), 2);
         }
         if (event == 1) {
             this.queue = !this.queue;
@@ -853,6 +856,11 @@ public class TileEntityDoubleMolecular extends TileEntityElectricMachine impleme
     @Override
     public void setRecipeOutput(final MachineRecipe output) {
         this.output = output;
+    }
+
+    @Override
+    public int getMode() {
+        return this.redstoneMode;
     }
 
 }

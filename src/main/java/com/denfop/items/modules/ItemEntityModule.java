@@ -73,12 +73,12 @@ public class ItemEntityModule extends ItemMulti<ItemEntityModule.Types> implemen
             entity.writeToNBT(root);
             root.setString("nameEntity", entity.getName());
             root.setInteger("id_mob", entity.getEntityId());
-            System.out.println(entityId);
-            System.out.println(EntityList.getKey(entity));
+
 
             CapturedMobUtils capturedMobUtils = CapturedMobUtils.create(entity);
-           if(capturedMobUtils == null)
-               return false;
+            if (capturedMobUtils == null) {
+                return false;
+            }
             entity.setDead();
             stack.shrink(1);
             ItemStack stack1 = capturedMobUtils.toStack(this, 1, 1);

@@ -207,15 +207,30 @@ import com.denfop.integration.jei.vein.VeinWrapper;
 import com.denfop.integration.jei.watergenerator.GenWaterCategory;
 import com.denfop.integration.jei.watergenerator.GenWaterHandler;
 import com.denfop.integration.jei.watergenerator.GenWaterWrapper;
-import crafttweaker.mods.jei.JEI;
-import crafttweaker.mods.jei.JEIAddonPlugin;
+import com.denfop.integration.jei.worldcollector.aer.AerCategory;
+import com.denfop.integration.jei.worldcollector.aer.AerHandler;
+import com.denfop.integration.jei.worldcollector.aer.AerWrapper;
+import com.denfop.integration.jei.worldcollector.aqua.AquaCategory;
+import com.denfop.integration.jei.worldcollector.aqua.AquaHandler;
+import com.denfop.integration.jei.worldcollector.aqua.AquaWrapper;
+import com.denfop.integration.jei.worldcollector.crystallize.CrystallizeCategory;
+import com.denfop.integration.jei.worldcollector.crystallize.CrystallizeHandler;
+import com.denfop.integration.jei.worldcollector.crystallize.CrystallizeWrapper;
+import com.denfop.integration.jei.worldcollector.earth.EarthCategory;
+import com.denfop.integration.jei.worldcollector.earth.EarthHandler;
+import com.denfop.integration.jei.worldcollector.earth.EarthWrapper;
+import com.denfop.integration.jei.worldcollector.end.EndCategory;
+import com.denfop.integration.jei.worldcollector.end.EndHandler;
+import com.denfop.integration.jei.worldcollector.end.EndWrapper;
+import com.denfop.integration.jei.worldcollector.nether.NetherCategory;
+import com.denfop.integration.jei.worldcollector.nether.NetherHandler;
+import com.denfop.integration.jei.worldcollector.nether.NetherWrapper;
 import ic2.api.recipe.Recipes;
 import ic2.core.block.ITeBlock;
 import ic2.core.block.TeBlockRegistry;
 import ic2.core.ref.TeBlock;
 import ic2.jeiIntegration.recipe.machine.DynamicCategory;
 import ic2.jeiIntegration.recipe.machine.IORecipeCategory;
-import ic2.jeiIntegration.recipe.machine.MetalFormerCategory;
 import ic2.jeiIntegration.recipe.machine.RecyclerCategory;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.IJeiRuntime;
@@ -298,6 +313,13 @@ public final class JEICompat implements IModPlugin {
         registry.addRecipeCategories(new MQuarryCategory(registry.getJeiHelpers().getGuiHelper()));
         registry.addRecipeCategories(new AirColCategory(registry.getJeiHelpers().getGuiHelper()));
         registry.addRecipeCategories(new CMQuarryCategory(registry.getJeiHelpers().getGuiHelper()));
+
+        registry.addRecipeCategories(new CrystallizeCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new AerCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new AquaCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new EarthCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new NetherCategory(registry.getJeiHelpers().getGuiHelper()));
+        registry.addRecipeCategories(new EndCategory(registry.getJeiHelpers().getGuiHelper()));
 
 
     }
@@ -1302,10 +1324,83 @@ public final class JEICompat implements IModPlugin {
         this.addMachineRecipes(registry, new RecyclerCategory(guiHelper), BlockSimpleMachine.recycler_iu);
 
 
+        registry.addRecipes(
+                CrystallizeHandler.getRecipes(),
+                new CrystallizeCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes(CrystallizeHandler.class, CrystallizeWrapper::new,
+                BlockBaseMachine3.crystallize.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.basemachine2, 1, 39),
+                new CrystallizeCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+        registry.addRecipes(
+                NetherHandler.getRecipes(),
+                new NetherCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes(NetherHandler.class, NetherWrapper::new,
+                BlockBaseMachine3.nether_assembler.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.basemachine2, 1, 37),
+                new NetherCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+        registry.addRecipes(
+                AerHandler.getRecipes(),
+                new AerCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes(AerHandler.class, AerWrapper::new,
+                BlockBaseMachine3.aer_assembler.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.basemachine2, 1, 34),
+                new AerCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+        registry.addRecipes(
+                AquaHandler.getRecipes(),
+                new AquaCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes(AquaHandler.class, AquaWrapper::new,
+                BlockBaseMachine3.aqua_assembler.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.basemachine2, 1, 35),
+                new AquaCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+        registry.addRecipes(
+                EarthHandler.getRecipes(),
+                new EarthCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes(EarthHandler.class, EarthWrapper::new,
+                BlockBaseMachine3.earth_assembler.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.basemachine2, 1, 36),
+                new EarthCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+        registry.addRecipes(
+                EndHandler.getRecipes(),
+                new EndCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
+
+        registry.handleRecipes(EndHandler.class, EndWrapper::new,
+                BlockBaseMachine3.ender_assembler.getName()
+        );
+        registry.addRecipeCatalyst(
+                new ItemStack(IUItem.basemachine2, 1, 23),
+                new EndCategory(registry.getJeiHelpers().getGuiHelper()).getUid()
+        );
     }
+
     public void onRuntimeAvailable(@Nonnull IJeiRuntime iJeiRuntime) {
         if (this.itemRegistry != null) {
-             this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.WindKineticGenerator));
+            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.WindKineticGenerator));
             this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.blastfurnace));
             this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.windmeter));
             this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.steelrotor));
@@ -1342,7 +1437,10 @@ public final class JEICompat implements IModPlugin {
             this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.silverDust));
             this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.silverIngot));
             this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.crushedSilverOre));
-            this.itemRegistry.removeIngredientsAtRuntime(VanillaTypes.ITEM, Collections.singleton(Ic2Items.purifiedCrushedSilverOre));
+            this.itemRegistry.removeIngredientsAtRuntime(
+                    VanillaTypes.ITEM,
+                    Collections.singleton(Ic2Items.purifiedCrushedSilverOre)
+            );
 
         }
 

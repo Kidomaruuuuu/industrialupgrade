@@ -72,18 +72,21 @@ public class TileEntityBasePlasticPlateCreator extends TileEntityElectricLiquidT
         this.progress = nbttagcompound.getShort("progress");
 
     }
+
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
         if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             tooltip.add(Localization.translate("press.lshift"));
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate("iu.machines_work_energy_type_eu"));
+            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate(
+                    "iu.machines_work_energy_type_eu"));
             tooltip.add(Localization.translate("iu.machines_work_length") + this.defaultOperationLength);
         }
-        super.addInformation(stack,tooltip,advanced);
+        super.addInformation(stack, tooltip, advanced);
 
     }
+
     public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound) {
         super.writeToNBT(nbttagcompound);
         nbttagcompound.setShort("progress", this.progress);

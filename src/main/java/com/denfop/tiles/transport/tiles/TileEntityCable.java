@@ -2,7 +2,6 @@ package com.denfop.tiles.transport.tiles;
 
 import com.denfop.IUItem;
 import com.denfop.api.energy.IAdvConductor;
-import com.denfop.tiles.transport.CableFoam;
 import com.denfop.tiles.transport.types.CableType;
 import ic2.api.energy.EnergyNet;
 import ic2.api.energy.event.EnergyTileLoadEvent;
@@ -12,14 +11,9 @@ import ic2.api.energy.tile.IEnergyEmitter;
 import ic2.api.energy.tile.IEnergyTile;
 import ic2.api.network.INetworkTileEntityEventListener;
 import ic2.core.IC2;
-import ic2.core.IWorldTickCallback;
-import ic2.core.block.BlockFoam;
-import ic2.core.block.BlockFoam.FoamType;
 import ic2.core.block.TileEntityBlock;
-import ic2.core.block.comp.Obscuration;
 import ic2.core.block.state.Ic2BlockState.Ic2BlockStateInstance;
 import ic2.core.block.state.UnlistedProperty;
-import ic2.core.ref.TeBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.entity.Entity;
@@ -53,33 +47,23 @@ public class TileEntityCable extends TileEntityBlock implements IAdvConductor, I
             "renderstate",
             TileEntityCable.CableRenderState.class
     );
-    private final Obscuration obscuration;
     public boolean addedToEnergyNet;
     public int type;
     protected CableType cableType;
-    protected int insulation;
-    private CableFoam foam;
     private byte connectivity;
     private volatile TileEntityCable.CableRenderState renderState;
-    private IWorldTickCallback continuousUpdate;
 
     public TileEntityCable(CableType cableType, int insulation) {
         this();
         this.cableType = cableType;
-        this.insulation = insulation;
         this.type = cableType.ordinal();
     }
 
     public TileEntityCable() {
         this.cableType = CableType.glass;
-        this.foam = CableFoam.None;
         this.connectivity = 0;
         this.addedToEnergyNet = false;
-        this.continuousUpdate = null;
-        this.obscuration = this.addComponent(new Obscuration(
-                this,
-                () -> IC2.network.get(true).updateTileEntityField(TileEntityCable.this, "obscuration")
-        ));
+
     }
 
     public static TileEntityCable delegate(CableType cableType, int insulation) {
@@ -107,9 +91,7 @@ public class TileEntityCable extends TileEntityBlock implements IAdvConductor, I
             MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent(this));
             this.addedToEnergyNet = true;
             this.updateConnectivity();
-            if (this.foam == CableFoam.Soft) {
-                this.changeFoam(this.foam, true);
-            }
+
         }
 
     }
@@ -120,10 +102,6 @@ public class TileEntityCable extends TileEntityBlock implements IAdvConductor, I
             this.addedToEnergyNet = false;
         }
 
-        if (this.continuousUpdate != null) {
-            IC2.tickHandler.removeContinuousWorldTick(this.getWorld(), this.continuousUpdate);
-            this.continuousUpdate = null;
-        }
 
         super.onUnloaded();
     }
@@ -142,10 +120,8 @@ public class TileEntityCable extends TileEntityBlock implements IAdvConductor, I
     }
 
     protected List<AxisAlignedBB> getAabbs(boolean forCollision) {
-        if (this.foam == CableFoam.Hardened || this.foam == CableFoam.Soft && !forCollision) {
-            return super.getAabbs(forCollision);
-        } else {
-            float th = this.cableType.thickness + (float) (this.insulation * 2) * 0.0625F;
+        {
+            float th = this.cableType.thickness + (float) (0) * 0.0625F;
             float sp = (1.0F - th) / 2.0F;
             List<AxisAlignedBB> ret = new ArrayList<>(7);
             ret.add(new AxisAlignedBB(
@@ -301,7 +277,7 @@ public class TileEntityCable extends TileEntityBlock implements IAdvConductor, I
     }
 
     protected int getLightOpacity() {
-        return this.foam == CableFoam.Hardened ? 255 : 0;
+        return 0;
     }
 
 
@@ -310,7 +286,7 @@ public class TileEntityCable extends TileEntityBlock implements IAdvConductor, I
     }
 
     protected boolean onRemovedByPlayer(EntityPlayer player, boolean willHarvest) {
-        return !this.changeFoam(CableFoam.None, false) && super.onRemovedByPlayer(player, willHarvest);
+        return super.onRemovedByPlayer(player, willHarvest);
     }
 
 
@@ -336,13 +312,9 @@ public class TileEntityCable extends TileEntityBlock implements IAdvConductor, I
     }
 
     public double getInsulationEnergyAbsorption() {
-        if (this.cableType.maxInsulation == 0) {
-            return 2.147483647E9D;
-        } else {
-            return this.cableType == CableType.glass
-                    ? EnergyNet.instance.getPowerFromTier(this.insulation)
-                    : EnergyNet.instance.getPowerFromTier(this.insulation + 1);
-        }
+
+        return 2.147483647E9D;
+
     }
 
     public double getInsulationBreakdownEnergy() {
@@ -366,26 +338,19 @@ public class TileEntityCable extends TileEntityBlock implements IAdvConductor, I
     public List<String> getNetworkedFields() {
         List<String> ret = new ArrayList<>();
         ret.add("cableType");
-        ret.add("insulation");
-        ret.add("foam");
         ret.add("connectivity");
-        ret.add("obscuration");
         ret.addAll(super.getNetworkedFields());
         return ret;
     }
 
     public void onNetworkUpdate(String field) {
         this.updateRenderState();
-        if (field.equals("foam") && (this.foam == CableFoam.None || this.foam == CableFoam.Hardened)) {
-            this.relight();
-        }
+
 
         this.rerender();
         super.onNetworkUpdate(field);
     }
 
-    private void relight() {
-    }
 
     public void onNetworkEvent(int event) {
         World world = this.getWorld();
@@ -418,55 +383,10 @@ public class TileEntityCable extends TileEntityBlock implements IAdvConductor, I
         }
     }
 
-    private boolean changeFoam(CableFoam foam, boolean duringLoad) {
-        if (this.foam == foam && !duringLoad) {
-            return false;
-        } else {
-            World world = this.getWorld();
-            if (!world.isRemote) {
-                this.foam = foam;
-                if (this.continuousUpdate != null) {
-                    IC2.tickHandler.removeContinuousWorldTick(world, this.continuousUpdate);
-                    this.continuousUpdate = null;
-                }
-
-                if (foam != CableFoam.Hardened) {
-                    this.obscuration.clear();
-
-                }
-
-                if (foam == CableFoam.Soft) {
-                    this.continuousUpdate = world1 -> {
-                        if (world1.rand.nextFloat() < BlockFoam.getHardenChance(
-                                world1,
-                                TileEntityCable.this.pos,
-                                TileEntityCable.this.getBlockType().getState(TeBlock.cable),
-                                FoamType.normal
-                        )) {
-                            TileEntityCable.this.changeFoam(CableFoam.Hardened, false);
-                        }
-
-                    };
-                    IC2.tickHandler.requestContinuousWorldTick(world, this.continuousUpdate);
-                }
-
-                if (!duringLoad) {
-                    IC2.network.get(true).updateTileEntityField(this, "foam");
-                    world.notifyNeighborsOfStateChange(this.pos, this.getBlockType(), true);
-                    this.markDirty();
-                }
-
-            }
-            return true;
-        }
-    }
-
 
     private void updateRenderState() {
         this.renderState = new TileEntityCable.CableRenderState(
                 this.cableType,
-                this.insulation,
-                this.foam,
                 this.connectivity,
                 this.getActive()
         );
@@ -483,23 +403,17 @@ public class TileEntityCable extends TileEntityBlock implements IAdvConductor, I
     public static class CableRenderState {
 
         public final CableType type;
-        public final int insulation;
-        public final CableFoam foam;
         public final int connectivity;
         public final boolean active;
 
-        public CableRenderState(CableType type, int insulation, CableFoam foam, int connectivity, boolean active) {
+        public CableRenderState(CableType type, int connectivity, boolean active) {
             this.type = type;
-            this.insulation = insulation;
-            this.foam = foam;
             this.connectivity = connectivity;
             this.active = active;
         }
 
         public int hashCode() {
             int ret = this.type.hashCode();
-            ret = ret * 31 + this.insulation;
-            ret = ret * 31 + this.foam.hashCode();
             ret = ret * 31 + this.connectivity;
             ret = ret << 1 | (this.active ? 1 : 0);
             return ret;
@@ -512,12 +426,12 @@ public class TileEntityCable extends TileEntityBlock implements IAdvConductor, I
                 return false;
             } else {
                 TileEntityCable.CableRenderState o = (TileEntityCable.CableRenderState) obj;
-                return o.type == this.type && o.insulation == this.insulation && o.foam == this.foam && o.connectivity == this.connectivity && o.active == this.active;
+                return o.type == this.type && o.connectivity == this.connectivity && o.active == this.active;
             }
         }
 
         public String toString() {
-            return "CableState<" + this.type + ", " + this.insulation + ", " + this.foam + ", " + this.connectivity + ", " + this.active + '>';
+            return "CableState<" + this.type + ", " + this.connectivity + ", " + this.active + '>';
         }
 
     }

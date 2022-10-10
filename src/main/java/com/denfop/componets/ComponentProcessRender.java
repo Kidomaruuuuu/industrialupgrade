@@ -1,6 +1,5 @@
 package com.denfop.componets;
 
-import com.denfop.tiles.base.EnumMultiMachine;
 import com.denfop.tiles.mechanism.EnumTypeMachines;
 
 public class ComponentProcessRender {
@@ -8,9 +7,9 @@ public class ComponentProcessRender {
     private final ProcessMultiComponent process;
     private final EnumTypeMachines typeMachines;
 
-    public ComponentProcessRender(ProcessMultiComponent process, EnumTypeMachines typeMachines){
+    public ComponentProcessRender(ProcessMultiComponent process, EnumTypeMachines typeMachines) {
         this.process = process;
-        this.typeMachines=typeMachines;
+        this.typeMachines = typeMachines;
 
 
     }

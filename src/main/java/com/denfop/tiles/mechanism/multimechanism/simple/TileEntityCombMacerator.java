@@ -7,14 +7,10 @@ import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.tiles.base.EnumMultiMachine;
 import com.denfop.tiles.base.TileEntityMultiMachine;
-import com.denfop.tiles.mechanism.EnumTypeMachines;
 import ic2.api.recipe.IRecipeInputFactory;
 import ic2.core.init.Localization;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
-
-import java.util.List;
-import java.util.Random;
 
 public class TileEntityCombMacerator extends TileEntityMultiMachine {
 
@@ -24,27 +20,7 @@ public class TileEntityCombMacerator extends TileEntityMultiMachine {
                 EnumMultiMachine.COMB_MACERATOR.lenghtOperation,
                 1
         );
-    }
-
-    public static void init() {
-        for (String name : OreDictionary.getOreNames()) {
-
-            if (name.startsWith("crushed") && !name.startsWith("crushedPurified")) {
-
-                String name1 = name.substring("crushed".length());
-
-                name1 = "ore" + name1;
-
-                if (OreDictionary
-                        .getOres(name1)
-                        .size() > 0 && OreDictionary.getOres(name1) != null && OreDictionary.getOres(name) != null && OreDictionary
-                        .getOres(name)
-                        .size() > 0) {
-                    addrecipe(name1, name);
-                }
-
-            }
-        }
+        Recipes.recipes.addInitRecipes(this);
     }
 
     public static void addrecipe(String input, String output) {
@@ -68,7 +44,27 @@ public class TileEntityCombMacerator extends TileEntityMultiMachine {
 
     }
 
+    public void init() {
 
+        for (String name : OreDictionary.getOreNames()) {
+
+            if (name.startsWith("crushed") && !name.startsWith("crushedPurified")) {
+
+                String name1 = name.substring("crushed".length());
+
+                name1 = "ore" + name1;
+
+                if (OreDictionary
+                        .getOres(name1)
+                        .size() > 0 && OreDictionary.getOres(name1) != null && OreDictionary.getOres(name) != null && OreDictionary
+                        .getOres(name)
+                        .size() > 0) {
+                    addrecipe(name1, name);
+                }
+
+            }
+        }
+    }
 
     @Override
     public EnumMultiMachine getMachine() {

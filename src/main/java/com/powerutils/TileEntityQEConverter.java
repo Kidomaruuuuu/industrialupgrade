@@ -4,6 +4,7 @@ import com.denfop.api.qe.NodeQEStats;
 import com.denfop.api.qe.QENet;
 import com.denfop.componets.AdvEnergy;
 import com.denfop.componets.QEComponent;
+import com.denfop.tiles.base.TileEntityInventory;
 import ic2.api.energy.EnergyNet;
 import ic2.api.energy.NodeStats;
 import ic2.api.network.INetworkClientTileEntityEventListener;
@@ -12,7 +13,6 @@ import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlotUpgrade;
 import ic2.core.init.Localization;
 import ic2.core.util.Util;
@@ -137,9 +137,9 @@ public class TileEntityQEConverter extends TileEntityInventory implements IHasGu
         } else {
 
             if (energy2.getEnergy() > 0 && energy.getEnergy() < energy.getCapacity()) {
-                double add = Math.min(energy.getFreeEnergy(), energy2.getEnergy() * 16);
-                energy2.addEnergy(add / 16);
-                energy.useEnergy(add);
+                double add = Math.min(energy.getFreeEnergy(), energy2.getEnergy() * 10);
+                energy.addEnergy(add / 10);
+                energy2.useEnergy(add);
             }
 
         }

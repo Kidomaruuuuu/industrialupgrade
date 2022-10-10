@@ -5,6 +5,7 @@ import com.denfop.container.ContainerPlasticPlateCreator;
 import com.denfop.utils.ModUtils;
 import ic2.core.GuiIC2;
 import ic2.core.gui.TankGauge;
+import ic2.core.init.Localization;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -31,7 +32,12 @@ public class GuiPlasticPlateCreator extends GuiIC2<ContainerPlasticPlateCreator>
         new AdvArea(this, 58, 35, 69, 50)
                 .withTooltip(tooltip2)
                 .drawForeground(par1, par2);
-
+        new AdvArea(this, 80, 35, 101, 49)
+                .withTooltip(Localization.translate("gui.MolecularTransformer.progress") + ": " + (int) (Math.min(
+                        this.container.base.getProgress(),
+                        1D
+                ) * 100) + "%")
+                .drawForeground(par1, par2);
     }
 
 

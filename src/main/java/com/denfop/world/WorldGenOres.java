@@ -88,7 +88,7 @@ public class WorldGenOres implements IWorldGenerator {
         if (Config.AluminiumOre) {
             this.addOreSpawn(IUItem.ore.getStateFromMeta(1), world, random, x, y, 16, 16, 3 + random.nextInt(3), 15, 0, 70);
         }
-        if (Config.VanadyOre) {
+        if (Config.VanadiumOre) {
             this.addOreSpawn(IUItem.ore.getStateFromMeta(2), world, random, x, y, 16, 16, 3 + random.nextInt(3), 16, 0, 70);
         }
         if (Config.TungstenOre) {

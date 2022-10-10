@@ -12,7 +12,6 @@ import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.audio.AudioSource;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.util.ITooltipFlag;
@@ -59,7 +58,7 @@ public abstract class TileEntityMatterGenerator extends TileEntityInventory impl
             tooltip.add(Localization.translate("press.lshift"));
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            tooltip.add(Localization.translate("iu.matter_solid_work_info") + (int)Config.SolidMatterStorage);
+            tooltip.add(Localization.translate("iu.matter_solid_work_info") + (int) Config.SolidMatterStorage);
         }
         if (this.hasComponent(AdvEnergy.class)) {
             AdvEnergy energy = this.getComponent(AdvEnergy.class);

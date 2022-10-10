@@ -11,7 +11,7 @@ import net.minecraftforge.oredict.OreDictionary;
 public class MetalFormerRecipe {
 
     public static final String[] recipe = {"ingot", "plate", "ingot", "plate", "block"};
-    public static final String[] recipe1 = {"plate", "casing", "stik", "stik", "plate"};
+    public static final String[] recipe1 = {"plate", "casing", "stick", "stick", "plate"};
 
     public static void init() {
         for (int j = 0; j < recipe.length; j++) {

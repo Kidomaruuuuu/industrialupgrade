@@ -31,6 +31,7 @@ public class TileEntityOtherPart extends TileEntityBlock implements IOtherBlastP
     public void setMain(final IBlastMain blastMain) {
         this.blastMain = blastMain;
     }
+
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
@@ -42,9 +43,10 @@ public class TileEntityOtherPart extends TileEntityBlock implements IOtherBlastP
                 0
         ).getUnlocalizedName()));
         tooltip.add(Localization.translate("iu.blastfurnace.info4"));
-        tooltip.add(Localization.translate("iu.blastfurnace.info5") +  Localization.translate(Ic2Items.ForgeHammer.getUnlocalizedName()));
+        tooltip.add(Localization.translate("iu.blastfurnace.info5") + Localization.translate(Ic2Items.ForgeHammer.getUnlocalizedName()));
         tooltip.add(Localization.translate("iu.blastfurnace.info6"));
     }
+
     @Override
     public void onPlaced(final ItemStack stack, final EntityLivingBase placer, final EnumFacing facing) {
         super.onPlaced(stack, placer, facing);

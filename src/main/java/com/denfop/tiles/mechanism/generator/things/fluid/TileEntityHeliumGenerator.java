@@ -51,10 +51,16 @@ public class TileEntityHeliumGenerator extends TileEntityElectricMachine impleme
 
         this.energycost = 1000;
         this.outputSlot = new InvSlotOutput(this, "output", 1);
-        this.containerslot = new InvSlotConsumableLiquidByList(this, "container", Access.I, 1, InvSide.TOP, InvSlotConsumableLiquid.OpType.Fill,
+        this.containerslot = new InvSlotConsumableLiquidByList(
+                this,
+                "container",
+                Access.I,
+                1,
+                InvSide.TOP,
+                InvSlotConsumableLiquid.OpType.Fill,
                 FluidName.fluidHelium.getInstance()
         );
-         this.fluids = this.addComponent(new Fluids(this));
+        this.fluids = this.addComponent(new Fluids(this));
         this.fluidTank = this.fluids.addTank("fluidTank", 20 * 1000, InvSlot.Access.O, InvSide.ANY,
                 Fluids.fluidPredicate(FluidName.fluidHelium.getInstance())
         );

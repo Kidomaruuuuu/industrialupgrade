@@ -4,12 +4,12 @@ import com.denfop.Constants;
 import com.denfop.IUCore;
 import com.denfop.tiles.base.TileEntityAntiMagnet;
 import com.denfop.tiles.base.TileEntityAntiUpgradeBlock;
+import com.denfop.tiles.base.TileEntityAutoDigger;
 import com.denfop.tiles.base.TileEntityAutoSpawner;
 import com.denfop.tiles.base.TileEntityCombinerSEGenerators;
 import com.denfop.tiles.base.TileEntityRadiationPurifier;
 import com.denfop.tiles.mechanism.TileEntityAnalyzerChest;
 import com.denfop.tiles.mechanism.TileEntityCreatorSchedules;
-import com.denfop.tiles.mechanism.TileEntityEnderAssembler;
 import com.denfop.tiles.mechanism.TileEntityGasCombiner;
 import com.denfop.tiles.mechanism.TileEntityKineticGeneratorAssembler;
 import com.denfop.tiles.mechanism.TileEntityPrivatizer;
@@ -25,6 +25,8 @@ import com.denfop.tiles.mechanism.TileEntitySatelliteAssembler;
 import com.denfop.tiles.mechanism.TileEntitySoilAnalyzer;
 import com.denfop.tiles.mechanism.TileEntityTunerWireless;
 import com.denfop.tiles.mechanism.cooling.TileEntityCooling;
+import com.denfop.tiles.mechanism.energy.TileEntityEnergyController;
+import com.denfop.tiles.mechanism.energy.TileEntityEnergySubstitute;
 import com.denfop.tiles.mechanism.generator.things.fluid.TileEntityAirCollector;
 import com.denfop.tiles.mechanism.generator.things.fluid.TileEntityWaterGenerator;
 import com.denfop.tiles.mechanism.heat.TileEntityElectricHeat;
@@ -33,6 +35,12 @@ import com.denfop.tiles.mechanism.wind.TileEntityAdvWindGenerator;
 import com.denfop.tiles.mechanism.wind.TileEntityImpWindGenerator;
 import com.denfop.tiles.mechanism.wind.TileEntityPerWindGenerator;
 import com.denfop.tiles.mechanism.wind.TileEntitySimpleWindGenerator;
+import com.denfop.tiles.mechanism.worlcollector.TileEntityAerAssembler;
+import com.denfop.tiles.mechanism.worlcollector.TileEntityAquaAssembler;
+import com.denfop.tiles.mechanism.worlcollector.TileEntityCrystallize;
+import com.denfop.tiles.mechanism.worlcollector.TileEntityEarthAssembler;
+import com.denfop.tiles.mechanism.worlcollector.TileEntityEnderAssembler;
+import com.denfop.tiles.mechanism.worlcollector.TileEntityNetherAssembler;
 import ic2.api.item.ITeBlockSpecialItem;
 import ic2.core.block.ITeBlock;
 import ic2.core.block.TileEntityBlock;
@@ -82,6 +90,17 @@ public enum BlockBaseMachine3 implements ITeBlock, ITeBlockSpecialItem {
     adv_wind_generator(TileEntityAdvWindGenerator.class, 29),
     imp_wind_generator(TileEntityImpWindGenerator.class, 30),
     per_wind_generator(TileEntityPerWindGenerator.class, 31),
+    energy_controller(TileEntityEnergyController.class, 32),
+    substitute(TileEntityEnergySubstitute.class, 33),
+
+    aer_assembler(TileEntityAerAssembler.class, 34),
+    aqua_assembler(TileEntityAquaAssembler.class, 35),
+    earth_assembler(TileEntityEarthAssembler.class, 36),
+    nether_assembler(TileEntityNetherAssembler.class, 37),
+    auto_digger(TileEntityAutoDigger.class, 38),
+    crystallize(TileEntityCrystallize.class, 39),
+
+
     ;
 
 

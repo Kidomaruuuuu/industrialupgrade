@@ -33,7 +33,7 @@ public class RotorsRodWrapper implements IRecipeWrapper {
 
     public List<List<ItemStack>> getInputs() {
         List<ItemStack> stack = new ArrayList<>();
-        for(ItemStack inputs : this.inputstack) {
+        for (ItemStack inputs : this.inputstack) {
             if (OreDictionary.getOreIDs(inputs).length > 0) {
                 int id = OreDictionary.getOreIDs(inputs)[0];
                 stack.addAll(OreDictionary.getOres(OreDictionary.getOreName(id)));

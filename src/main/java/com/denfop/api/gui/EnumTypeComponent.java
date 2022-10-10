@@ -1,19 +1,18 @@
 package com.denfop.api.gui;
 
 public enum EnumTypeComponent {
-    ENERGY_CLASSIC(139,4,148,4,7,14,EnumTypeRender.HEIGHT,true),
-    ENERGY_RF_CLASSIC(139,18,148,18,7,14,EnumTypeRender.HEIGHT,true),
-    ENERGY(0,0,12,1,12,16,EnumTypeRender.HEIGHT,0,1,true),
-    ENERGY_WEIGHT(30,2,69,2,39,12,EnumTypeRender.WEIGHT,0,0,true),
-    ADVANCED(220,0,220,0,18,18,EnumTypeRender.WEIGHT,0,0,false),
-    IMPROVED(202,0,202,0,18,18,EnumTypeRender.WEIGHT,0,0,false),
-    PERFECT(184,0,184,0,18,18,EnumTypeRender.WEIGHT,0,0,false),
-    DEFAULT(238,0,238,0,18,18,EnumTypeRender.WEIGHT,0,0,false),
-    MULTI_PROCESS(223,50,23,50,16,24,EnumTypeRender.WEIGHT,0,0,true),
-    COLD(163,3,167,3,4,15,EnumTypeRender.HEIGHT,0,0,true),
-    EXP(163,18,167,18,4,15,EnumTypeRender.HEIGHT,0,0,true),
-    FLUID_PART(85,46,85,46,22,16,EnumTypeRender.WEIGHT,0,0,false)
-    ;
+    ENERGY_CLASSIC(139, 4, 148, 4, 7, 14, EnumTypeRender.HEIGHT, true),
+    ENERGY_RF_CLASSIC(139, 18, 148, 18, 7, 14, EnumTypeRender.HEIGHT, true),
+    ENERGY(0, 0, 12, 1, 12, 16, EnumTypeRender.HEIGHT, 0, 1, true),
+    ENERGY_WEIGHT(30, 2, 69, 2, 39, 12, EnumTypeRender.WEIGHT, 0, 0, true),
+    ADVANCED(220, 0, 220, 0, 18, 18, EnumTypeRender.WEIGHT, 0, 0, false),
+    IMPROVED(202, 0, 202, 0, 18, 18, EnumTypeRender.WEIGHT, 0, 0, false),
+    PERFECT(184, 0, 184, 0, 18, 18, EnumTypeRender.WEIGHT, 0, 0, false),
+    DEFAULT(238, 0, 238, 0, 18, 18, EnumTypeRender.WEIGHT, 0, 0, false),
+    MULTI_PROCESS(223, 50, 23, 50, 16, 24, EnumTypeRender.WEIGHT, 0, 0, true),
+    COLD(163, 3, 167, 3, 4, 15, EnumTypeRender.HEIGHT, 0, 0, true),
+    EXP(163, 18, 167, 18, 4, 15, EnumTypeRender.HEIGHT, 0, 0, true),
+    FLUID_PART(85, 46, 85, 46, 22, 16, EnumTypeRender.WEIGHT, 0, 0, false);
 
     private final int x;
     private final int y;
@@ -26,29 +25,41 @@ public enum EnumTypeComponent {
     private final int endY;
     private final boolean hasDescription;
 
-    EnumTypeComponent(int x, int y, int x1, int y1, int weight, int height, EnumTypeRender render, boolean hasDescription){
+    EnumTypeComponent(int x, int y, int x1, int y1, int weight, int height, EnumTypeRender render, boolean hasDescription) {
         this.x = x;
-        this.y= y;
+        this.y = y;
         this.x1 = x1;
         this.y1 = y1;
-        this.weight=weight;
+        this.weight = weight;
         this.height = height;
-        this.render =render;
+        this.render = render;
         this.endX = 0;
         this.endY = 0;
-        this.hasDescription=hasDescription;
+        this.hasDescription = hasDescription;
     }
-    EnumTypeComponent(int x, int y, int x1, int y1, int weight, int height, EnumTypeRender render,int endX, int endY, boolean hasDescription){
+
+    EnumTypeComponent(
+            int x,
+            int y,
+            int x1,
+            int y1,
+            int weight,
+            int height,
+            EnumTypeRender render,
+            int endX,
+            int endY,
+            boolean hasDescription
+    ) {
         this.x = x;
-        this.y= y;
+        this.y = y;
         this.x1 = x1;
         this.y1 = y1;
-        this.weight=weight;
+        this.weight = weight;
         this.height = height;
-        this.render =render;
+        this.render = render;
         this.endX = endX;
         this.endY = endY;
-        this.hasDescription=hasDescription;
+        this.hasDescription = hasDescription;
     }
 
     public int getEndX() {

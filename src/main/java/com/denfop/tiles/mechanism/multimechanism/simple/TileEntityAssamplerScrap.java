@@ -21,17 +21,7 @@ public class TileEntityAssamplerScrap extends TileEntityMultiMachine {
                 EnumMultiMachine.AssamplerScrap.lenghtOperation,
                 3
         );
-    }
-
-    public static void init() {
-        addrecipe(
-                new ItemStack(ItemName.crafting.getItemStack(CraftingItemType.rubber).getItem(), 9, 23),
-                new ItemStack(ItemName.crafting.getItemStack(CraftingItemType.rubber).getItem(), 1, 24)
-        );
-        addrecipe(
-                new ItemStack(ItemName.crafting.getItemStack(CraftingItemType.rubber).getItem(), 9, 24),
-                new ItemStack(IUItem.doublescrapBox, 1)
-        );
+        Recipes.recipes.addInitRecipes(this);
     }
 
     public static void addrecipe(ItemStack input, ItemStack output) {
@@ -44,6 +34,17 @@ public class TileEntityAssamplerScrap extends TileEntityMultiMachine {
                         ),
                         new RecipeOutput(null, output)
                 )
+        );
+    }
+
+    public void init() {
+        addrecipe(
+                new ItemStack(ItemName.crafting.getItemStack(CraftingItemType.rubber).getItem(), 9, 23),
+                new ItemStack(ItemName.crafting.getItemStack(CraftingItemType.rubber).getItem(), 1, 24)
+        );
+        addrecipe(
+                new ItemStack(ItemName.crafting.getItemStack(CraftingItemType.rubber).getItem(), 9, 24),
+                new ItemStack(IUItem.doublescrapBox, 1)
         );
     }
 

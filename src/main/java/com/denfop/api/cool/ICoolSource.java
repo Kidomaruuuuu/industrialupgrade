@@ -8,6 +8,6 @@ public interface ICoolSource extends ICoolEmitter {
 
     boolean isAllowed();
 
-    void  setAllowed(boolean allowed);
+    void setAllowed(boolean allowed);
 
 }

@@ -10,8 +10,8 @@ import com.denfop.api.heat.HeatNet;
 import com.denfop.api.qe.QENet;
 import com.denfop.api.radiationsystem.RadiationSystem;
 import com.denfop.api.recipe.BaseMachineRecipe;
-import com.denfop.api.recipe.ListRecipes;
 import com.denfop.api.recipe.RecipeInputStack;
+import com.denfop.api.recipe.RecipesCore;
 import com.denfop.api.se.SENet;
 import com.denfop.api.upgrade.BaseUpgradeSystem;
 import com.denfop.api.upgrade.UpgradeSystem;
@@ -68,7 +68,6 @@ import com.denfop.heat.HeatNetGlobal;
 import com.denfop.integration.avaritia.BlockAvaritiaSolarPanel;
 import com.denfop.integration.botania.BlockBotSolarPanel;
 import com.denfop.integration.de.BlockDESolarPanel;
-import com.denfop.integration.rs.RefinedStorageIntegration;
 import com.denfop.integration.thaumcraft.BlockThaumSolarPanel;
 import com.denfop.items.energy.EntityAdvArrow;
 import com.denfop.items.energy.ItemQuantumSaber;
@@ -82,6 +81,7 @@ import com.denfop.register.RegisterOreDictionary;
 import com.denfop.se.SENetGlobal;
 import com.denfop.tabs.TabCore;
 import com.denfop.tiles.mechanism.blastfurnace.api.BlastSystem;
+import com.denfop.tiles.mechanism.quarry.QuarryItem;
 import com.denfop.utils.KeyboardIU;
 import com.denfop.utils.Keys;
 import com.denfop.utils.ListInformationUtils;
@@ -96,7 +96,6 @@ import ic2.core.block.TeBlockRegistry;
 import ic2.core.util.SideGateway;
 import ic2.core.util.Util;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -150,7 +149,7 @@ public final class IUCore {
     public static final CreativeTabs ReactorsTab = new TabCore(6, "ReactorsTab");
     public static final CreativeTabs UpgradeTab = new TabCore(7, "UpgradeTab");
     public static final CreativeTabs BlueprintTab = new TabCore(8, "BlueprintTab");
-
+    public static final List<ITeBlock> list_teBlocks = new ArrayList<>();
     public static final Map<Integer, EnumModule> modules = new HashMap<>();
     public static final List<ItemStack> list = new ArrayList<>();
     public static final List<ItemStack> get_ore = new ArrayList<>();
@@ -163,6 +162,14 @@ public final class IUCore {
     public static final List<ItemStack> list_removing = new ArrayList<>();
     public static final List<ItemStack> list_furnace_adding = new ArrayList<>();
     public static final List<ItemStack> list_furnace_removing = new ArrayList<>();
+
+
+    public static final List<QuarryItem> list_quarry = new ArrayList<>();
+
+    public static final List<QuarryItem> get_ingot_quarry = new ArrayList<>();
+    public static final List<QuarryItem> get_crushed_quarry = new ArrayList<>();
+    public static final List<QuarryItem> get_comb_crushed_quarry = new ArrayList<>();
+
     public static boolean dynamicTrees = false;
     public static Logger log;
     @SidedProxy(clientSide = "com.denfop.proxy.ClientProxy", serverSide = "com.denfop.proxy.CommonProxy")
@@ -178,6 +185,7 @@ public final class IUCore {
     )
     public static KeyboardIU keyboard;
     public static SideGateway<NetworkManager> network;
+    public static Map<String, LootTable> lootTables = new HashMap<>();
 
     static {
         FluidRegistry.enableUniversalBucket();
@@ -323,10 +331,12 @@ public final class IUCore {
         MinecraftForge.EVENT_BUS.register(this);
         ModUtils.log = event.getModLog();
         IUCore.log = event.getModLog();
+        NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
+
         Config.loadNormalConfig(event.getSuggestedConfigurationFile());
         UpgradeSystem.system = new BaseUpgradeSystem();
         new RotorUpgradeSystem();
-        Recipes.recipes = new ListRecipes();
+        Recipes.recipes = new RecipesCore();
         proxy.regrecipemanager();
         MinecraftForge.EVENT_BUS.register(new TickHandlerIU());
 
@@ -345,7 +355,6 @@ public final class IUCore {
         initENet();
 
     }
-
 
     @SubscribeEvent
     public void getore(OreDictionary.OreRegisterEvent event) {
@@ -403,25 +412,26 @@ public final class IUCore {
         }
     }
 
-    public static Map<String,LootTable> lootTables = new HashMap<>();
     @SubscribeEvent
     public void load_table(final LootTableLoadEvent event) {
-         if(event.getName().toString().contains("entities")) {
-             StringBuilder builder = new StringBuilder(event.getName().toString());
-             int index = builder.indexOf("/");
-             int index1 = builder.indexOf(":");
-             builder.delete(index1+1,index+1);
-             if(builder.toString().contains("sheep")){
-                 index = builder.indexOf("/");
-                 if(index >= 0)
-                 builder.replace(index,index+1,"_");
-             }
+        if (event.getName().toString().contains("entities")) {
+            StringBuilder builder = new StringBuilder(event.getName().toString());
+            int index = builder.indexOf("/");
+            int index1 = builder.indexOf(":");
+            builder.delete(index1 + 1, index + 1);
+            if (builder.toString().contains("sheep")) {
+                index = builder.indexOf("/");
+                if (index >= 0) {
+                    builder.replace(index, index + 1, "_");
+                }
+            }
 
-             lootTables.put(builder.toString(),event.getTable());
+            lootTables.put(builder.toString(), event.getTable());
 
         }
 
     }
+
     @Mod.EventHandler
     public void postInit(final FMLPostInitializationEvent event) {
         proxy.postInit(event);
@@ -446,6 +456,12 @@ public final class IUCore {
         addOre1("oreIridium");
         addOre1("crystalCertusQuartz");
         addOre("oreIridium");
+        addOre("oreTin");
+        addOre1("oreTin");
+        addOre("oreCopper");
+        addOre1("oreCopper");
+        addOre("oreLead");
+        addOre1("oreLead");
         get_ore.add(new ItemStack(Blocks.REDSTONE_ORE));
         get_ore.add(new ItemStack(Blocks.LIT_REDSTONE_ORE));
         removeOre("oreEndLapis");
@@ -512,8 +528,8 @@ public final class IUCore {
                 this.get_ingot.add(stack);
             }
         }
-        IUCore.list_adding.forEach(stack ->  addOre1(stack));
-        IUCore.list_removing.forEach(stack ->  removeOre(stack));
+        IUCore.list_adding.forEach(stack -> addOre1(stack));
+        IUCore.list_removing.forEach(stack -> removeOre(stack));
         IUCore.list.forEach(stack -> {
 
             get_all_list.add(new RecipeInputStack(stack));
@@ -523,8 +539,8 @@ public final class IUCore {
 
             get_all_list.add(new RecipeInputStack(stack));
         });
-        IUCore.list_furnace_adding.forEach(stack ->  addOre2(stack));
-        IUCore.list_furnace_removing.forEach(stack ->  removeOre2(stack));
+        IUCore.list_furnace_adding.forEach(stack -> addOre2(stack));
+        IUCore.list_furnace_removing.forEach(stack -> removeOre2(stack));
         get_all_list.removeIf(stack -> IUCore.get_comb_crushed.contains(stack));
         IUCore.get_comb_crushed.forEach(stack -> {
 
@@ -536,9 +552,22 @@ public final class IUCore {
             get_all_list.add(new RecipeInputStack(stack));
         });
 
-
-
-
+        IUCore.get_crushed.forEach(stack -> {
+            this.
+                    get_crushed_quarry.add(new QuarryItem(stack));
+        });
+        IUCore.list.forEach(stack -> {
+            this.
+                    list_quarry.add(new QuarryItem(stack));
+        });
+        IUCore.get_ingot.forEach(stack -> {
+            this.
+                    get_ingot_quarry.add(new QuarryItem(stack));
+        });
+        IUCore.get_comb_crushed.forEach(stack -> {
+            this.
+                    get_comb_crushed_quarry.add(new QuarryItem(stack));
+        });
         fish_rodding.add(new ItemStack(Items.FISH));
         fish_rodding.add(new ItemStack(Items.FISH, 1, 1));
         fish_rodding.add(new ItemStack(Items.FISH, 1, 2));
@@ -570,9 +599,8 @@ public final class IUCore {
                 list.get(1).shrink(list.get(1).getCount());
             }
         }
-        if (Loader.isModLoaded("refinedstorage")) {
-            RefinedStorageIntegration.init();
-        }
+
+
     }
 
     @SubscribeEvent
@@ -581,7 +609,6 @@ public final class IUCore {
         if (event.getState().getBlock() instanceof BlockIUFluid) {
             event.setCanceled(true);
             Fluid fluid = ((BlockIUFluid) event.getState().getBlock()).getFluid();
-            GlStateManager.setFog(GlStateManager.FogMode.EXP);
             event.setDensity((float) Util.map(Math.abs(fluid.getDensity()), 20000.0D, 2.0D));
         }
     }
@@ -642,18 +669,23 @@ public final class IUCore {
             }
         }
     }
+
     public void addOre1(ItemStack name) {
         list.add(name);
     }
+
     public void removeOre(ItemStack name) {
         list.removeIf(stack -> stack.isItemEqual(name));
     }
+
     public void addOre2(ItemStack name) {
         get_ingot.add(name);
     }
+
     public void removeOre2(ItemStack name) {
         get_ingot.removeIf(stack -> stack.isItemEqual(name));
     }
+
     public void removeOre(String name) {
         if (OreDictionary.getOres(name).size() >= 1) {
             if (list.contains(OreDictionary.getOres(name).get(0))) {

@@ -1,5 +1,6 @@
 package com.denfop.api.research;
 
+import com.denfop.IUCore;
 import com.denfop.api.research.event.EventDownloadData;
 import com.denfop.api.research.event.EventLoadData;
 import com.denfop.api.research.event.EventLoadResearchItem;
@@ -24,18 +25,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class BaseResearchSystem implements IResearchSystem {
 
     public int max;
-    List<UUID> list_uuids;
+    List<String> list_uuids;
     List<IResearch> list_research;
     List<IResearchPages> list_research_pages;
     List<IResearchPart> list_researcher_parts;
-    Map<UUID, List<IResearch>> map_players;
+    Map<String, List<IResearch>> map_players;
     Map<Integer, IResearch> map_research;
-    Map<UUID, BaseLevelSystem> map_level;
+    Map<String, BaseLevelSystem> map_level;
     IDataResearches data;
     IResearchSystemParts systemParts;
 
@@ -53,6 +53,15 @@ public class BaseResearchSystem implements IResearchSystem {
         this.max = 0;
         MinecraftForge.EVENT_BUS.register(this);
 
+    }
+
+    public Map<String, BaseLevelSystem> getMap_level() {
+        return map_level;
+    }
+
+
+    public Map<String, List<IResearch>> getMap_players() {
+        return map_players;
     }
 
     @SubscribeEvent
@@ -74,7 +83,7 @@ public class BaseResearchSystem implements IResearchSystem {
 
     @Override
     public BaseLevelSystem getLevel(final EntityPlayer player) {
-        return this.map_level.get(player.getGameProfile().getId());
+        return this.map_level.get(player.getName());
     }
 
     @SubscribeEvent
@@ -103,6 +112,9 @@ public class BaseResearchSystem implements IResearchSystem {
 
     @SubscribeEvent
     public void downloadData(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.player.getEntityWorld().isRemote) {
+            return;
+        }
         if (!this.checkData(event.player)) {
             MinecraftForge.EVENT_BUS.post(new EventLoadData(event.player));
         }
@@ -115,6 +127,9 @@ public class BaseResearchSystem implements IResearchSystem {
 
     @SubscribeEvent
     public void uploadData(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (event.player.getEntityWorld().isRemote) {
+            return;
+        }
         if (this.checkData(event.player)) {
             MinecraftForge.EVENT_BUS.post(new EventUnLoadData(event.player));
         }
@@ -122,11 +137,17 @@ public class BaseResearchSystem implements IResearchSystem {
 
     @SubscribeEvent
     public void attackEntity(LivingDeathEvent event) {
+        if (event.getEntity().getEntityWorld().isRemote) {
+            return;
+        }
         if (event.getSource().damageType.equals("player")) {
             if (event.getSource() instanceof EntityDamageSource && !(event.getSource().getTrueSource() instanceof FakePlayer)) {
                 EntityDamageSource damage = (EntityDamageSource) event.getSource();
                 BaseLevelSystem system = ResearchSystem.instance.getLevel((EntityPlayer) damage.getTrueSource());
                 system.addLevel(EnumLeveling.PVP, 1);
+                IUCore.network.get(true).initiateResearchSystemAdd(EnumLeveling.PVP, 1,
+                        damage.getTrueSource().getName()
+                );
             }
         } else if (event.getSource().damageType.equals("arrow")) {
             if (event
@@ -137,20 +158,27 @@ public class BaseResearchSystem implements IResearchSystem {
                 EntityDamageSource damage = (EntityDamageSource) event.getSource();
                 BaseLevelSystem system = ResearchSystem.instance.getLevel((EntityPlayer) damage.getTrueSource());
                 system.addLevel(EnumLeveling.PVP, 1);
+                IUCore.network.get(true).initiateResearchSystemAdd(EnumLeveling.PVP, 1,
+                        damage.getTrueSource().getName()
+                );
             }
         }
     }
 
     @SubscribeEvent
     public void uploadData(EventUnLoadData event) {
+        if (event.player.getEntityWorld().isRemote) {
+            return;
+        }
         this.uploadData(event.player);
     }
 
     @Override
     public void uploadData(final EntityPlayer player) {
-        this.map_players.remove(player.getGameProfile().getId());
-        this.map_level.remove(player.getGameProfile().getId());
-        this.getUUIDs().remove(player.getGameProfile().getId());
+        this.map_players.remove(player.getName());
+        this.map_level.remove(player.getName());
+        this.getUUIDs().remove(player.getName());
+        IUCore.network.get(true).initiateResearchSystemDelete(player.getName());
     }
 
     @Override
@@ -164,18 +192,19 @@ public class BaseResearchSystem implements IResearchSystem {
             }
         }
         BaseLevelSystem levelSystem = new BaseLevelSystem(player);
-        this.map_level.put(player.getGameProfile().getId(), levelSystem);
-        this.map_players.put(player.getGameProfile().getId(), list_researches);
-        this.getUUIDs().add(player.getGameProfile().getId());
+        this.map_level.put(player.getName(), levelSystem);
+        this.map_players.put(player.getName(), list_researches);
+        this.getUUIDs().add(player.getName());
+        IUCore.network.get(true).initiateResearchSystem(levelSystem);
     }
 
     @Override
     public boolean checkData(final EntityPlayer player) {
-        return getUUIDs().contains(player.getGameProfile().getId());
+        return getUUIDs().contains(player.getName());
     }
 
     @Override
-    public List<UUID> getUUIDs() {
+    public List<String> getUUIDs() {
         return this.list_uuids;
     }
 

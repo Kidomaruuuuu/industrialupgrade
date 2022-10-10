@@ -21,6 +21,15 @@ public enum EnumTypeWind {
 
     }
 
+    public static EnumTypeWind getValueFromWind(double wind_speed) {
+        for (EnumTypeWind wind : values()) {
+            if (wind.getMin() >= wind_speed && wind_speed <= wind.max) {
+                return wind;
+            }
+        }
+        return EnumTypeWind.ONE;
+    }
+
     public double getMax() {
         return max;
     }

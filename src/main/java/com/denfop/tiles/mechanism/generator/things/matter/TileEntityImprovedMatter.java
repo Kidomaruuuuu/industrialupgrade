@@ -13,4 +13,5 @@ public class TileEntityImprovedMatter extends TileEntityMultiMatter {
     public EnumTypeStyle getStyle() {
         return EnumTypeStyle.IMPROVED;
     }
+
 }

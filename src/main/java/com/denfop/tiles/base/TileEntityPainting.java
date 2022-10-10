@@ -3,6 +3,7 @@ package com.denfop.tiles.base;
 import com.denfop.IUItem;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
+import com.denfop.api.recipe.IHasRecipe;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.api.recipe.RecipeOutput;
@@ -29,34 +30,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class TileEntityPainting extends TileEntityDoubleElectricMachine {
+public class TileEntityPainting extends TileEntityDoubleElectricMachine implements IHasRecipe {
 
     public TileEntityPainting() {
         super(1, 300, 1, EnumDoubleElectricMachine.PAINTING);
+        Recipes.recipes.addInitRecipes(this);
     }
-
-    public static void init() {
-        addpainting(new ItemStack(IUItem.nanodrill, 1, OreDictionary.WILDCARD_VALUE));
-        addpainting(new ItemStack(IUItem.quantumdrill, 1, OreDictionary.WILDCARD_VALUE));
-        addpainting(new ItemStack(IUItem.spectraldrill, 1, OreDictionary.WILDCARD_VALUE));
-
-        addpainting(new ItemStack(IUItem.spectral_helmet, 1, OreDictionary.WILDCARD_VALUE));
-        addpainting(new ItemStack(IUItem.spectral_leggings, 1, OreDictionary.WILDCARD_VALUE));
-        addpainting(new ItemStack(IUItem.spectral_chestplate, 1, OreDictionary.WILDCARD_VALUE));
-        addpainting(new ItemStack(IUItem.spectral_boots, 1, OreDictionary.WILDCARD_VALUE));
-        addpainting(new ItemStack(IUItem.adv_nano_chestplate, 1, OreDictionary.WILDCARD_VALUE));
-        addpainting(new ItemStack(IUItem.adv_nano_boots, 1, OreDictionary.WILDCARD_VALUE));
-        addpainting(new ItemStack(IUItem.adv_nano_helmet, 1, OreDictionary.WILDCARD_VALUE));
-        addpainting(new ItemStack(IUItem.adv_nano_leggings, 1, OreDictionary.WILDCARD_VALUE));
-
-        addpainting(new ItemStack(IUItem.advancedSolarHelmet, 1, OreDictionary.WILDCARD_VALUE));
-        addpainting(new ItemStack(IUItem.hybridSolarHelmet, 1, OreDictionary.WILDCARD_VALUE));
-        addpainting(new ItemStack(IUItem.ultimateSolarHelmet, 1, OreDictionary.WILDCARD_VALUE));
-        addpainting(new ItemStack(IUItem.spectralSolarHelmet, 1, OreDictionary.WILDCARD_VALUE));
-        addpainting(new ItemStack(IUItem.singularSolarHelmet, 1, OreDictionary.WILDCARD_VALUE));
-
-    }
-
 
     public static void addpainting(ItemStack container) {
         NBTTagCompound nbt = ModUtils.nbt();
@@ -197,6 +176,28 @@ public class TileEntityPainting extends TileEntityDoubleElectricMachine {
                 ),
                 new RecipeOutput(nbt11, container)
         ));
+    }
+
+    public void init() {
+        addpainting(new ItemStack(IUItem.nanodrill, 1, OreDictionary.WILDCARD_VALUE));
+        addpainting(new ItemStack(IUItem.quantumdrill, 1, OreDictionary.WILDCARD_VALUE));
+        addpainting(new ItemStack(IUItem.spectraldrill, 1, OreDictionary.WILDCARD_VALUE));
+
+        addpainting(new ItemStack(IUItem.spectral_helmet, 1, OreDictionary.WILDCARD_VALUE));
+        addpainting(new ItemStack(IUItem.spectral_leggings, 1, OreDictionary.WILDCARD_VALUE));
+        addpainting(new ItemStack(IUItem.spectral_chestplate, 1, OreDictionary.WILDCARD_VALUE));
+        addpainting(new ItemStack(IUItem.spectral_boots, 1, OreDictionary.WILDCARD_VALUE));
+        addpainting(new ItemStack(IUItem.adv_nano_chestplate, 1, OreDictionary.WILDCARD_VALUE));
+        addpainting(new ItemStack(IUItem.adv_nano_boots, 1, OreDictionary.WILDCARD_VALUE));
+        addpainting(new ItemStack(IUItem.adv_nano_helmet, 1, OreDictionary.WILDCARD_VALUE));
+        addpainting(new ItemStack(IUItem.adv_nano_leggings, 1, OreDictionary.WILDCARD_VALUE));
+
+        addpainting(new ItemStack(IUItem.advancedSolarHelmet, 1, OreDictionary.WILDCARD_VALUE));
+        addpainting(new ItemStack(IUItem.hybridSolarHelmet, 1, OreDictionary.WILDCARD_VALUE));
+        addpainting(new ItemStack(IUItem.ultimateSolarHelmet, 1, OreDictionary.WILDCARD_VALUE));
+        addpainting(new ItemStack(IUItem.spectralSolarHelmet, 1, OreDictionary.WILDCARD_VALUE));
+        addpainting(new ItemStack(IUItem.singularSolarHelmet, 1, OreDictionary.WILDCARD_VALUE));
+
     }
 
     public void operateOnce(MachineRecipe output, List<ItemStack> processResult) {

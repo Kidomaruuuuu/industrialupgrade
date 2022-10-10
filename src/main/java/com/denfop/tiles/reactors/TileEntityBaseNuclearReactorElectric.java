@@ -6,6 +6,7 @@ import com.denfop.api.reactors.IAdvReactor;
 import com.denfop.container.ContainerBaseNuclearReactor;
 import com.denfop.gui.GuiNuclearReactor;
 import com.denfop.invslot.InvSlotReactor;
+import com.denfop.tiles.base.TileEntityInventory;
 import ic2.api.energy.EnergyNet;
 import ic2.api.energy.event.EnergyTileLoadEvent;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
@@ -20,7 +21,6 @@ import ic2.core.IC2DamageSource;
 import ic2.core.IHasGui;
 import ic2.core.audio.AudioSource;
 import ic2.core.audio.PositionSpec;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.gui.dynamic.IGuiValueProvider;
 import ic2.core.init.Localization;
 import net.minecraft.block.Block;
@@ -83,14 +83,6 @@ public abstract class TileEntityBaseNuclearReactorElectric extends TileEntityInv
         this.size = sizeX;
     }
 
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
-        tooltip.add(Localization.translate("iu.reactor_info")+this.coef);
-        tooltip.add(Localization.translate("iu.reactor_info1")+this.sizeX+"x"+this.sizeY);
-        super.addInformation(stack, tooltip, advanced);
-    }
-
     public static void showHeatEffects(World world, BlockPos pos, int heat) {
         Random rnd = world.rand;
         if (rnd.nextInt(8) == 0) {
@@ -127,6 +119,14 @@ public abstract class TileEntityBaseNuclearReactorElectric extends TileEntityInv
             }
 
         }
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
+        tooltip.add(Localization.translate("iu.reactor_info") + this.coef);
+        tooltip.add(Localization.translate("iu.reactor_info1") + this.sizeX + "x" + this.sizeY);
+        super.addInformation(stack, tooltip, advanced);
     }
 
     public List<ReactorsItem> getReactorsItems() {

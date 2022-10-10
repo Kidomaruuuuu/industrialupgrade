@@ -2,7 +2,6 @@ package com.denfop.tiles.base;
 
 import com.denfop.IUItem;
 import com.denfop.api.recipe.InvSlotOutput;
-import com.denfop.componets.AdvEnergy;
 import com.denfop.componets.SEComponent;
 import com.denfop.container.ContainerSolarGeneratorEnergy;
 import com.denfop.gui.GuiSolarGeneratorEnergy;
@@ -10,7 +9,6 @@ import com.denfop.invslot.InvSlotGenSunarrium;
 import ic2.api.network.INetworkClientTileEntityEventListener;
 import ic2.core.ContainerBase;
 import ic2.core.IHasGui;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.init.Localization;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.client.gui.GuiScreen;
@@ -37,6 +35,10 @@ public class TileEntitySolarGeneratorEnergy extends TileEntityInventory implemen
     public boolean work;
     public SEComponent sunenergy;
     public List<Double> lst;
+    public double coef_day;
+    public double coef_night;
+    public double update_night;
+    public double generation;
     private boolean noSunWorld;
     private boolean skyIsVisible;
     private boolean sunIsUp;
@@ -53,12 +55,16 @@ public class TileEntitySolarGeneratorEnergy extends TileEntityInventory implemen
         this.lst.add(0D);
         this.sunenergy = this.addComponent(SEComponent
                 .asBasicSource(this, 10000, 1));
+        this.coef_day = 0;
+        this.coef_night = 0;
+        this.update_night = 0;
     }
 
     @Override
     public int getSizeInventory() {
         return 1;
     }
+
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
@@ -67,7 +73,7 @@ public class TileEntitySolarGeneratorEnergy extends TileEntityInventory implemen
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             tooltip.add(Localization.translate("iu.solarium_energy.info"));
-            tooltip.add(Localization.translate("iu.info_upgrade_energy")+this.cof);
+            tooltip.add(Localization.translate("iu.info_upgrade_energy") + this.cof);
 
         }
         super.addInformation(stack, tooltip, advanced);
@@ -112,6 +118,9 @@ public class TileEntitySolarGeneratorEnergy extends TileEntityInventory implemen
         super.onLoaded();
         this.lst = this.input.coefday();
         this.noSunWorld = this.world.provider.isNether();
+        this.coef_day = this.lst.get(0);
+        this.coef_night = this.lst.get(1);
+        this.update_night = this.lst.get(2);
         updateVisibility();
 
     }
@@ -130,6 +139,7 @@ public class TileEntitySolarGeneratorEnergy extends TileEntityInventory implemen
             updateVisibility();
         }
         long tick = this.getWorld().provider.getWorldTime() % 24000L;
+        this.generation = 0;
         if (this.skyIsVisible) {
             energy(tick);
             if (this.sunenergy.getEnergy() >= 4500) {
@@ -141,10 +151,12 @@ public class TileEntitySolarGeneratorEnergy extends TileEntityInventory implemen
             }
         }
 
+
     }
 
     public void energy(long tick) {
         double k = 0;
+
         if (this.sunIsUp) {
             if (tick <= 1000L) {
                 k = 5;
@@ -161,10 +173,9 @@ public class TileEntitySolarGeneratorEnergy extends TileEntityInventory implemen
             if (tick > 11000L) {
                 k = 5;
             }
-            this.sunenergy.addEnergy(k * this.cof * (1 + lst.get(0)));
-        }
-
-        if (lst.get(2) > 0 && !this.sunIsUp) {
+            this.generation = k * this.cof * (1 + coef_day);
+            this.sunenergy.addEnergy(this.generation);
+        } else if (this.update_night > 0) {
             double tick1 = tick - 12000;
             if (tick1 <= 1000L) {
                 k = 5;
@@ -181,7 +192,8 @@ public class TileEntitySolarGeneratorEnergy extends TileEntityInventory implemen
             if (tick1 > 11000L) {
                 k = 5;
             }
-            this.sunenergy.addEnergy(k * this.cof * (lst.get(2) - 1) * (1 + lst.get(1)));
+            this.generation = k * this.cof * (this.update_night - 1) * (1 + this.coef_night);
+            this.sunenergy.addEnergy(this.generation);
 
         }
 

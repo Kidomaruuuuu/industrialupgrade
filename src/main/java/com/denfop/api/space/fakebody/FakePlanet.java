@@ -121,6 +121,7 @@ public class FakePlanet implements IFakePlanet {
         SpaceNet.instance.getFakeSpaceSystem().loadFakeBody(this, list, this.player);
     }
 
+
     @Override
     public void writeNBT(List<IBaseResource> list) {
         if (!this.player.getTag().hasKey("space_iu")) {
@@ -142,6 +143,12 @@ public class FakePlanet implements IFakePlanet {
         resources.setInteger("col", list.size());
         nbt1.setTag("resource", resources);
         nbt.setTag(this.planet.getName(), nbt1);
+    }
+
+    @Override
+    public NBTTagCompound write(final List<IBaseResource> list) {
+        NBTTagCompound tagCompound = new NBTTagCompound();
+        return null;
     }
 
     @Override

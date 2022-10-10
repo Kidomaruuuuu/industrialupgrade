@@ -3,7 +3,6 @@ package com.denfop.items.bags;
 import com.denfop.Constants;
 import com.denfop.IUCore;
 import com.denfop.api.IModelRegister;
-import com.denfop.container.ContainerBags;
 import com.denfop.container.ContainerLeadBox;
 import com.denfop.utils.ModUtils;
 import ic2.core.IC2;
@@ -73,17 +72,17 @@ public class ItemLeadBox extends Item implements IHandHeldInventory, IModelRegis
         NBTTagCompound nbt = ModUtils.nbt(stack);
 
 
-            if(nbt.getBoolean("open")){
-                int slot_id = nbt.getInteger("slot_inventory");
-                if (slot_id != itemSlot && !player.getEntityWorld().isRemote && !StackUtil.isEmpty(stack) && player.openContainer instanceof ContainerLeadBox) {
-                    HandHeldLeadBox toolbox = ((ContainerLeadBox) player.openContainer).base;
-                    if (toolbox.isThisContainer(stack)) {
-                        toolbox.saveAsThrown(stack);
-                        player.closeScreen();
-                        nbt.setBoolean("open",false);
-                    }
+        if (nbt.getBoolean("open")) {
+            int slot_id = nbt.getInteger("slot_inventory");
+            if (slot_id != itemSlot && !player.getEntityWorld().isRemote && !StackUtil.isEmpty(stack) && player.openContainer instanceof ContainerLeadBox) {
+                HandHeldLeadBox toolbox = ((ContainerLeadBox) player.openContainer).base;
+                if (toolbox.isThisContainer(stack)) {
+                    toolbox.saveAsThrown(stack);
+                    player.closeScreen();
+                    nbt.setBoolean("open", false);
                 }
             }
+        }
 
         if (worldIn.provider.getWorldTime() % 40 == 0) {
             if (!(player.openContainer instanceof ContainerLeadBox)) {
@@ -136,7 +135,7 @@ public class ItemLeadBox extends Item implements IHandHeldInventory, IModelRegis
 
         ItemStack stack = StackUtil.get(player, hand);
         if (IC2.platform.isSimulating()) {
-            save(stack,player);
+            save(stack, player);
             IC2.platform.launchGui(player, this.getInventory(player, stack));
             return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
 
@@ -144,11 +143,13 @@ public class ItemLeadBox extends Item implements IHandHeldInventory, IModelRegis
 
         return new ActionResult<>(EnumActionResult.PASS, player.getHeldItem(hand));
     }
-    public void save(ItemStack stack,EntityPlayer player){
+
+    public void save(ItemStack stack, EntityPlayer player) {
         final NBTTagCompound nbt = ModUtils.nbt(stack);
-        nbt.setBoolean("open",true);
-        nbt.setInteger("slot_inventory",player.inventory.currentItem);
+        nbt.setBoolean("open", true);
+        nbt.setInteger("slot_inventory", player.inventory.currentItem);
     }
+
     public boolean onDroppedByPlayer(@Nonnull ItemStack stack, EntityPlayer player) {
         if (!player.getEntityWorld().isRemote && !StackUtil.isEmpty(stack) && player.openContainer instanceof ContainerLeadBox) {
             HandHeldLeadBox toolbox = ((ContainerLeadBox) player.openContainer).base;

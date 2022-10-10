@@ -1,6 +1,6 @@
 package com.denfop.invslot;
 
-import ic2.core.block.TileEntityInventory;
+import com.denfop.tiles.base.TileEntityInventory;
 import ic2.core.block.invslot.InvSlot;
 import net.minecraft.item.ItemFishingRod;
 import net.minecraft.item.ItemStack;
@@ -12,10 +12,6 @@ public class InvSlotFisher extends InvSlot {
     public InvSlotFisher(TileEntityInventory base1) {
         super(base1, "input2", InvSlot.Access.I, 1, InvSlot.InvSide.TOP);
         this.stackSizeLimit = 1;
-    }
-
-    public static boolean isStackEqual(ItemStack stack1, ItemStack stack2) {
-        return stack1.isEmpty() && stack2.isEmpty() || stack1.getItem() == stack2.getItem() && (!stack1.getHasSubtypes() && !stack1.isItemStackDamageable() || stack1.getItemDamage() == stack2.getItemDamage());
     }
 
 

@@ -23,6 +23,7 @@ public class KeyboardClient extends KeyboardIU {
     public static final KeyBinding verticalmode = new KeyBinding("Vertical Key", Keyboard.KEY_K, "IndustrialUpgrade");
     public static final KeyBinding savemode = new KeyBinding("Save move Key", Keyboard.KEY_L, "IndustrialUpgrade");
     public static final KeyBinding blackmode = new KeyBinding("BlackList Key", Keyboard.KEY_J, "IndustrialUpgrade");
+    public static final KeyBinding streakmode = new KeyBinding("Streak Key", Keyboard.KEY_V, "IndustrialUpgrade");
 
     private int lastKeyState = 0;
 
@@ -33,6 +34,7 @@ public class KeyboardClient extends KeyboardIU {
         ClientRegistry.registerKeyBinding(verticalmode);
         ClientRegistry.registerKeyBinding(savemode);
         ClientRegistry.registerKeyBinding(blackmode);
+        ClientRegistry.registerKeyBinding(streakmode);
     }
 
     public void sendKeyUpdate() {
@@ -56,6 +58,9 @@ public class KeyboardClient extends KeyboardIU {
             }
             if (GameSettings.isKeyDown(blackmode)) {
                 keys.add(Key.BLACKMODE);
+            }
+            if (GameSettings.isKeyDown(streakmode)) {
+                keys.add(Key.STREAK);
             }
         }
 

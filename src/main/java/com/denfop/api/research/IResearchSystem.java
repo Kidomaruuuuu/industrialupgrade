@@ -7,7 +7,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 public interface IResearchSystem {
 
@@ -17,7 +17,7 @@ public interface IResearchSystem {
 
     boolean checkData(EntityPlayer player);
 
-    List<UUID> getUUIDs();
+    List<String> getUUIDs();
 
     IResearch getResearchFromItem(ItemStack stack);
 
@@ -26,5 +26,9 @@ public interface IResearchSystem {
     List<IResearchPart> getCopy(IResearch research);
 
     BaseLevelSystem getLevel(EntityPlayer player);
+
+    Map<String, BaseLevelSystem> getMap_level();
+
+    Map<String, List<IResearch>> getMap_players();
 
 }

@@ -7,6 +7,7 @@ import com.denfop.api.gui.GuiComponent;
 import com.denfop.api.recipe.InvSlotMultiRecipes;
 import com.denfop.componets.ComponentProcessRender;
 import com.denfop.container.ContainerMultiMachine;
+import com.denfop.utils.ModUtils;
 import ic2.core.gui.GuiElement;
 import ic2.core.init.Localization;
 import ic2.core.slot.SlotInvSlot;
@@ -37,6 +38,7 @@ public class GuiMultiMachine extends GuiIU<ContainerMultiMachine> {
         this.addComponent(new GuiComponent(this, 34, 47, EnumTypeComponent.EXP,
                 new Component<>(this.container.base.exp)
         ));
+        isBlack = false;
     }
 
     @Override
@@ -80,7 +82,7 @@ public class GuiMultiMachine extends GuiIU<ContainerMultiMachine> {
             if (slot instanceof SlotInvSlot) {
                 int xX = slot.xPos;
                 int yY = slot.yPos;
-                SlotInvSlot slotInv = (SlotInvSlot)slot;
+                SlotInvSlot slotInv = (SlotInvSlot) slot;
                 if (slotInv.invSlot instanceof com.denfop.api.recipe.InvSlotMultiRecipes) {
                     this.process.setIndex(i);
                     this.process.setX(xX);
@@ -91,7 +93,19 @@ public class GuiMultiMachine extends GuiIU<ContainerMultiMachine> {
             }
         }
         this.mc.getTextureManager().bindTexture(getTexture());
-        this.drawXCenteredString(this.xSize / 2, 6, Localization.translate(this.container.base.getName()), 4210752, false);
+        if (!this.isBlack) {
+            this.drawXCenteredString(this.xSize / 2, 6, Localization.translate(this.container.base.getName()), 4210752, false);
+        } else {
+            this.drawXCenteredString(
+                    this.xSize / 2,
+                    6,
+                    Localization.translate(this.container.base.getName()),
+                    ModUtils.convertRGBcolorToInt(216, 216, 216),
+                    false
+            );
+        }
+
+
         for (final GuiElement<?> guiElement : this.elements) {
             if (guiElement.isEnabled()) {
                 guiElement.drawBackground(x - this.guiLeft, y - this.guiTop);

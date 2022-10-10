@@ -12,6 +12,7 @@ import com.denfop.gui.GuiSolarPanels;
 import com.denfop.invslot.InvSlotPanel;
 import com.denfop.items.modules.ItemAdditionModule;
 import com.denfop.proxy.CommonProxy;
+import com.denfop.tiles.base.TileEntityInventory;
 import com.denfop.utils.ModUtils;
 import ic2.api.energy.EnergyNet;
 import ic2.api.energy.event.EnergyTileLoadEvent;
@@ -24,7 +25,6 @@ import ic2.api.network.INetworkUpdateListener;
 import ic2.api.tile.IWrenchable;
 import ic2.core.ContainerBase;
 import ic2.core.IHasGui;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.init.Localization;
 import ic2.core.ref.TeBlock;
@@ -100,13 +100,13 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IAdvEne
     public boolean rf = true;
     public double moonPhase = 1;
     public double tick;
+    public SunCoef sunCoef;
     protected double tierPower;
     protected boolean canRain;
     protected boolean hasSky;
     protected boolean addedToEnet;
     protected double pastEnergy;
     protected double perenergy;
-    protected SunCoef sunCoef;
     List<TransferRFEnergy> transferRFEnergyList = new ArrayList<>();
 
     public TileEntitySolarPanel(
@@ -140,13 +140,15 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IAdvEne
         this.perenergy = 0;
         this.tick = 0;
     }
-    @Override
-    public int getInventoryStackLimit() {
-        return 1;
-    }
+
     public TileEntitySolarPanel(EnumSolarPanels solarpanels) {
         this(solarpanels.tier, solarpanels.genday, solarpanels.producing, solarpanels.maxstorage, solarpanels);
 
+    }
+
+    @Override
+    public int getInventoryStackLimit() {
+        return 1;
     }
 
     protected boolean canEntityDestroy(Entity entity) {
@@ -489,7 +491,6 @@ public class TileEntitySolarPanel extends TileEntityInventory implements IAdvEne
             }
         }
         gainFuel();
-
 
         if (this.storage2 >= this.maxStorage2) {
             this.storage2 = this.maxStorage2;

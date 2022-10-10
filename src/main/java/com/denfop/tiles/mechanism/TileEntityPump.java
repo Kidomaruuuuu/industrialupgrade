@@ -70,21 +70,24 @@ public class TileEntityPump extends TileEntityElectricLiquidTankInventory implem
         this.defaultEnergyStorage = this.operationLength;
 
     }
+
+    private static int applyModifier(int base, int extra, double multiplier) {
+        double ret = (double) Math.round(((double) base + (double) extra) * multiplier);
+        return ret > 2.147483647E9D ? 2147483647 : (int) ret;
+    }
+
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
         if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             tooltip.add(Localization.translate("press.lshift"));
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate("iu.machines_work_energy_type_eu"));
+            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate(
+                    "iu.machines_work_energy_type_eu"));
             tooltip.add(Localization.translate("iu.machines_work_length") + this.defaultOperationLength);
         }
-        super.addInformation(stack,tooltip,advanced);
+        super.addInformation(stack, tooltip, advanced);
 
-    }
-    private static int applyModifier(int base, int extra, double multiplier) {
-        double ret = (double) Math.round(((double) base + (double) extra) * multiplier);
-        return ret > 2.147483647E9D ? 2147483647 : (int) ret;
     }
 
     public void onUnloaded() {

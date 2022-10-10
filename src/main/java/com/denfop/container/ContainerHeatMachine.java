@@ -29,6 +29,7 @@ public class ContainerHeatMachine extends ContainerFullInv<TileEntityBaseHeatMac
         ret.add("energy");
         ret.add("heat");
         ret.add("maxtemperature");
+        ret.add("work");
         return ret;
     }
 

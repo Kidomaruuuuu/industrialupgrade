@@ -25,6 +25,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jetbrains.annotations.Nullable;
@@ -90,6 +91,10 @@ public class ItemUpgradeMachinesKit extends ItemMulti<ItemUpgradeMachinesKit.Typ
         if (!IC2.platform.isSimulating()) {
             return EnumActionResult.PASS;
         } else {
+            final EnumActionResult hooks = ForgeHooks.onItemRightClick(player, hand);
+            if (hooks == EnumActionResult.FAIL) {
+                return hooks;
+            }
             ItemStack stack = player.getHeldItem(hand);
             TileEntity tileEntity = world.getTileEntity(pos);
             if (stack.getItemDamage() != 3) {

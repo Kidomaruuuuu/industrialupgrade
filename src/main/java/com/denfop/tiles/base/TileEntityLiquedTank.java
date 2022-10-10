@@ -12,7 +12,6 @@ import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.block.comp.Fluids;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.init.Localization;
@@ -59,7 +58,7 @@ public class TileEntityLiquedTank extends TileEntityInventory implements IHasGui
         this.containerslot1 = new InvSlotConsumableLiquidByList(this,
                 "containerslot1", InvSlot.Access.I, 1, InvSlot.InvSide.TOP, InvSlotConsumableLiquid.OpType.Drain
         );
-         this.texture = new ResourceLocation(
+        this.texture = new ResourceLocation(
                 Constants.TEXTURES,
                 "textures/models/" + texturename + ".png"
         );

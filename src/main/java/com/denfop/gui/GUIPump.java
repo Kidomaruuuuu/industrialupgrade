@@ -3,7 +3,6 @@ package com.denfop.gui;
 import com.denfop.Constants;
 import com.denfop.container.ContainerPump;
 import com.denfop.utils.ModUtils;
-import ic2.core.GuiIC2;
 import ic2.core.gui.TankGauge;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
@@ -15,7 +14,7 @@ public class GuiPump extends GuiIU<ContainerPump> {
     public final ContainerPump container;
 
     public GuiPump(ContainerPump container1) {
-        super(container1,container1.base.getStyle());
+        super(container1, container1.base.getStyle());
         this.container = container1;
     }
 

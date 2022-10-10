@@ -1,5 +1,6 @@
 package com.denfop.proxy;
 
+import cofh.api.fluid.IFluidContainerItem;
 import com.denfop.Config;
 import com.denfop.IUItem;
 import com.denfop.IULoots;
@@ -94,33 +95,16 @@ import com.denfop.recipes.OreWashingRecipe;
 import com.denfop.register.Register;
 import com.denfop.register.RegisterOreDictionary;
 import com.denfop.tiles.base.TileEntityConverterSolidMatter;
-import com.denfop.tiles.base.TileEntityDoubleMolecular;
-import com.denfop.tiles.base.TileEntityMolecularTransformer;
-import com.denfop.tiles.base.TileEntityObsidianGenerator;
-import com.denfop.tiles.base.TileEntityPainting;
-import com.denfop.tiles.base.TileEntitySunnariumMaker;
-import com.denfop.tiles.mechanism.TileEntityGenerationMicrochip;
-import com.denfop.tiles.mechanism.TileEntityGenerationStone;
-import com.denfop.tiles.mechanism.TileEntityHandlerHeavyOre;
-import com.denfop.tiles.mechanism.TileEntityPlasticCreator;
-import com.denfop.tiles.mechanism.TileEntityPlasticPlateCreator;
-import com.denfop.tiles.mechanism.TileEntityRodManufacturer;
-import com.denfop.tiles.mechanism.TileEntityRotorAssembler;
-import com.denfop.tiles.mechanism.TileEntitySunnariumPanelMaker;
-import com.denfop.tiles.mechanism.TileEntityWitherMaker;
-import com.denfop.tiles.mechanism.dual.TileEntityEnrichment;
-import com.denfop.tiles.mechanism.dual.TileEntitySynthesis;
-import com.denfop.tiles.mechanism.dual.TileEntityUpgradeBlock;
-import com.denfop.tiles.mechanism.dual.heat.TileEntityAlloySmelter;
-import com.denfop.tiles.mechanism.multimechanism.simple.TileEntityAssamplerScrap;
-import com.denfop.tiles.mechanism.multimechanism.simple.TileEntityCombMacerator;
-import com.denfop.tiles.mechanism.multimechanism.simple.TileEntityFermer;
-import com.denfop.tiles.mechanism.triple.heat.TileEntityAdvAlloySmelter;
 import com.denfop.tiles.panels.entity.EnumSolarPanels;
 import com.denfop.utils.CraftManagerUtils;
 import com.denfop.utils.ElectricItemManager;
 import com.denfop.utils.ListInformationUtils;
+import com.denfop.utils.MatterRecipe;
+import com.denfop.utils.ModUtils;
+import com.denfop.utils.Precision;
 import com.denfop.world.WorldGenOres;
+import com.google.common.collect.Lists;
+import forestry.api.core.IToolPipette;
 import ic2.api.item.ElectricItem;
 import ic2.api.recipe.IBasicMachineRecipeManager;
 import ic2.api.recipe.IRecipeInput;
@@ -129,8 +113,11 @@ import ic2.api.recipe.MachineRecipe;
 import ic2.core.IC2;
 import ic2.core.block.comp.Components;
 import ic2.core.block.machine.tileentity.TileEntityMatter;
+import ic2.core.util.LogCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -140,9 +127,13 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.IGuiHandler;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -242,30 +233,8 @@ public class CommonProxy implements IGuiHandler {
         EnumSolarPanels.registerTile();
         ItemUpgradePanelKit.EnumSolarPanelsKit.registerkit();
         IUItem.register_mineral();
-        TileEntityAssamplerScrap.init();
-        TileEntityHandlerHeavyOre.init();
-        TileEntityFermer.init();
-        TileEntityEnrichment.init();
-        TileEntitySynthesis.init();
-        TileEntityAlloySmelter.init();
-        TileEntityAdvAlloySmelter.init();
-        TileEntityCombMacerator.init();
-        TileEntityMolecularTransformer.init();
-        TileEntityGenerationMicrochip.init();
-        TileEntityGenerationStone.init();
-        TileEntityConverterSolidMatter.init();
-        TileEntityWitherMaker.init();
-        TileEntitySunnariumMaker.init();
-        TileEntityPainting.init();
-        TileEntitySunnariumPanelMaker.init();
-        TileEntityUpgradeBlock.init();
         TileEntityMatter.addAmplifier(new ItemStack(IUItem.doublescrapBox), 1, 405000);
-        TileEntityDoubleMolecular.init();
-        TileEntityObsidianGenerator.init();
-        TileEntityPlasticCreator.init();
-        TileEntityPlasticPlateCreator.init();
-        TileEntityRotorAssembler.init();
-        TileEntityRodManufacturer.init();
+        Recipes.recipes.initializationRecipes();
     }
 
     public void init(FMLInitializationEvent event) {
@@ -284,7 +253,135 @@ public class CommonProxy implements IGuiHandler {
     public void postInit(FMLPostInitializationEvent event) {
         IUEventHandler sspEventHandler = new IUEventHandler();
         MinecraftForge.EVENT_BUS.register(sspEventHandler);
+        Map<List<List<ItemStack>>, MatterRecipe> itemStackMap1 = new HashMap<>();
+        long startTime = System.nanoTime();
+        List<MatterRecipe> matterRecipeList = new ArrayList<>();
+        IC2.log.debug(LogCategory.General, "Checking recipes %d ",
+                ForgeRegistries.RECIPES.getValuesCollection().size()
+        );
+        for (IRecipe r : Lists.newArrayList(ForgeRegistries.RECIPES.getValuesCollection())) {
+            List<List<ItemStack>> itemStackList = new ArrayList<>();
+            for (Ingredient ingredient : r.getIngredients()) {
+                List<ItemStack> itemStackList1;
+                if (ingredient instanceof IRecipeInput) {
+                    itemStackList1 = ((IRecipeInput) ingredient).getInputs();
+                } else {
+                    itemStackList1 = Arrays.asList(ingredient.getMatchingStacks());
+                }
+                if (!itemStackList1.isEmpty()) {
+                    itemStackList.add(itemStackList1);
+                }
+            }
+            final ItemStack output = r.getRecipeOutput();
+            final NBTTagCompound nbt = ModUtils.nbtOrNull(output);
 
+            if ((nbt != null && nbt.hasKey("RSControl")) || output.getItem() instanceof IFluidContainerItem || output.getItem() instanceof IToolPipette) {
+                continue;
+            }
+            if (Recipes.recipes.getRecipeOutput("converter", false, output) != null) {
+                continue;
+            }
+            MatterRecipe matterRecipe =new MatterRecipe(r.getRecipeOutput());
+            matterRecipeList.add(matterRecipe);
+            itemStackMap1.put(itemStackList, matterRecipe);
+        }
+        IC2.log.debug(LogCategory.General, "Finished checking recipes for converter matter after %d ms.",
+                (System.nanoTime() - startTime) / 1000000L
+        );
+        startTime = System.nanoTime();
+        Map<List<List<ItemStack>>, MatterRecipe> itemStackMap3 = new HashMap<>();
+        final long startTime1 = System.nanoTime();
+        for (int i = 0; i < 1; i++) {
+            for (Map.Entry<List<List<ItemStack>>, MatterRecipe> entry : itemStackMap1.entrySet()) {
+                List<List<ItemStack>> list = entry.getKey();
+                final ItemStack output = entry.getValue().getStack();
+                MatterRecipe matterRecipe = entry.getValue();
+                if(matterRecipe.can())
+                    continue;
+                List<List<ItemStack>> list2 = new ArrayList<>();
+                for (List<ItemStack> list1 : list) {
+                    boolean need_continue = false;
+                    for (ItemStack stack : list1) {
+                        BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput("converter", false, stack);
+                        if (recipe == null) {
+                            continue;
+                        }
+                        need_continue = true;
+                        matterRecipe.addMatter(stack.getCount() * recipe.output.metadata.getDouble("quantitysolid_0") / output.getCount());
+                        matterRecipe.addSun(stack.getCount() * recipe.output.metadata.getDouble("quantitysolid_1") / output.getCount());
+                        matterRecipe.addAqua(stack.getCount() * recipe.output.metadata.getDouble("quantitysolid_2") / output.getCount());
+                        matterRecipe.addNether(stack.getCount() * recipe.output.metadata.getDouble("quantitysolid_3") / output.getCount());
+                        matterRecipe.addNight(stack.getCount() * recipe.output.metadata.getDouble("quantitysolid_4") / output.getCount());
+                        matterRecipe.addEarth(stack.getCount() * recipe.output.metadata.getDouble("quantitysolid_5") / output.getCount());
+                        matterRecipe.addEnd(stack.getCount() * recipe.output.metadata.getDouble("quantitysolid_6") / output.getCount());
+                        matterRecipe.addAer(stack.getCount() * recipe.output.metadata.getDouble("quantitysolid_7") / output.getCount());
+                        list2.add(list1);
+                        break;
+                    }
+                    if (!need_continue) {
+                        break;
+                    }
+
+                }
+                list.removeIf(list2::contains);
+                if (list.isEmpty()) {
+                    matterRecipe.setCan(true);
+                    itemStackMap3.put(list,matterRecipe);
+                }
+
+            }
+            List<MatterRecipe> matterRecipeList1 = new ArrayList<>();
+            matterRecipeList.forEach(matterRecipe1 -> {
+                if (matterRecipe1.can()) {
+                    TileEntityConverterSolidMatter.addrecipe(matterRecipe1.getStack(),
+                            Precision.round(matterRecipe1.getMatter(), 2),
+                            Precision.round(matterRecipe1.getSun(), 2)
+                            ,
+                            Precision.round(matterRecipe1.getAqua(), 2),
+                            Precision.round(matterRecipe1.getNether(), 2),
+                            Precision.round(matterRecipe1.getNight(), 2),
+                            Precision.round(matterRecipe1.getEarth(), 2),
+                            Precision.round(matterRecipe1.getEnd(), 2),
+                            Precision.round(matterRecipe1.getAer(), 2)
+                    );
+                    matterRecipeList1.add(matterRecipe1);
+                }
+
+            });
+            matterRecipeList.removeAll(matterRecipeList1);
+            itemStackMap3.forEach((key,value) -> itemStackMap1.remove(key));
+            IC2.log.debug(LogCategory.General, "Finished  %d stage recipes for converter matter after %d ms. ",i,
+                    (System.nanoTime() - startTime) / 1000000L
+            );
+            startTime = System.nanoTime();
+        }
+
+        IC2.log.debug(LogCategory.General, "Finished adding recipes for converter matter after %d ms.",
+                (System.nanoTime() - startTime1) / 1000000L
+        );
+        matterRecipeList.clear();
+        itemStackMap1.clear();
+        IUItem.machineRecipe = Recipes.recipes.getRecipeStack("converter");
+        writeRecipe(ic2.api.recipe.Recipes.macerator, "macerator");
+        writeRecipe(ic2.api.recipe.Recipes.compressor, "compressor");
+        writeRecipe(ic2.api.recipe.Recipes.extractor, "extractor");
+        writeRecipe(ic2.api.recipe.Recipes.metalformerCutting, "cutting");
+        writeRecipe(ic2.api.recipe.Recipes.metalformerExtruding, "extruding");
+        writeRecipe(ic2.api.recipe.Recipes.metalformerRolling, "rolling");
+        writeRecipe(ic2.api.recipe.Recipes.recycler, "recycler");
+        writeRecipe();
+        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
+        for (int i = 0; i < 8; i++) {
+            Recipes.recipes.addRecipe(
+                    "matter",
+                    new BaseMachineRecipe(
+                            new Input(
+                                    input.forStack(new ItemStack(IUItem.matter, 1, i))
+                            ),
+                            new RecipeOutput(null, new ItemStack(IUItem.matter, 1, i))
+                    )
+            );
+        }
         if (Loader.isModLoaded("forestry")) {
             FIntegration.init();
         }
@@ -339,6 +436,11 @@ public class CommonProxy implements IGuiHandler {
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.tank3));
         CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.iridiumDrill));
 
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.bronzerotor));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.carbonrotor));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.ironrotor));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.woodrotor));
+        CraftManagerUtils.removeCrafting(CraftManagerUtils.getRecipe(Ic2Items.steelrotor));
 
         if (Components.getId(AdvEnergy.class) == null) {
             Components.register(AdvEnergy.class, "AdvEnergy");
@@ -392,26 +494,7 @@ public class CommonProxy implements IGuiHandler {
         MetalFormerRecipe.init();
         OreWashingRecipe.init();
 
-        writeRecipe(ic2.api.recipe.Recipes.macerator, "macerator");
-        writeRecipe(ic2.api.recipe.Recipes.compressor, "compressor");
-        writeRecipe(ic2.api.recipe.Recipes.extractor, "extractor");
-        writeRecipe(ic2.api.recipe.Recipes.metalformerCutting, "cutting");
-        writeRecipe(ic2.api.recipe.Recipes.metalformerExtruding, "extruding");
-        writeRecipe(ic2.api.recipe.Recipes.metalformerRolling, "rolling");
-        writeRecipe(ic2.api.recipe.Recipes.recycler, "recycler");
-        writeRecipe();
-        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
-        for (int i = 0; i < 8; i++) {
-            Recipes.recipes.addRecipe(
-                    "matter",
-                    new BaseMachineRecipe(
-                            new Input(
-                                    input.forStack(new ItemStack(IUItem.matter, 1, i))
-                            ),
-                            new RecipeOutput(null, new ItemStack(IUItem.matter, 1, i))
-                    )
-            );
-        }
+
     }
 
     private void writeRecipe() {
@@ -428,7 +511,12 @@ public class CommonProxy implements IGuiHandler {
                 continue;
             }
             NBTTagCompound nbt = new NBTTagCompound();
-            nbt.setFloat("experience", recipes.getSmeltingExperience(output));
+            try {
+                nbt.setFloat("experience", recipes.getSmeltingExperience(output));
+            } catch (Exception e) {
+                nbt.setFloat("experience", 0.1F);
+
+            }
             Recipes.recipes.addRecipe(
                     "furnace",
                     new BaseMachineRecipe(

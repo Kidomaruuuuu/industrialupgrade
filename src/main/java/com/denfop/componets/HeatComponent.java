@@ -34,7 +34,6 @@ public class HeatComponent extends TileEntityComponent {
     public static final boolean debugLoad = System.getProperty("ic2.comp.energy.debugload") != null;
     public final World world;
     public final boolean fullEnergy;
-    private double coef;
     public double capacity;
     public double storage;
     public int sinkTier;
@@ -51,6 +50,8 @@ public class HeatComponent extends TileEntityComponent {
     public boolean need;
     public boolean allow;
     Random rand = new Random();
+    private double coef;
+
     public HeatComponent(TileEntityBlock parent, double capacity) {
         this(parent, capacity, Collections.emptySet(), Collections.emptySet(), 1);
     }
@@ -144,7 +145,7 @@ public class HeatComponent extends TileEntityComponent {
             }
 
             this.loaded = true;
-            switch (this.parent.getWorld().provider.getBiomeForCoords(this.parent.getPos()).getTempCategory()){
+            switch (this.parent.getWorld().provider.getBiomeForCoords(this.parent.getPos()).getTempCategory()) {
                 case COLD:
                     coef = -1;
                     break;
@@ -170,8 +171,9 @@ public class HeatComponent extends TileEntityComponent {
             } else if (this.sourceDirections.isEmpty()) {
                 this.delegate = new HeatComponent.EnergyNetDelegateSink();
             }
-            if(delegate == null)
+            if (delegate == null) {
                 return;
+            }
             this.delegate.setWorld(this.parent.getWorld());
             this.delegate.setPos(this.parent.getPos());
         }
@@ -251,9 +253,11 @@ public class HeatComponent extends TileEntityComponent {
     public double addEnergy(double amount) {
 
         this.storage += amount;
-        if(this.world != null)
-        if(rand.nextInt(2) == 1)
-            this.storage += 1 * this.coef;
+        if (this.world != null) {
+            if (rand.nextInt(2) == 1) {
+                this.storage += 1 * this.coef;
+            }
+        }
         this.storage = Math.min(this.storage, this.capacity);
         this.storage = Math.max(this.storage, 0);
 
@@ -272,11 +276,14 @@ public class HeatComponent extends TileEntityComponent {
     public boolean useEnergy(double amount) {
         if (this.storage >= amount) {
             this.storage -= amount;
-            if(rand.nextInt(2) == 1)
-                if(this.coef == -1)
+            if (rand.nextInt(2) == 1) {
+                if (this.coef == -1) {
                     this.storage -= 1;
-            if(storage < 0)
+                }
+            }
+            if (storage < 0) {
                 this.storage = 0;
+            }
             return true;
         } else {
             return false;
@@ -287,11 +294,14 @@ public class HeatComponent extends TileEntityComponent {
         double ret = Math.abs(Math.max(0.0D, amount - this.storage) - amount);
         if (!simulate) {
             this.storage -= ret;
-            if(rand.nextInt(2) == 1)
-                if(this.coef == -1)
+            if (rand.nextInt(2) == 1) {
+                if (this.coef == -1) {
                     this.storage -= 1;
-                if(storage < 0)
-                    this.storage = 0;
+                }
+            }
+            if (storage < 0) {
+                this.storage = 0;
+            }
         }
         return ret;
     }
@@ -480,6 +490,7 @@ public class HeatComponent extends TileEntityComponent {
 
         public void drawHeat(double amount) {
         }
+
         @Override
         public boolean isAllowed() {
             return HeatComponent.this.allow;

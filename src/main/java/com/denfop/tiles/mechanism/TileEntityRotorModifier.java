@@ -7,8 +7,8 @@ import com.denfop.api.windsystem.upgrade.InvSlotRotor;
 import com.denfop.componets.AdvEnergy;
 import com.denfop.container.ContainerRotorUpgrade;
 import com.denfop.gui.GuiRotorUpgrade;
+import com.denfop.tiles.base.TileEntityInventory;
 import ic2.core.IHasGui;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.util.ITooltipFlag;
@@ -30,6 +30,7 @@ public class TileEntityRotorModifier extends TileEntityInventory implements IWin
         slot = new InvSlotUpgrade(this);
         rotor_slot = new InvSlotRotor(slot);
     }
+
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
         if (this.hasComponent(AdvEnergy.class)) {
@@ -42,6 +43,7 @@ public class TileEntityRotorModifier extends TileEntityInventory implements IWin
         }
 
     }
+
     @SideOnly(Side.CLIENT)
     protected boolean shouldSideBeRendered(EnumFacing side, BlockPos otherPos) {
         return false;

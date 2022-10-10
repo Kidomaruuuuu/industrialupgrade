@@ -36,22 +36,16 @@ public class BasicRecipe {
             }
         }
         for (int i = 0; i < ItemIngots.ItemIngotsTypes.values().length; i++) {
-            Recipes.advRecipes.addShapelessRecipe(new ItemStack(IUItem.stik, 2, i), new ItemStack(Ic2Items.cutter.getItem(), 1,
-                            OreDictionary.WILDCARD_VALUE
-                    ),
-                    OreDictionary.getOres("ingot"+RegisterOreDictionary.list_string.get(i))
+            Recipes.advRecipes.addShapelessRecipe(new ItemStack(IUItem.stik, 2, i), "craftingToolWireCutter",
+                    "ingot" + RegisterOreDictionary.list_string.get(i)
             );
             Recipes.advRecipes.addShapelessRecipe(new ItemStack(IUItem.plate, 1, i),
-                    new ItemStack(Ic2Items.ForgeHammer.getItem(), 1,
-                            OreDictionary.WILDCARD_VALUE
-                    ),OreDictionary.getOres("ingot"+RegisterOreDictionary.list_string.get(i))
+                    "craftingToolForgeHammer", "ingot" + RegisterOreDictionary.list_string.get(i)
 
             );
-            Recipes.advRecipes.addShapelessRecipe(new ItemStack(IUItem.casing, 2, i), new ItemStack(Ic2Items.ForgeHammer.getItem()
-                            , 1,
-                            OreDictionary.WILDCARD_VALUE
-                    ),
-                    OreDictionary.getOres("plate"+RegisterOreDictionary.list_string.get(i))
+
+            Recipes.advRecipes.addShapelessRecipe(new ItemStack(IUItem.casing, 2, i), "craftingToolForgeHammer",
+                    "plate" + RegisterOreDictionary.list_string.get(i)
             );
         }
         Recipes.advRecipes.addRecipe(new ItemStack(IUItem.basemachine, 1, 13),
@@ -1041,7 +1035,7 @@ public class BasicRecipe {
                 'E',
                 new ItemStack(IUItem.core, 1, 5),
                 'D',
-                IUItem.blockmolecular,
+                new ItemStack(IUItem.machines, 1, 3),
                 'C',
                 OreDictionary.getOres("plateCobalt"),
                 'B',
@@ -1058,7 +1052,7 @@ public class BasicRecipe {
                 'E',
                 new ItemStack(IUItem.core, 1, 5),
                 'D',
-                IUItem.blockmolecular,
+                new ItemStack(IUItem.machines, 1, 3),
                 'C',
                 OreDictionary.getOres("platePlatinum"),
                 'B',
@@ -1075,7 +1069,7 @@ public class BasicRecipe {
                 'E',
                 new ItemStack(IUItem.core, 1, 5),
                 'D',
-                IUItem.blockmolecular,
+                new ItemStack(IUItem.machines, 1, 3),
                 'C',
                 OreDictionary.getOres("doubleplateAlcled"),
                 'B',
@@ -1091,13 +1085,13 @@ public class BasicRecipe {
                 'E',
                 new ItemStack(IUItem.core, 1, 5),
                 'D',
-                IUItem.blockmolecular,
+                new ItemStack(IUItem.machines, 1, 3),
                 'C',
                 OreDictionary.getOres("doubleplateDuralumin"),
                 'B',
                 OreDictionary.getOres("casingCaravky"),
                 'A',
-                OreDictionary.getOres("casingVanady")
+                OreDictionary.getOres("casingVanadium")
         );
         Recipes.advRecipes.addRecipe(
                 new ItemStack(IUItem.solidmatter, 1, 4),
@@ -1107,7 +1101,7 @@ public class BasicRecipe {
                 'E',
                 new ItemStack(IUItem.core, 1, 5),
                 'D',
-                IUItem.blockmolecular,
+                new ItemStack(IUItem.machines, 1, 3),
                 'C',
                 OreDictionary.getOres("doubleplateManganese"),
                 'B',
@@ -1123,7 +1117,7 @@ public class BasicRecipe {
                 'E',
                 new ItemStack(IUItem.core, 1, 5),
                 'D',
-                IUItem.blockmolecular,
+                new ItemStack(IUItem.machines, 1, 3),
                 'C',
                 OreDictionary.getOres("doubleplateTitanium"),
                 'B',
@@ -1139,7 +1133,7 @@ public class BasicRecipe {
                 'E',
                 new ItemStack(IUItem.core, 1, 5),
                 'D',
-                IUItem.blockmolecular,
+                new ItemStack(IUItem.machines, 1, 3),
                 'C',
                 OreDictionary.getOres("doubleplateRedbrass"),
                 'B',
@@ -1155,13 +1149,13 @@ public class BasicRecipe {
                 'E',
                 new ItemStack(IUItem.core, 1, 5),
                 'D',
-                IUItem.blockmolecular,
+                new ItemStack(IUItem.machines, 1, 3),
                 'C',
                 OreDictionary.getOres("doubleplateAlumel"),
                 'B',
                 OreDictionary.getOres("casingCobalt"),
                 'A',
-                OreDictionary.getOres("casingVanady")
+                OreDictionary.getOres("casingVanadium")
         );
         Recipes.advRecipes.addRecipe(
                 new ItemStack(IUItem.module_schedule),
@@ -1177,7 +1171,7 @@ public class BasicRecipe {
                 'B',
                 new ItemStack(IUItem.plastic_plate),
                 'A',
-                OreDictionary.getOres("plateVanady")
+                OreDictionary.getOres("plateVanadium")
         );
         Recipes.advRecipes.addRecipe(
                 Ic2Items.replicator,
@@ -1639,6 +1633,7 @@ public class BasicRecipe {
             );
 
         }
+
         for (int i = 0; i < RegisterOreDictionary.list_string1.size(); i++) {
             Recipes.advRecipes.addShapelessRecipe(
                     new ItemStack(IUItem.alloysingot, 9, i),
@@ -1921,7 +1916,7 @@ public class BasicRecipe {
         );
 //
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.corewind,1,0),
+                new ItemStack(IUItem.corewind, 1, 0),
                 " A ",
                 "ABA",
                 " A ",
@@ -1931,7 +1926,7 @@ public class BasicRecipe {
                 "plankWood"
         );
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.corewind,1,1),
+                new ItemStack(IUItem.corewind, 1, 1),
                 " A ",
                 "ABA",
                 " A ",
@@ -1941,7 +1936,7 @@ public class BasicRecipe {
                 new ItemStack(IUItem.rotor_wood, 1, OreDictionary.WILDCARD_VALUE)
         );
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.corewind,1,2),
+                new ItemStack(IUItem.corewind, 1, 2),
                 " A ",
                 "ABA",
                 " A ",
@@ -1951,7 +1946,7 @@ public class BasicRecipe {
                 new ItemStack(IUItem.rotor_bronze, 1, OreDictionary.WILDCARD_VALUE)
         );
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.corewind,1,3),
+                new ItemStack(IUItem.corewind, 1, 3),
                 " A ",
                 "ABA",
                 " A ",
@@ -1961,7 +1956,7 @@ public class BasicRecipe {
                 new ItemStack(IUItem.rotor_iron, 1, OreDictionary.WILDCARD_VALUE)
         );
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.corewind,1,4),
+                new ItemStack(IUItem.corewind, 1, 4),
                 " A ",
                 "ABA",
                 " A ",
@@ -1972,7 +1967,7 @@ public class BasicRecipe {
         );
         //
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.corewind,1,5),
+                new ItemStack(IUItem.corewind, 1, 5),
                 "CAC",
                 "ABA",
                 "CAC", 'C',
@@ -1983,7 +1978,7 @@ public class BasicRecipe {
                 new ItemStack(IUItem.rotor_carbon, 1, OreDictionary.WILDCARD_VALUE)
         );
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.corewind,1,6),
+                new ItemStack(IUItem.corewind, 1, 6),
                 "CAC",
                 "ABA",
                 "CAC", 'C',
@@ -1994,7 +1989,7 @@ public class BasicRecipe {
                 new ItemStack(IUItem.iridium.getItem(), 1, OreDictionary.WILDCARD_VALUE)
         );
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.corewind,1,7),
+                new ItemStack(IUItem.corewind, 1, 7),
                 "DCD",
                 "ABA",
                 "DCD", 'D',
@@ -2007,7 +2002,7 @@ public class BasicRecipe {
                 new ItemStack(IUItem.compressiridium.getItem(), 1, OreDictionary.WILDCARD_VALUE)
         );
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.corewind,1,8),
+                new ItemStack(IUItem.corewind, 1, 8),
                 "DCD",
                 "ABA",
                 " C ", 'D',
@@ -2020,7 +2015,7 @@ public class BasicRecipe {
                 new ItemStack(IUItem.spectral.getItem(), 1, OreDictionary.WILDCARD_VALUE)
         );
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.corewind,1,10),
+                new ItemStack(IUItem.corewind, 1, 10),
                 "DCD",
                 "CBC",
                 " C ", 'D',
@@ -2031,7 +2026,7 @@ public class BasicRecipe {
                 new ItemStack(IUItem.myphical.getItem(), 1, OreDictionary.WILDCARD_VALUE)
         );
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.corewind,1,9),
+                new ItemStack(IUItem.corewind, 1, 9),
                 "DCD",
                 "CBC",
                 "ACA", 'D',
@@ -2044,7 +2039,7 @@ public class BasicRecipe {
                 new ItemStack(IUItem.photon.getItem(), 1, OreDictionary.WILDCARD_VALUE)
         );
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.corewind,1,11),
+                new ItemStack(IUItem.corewind, 1, 11),
                 "DCD",
                 "CBC",
                 " C ", 'D',
@@ -2055,7 +2050,7 @@ public class BasicRecipe {
                 new ItemStack(IUItem.neutron.getItem(), 1, OreDictionary.WILDCARD_VALUE)
         );
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.corewind,1,12),
+                new ItemStack(IUItem.corewind, 1, 12),
                 "ACA",
                 "CBC",
                 "ACA",
@@ -2067,7 +2062,7 @@ public class BasicRecipe {
                 new ItemStack(IUItem.barionrotor.getItem(), 1, OreDictionary.WILDCARD_VALUE)
         );
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.corewind,1,13),
+                new ItemStack(IUItem.corewind, 1, 13),
                 "ECE",
                 "CBC",
                 "ACA", 'E',
@@ -3848,6 +3843,7 @@ public class BasicRecipe {
                 'D',
                 new ItemStack(IUItem.tranformer, 1, 1)
         );
+
         Recipes.advRecipes.addRecipe(
                 new ItemStack(IUItem.combinersolidmatter),
                 "ABC",
@@ -4589,7 +4585,7 @@ public class BasicRecipe {
                 "BAB",
                 "BCB",
                 'C',
-                OreDictionary.getOres("plateVanady"),
+                OreDictionary.getOres("plateVanadium"),
                 'A',
                 Ic2Items.liquidheatexchanger,
                 'B',
@@ -5201,7 +5197,7 @@ public class BasicRecipe {
                 'C',
                 IUItem.quantumtool
 
-                );
+        );
         Recipes.advRecipes.addRecipe(
                 new ItemStack(IUItem.basemachine2, 1, 21),
                 "DDD",
@@ -5236,65 +5232,273 @@ public class BasicRecipe {
                 new ItemStack(IUItem.windmeter, 1, 0),
                 " A ",
                 "ABA",
-                " AC",'A', Ic2Items.casingtin,'B',Ic2Items.casingbronze,'C',Ic2Items.powerunitsmall
+                " AC", 'A', Ic2Items.casingtin, 'B', Ic2Items.casingbronze, 'C', Ic2Items.powerunitsmall
 
 
         );
         Recipes.advRecipes.addRecipe(
                 new ItemStack(IUItem.rotorupgrade_schemes),
-                "ADA","CBC","ADA",'A', new ItemStack(IUItem.plastic_plate)
-                ,'D',"doubleplateVanadoalumite", 'B', new ItemStack(IUItem.photoniy_ingot),'C', "plateManganese");
-           Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.rotors_upgrade,1,0),
-                "A A","CBC","A A",'A', new ItemStack(IUItem.advnanobox)
-                , 'B', new ItemStack(IUItem.rotorupgrade_schemes),'C', "casingNichrome");
+                "ADA", "CBC", "ADA", 'A', new ItemStack(IUItem.plastic_plate)
+                , 'D', "doubleplateVanadoalumite", 'B', new ItemStack(IUItem.photoniy_ingot), 'C', "plateManganese"
+        );
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.rotors_upgrade,1,1),
-                "ADA","CBC","ADA",'A', new ItemStack(IUItem.advQuantumtool),'B',new ItemStack(IUItem.core,1,3)
-                , 'C',  new ItemStack(IUItem.rotors_upgrade,1,0),'D', "casingRedbrass");
+                new ItemStack(IUItem.rotors_upgrade, 1, 0),
+                "A A", "CBC", "A A", 'A', new ItemStack(IUItem.advnanobox)
+                , 'B', new ItemStack(IUItem.rotorupgrade_schemes), 'C', "casingNichrome"
+        );
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.rotors_upgrade,1,2),
-                "ADA","CBC","ADA",'A', new ItemStack(IUItem.adv_spectral_box),'B',new ItemStack(IUItem.core,1,5)
-                , 'C',  new ItemStack(IUItem.rotors_upgrade,1,1),'D', "casingMuntsa");
+                new ItemStack(IUItem.rotors_upgrade, 1, 1),
+                "ADA", "CBC", "ADA", 'A', new ItemStack(IUItem.advQuantumtool), 'B', new ItemStack(IUItem.core, 1, 3)
+                , 'C', new ItemStack(IUItem.rotors_upgrade, 1, 0), 'D', "casingRedbrass"
+        );
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(IUItem.rotors_upgrade, 1, 2),
+                "ADA", "CBC", "ADA", 'A', new ItemStack(IUItem.adv_spectral_box), 'B', new ItemStack(IUItem.core, 1, 5)
+                , 'C', new ItemStack(IUItem.rotors_upgrade, 1, 1), 'D', "casingMuntsa"
+        );
 
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.rotors_upgrade,1,3),
-                "A A","CBC","A A",'A', new ItemStack(IUItem.advnanobox)
-                , 'B', new ItemStack(IUItem.rotorupgrade_schemes),'C', Ic2Items.iridiumPlate);
+                new ItemStack(IUItem.rotors_upgrade, 1, 3),
+                "A A", "CBC", "A A", 'A', new ItemStack(IUItem.advnanobox)
+                , 'B', new ItemStack(IUItem.rotorupgrade_schemes), 'C', Ic2Items.iridiumPlate
+        );
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.rotors_upgrade,1,4),
-                "ADA","CBC","ADA",'A', new ItemStack(IUItem.advQuantumtool),'B',new ItemStack(IUItem.core,1,4)
-                , 'C',  new ItemStack(IUItem.rotors_upgrade,1,3),'D', IUItem.compressIridiumplate);
+                new ItemStack(IUItem.rotors_upgrade, 1, 4),
+                "ADA", "CBC", "ADA", 'A', new ItemStack(IUItem.advQuantumtool), 'B', new ItemStack(IUItem.core, 1, 4)
+                , 'C', new ItemStack(IUItem.rotors_upgrade, 1, 3), 'D', IUItem.compressIridiumplate
+        );
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.rotors_upgrade,1,5),
-                "ADA","CBC","ADA",'A', new ItemStack(IUItem.adv_spectral_box),'B',new ItemStack(IUItem.core,1,6)
-                , 'C',  new ItemStack(IUItem.rotors_upgrade,1,4),'D', IUItem.doublecompressIridiumplate);
+                new ItemStack(IUItem.rotors_upgrade, 1, 5),
+                "ADA", "CBC", "ADA", 'A', new ItemStack(IUItem.adv_spectral_box), 'B', new ItemStack(IUItem.core, 1, 6)
+                , 'C', new ItemStack(IUItem.rotors_upgrade, 1, 4), 'D', IUItem.doublecompressIridiumplate
+        );
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.rotors_upgrade,1,6),
-                "ADA","CBC","ADA",'A', new ItemStack(IUItem.advnanobox)
-                , 'B', new ItemStack(IUItem.rotorupgrade_schemes),'C', Ic2Items.iridiumPlate,'D', "casingDuralumin");
+                new ItemStack(IUItem.rotors_upgrade, 1, 6),
+                "ADA", "CBC", "ADA", 'A', new ItemStack(IUItem.advnanobox)
+                , 'B', new ItemStack(IUItem.rotorupgrade_schemes), 'C', Ic2Items.iridiumPlate, 'D', "casingDuralumin"
+        );
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.rotors_upgrade,1,7),
-                "ADA","CBC","ADA",'A', new ItemStack(IUItem.advQuantumtool),'B',new ItemStack(IUItem.core,1,4)
-                , 'C',  new ItemStack(IUItem.rotors_upgrade,1,6),'D', IUItem.compressIridiumplate);
+                new ItemStack(IUItem.rotors_upgrade, 1, 7),
+                "ADA", "CBC", "ADA", 'A', new ItemStack(IUItem.advQuantumtool), 'B', new ItemStack(IUItem.core, 1, 4)
+                , 'C', new ItemStack(IUItem.rotors_upgrade, 1, 6), 'D', IUItem.compressIridiumplate
+        );
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.rotors_upgrade,1,8),
-                "ADA","CBC","ADA",'A', new ItemStack(IUItem.adv_spectral_box),'B',new ItemStack(IUItem.core,1,6)
-                , 'C',  new ItemStack(IUItem.rotors_upgrade,1,7),'D', IUItem.doublecompressIridiumplate);
+                new ItemStack(IUItem.rotors_upgrade, 1, 8),
+                "ADA", "CBC", "ADA", 'A', new ItemStack(IUItem.adv_spectral_box), 'B', new ItemStack(IUItem.core, 1, 6)
+                , 'C', new ItemStack(IUItem.rotors_upgrade, 1, 7), 'D', IUItem.doublecompressIridiumplate
+        );
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.rotors_upgrade,1,9),
-                "ADA","CBC","ADA",'A', new ItemStack(IUItem.adv_spectral_box)
-                , 'B', new ItemStack(IUItem.rotorupgrade_schemes),'C', IUItem.compressIridiumplate,'D', "doubleplateAlumel");
+                new ItemStack(IUItem.rotors_upgrade, 1, 9),
+                "ADA", "CBC", "ADA", 'A', new ItemStack(IUItem.adv_spectral_box)
+                , 'B', new ItemStack(IUItem.rotorupgrade_schemes), 'C', IUItem.compressIridiumplate, 'D', "doubleplateAlumel"
+        );
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.rotors_upgrade,1,10),
-                "ADA","CBC","ADA",'A', new ItemStack(IUItem.core,1,5)
-                , 'B', new ItemStack(IUItem.rotorupgrade_schemes),'C', IUItem.compressIridiumplate,'D', "doubleplateInvar");
+                new ItemStack(IUItem.rotors_upgrade, 1, 10),
+                "ADA", "CBC", "ADA", 'A', new ItemStack(IUItem.core, 1, 5)
+                , 'B', new ItemStack(IUItem.rotorupgrade_schemes), 'C', IUItem.compressIridiumplate, 'D', "doubleplateInvar"
+        );
 
         Recipes.advRecipes.addRecipe(
-                new ItemStack(IUItem.spawnermodules,1,8),
-                "ECE","BAB","DCD",'A', new ItemStack(IUItem.module_schedule),'E', new ItemStack(IUItem.core,5)
-                , 'B', new ItemStack(IUItem.quantumtool),'C', Ic2Items.iridiumPlate,'D', IUItem.cirsuitQuantum);
+                new ItemStack(IUItem.spawnermodules, 1, 8),
+                "ECE", "BAB", "DCD", 'A', new ItemStack(IUItem.module_schedule), 'E', new ItemStack(IUItem.core, 5)
+                , 'B', new ItemStack(IUItem.quantumtool), 'C', Ic2Items.iridiumPlate, 'D', IUItem.cirsuitQuantum
+        );
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(IUItem.basemachine2, 1, 23),
+                "CBC",
+                "ADA",
+                "EBE",
+                'E',
+                IUItem.advQuantumtool,
+                'D',
+                IUItem.blockmolecular,
+                'C',
+                IUItem.cirsuitQuantum,
+                'B',
+                IUItem.compresscarbon,
+                'A',
+                OreDictionary.getOres("doubleplateVanadium")
+        );
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(IUItem.basemachine2, 1, 39),
+                "CBC",
+                "ADA",
+                "EBE",
+                'E',
+                IUItem.advQuantumtool,
+                'D',
+                IUItem.blockmolecular,
+                'C',
+                IUItem.cirsuitQuantum,
+                'B',
+                IUItem.compressIridiumplate,
+                'A',
+                OreDictionary.getOres("doubleplateNichrome")
+        );
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(IUItem.basemachine2, 1, 37),
+                "CBC",
+                "ADA",
+                "EBE",
+                'E',
+                IUItem.advQuantumtool,
+                'D',
+                IUItem.blockmolecular,
+                'C',
+                IUItem.cirsuitQuantum,
+                'B',
+                IUItem.compresscarbonultra,
+                'A',
+                OreDictionary.getOres("doubleplateRedbrass")
+        );
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(IUItem.basemachine2, 1, 36),
+                "CBC",
+                "ADA",
+                "EBE",
+                'E',
+                IUItem.advQuantumtool,
+                'D',
+                IUItem.blockmolecular,
+                'C',
+                IUItem.cirsuitQuantum,
+                'B',
+                IUItem.compresscarbonultra,
+                'A',
+                OreDictionary.getOres("doubleplateVitalium")
+        );
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(IUItem.basemachine2, 1, 35),
+                "CBC",
+                "ADA",
+                "EBE",
+                'E',
+                IUItem.advQuantumtool,
+                'D',
+                IUItem.blockmolecular,
+                'C',
+                IUItem.cirsuitQuantum,
+                'B',
+                IUItem.doublecompressIridiumplate,
+                'A',
+                OreDictionary.getOres("doubleplatePlatinum")
+        );
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(IUItem.basemachine2, 1, 34),
+                "CBC",
+                "ADA",
+                "EBE",
+                'E',
+                IUItem.advQuantumtool,
+                'D',
+                IUItem.blockmolecular,
+                'C',
+                IUItem.cirsuitQuantum,
+                'B',
+                IUItem.compressIridiumplate,
+                'A',
+                OreDictionary.getOres("doubleplateVanadoalumite")
+        );
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(IUItem.basemachine2, 1, 38),
+                "CBC",
+                "ADA",
+                "EBE",
+                'E',
+                IUItem.adv_spectral_box,
+                'D',
+                Ic2Items.advancedMachine,
+                'C',
+                IUItem.circuitSpectral,
+                'B',
+                OreDictionary.getOres("doubleplateMuntsa"),
+                'A',
+                OreDictionary.getOres("doubleplateAluminumbronze")
+        );
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(IUItem.basemachine2, 1, 32),
+                " C ",
+                "CDC",
+                "ECE",
+                'C',
+                ModUtils.getCable(Ic2Items.copperCableItem, 1),
+                'D',
+                Ic2Items.advancedMachine,
+                'E',
+                IUItem.circuitNano
+        );
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(IUItem.basemachine2, 1, 33),
+                " C ",
+                "CDC",
+                "ECE",
+                'C',
+                ModUtils.getCable(Ic2Items.copperCableItem, 1),
+                'D',
+                Ic2Items.advancedMachine,
+                'E',
+                IUItem.cirsuitQuantum
+        );
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(IUItem.rotors_upgrade, 1, 11),
+                "ADA", "CBC", "DED", 'A', new ItemStack(IUItem.advnanobox)
+                , 'B', new ItemStack(IUItem.rotorupgrade_schemes), 'C', Ic2Items.iridiumPlate, 'D', "doubleplatePlatinum", 'E',
+                new ItemStack(IUItem.core, 1, 3)
+        );
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(IUItem.rotors_upgrade, 1, 12),
+                "ADA", "CBC", "ADA", 'A', new ItemStack(IUItem.advQuantumtool), 'B', new ItemStack(IUItem.core, 1, 4)
+                , 'C', new ItemStack(IUItem.rotors_upgrade, 1, 11), 'D', IUItem.compressIridiumplate
+        );
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(IUItem.rotors_upgrade, 1, 13),
+                "ADA", "CBC", "ADA", 'A', new ItemStack(IUItem.adv_spectral_box), 'B', new ItemStack(IUItem.core, 1, 6)
+                , 'C', new ItemStack(IUItem.rotors_upgrade, 1, 12), 'D', IUItem.doublecompressIridiumplate
+        );
 
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(IUItem.rotors_upgrade, 1, 14),
+                "ADA", "CBC", "DED", 'A', new ItemStack(IUItem.advnanobox)
+                , 'B', new ItemStack(IUItem.rotorupgrade_schemes), 'C', Ic2Items.iridiumPlate, 'D', "doubleplateVitalium", 'E',
+                new ItemStack(IUItem.core, 1, 4)
+        );
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(IUItem.rotors_upgrade, 1, 15),
+                "ADA", "CBC", "ADA", 'A', new ItemStack(IUItem.advQuantumtool), 'B', new ItemStack(IUItem.core, 1, 5)
+                , 'C', new ItemStack(IUItem.rotors_upgrade, 1, 14), 'D', IUItem.compressIridiumplate
+        );
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(IUItem.rotors_upgrade, 1, 16),
+                "ADA", "CBC", "ADA", 'A', new ItemStack(IUItem.adv_spectral_box), 'B', new ItemStack(IUItem.core, 1, 6)
+                , 'C', new ItemStack(IUItem.rotors_upgrade, 1, 15), 'D', IUItem.doublecompressIridiumplate
+        );
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(IUItem.rotors_upgrade, 1, 17),
+                "ADA",
+                "CBC",
+                "DED",
+                'A',
+                new ItemStack(IUItem.advnanobox)
+                ,
+                'B',
+                new ItemStack(IUItem.rotorupgrade_schemes),
+                'C',
+                Ic2Items.iridiumPlate,
+                'D',
+                "doubleplateRedbrass",
+                'E',
+                new ItemStack(IUItem.core, 1, 4)
+        );
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(IUItem.rotors_upgrade, 1, 18),
+                "ADA", "CBC", "ADA", 'A', new ItemStack(IUItem.advQuantumtool), 'B', new ItemStack(IUItem.core, 1, 5)
+                , 'C', new ItemStack(IUItem.rotors_upgrade, 1, 17), 'D', IUItem.compressIridiumplate
+        );
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(IUItem.rotors_upgrade, 1, 19),
+                "ADA", "CBC", "ADA", 'A', new ItemStack(IUItem.adv_spectral_box), 'B', new ItemStack(IUItem.core, 1, 6)
+                , 'C', new ItemStack(IUItem.rotors_upgrade, 1, 18), 'D', IUItem.doublecompressIridiumplate
+        );
     }
 
 }

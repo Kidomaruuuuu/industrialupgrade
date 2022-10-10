@@ -55,8 +55,8 @@ public abstract class TileEntityMultiMatter extends TileEntityElectricMachine im
     public final InvSlotConsumableLiquid containerslot;
     @GuiSynced
     public final FluidTank fluidTank;
-    protected final Fluids fluids;
     public final float energycost;
+    protected final Fluids fluids;
     public boolean work;
     public int scrap = 0;
     public boolean redstonePowered = false;
@@ -102,14 +102,15 @@ public abstract class TileEntityMultiMatter extends TileEntityElectricMachine im
         double ret = (double) Math.round(((double) 3 + (double) extra));
         return ret > 2.147483647E9D ? 2147483647 : (int) ret;
     }
+
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
         if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             tooltip.add(Localization.translate("press.lshift"));
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            tooltip.add(Localization.translate("iu.matter_work_info") + (int)this.energycost);
-         }
+            tooltip.add(Localization.translate("iu.matter_work_info") + (int) this.energycost);
+        }
         if (this.hasComponent(AdvEnergy.class)) {
             AdvEnergy energy = this.getComponent(AdvEnergy.class);
 
@@ -121,6 +122,7 @@ public abstract class TileEntityMultiMatter extends TileEntityElectricMachine im
         }
 
     }
+
     @Override
     public void onNetworkEvent(final EntityPlayer entityPlayer, final int i) {
         this.work = !this.work;
@@ -185,7 +187,7 @@ public abstract class TileEntityMultiMatter extends TileEntityElectricMachine im
                 }
             }
             if (this.energy.getEnergy() >= this.energycost) {
-               this.attemptGeneration();
+                this.attemptGeneration();
             }
             if (!this.containerslot.isEmpty()) {
                 this.containerslot.processFromTank(this.fluidTank, this.outputSlot);

@@ -7,8 +7,10 @@ public class TileEntityAdvGeoGenerator extends TileEntityGeoGenerator {
     public TileEntityAdvGeoGenerator() {
         super(16, 2.2);
     }
+
     @Override
     public EnumTypeStyle getStyle() {
         return EnumTypeStyle.ADVANCED;
     }
+
 }

@@ -21,11 +21,9 @@ import ic2.api.energy.EnergyNet;
 import ic2.api.item.ElectricItem;
 import ic2.api.item.IElectricItem;
 import ic2.api.network.INetworkClientTileEntityEventListener;
-import ic2.api.tile.IEnergyStorage;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.init.Localization;
 import ic2.core.init.MainConfig;
 import ic2.core.ref.TeBlock;
@@ -59,7 +57,7 @@ import java.util.Random;
 
 public class TileEntityElectricBlock extends TileEntityInventory implements IHasGui,
         INetworkClientTileEntityEventListener, IEnergyHandler, IEnergyReceiver,
-         IEnergyProvider, IStorage {
+        IEnergyProvider, IStorage {
 
     public static EnumElectricBlock electricblock;
     public final double tier;
@@ -144,7 +142,8 @@ public class TileEntityElectricBlock extends TileEntityInventory implements IHas
     public void addInformation(final ItemStack itemStack, final List<String> info, final ITooltipFlag advanced) {
 
 
-        info.add(Localization.translate("ic2.item.tooltip.Output") + " " + ModUtils.getString(EnergyNet.instance.getPowerFromTier(this.energy.getSourceTier())) + " EU/t ");
+        info.add(Localization.translate("ic2.item.tooltip.Output") + " " + ModUtils.getString(EnergyNet.instance.getPowerFromTier(
+                this.energy.getSourceTier())) + " EU/t ");
         info.add(Localization.translate("ic2.item.tooltip.Capacity") + " " + ModUtils.getString(this.energy.getCapacity()) + " EU ");
         info.add(Localization.translate("ic2.item.tooltip.Capacity") + " " + ModUtils.getString(this.maxStorage2) + " RF ");
         NBTTagCompound nbttagcompound = ModUtils.nbt(itemStack);
@@ -689,12 +688,6 @@ public class TileEntityElectricBlock extends TileEntityInventory implements IHas
     }
 
 
-
-
-
-
-
-
     public int addEnergy(int amount) {
         this.energy.addEnergy(amount);
         return amount;
@@ -823,8 +816,6 @@ public class TileEntityElectricBlock extends TileEntityInventory implements IHas
 
         return nbttagcompound;
     }
-
-
 
 
     public void onGuiClosed(EntityPlayer player) {

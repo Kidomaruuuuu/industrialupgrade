@@ -1,16 +1,8 @@
 package com.denfop.tiles.mechanism.multimechanism.triple;
 
-import com.denfop.Ic2Items;
-import com.denfop.api.recipe.BaseMachineRecipe;
-import com.denfop.api.recipe.Input;
-import com.denfop.api.recipe.MachineRecipe;
-import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.tiles.base.EnumMultiMachine;
 import com.denfop.tiles.base.TileEntityMultiMachine;
-import ic2.api.recipe.IRecipeInputFactory;
 import ic2.core.init.Localization;
-
-import java.util.Collections;
 
 public class TileEntityTripleCombRecycler extends TileEntityMultiMachine {
 
@@ -27,8 +19,6 @@ public class TileEntityTripleCombRecycler extends TileEntityMultiMachine {
             super.initiate(soundEvent);
         }
     }
-
-
 
 
     @Override

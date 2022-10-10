@@ -33,6 +33,7 @@ public class TileEntityAntiUpgradeBlock extends TileEntityElectricMachine implem
         this.input = new InvSlotAntiUpgradeBlock(this);
         this.index = 0;
     }
+
     @SideOnly(Side.CLIENT)
     public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
         if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
@@ -44,6 +45,7 @@ public class TileEntityAntiUpgradeBlock extends TileEntityElectricMachine implem
         }
         super.addInformation(stack, tooltip, advanced);
     }
+
     @SideOnly(Side.CLIENT)
     protected boolean shouldSideBeRendered(EnumFacing side, BlockPos otherPos) {
         return false;

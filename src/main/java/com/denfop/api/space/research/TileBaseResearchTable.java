@@ -6,7 +6,7 @@ import com.denfop.api.space.SpaceNet;
 import com.denfop.api.space.fakebody.FakePlayer;
 import com.denfop.api.space.fakebody.SpaceOperation;
 import com.denfop.api.space.research.event.ResearchTableLoadEvent;
-import ic2.core.block.TileEntityInventory;
+import com.denfop.tiles.base.TileEntityInventory;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

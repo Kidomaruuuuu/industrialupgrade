@@ -31,6 +31,7 @@ public class ListInformationUtils {
     public static final List<String> anti_upgrade_block = new ArrayList<>();
     public static final List<String> quarry = new ArrayList<>();
     public static final List<String> quarryvein = new ArrayList<>();
+    public static final List<String> solar = new ArrayList<>();
     public static final Map<Integer, List<String>> integerListMap = new HashMap<>();
     public static int tick = 0;
     public static int index = 0;
@@ -127,44 +128,54 @@ public class ListInformationUtils {
 
         anti_upgrade_block.add(Localization.translate("iu.anti_modification.info1"));
         anti_upgrade_block.add(Localization.translate("iu.anti_modification.info2"));
-        for(int i=1; i< 9;i++)
-        quarry.add(Localization.translate("iu.simplyquarries_info"+i));
-        for(int i=1; i< 4;i++)
-            quarryvein.add(Localization.translate("iu.quarryvein_info"+i));
+        for (int i = 1; i < 9; i++) {
+            quarry.add(Localization.translate("iu.simplyquarries_info" + i));
+        }
+        for (int i = 1; i < 4; i++) {
+            quarryvein.add(Localization.translate("iu.quarryvein_info" + i));
+        }
+        for (int i = 0; i < 6; i++) {
+            solar.add(new ItemStack(IUItem.basemodules, 1, i).getDisplayName());
+        }
+        for (int i = 15; i < 18; i++) {
+            solar.add(new ItemStack(IUItem.basemodules, 1, i).getDisplayName());
+        }
 
+        for (EnumMultiMachine machines : EnumMultiMachine.values()) {
+            switch (machines.sizeWorkingSlot) {
+                case 1:
+                case 2:
+                    if (integerListMap.containsKey(0)) {
+                        integerListMap.get(0).add(new ItemStack(machines.block, 1, machines.meta).getDisplayName());
+                    } else {
+                        List<String> stringList = new ArrayList<>();
+                        stringList.add(new ItemStack(machines.block, 1, machines.meta).getDisplayName());
+                        integerListMap.put(0, stringList);
+                    }
+                    break;
+                case 3:
+                    if (integerListMap.containsKey(1)) {
+                        integerListMap.get(1).add(new ItemStack(machines.block, 1, machines.meta).getDisplayName());
+                    } else {
+                        List<String> stringList = new ArrayList<>();
+                        stringList.add(new ItemStack(machines.block, 1, machines.meta).getDisplayName());
+                        integerListMap.put(1, stringList);
+                    }
+                    break;
+                case 4:
+                    if (integerListMap.containsKey(2)) {
+                        integerListMap.get(2).add(new ItemStack(machines.block, 1, machines.meta).getDisplayName());
+                    } else {
+                        List<String> stringList = new ArrayList<>();
+                        stringList.add(new ItemStack(machines.block, 1, machines.meta).getDisplayName());
+                        integerListMap.put(2, stringList);
+                    }
+                    break;
+            }
 
-       for(EnumMultiMachine machines : EnumMultiMachine.values()){
-          switch (machines.sizeWorkingSlot){
-              case 1:
-              case 2:
-                  if(integerListMap.containsKey(0)){
-                      integerListMap.get(0).add(new ItemStack(machines.block,1,machines.meta).getDisplayName());
-                  }else{
-                      List<String> stringList = new ArrayList<>();
-                      stringList.add(new ItemStack(machines.block,1,machines.meta).getDisplayName());
-                      integerListMap.put(0,stringList);
-                  }
-                  break;
-              case 3:
-                  if(integerListMap.containsKey(1)){
-                      integerListMap.get(1).add(new ItemStack(machines.block,1,machines.meta).getDisplayName());
-                  }else{
-                      List<String> stringList = new ArrayList<>();
-                      stringList.add(new ItemStack(machines.block,1,machines.meta).getDisplayName());
-                      integerListMap.put(1,stringList);
-                  }
-                  break;
-              case 4:
-                  if(integerListMap.containsKey(2)){
-                      integerListMap.get(2).add(new ItemStack(machines.block,1,machines.meta).getDisplayName());
-                  }else{
-                      List<String> stringList = new ArrayList<>();
-                      stringList.add(new ItemStack(machines.block,1,machines.meta).getDisplayName());
-                      integerListMap.put(2,stringList);
-                  }
-                  break;
-          }
-       }
+        }
+        integerListMap.get(1).addAll(integerListMap.get(0));
+        integerListMap.get(2).addAll(integerListMap.get(1));
     }
 
 }

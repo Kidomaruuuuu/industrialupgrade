@@ -52,7 +52,13 @@ public class TileEntityWaterGenerator extends TileEntityElectricMachine implemen
 
         this.energycost = 40;
         this.outputSlot = new InvSlotOutput(this, "output", 1);
-        this.containerslot = new InvSlotConsumableLiquidByList(this, "container", Access.I, 1, InvSide.TOP, InvSlotConsumableLiquid.OpType.Fill,
+        this.containerslot = new InvSlotConsumableLiquidByList(
+                this,
+                "container",
+                Access.I,
+                1,
+                InvSide.TOP,
+                InvSlotConsumableLiquid.OpType.Fill,
                 FluidRegistry.WATER
         );
 

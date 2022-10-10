@@ -22,7 +22,6 @@ public class TileEntityRecycler extends TileEntityMultiMachine {
     }
 
 
-
     @Override
     public EnumMultiMachine getMachine() {
         return EnumMultiMachine.RECYCLER;

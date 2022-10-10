@@ -22,6 +22,7 @@ public class TileEntityCooling extends TileEntityElectricMachine implements INet
 
     public final CoolComponent cold;
     public int max;
+    public boolean work;
     private int coef;
 
     public TileEntityCooling() {
@@ -33,12 +34,14 @@ public class TileEntityCooling extends TileEntityElectricMachine implements INet
     public void readFromNBT(NBTTagCompound nbttagcompound) {
         super.readFromNBT(nbttagcompound);
         this.max = nbttagcompound.getInteger("max");
+        this.work = nbttagcompound.getBoolean("work");
         this.cold.setCapacity(this.max);
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound nbttagcompound) {
         super.writeToNBT(nbttagcompound);
         nbttagcompound.setInteger("max", this.max);
+        nbttagcompound.setBoolean("work", this.work);
         return nbttagcompound;
 
     }
@@ -62,7 +65,11 @@ public class TileEntityCooling extends TileEntityElectricMachine implements INet
             }
             this.max = (int) this.cold.getCapacity();
         }
+        if (i == 2) {
+            this.work = !this.work;
+        }
     }
+
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
@@ -70,22 +77,25 @@ public class TileEntityCooling extends TileEntityElectricMachine implements INet
             tooltip.add(Localization.translate("press.lshift"));
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            tooltip.add(Localization.translate("iu.machines_work_energy") + 50 + Localization.translate("iu" +
+            tooltip.add(Localization.translate("iu.machines_work_energy") + 30 + Localization.translate("iu" +
                     ".machines_work_energy_type_eu"));
         }
         super.addInformation(stack, tooltip, advanced);
     }
+
     @Override
     protected void onLoaded() {
         super.onLoaded();
-        this.coef = (int) Math.max(Math.ceil(this.cold.storage / 16),1);
+        this.coef = (int) Math.max(Math.ceil(this.cold.storage / 16), 1);
     }
+
     protected void updateEntityServer() {
         super.updateEntityServer();
-        if(this.cold.allow)
-        if (this.energy.getEnergy() >= 30 * this.coef && this.cold.getEnergy() < this.cold.getCapacity()) {
-            this.cold.addEnergy(1);
-            this.energy.useEnergy(30* this.coef);
+        if (this.cold.allow || work) {
+            if (this.energy.getEnergy() >= 30 * this.coef && this.cold.getEnergy() < this.cold.getCapacity()) {
+                this.cold.addEnergy(1);
+                this.energy.useEnergy(30 * this.coef);
+            }
         }
         if (this.world.provider.getWorldTime() % 20 == 0 && this.cold.getEnergy() >= 1) {
             this.cold.addEnergy(-1);

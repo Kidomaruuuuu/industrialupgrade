@@ -3,7 +3,6 @@ package com.denfop.gui;
 import com.denfop.Constants;
 import com.denfop.container.ContainerCombinerMatter;
 import ic2.core.GuiIC2;
-import ic2.core.IC2;
 import ic2.core.gui.TankGauge;
 import ic2.core.init.Localization;
 import net.minecraft.util.ResourceLocation;
@@ -61,7 +60,7 @@ public class GuiCombinerMatter extends GuiIC2<ContainerCombinerMatter> {
     protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
         super.drawGuiContainerBackgroundLayer(f, x, y);
         this.mc.getTextureManager().bindTexture(getTexture());
-         int xoffset = (this.width - this.xSize) / 2;
+        int xoffset = (this.width - this.xSize) / 2;
         int yoffset = (this.height - this.ySize) / 2;
 
         this.mc.getTextureManager().bindTexture(getTexture());

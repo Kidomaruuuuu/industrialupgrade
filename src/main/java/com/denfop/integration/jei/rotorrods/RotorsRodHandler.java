@@ -14,7 +14,7 @@ public class RotorsRodHandler {
     private final ItemStack output;
     private final ItemStack[] input;
 
-    public RotorsRodHandler(ItemStack output,ItemStack... inputs) {
+    public RotorsRodHandler(ItemStack output, ItemStack... inputs) {
         this.input = inputs;
         this.output = output;
     }
@@ -26,8 +26,8 @@ public class RotorsRodHandler {
         return recipes;
     }
 
-    public static RotorsRodHandler addRecipe(ItemStack output,ItemStack... inputs) {
-        RotorsRodHandler recipe = new RotorsRodHandler(output,inputs);
+    public static RotorsRodHandler addRecipe(ItemStack output, ItemStack... inputs) {
+        RotorsRodHandler recipe = new RotorsRodHandler(output, inputs);
         if (recipes.contains(recipe)) {
             return null;
         }
@@ -36,10 +36,10 @@ public class RotorsRodHandler {
     }
 
 
-
     public static void initRecipes() {
         for (BaseMachineRecipe container : Recipes.recipes.getRecipeList("rod_assembler")) {
-            addRecipe(container.getOutput().items.get(0),
+            addRecipe(
+                    container.getOutput().items.get(0),
                     container.input.getInputs().get(0).getInputs().get(0),
                     container.input.getInputs().get(1).getInputs().get(0),
                     container.input.getInputs().get(2).getInputs().get(0),
@@ -60,7 +60,6 @@ public class RotorsRodHandler {
     public ItemStack getOutput() { // Получатель выходного предмета рецепта.
         return output.copy();
     }
-
 
 
 }

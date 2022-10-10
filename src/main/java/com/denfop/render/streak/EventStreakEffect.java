@@ -2,16 +2,11 @@ package com.denfop.render.streak;
 
 
 import com.denfop.utils.StreakLocationUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class EventStreakEffect {
@@ -33,7 +28,7 @@ public class EventStreakEffect {
         }
         return loc;
     }
-
+/*
     @SubscribeEvent
     public void onRenderTick(TickEvent.RenderTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
@@ -121,5 +116,5 @@ public class EventStreakEffect {
         streak.posY = streak.parent.posY;
         streak.posZ = streak.parent.posZ;
     }
-
+*/
 }

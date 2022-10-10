@@ -58,7 +58,7 @@ public class InvSlotUpgradeModule extends InvSlot {
                         }
                         break;
                     case FIRE:
-                        fireAspect+=1;
+                        fireAspect += 1;
                         this.tile.costenergy += module.percent * this.tile.costenergy / 100;
                         break;
                 }
@@ -112,7 +112,7 @@ public class InvSlotUpgradeModule extends InvSlot {
                         }
                         break;
                     case FIRE:
-                        fireAspect+=1;
+                        fireAspect += 1;
                         this.tile.costenergy += module.percent * this.tile.costenergy / 100;
                         break;
                 }

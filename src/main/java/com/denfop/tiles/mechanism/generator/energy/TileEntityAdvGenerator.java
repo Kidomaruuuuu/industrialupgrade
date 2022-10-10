@@ -49,13 +49,14 @@ public class TileEntityAdvGenerator extends TileEntityBaseGenerator implements I
         }
 
     }
+
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
         if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             tooltip.add(Localization.translate("press.lshift"));
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            tooltip.add(Localization.translate("iu.info_upgrade_energy")+this.coef);
+            tooltip.add(Localization.translate("iu.info_upgrade_energy") + this.coef);
         }
         if (this.hasComponent(AdvEnergy.class)) {
             AdvEnergy energy = this.getComponent(AdvEnergy.class);
@@ -132,7 +133,6 @@ public class TileEntityAdvGenerator extends TileEntityBaseGenerator implements I
         nbt.setInteger("itemFuelTime", this.itemFuelTime);
         return nbt;
     }
-
 
 
     @Override

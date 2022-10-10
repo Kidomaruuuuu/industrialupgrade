@@ -1,6 +1,5 @@
 package com.denfop.tiles.mechanism.multimechanism.quad;
 
-import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.tiles.base.EnumMultiMachine;
 import com.denfop.tiles.base.TileEntityMultiMachine;
 import ic2.core.init.Localization;
@@ -18,7 +17,6 @@ public class TileEntityQuadCombRecycler extends TileEntityMultiMachine {
             super.initiate(soundEvent);
         }
     }
-
 
 
     @Override

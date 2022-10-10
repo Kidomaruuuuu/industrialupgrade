@@ -181,9 +181,47 @@
 	  "analyzer_chest": {
         "model": "industrialupgrade:basemachine/analyzer_chest"
       },
-	  
-      "quantum_solar_panelrain": {
-        "model": "industrialupgrade:quantum_solar_panelrain"
+	  "aer_assembler": {
+        "model": "industrialupgrade:basemachine/air_collector"
+      },
+	  "aqua_assembler": {
+        "model": "industrialupgrade:basemachine/water_collector"
+      },
+	  "earth_assembler": {
+        "model": "industrialupgrade:basemachine/earth_collector"
+      },
+	  "nether_assembler": {
+        "model": "industrialupgrade:basemachine/infernal_assembler"
+      },
+	  "auto_digger": {
+        "model": "industrialupgrade:basemachine/auto-digger"
+      },
+	  "crystallize": {
+        "model": "industrialupgrade:basemachine/crystallizer_2"
+      },
+	  "aer_assembler_active": {
+        "model": "industrialupgrade:basemachine/air_collector"
+      },
+	  "aqua_assembler_active": {
+        "model": "industrialupgrade:basemachine/water_collector"
+      },
+	  "earth_assembler_active": {
+        "model": "industrialupgrade:basemachine/earth_collector"
+      },
+	  "nether_assembler_active": {
+        "model": "industrialupgrade:basemachine/infernal_assembler"
+      },
+	  "ender_assembler_active": {
+        "model": "industrialupgrade:basemachine/ender_assembler-digger"
+      },
+	  "crystallize_active": {
+        "model": "industrialupgrade:basemachine/crystallizer_2"
+      },
+	  "energy_controller": {
+        "model": "industrialupgrade:basemachine/controller_network"
+      },
+      "substitute": {
+        "model": "industrialupgrade:basemachine/controller_wires"
       }
     },
     "facing": {

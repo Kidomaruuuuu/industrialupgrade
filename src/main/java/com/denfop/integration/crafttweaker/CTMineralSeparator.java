@@ -5,7 +5,6 @@ import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.RecipeOutput;
-import com.denfop.invslot.RecipeInputOreDict;
 import com.denfop.items.resource.ItemIngots;
 import com.denfop.utils.ModUtils;
 import crafttweaker.CraftTweakerAPI;
@@ -68,6 +67,7 @@ public class CTMineralSeparator {
                 return new ItemStack(((ItemStack) internal).getItem(), item.getAmount(), item.getDamage());
             }
         }
+
         public static ItemStack[] getItemStack(IItemStack[] item) {
             if (item == null) {
                 return null;
@@ -78,12 +78,17 @@ public class CTMineralSeparator {
                 }
                 ItemStack[] itemStacks = new ItemStack[item.length];
                 assert internal instanceof ItemStack;
-                for(int i = 0; i < itemStacks.length;i++){
-                    itemStacks[i] = new ItemStack(((ItemStack) item[i].getInternal()).getItem(), item[i].getAmount(), item[i].getDamage());
+                for (int i = 0; i < itemStacks.length; i++) {
+                    itemStacks[i] = new ItemStack(
+                            ((ItemStack) item[i].getInternal()).getItem(),
+                            item[i].getAmount(),
+                            item[i].getDamage()
+                    );
                 }
                 return itemStacks;
             }
         }
+
         public void apply() {
             NBTTagCompound nbt = ModUtils.nbt();
             nbt.setShort("temperature", temperature);
@@ -122,9 +127,15 @@ public class CTMineralSeparator {
 
         @Override
         public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            if (!super.equals(o)) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            if (!super.equals(o)) {
+                return false;
+            }
             AddMineralSeparatorIngredientAction that = (AddMineralSeparatorIngredientAction) o;
             return temperature == that.temperature && Arrays.equals(output, that.output) && Objects.equals(
                     input,
@@ -172,8 +183,9 @@ public class CTMineralSeparator {
         }
 
         public void apply() {
-            Recipes.recipes.removeRecipe("handlerho", Recipes.recipes.getRecipeOutput("handlerho",false,
-                    getItemStack(this.input)).getOutput() );
+            Recipes.recipes.removeRecipe("handlerho", Recipes.recipes.getRecipeOutput("handlerho", false,
+                    getItemStack(this.input)
+            ).getOutput());
         }
 
         public String describe() {
@@ -186,9 +198,15 @@ public class CTMineralSeparator {
 
         @Override
         public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            if (!super.equals(o)) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            if (!super.equals(o)) {
+                return false;
+            }
             RemoveMineralSeparatorIngredientAction that = (RemoveMineralSeparatorIngredientAction) o;
             return Objects.equals(input, that.input);
         }

@@ -13,7 +13,6 @@ import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
-import ic2.core.block.TileEntityInventory;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
@@ -39,12 +38,13 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
     public final SEComponent sunenergy;
     public final InvSlotGenCombinerSunarrium input;
     public final ItemStack itemstack = new ItemStack(IUItem.sunnarium, 1, 4);
-    public  double coef_day;
-    public  double coef_night;
-    public  double update_night;
+    public double coef_day;
+    public double coef_night;
+    public double update_night;
     public int count;
     public List<Double> lst;
     public int coef = 0;
+    public double generation;
     private boolean noSunWorld;
     private boolean skyIsVisible;
     private boolean sunIsUp;
@@ -112,7 +112,7 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
         super.onLoaded();
         this.inputSlot.update();
         this.lst = this.input.coefday();
-        this.coef_day =  this.lst.get(0);
+        this.coef_day = this.lst.get(0);
         this.coef_night = this.lst.get(1);
         this.update_night = this.lst.get(2);
         this.noSunWorld = this.world.provider.isNether();
@@ -144,8 +144,8 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
             if (tick > 11000L) {
                 k = 5;
             }
-
-            this.sunenergy.addEnergy(k * this.coef * (1 + coef_day));
+            generation = k * this.coef * (1 + coef_day);
+            this.sunenergy.addEnergy(generation);
         }
 
         if (this.update_night > 0 && !this.sunIsUp) {
@@ -165,8 +165,8 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
             if (tick1 > 11000L) {
                 k = 5;
             }
-
-            this.sunenergy.addEnergy(k * this.coef * (this.update_night - 1) * (1 + this.coef_night));
+            generation = k * this.coef * (this.update_night - 1) * (1 + this.coef_night);
+            this.sunenergy.addEnergy(generation);
 
         }
 
@@ -178,6 +178,7 @@ public class TileEntityCombinerSEGenerators extends TileEntityInventory implemen
             updateVisibility();
         }
         long tick = this.getWorld().provider.getWorldTime() % 24000L;
+        generation = 0;
         if (this.skyIsVisible) {
             energy(tick);
             while (this.sunenergy.getEnergy() >= 2500 && this.outputSlot.add(itemstack)) {

@@ -5,7 +5,6 @@ import com.denfop.gui.AdvArea;
 import com.denfop.gui.GuiIU;
 import com.denfop.utils.ListInformationUtils;
 import com.denfop.utils.ModUtils;
-import ic2.core.GuiIC2;
 import ic2.core.IC2;
 import ic2.core.init.Localization;
 import net.minecraft.client.renderer.GlStateManager;
@@ -29,7 +28,7 @@ public class GuiBaseQuarry extends GuiIU<ContainerBaseQuarry> {
     public final ContainerBaseQuarry container;
 
     public GuiBaseQuarry(ContainerBaseQuarry container1) {
-        super(container1,container1.base.getStyle());
+        super(container1, container1.base.getStyle());
         this.container = container1;
         this.xSize = 229;
     }
@@ -48,7 +47,7 @@ public class GuiBaseQuarry extends GuiIU<ContainerBaseQuarry> {
             }
 
             this.drawTooltip(mouseX, mouseY, text);
-        }else   if (mouseX >= 189 && mouseX <= 206 && mouseY >= 83 && mouseY <= 100) {
+        } else if (mouseX >= 189 && mouseX <= 206 && mouseY >= 83 && mouseY <= 100) {
             List<String> text = new ArrayList<>();
             text.add(Localization.translate("button.rf"));
             List<String> compatibleUpgrades = Collections.singletonList(Localization.translate(this.container.base.vein_need
@@ -61,7 +60,7 @@ public class GuiBaseQuarry extends GuiIU<ContainerBaseQuarry> {
                 text.add(itemstack);
             }
             this.drawTooltip(mouseX, mouseY, text);
-        }else  if (mouseX >= 3 && mouseX <= 15 && mouseY >= 3 && mouseY <= 15) {
+        } else if (mouseX >= 3 && mouseX <= 15 && mouseY >= 3 && mouseY <= 15) {
             List<String> text = new ArrayList<>();
             text.add(Localization.translate("iu.simplyquarries_info"));
             List<String> compatibleUpgrades = ListInformationUtils.quarry;
@@ -107,13 +106,13 @@ public class GuiBaseQuarry extends GuiIU<ContainerBaseQuarry> {
 
     private List<String> getStringList() {
         List<String> lst = new ArrayList<>();
-        if(this.container.base != null) {
+        if (this.container.base != null) {
             lst.add("Consume: " + this.container.base.energyconsume + "EU/t");
-            if( this.container.base.blockpos != null) {
+            if (this.container.base.blockpos != null) {
                 lst.add("X: " + this.container.base.blockpos.getX());
                 lst.add("Y: " + this.container.base.blockpos.getY());
                 lst.add("Z: " + this.container.base.blockpos.getZ());
-            }else{
+            } else {
                 lst.add("X: " + this.container.base.default_pos.getX());
                 lst.add("Y: " + this.container.base.default_pos.getY());
                 lst.add("Z: " + this.container.base.default_pos.getZ());

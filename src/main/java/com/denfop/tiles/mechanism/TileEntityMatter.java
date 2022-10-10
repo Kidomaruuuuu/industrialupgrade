@@ -13,4 +13,5 @@ public class TileEntityMatter extends TileEntityMultiMatter {
     public EnumTypeStyle getStyle() {
         return EnumTypeStyle.DEFAULT;
     }
+
 }

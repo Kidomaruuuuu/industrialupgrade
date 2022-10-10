@@ -4,11 +4,9 @@ import com.denfop.IUCore;
 import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.audio.AudioSource;
-import com.denfop.componets.AdvEnergy;
 import com.denfop.componets.HeatComponent;
 import com.denfop.container.ContainerBaseGenerationChipMachine;
 import com.denfop.invslot.InvSlotUpgrade;
-import com.denfop.tiles.mechanism.triple.heat.TileEntityAdvAlloySmelter;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
@@ -90,8 +88,9 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
         }
         inputSlotA.load();
         this.getOutput();
-        if(this.output == null)
-            ( this).heat.need = false;
+        if (this.output == null) {
+            (this).heat.need = false;
+        }
     }
 
     public void onUnloaded() {
@@ -117,7 +116,8 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             tooltip.add(Localization.translate("iu.heatmachine.info"));
-            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate("iu.machines_work_energy_type_eu"));
+            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate(
+                    "iu.machines_work_energy_type_eu"));
             tooltip.add(Localization.translate("iu.machines_work_length") + this.defaultOperationLength);
 
         }
@@ -131,14 +131,15 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
 
             if (output.getRecipe().output.metadata.getShort("temperature") == 0 || output.getRecipe().output.metadata.getInteger(
                     "temperature") > this.heat.getEnergy()) {
-                if(!( this).heat.need)
-                    ( this).heat.need = true;
+                if (!(this).heat.need) {
+                    (this).heat.need = true;
+                }
                 return;
 
-            } else
-            if(( this).heat.need)
-                ( this).heat.need = false;
-            ( this).heat.storage--;
+            } else if ((this).heat.need) {
+                (this).heat.need = false;
+            }
+            (this).heat.storage--;
 
             if (!this.getActive()) {
                 setActive(true);
@@ -178,8 +179,9 @@ public abstract class TileEntityBaseGenerationMicrochip extends TileEntityElectr
 
         }
 
-            if (output == null )
-                this.heat.useEnergy(1);
+        if (output == null) {
+            this.heat.useEnergy(1);
+        }
         if ((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark()) {
             setOverclockRates();
         }

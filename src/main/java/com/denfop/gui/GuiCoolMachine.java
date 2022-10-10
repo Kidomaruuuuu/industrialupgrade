@@ -26,6 +26,7 @@ public class GuiCoolMachine extends GuiIC2<ContainerCoolMachine> {
         this.name = Localization.translate(guiContainer.base.getName());
 
     }
+
     private void handleUpgradeTooltip(int mouseX, int mouseY) {
         if (mouseX >= 3 && mouseX <= 15 && mouseY >= 3 && mouseY <= 15) {
             List<String> text = new ArrayList<>();
@@ -41,6 +42,7 @@ public class GuiCoolMachine extends GuiIC2<ContainerCoolMachine> {
             this.drawTooltip(mouseX, mouseY, text);
         }
     }
+
     protected void mouseClicked(int i, int j, int k) throws IOException {
         super.mouseClicked(i, j, k);
         int xMin = (this.width - this.xSize) / 2;
@@ -53,7 +55,9 @@ public class GuiCoolMachine extends GuiIC2<ContainerCoolMachine> {
         if (x >= 73 && x <= 83 && y >= 54 && y <= 64) {
             IC2.network.get(false).initiateClientTileEntityEvent(this.container.base, 1);
         }
-
+        if (x >= 144 && x <= 157 && y >= 33 && y <= 45) {
+            IC2.network.get(false).initiateClientTileEntityEvent(this.container.base, 2);
+        }
     }
 
     protected void drawForegroundLayer(int par1, int par2) {
@@ -72,6 +76,8 @@ public class GuiCoolMachine extends GuiIC2<ContainerCoolMachine> {
         new AdvArea(this, 113, 21, 124, 70)
                 .withTooltip(tooltip2)
                 .drawForeground(par1, par2);
+        new AdvArea(this, 144, 33, 157, 45).withTooltip(this.container.base.work ? Localization.translate("turn_off") :
+                Localization.translate("turn_on")).drawForeground(par1, par2);
 
     }
 
@@ -94,6 +100,11 @@ public class GuiCoolMachine extends GuiIC2<ContainerCoolMachine> {
         if (chargeLevel > 0) {
             drawTexturedModalRect(xOffset + 113, yOffset + 22 + 48 - chargeLevel, 176,
                     115 + 48 - chargeLevel, 12, chargeLevel
+            );
+        }
+        if (this.container.base.work) {
+            drawTexturedModalRect(xOffset + 143, yOffset + 32, 199,
+                    55, 239 - 224, 84 - 70
             );
         }
 

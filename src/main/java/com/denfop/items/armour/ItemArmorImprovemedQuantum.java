@@ -234,8 +234,21 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
             if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
                 info.add(Localization.translate("iu.changemode_fly") + Keyboard.getKeyName(Math.abs(KeyboardClient.flymode.getKeyCode())));
                 info.add(Localization.translate("iu.vertical") + Keyboard.getKeyName(Math.abs(KeyboardClient.verticalmode.getKeyCode())));
-                info.add(Localization.translate("iu.magnet_mode") + Keyboard.getKeyName(Math.abs(KeyboardClient.changemode.getKeyCode())) + " + " + Keyboard.getKeyName(Math.abs(
-                        Keyboard.KEY_LSHIFT)));
+                info.add(Localization.translate("iu.magnet_mode") + Keyboard.getKeyName(Math.abs(KeyboardClient.changemode.getKeyCode())) + " + " + Keyboard.getKeyName(
+                        Math.abs(
+                                Keyboard.KEY_LSHIFT)));
+                info.add(Localization.translate("iu.streak") + Keyboard.getKeyName(KeyboardClient.streakmode.getKeyCode()));
+                info.add(Localization.translate("iu.changemode_key") + Localization.translate(
+                        "iu.changemode_rcm1"));
+                int mode = ModUtils.NBTGetInteger(itemStack, "mode1");
+                if (mode > 2 || mode < 0) {
+                    mode = 0;
+                }
+
+                info.add(
+                        TextFormatting.GREEN + Localization.translate("message.text.mode") + ": "
+                                + Localization.translate("message.magnet.mode." + mode)
+                );
 
             }
 
@@ -794,7 +807,18 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
                         nbtData.setBoolean("magnet", magnet);
                     }
                 }
+                if (IUCore.keyboard.isStreakKeyDown(player) && toggleTimer == 0) {
+                    toggleTimer = 10;
+                    player.openGui(
+                            IUCore.instance,
+                            4,
+                            player.getEntityWorld(),
+                            (int) player.posX,
+                            (int) player.posY,
+                            (int) player.posZ
+                    );
 
+                }
                 if (IUCore.keyboard.isFlyModeKeyDown(player) && toggleTimer == 0) {
                     toggleTimer = 10;
                     jetpack = !jetpack;
@@ -927,6 +951,7 @@ public class ItemArmorImprovemedQuantum extends ItemArmorElectric
                 if (ret) {
                     player.openContainer.detectAndSendChanges();
                 }
+
                 player.extinguish();
                 break;
             case 1:

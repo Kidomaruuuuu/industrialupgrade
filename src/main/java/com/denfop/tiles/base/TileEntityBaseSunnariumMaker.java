@@ -101,7 +101,8 @@ public abstract class TileEntityBaseSunnariumMaker extends TileEntityElectricMac
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             tooltip.add(Localization.translate("iu.solarium_energy_sink.info"));
-            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate("iu.machines_work_energy_type_eu"));
+            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate(
+                    "iu.machines_work_energy_type_eu"));
             tooltip.add(Localization.translate("iu.machines_work_energy") + 5 + Localization.translate(
                     "iu.machines_work_energy_type_se"));
             tooltip.add(Localization.translate("iu.machines_work_length") + this.defaultOperationLength);

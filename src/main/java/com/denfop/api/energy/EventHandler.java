@@ -1,6 +1,8 @@
 package com.denfop.api.energy;
 
 
+import com.denfop.api.energy.event.EventLoadController;
+import com.denfop.api.energy.event.EventUnloadController;
 import ic2.api.energy.event.EnergyTileLoadEvent;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -15,6 +17,32 @@ public class EventHandler {
         MinecraftForge.EVENT_BUS.register(this);
     }
 
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onEnergyTileLoad(final EventLoadController event) {
+        if (event.getWorld().isRemote) {
+            return;
+        }
+
+        final EnergyNetLocal local = EnergyNetGlobal.getForWorld(event.getWorld());
+
+        if (local != null) {
+            local.addController((IEnergyController) event.tile);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onEnergyTileUnLoad(final EventUnloadController event) {
+        if (event.getWorld().isRemote) {
+            return;
+        }
+
+        final EnergyNetLocal local = EnergyNetGlobal.getForWorld(event.getWorld());
+
+        if (local != null) {
+            local.removeController((IEnergyController) event.tile);
+        }
+    }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onEnergyTileLoad(final EnergyTileLoadEvent event) {

@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
@@ -50,8 +51,20 @@ public class ItemRotorsUpgrade extends ItemMulti<ItemRotorsUpgrade.Types> implem
     ) {
         final RotorUpgradeItemInform upgrade = new RotorUpgradeItemInform(getType(stack.getItemDamage()), 1);
         tooltip.add(upgrade.getName());
-        tooltip.add(Localization.translate("iu.upgrade_item.info")+upgrade.upgrade.max);
+        tooltip.add(Localization.translate("iu.upgrade_item.info") + upgrade.upgrade.max);
+        switch (stack.getItemDamage()) {
+            case 11:
+            case 12:
+            case 13:
+            case 14:
+            case 15:
+            case 16:
+            case 17:
+            case 18:
+            case 19:
+                tooltip.add(TextFormatting.RED + Localization.translate("wind.limit_upgrades.info"));
 
+        }
         super.addInformation(stack, worldIn, tooltip, flagIn);
     }
 
@@ -84,7 +97,17 @@ public class ItemRotorsUpgrade extends ItemMulti<ItemRotorsUpgrade.Types> implem
         rotorupgrade7(7),
         rotorupgrade8(8),
         rotorupgrade9(9),
-        rotorupgrade10(10);
+        rotorupgrade10(10),
+        rotorupgrade11(11),
+        rotorupgrade12(12),
+        rotorupgrade13(13),
+        rotorupgrade14(14),
+        rotorupgrade15(15),
+        rotorupgrade16(16),
+        rotorupgrade17(17),
+        rotorupgrade18(18),
+        rotorupgrade19(19),
+        ;
 
         private final String name;
         private final int ID;

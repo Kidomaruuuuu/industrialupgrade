@@ -33,7 +33,6 @@ public class CoolComponent extends TileEntityComponent {
     public static final boolean debugLoad = System.getProperty("ic2.comp.energy.debugload") != null;
     public final World world;
     public final boolean fullEnergy;
-    private double coef;
     public double capacity;
     public double storage;
     public int sinkTier;
@@ -50,6 +49,8 @@ public class CoolComponent extends TileEntityComponent {
     public boolean upgrade = false;
     public int meta = 0;
     public boolean allow = true;
+    private double coef;
+
     public CoolComponent(TileEntityBlock parent, double capacity) {
         this(parent, capacity, Collections.emptySet(), Collections.emptySet(), 1);
     }
@@ -141,7 +142,7 @@ public class CoolComponent extends TileEntityComponent {
             }
 
             this.loaded = true;
-            switch (this.parent.getWorld().provider.getBiomeForCoords(this.parent.getPos()).getTempCategory()){
+            switch (this.parent.getWorld().provider.getBiomeForCoords(this.parent.getPos()).getTempCategory()) {
                 case COLD:
                     coef = 0.5;
                     break;
@@ -164,7 +165,7 @@ public class CoolComponent extends TileEntityComponent {
 
             if (this.sinkDirections.isEmpty()) {
                 this.delegate = new CoolComponent.EnergyNetDelegateSource();
-            } else  {
+            } else {
                 this.delegate = new CoolComponent.EnergyNetDelegateSink();
             }
 
@@ -266,8 +267,9 @@ public class CoolComponent extends TileEntityComponent {
     public boolean useEnergy(double amount) {
         if (this.storage >= amount / this.coef) {
             this.storage -= amount / this.coef;
-            if(CoolComponent.this.storage <= 0.005)
+            if (CoolComponent.this.storage <= 0.005) {
                 CoolComponent.this.storage = 0;
+            }
             return true;
         } else {
             return false;
@@ -275,15 +277,16 @@ public class CoolComponent extends TileEntityComponent {
     }
 
     public double useEnergy(double amount, boolean simulate) {
-        if(this.storage <= 0) {
+        if (this.storage <= 0) {
             this.storage = 0;
             return amount;
         }
-        double ret = Math.abs(Math.max(0.0D, amount - this.storage) - amount)  / this.coef;
+        double ret = Math.abs(Math.max(0.0D, amount - this.storage) - amount) / this.coef;
         if (!simulate) {
-            this.storage -= ret  / this.coef;
-            if(CoolComponent.this.storage <= 0.005)
+            this.storage -= ret / this.coef;
+            if (CoolComponent.this.storage <= 0.005) {
                 CoolComponent.this.storage = 0;
+            }
         }
 
         return ret;
@@ -412,7 +415,6 @@ public class CoolComponent extends TileEntityComponent {
         }
 
     }
-
 
 
     private class EnergyNetDelegateSink extends CoolComponent.EnergyNetDelegate implements ICoolSink {

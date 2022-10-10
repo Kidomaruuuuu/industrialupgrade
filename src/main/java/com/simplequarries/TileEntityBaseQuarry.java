@@ -2,7 +2,6 @@ package com.simplequarries;
 
 import com.denfop.IUCore;
 import com.denfop.IUItem;
-import com.denfop.Ic2Items;
 import com.denfop.api.Recipes;
 import com.denfop.api.audio.EnumTypeAudio;
 import com.denfop.api.audio.IAudioFixer;
@@ -22,6 +21,7 @@ import com.denfop.componets.QEComponent;
 import com.denfop.items.modules.EnumQuarryModules;
 import com.denfop.items.modules.EnumQuarryType;
 import com.denfop.tiles.base.FakePlayerSpawner;
+import com.denfop.tiles.base.TileEntityInventory;
 import com.denfop.utils.ExperienceUtils;
 import com.denfop.utils.ModUtils;
 import ic2.api.network.INetworkClientTileEntityEventListener;
@@ -30,24 +30,19 @@ import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.init.Localization;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.fml.relauncher.Side;
@@ -200,7 +195,7 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
         this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
         if (this.vein != null) {
             if (this.vein.getType() != Type.VEIN) {
-                return;
+                this.vein = null;
             }
 
 
@@ -216,7 +211,7 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
         this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
         if (this.vein != null) {
             if (this.vein.getType() != Type.VEIN) {
-                return;
+                this.vein = null;
             }
 
 
@@ -239,6 +234,7 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
         }
         return false;
     }
+
     public List<ItemStack> getWrenchDrops(EntityPlayer player, int fortune) {
         List<ItemStack> ret = super.getWrenchDrops(player, fortune);
         ItemStack colling = ItemStack.EMPTY;
@@ -255,6 +251,7 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
         }
         return ret;
     }
+
     protected void onUnloaded() {
         super.onUnloaded();
         if (IC2.platform.isRendering() && this.audioSource != null) {
@@ -287,241 +284,247 @@ public class TileEntityBaseQuarry extends TileEntityInventory implements IHasGui
             if (vein != null) {
                 if (vein.get()) {
                     if (this.energy.getEnergy() > this.energyconsume) {
-                        if (this.vein.getCol() > 0) {
+                        if (this.vein.getCol() > 0 && this.vein.getType() == Type.VEIN) {
                             final ItemStack stack1 = new ItemStack(IUItem.heavyore, 1, vein.getMeta());
                             if (this.outputSlot.add(stack1)) {
                                 this.energy.useEnergy(this.energyconsume);
                                 this.vein.removeCol(1);
                                 this.cold.addEnergy(0.05);
-
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            ItemStack stack1 = new ItemStack(Items.ENCHANTED_BOOK);
-            if (this.chance != 0) {
-                stack1.addEnchantment(Enchantments.FORTUNE, this.chance);
-            }
-            for (int i = 0; i < this.speed; i++) {
-                if (this.energy.canUseEnergy(this.energyconsume)) {
-                    this.energy.useEnergy(this.energyconsume);
-                    if (!this.getActive()) {
-                        initiate(0);
-                        setActive(true);
-
-                    }
-                    final IBlockState state = this
-                            .getWorld()
-                            .getBlockState(this.blockpos);
-                    if (!(state.getMaterial() == Material.AIR)) {
-                        Block block = state.getBlock();
-                        ItemStack stack = new ItemStack(block, 1,
-                                block.getMetaFromState(state)
-                        );
-                        this.cold.addEnergy(0.005);
-                        if (!stack.isEmpty()) {
-                            if ((state.getMaterial() == Material.IRON || state
-                                    .getMaterial() == Material.ROCK) && OreDictionary.getOreIDs(stack).length > 0) {
-                                int id = OreDictionary.getOreIDs(stack)[0];
-                                String name = OreDictionary.getOreName(id);
-
-                                if (name.startsWith("ore")) {
-
-                                    if (list(this.list_modules, stack)) {
-                                        int chunkx = this.getWorld().getChunkFromBlockCoords(this.pos).x * 16 * col;
-                                        int chunkz = this.getWorld().getChunkFromBlockCoords(this.pos).z * 16 * col;
-                                        if (this.blockpos.getX() < chunkx + 16 * this.col) {
-                                            this.blockpos = this.blockpos.add(1, 0, 0);
-                                        } else {
-                                            if (this.blockpos.getZ() < chunkz + 16 * this.col) {
-                                                this.blockpos = this.blockpos.add(-16 * this.col, 0, 1);
-                                            } else {
-                                                if (this.blockpos.getY() < this.max_y) {
-                                                    this.blockpos = this.blockpos.add(0, 1, -16 * col);
-                                                } else {
-                                                    this.work = false;
-                                                }
-                                            }
-                                        }
-                                        if (this.col == 1) {
-                                            if (this.blockpos.getX() > chunkx + 16 || this.blockpos.getZ() > chunkz + 16) {
-                                                this.blockpos = null;
-                                            }
-                                        }
-                                        return;
-                                    }
-                                    if (!(ForgeHooks.onBlockBreakEvent(world, world.getWorldInfo().getGameType(),
-                                            player, pos) == -1)) {
-
-
-
-                                    block.onBlockHarvested(this.world, this.blockpos, state, player);
-                                    final List<ItemStack> drops = block.getDrops(world, this.blockpos, state, this.chance);
-                                        int chance = 0;
-                                        if (this.energy1.canUseEnergy(80)) {
-                                            chance = this.getWorld().rand.nextInt(101);
-                                            this.energy1.useEnergy(80);
-                                        }
-                                        boolean need = false;
-                                        for (ItemStack item : drops) {
-                                            if (!this.furnace) {
-
-                                                if (this.mac_enabled) {
-                                                    ItemStack stack4;
-                                                    BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
-                                                            "macerator",
-                                                            false,
-                                                            item
-                                                    );
-                                                    if (recipe != null) {
-                                                        stack4 = recipe.getOutput().items.get(0);
-                                                    } else {
-                                                        stack4 = item;
-                                                    }
-                                                    if (this.outputSlot.add(stack4)) {
-                                                        need = true;
-                                                        if (chance > 85) {
-                                                            this.outputSlot.add(stack4);
-                                                        }
-                                                    }
-                                                } else if (this.comb_mac_enabled) {
-                                                    ItemStack stack4;
-                                                    BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
-                                                            "comb_macerator",
-                                                            false,
-                                                            item
-                                                    );
-                                                    if (recipe != null) {
-                                                        stack4 = recipe.getOutput().items.get(0);
-                                                    } else {
-                                                        stack4 = item;
-                                                    }
-                                                    if (this.outputSlot.add(stack4)) {
-                                                        need = true;
-                                                        if (chance > 85) {
-                                                            this.outputSlot.add(stack4);
-                                                        }
-                                                    }
-                                                } else {
-                                                    if (this.outputSlot.add(item)) {
-                                                        need = true;
-                                                        if (chance > 85) {
-                                                            this.outputSlot.add(item);
-                                                        }
-                                                    }
-                                                }
-                                            } else {
-                                                ItemStack stack4 = item;
-                                                ItemStack stack5 = ItemStack.EMPTY;
-                                                if (this.mac_enabled) {
-                                                    BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
-                                                            "macerator",
-                                                            false,
-                                                            item
-                                                    );
-                                                    if (recipe != null) {
-                                                        stack5 = recipe.getOutput().items.get(0).copy();
-                                                    }
-
-
-                                                } else if (this.comb_mac_enabled) {
-                                                    BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
-                                                            "comb_macerator",
-                                                            false,
-                                                            item
-                                                    );
-                                                    if (recipe != null) {
-                                                        stack5 = recipe.getOutput().items.get(0).copy();
-                                                    }
-
-
-                                                }
-                                                BaseMachineRecipe recipe;
-                                                if (stack5.isEmpty()) {
-                                                    recipe = Recipes.recipes.getRecipeOutput("furnace", false,
-                                                            stack4
-                                                    );
-                                                } else {
-                                                    recipe = Recipes.recipes.getRecipeOutput("furnace", false,
-                                                            stack5
-                                                    );
-                                                }
-
-                                                if (recipe != null) {
-                                                    stack4 = recipe.getOutput().items.get(0).copy();
-                                                }
-
-                                                if (!stack5.isEmpty()) {
-                                                    stack4.setCount(stack5.getCount());
-                                                } else if (!stack4.isEmpty()) {
-                                                    stack4.setCount(item.getCount());
-                                                }
-                                                if (stack4.isEmpty()) {
-
-                                                    if (this.outputSlot.add(item)) {
-                                                        need = true;
-                                                        if (chance > 85) {
-                                                            this.outputSlot.add(item);
-                                                        }
-                                                    }
-                                                } else {
-                                                    if (this.outputSlot.add(stack4)) {
-                                                        need = true;
-                                                        if (chance > 85) {
-                                                            this.outputSlot.add(stack4);
-                                                        }
-                                                    }
-                                                }
-
-                                            }
-
-                                        }
-                                        if(need){
-                                            block.removedByPlayer(state, world, this.blockpos, player, true);
-                                            int exp = block.getExpDrop(state, world, this.blockpos, this.chance);
-                                            this.exp.addEnergy(exp);
-                                        }
-                                    }
+                                int chance = 0;
+                                if (this.energy1.canUseEnergy(80)) {
+                                    chance = this.getWorld().rand.nextInt(101);
+                                    this.energy1.useEnergy(80);
+                                }
+                                if (chance > 85) {
+                                    this.outputSlot.add(stack1);
                                 }
                             }
                         }
-                    }
-                    int chunkx = this.getWorld().getChunkFromBlockCoords(this.pos).x * 16;
-                    int chunkz = this.getWorld().getChunkFromBlockCoords(this.pos).z * 16;
-                    if (this.blockpos.getX() < chunkx + 16 * col) {
-                        this.blockpos = blockpos.add(1, 0, 0);
-                    } else {
-                        if (this.blockpos.getZ() < chunkz + 16 * col) {
-                            this.blockpos = this.blockpos.add(-16 * col, 0, 1);
-                        } else {
-                            if (this.blockpos.getY() < this.max_y) {
-                                this.blockpos = this.blockpos.add(0, 1, -16 * col);
-                            } else {
-                                this.work = false;
-                            }
-                        }
-                    }
-                    if (col == 1) {
-                        if (this.blockpos.getX() > chunkx + 16 || this.blockpos.getZ() > chunkz + 16) {
-                            this.blockpos = new BlockPos(chunkx, this.min_y, chunkz);
-                        }
-                    }
-
-                } else {
-                    if (this.getActive()) {
-                        initiate(2);
-                        setActive(false);
                     }
                 }
             }
         }
 
+        ItemStack stack1 = new ItemStack(Items.ENCHANTED_BOOK);
+        if (this.chance != 0) {
+            stack1.addEnchantment(Enchantments.FORTUNE, this.chance);
+        }
+        for (int i = 0; i < this.speed; i++) {
+            if (this.energy.canUseEnergy(this.energyconsume)) {
+                this.energy.useEnergy(this.energyconsume);
+                if (!this.getActive()) {
+                    initiate(0);
+                    setActive(true);
 
-        if (getActive() && this.world.provider.getWorldTime() % 15 == 0) {
-            ItemStack stack3 = Ic2Items.ejectorUpgrade;
-            ModUtils.tick(stack3, this.outputSlot, this);
+                }
+                final IBlockState state = this
+                        .getWorld()
+                        .getBlockState(this.blockpos);
+                if (!(state.getMaterial() == Material.AIR)) {
+                    Block block = state.getBlock();
+                    ItemStack stack = new ItemStack(block, 1,
+                            block.getMetaFromState(state)
+                    );
+                    this.cold.addEnergy(0.005);
+                    if (!stack.isEmpty()) {
+                        if ((state.getMaterial() == Material.IRON || state
+                                .getMaterial() == Material.ROCK) && OreDictionary.getOreIDs(stack).length > 0) {
+                            int id = OreDictionary.getOreIDs(stack)[0];
+                            String name = OreDictionary.getOreName(id);
+
+                            if (name.startsWith("ore")) {
+
+                                if (list(this.list_modules, stack)) {
+                                    int chunkx = this.getWorld().getChunkFromBlockCoords(this.pos).x * 16 * col;
+                                    int chunkz = this.getWorld().getChunkFromBlockCoords(this.pos).z * 16 * col;
+                                    if (this.blockpos.getX() < chunkx + 16 * this.col) {
+                                        this.blockpos = this.blockpos.add(1, 0, 0);
+                                    } else {
+                                        if (this.blockpos.getZ() < chunkz + 16 * this.col) {
+                                            this.blockpos = this.blockpos.add(-16 * this.col, 0, 1);
+                                        } else {
+                                            if (this.blockpos.getY() < this.max_y) {
+                                                this.blockpos = this.blockpos.add(0, 1, -16 * col);
+                                            } else {
+                                                this.work = false;
+                                            }
+                                        }
+                                    }
+                                    if (this.col == 1) {
+                                        if (this.blockpos.getX() > chunkx + 16 || this.blockpos.getZ() > chunkz + 16) {
+                                            this.blockpos = null;
+                                        }
+                                    }
+                                    return;
+                                }
+                                if (!(ForgeHooks.onBlockBreakEvent(world, world.getWorldInfo().getGameType(),
+                                        player, pos
+                                ) == -1)) {
+
+
+                                    block.onBlockHarvested(this.world, this.blockpos, state, player);
+                                    final List<ItemStack> drops = block.getDrops(world, this.blockpos, state, this.chance);
+                                    int chance = 0;
+                                    if (this.energy1.canUseEnergy(80)) {
+                                        chance = this.getWorld().rand.nextInt(101);
+                                        this.energy1.useEnergy(80);
+                                    }
+                                    boolean need = false;
+                                    for (ItemStack item : drops) {
+                                        if (!this.furnace) {
+
+                                            if (this.mac_enabled) {
+                                                ItemStack stack4;
+                                                BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
+                                                        "macerator",
+                                                        false,
+                                                        item
+                                                );
+                                                if (recipe != null) {
+                                                    stack4 = recipe.getOutput().items.get(0);
+                                                } else {
+                                                    stack4 = item;
+                                                }
+                                                if (this.outputSlot.add(stack4)) {
+                                                    need = true;
+                                                    if (chance > 85) {
+                                                        this.outputSlot.add(stack4);
+                                                    }
+                                                }
+                                            } else if (this.comb_mac_enabled) {
+                                                ItemStack stack4;
+                                                BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
+                                                        "comb_macerator",
+                                                        false,
+                                                        item
+                                                );
+                                                if (recipe != null) {
+                                                    stack4 = recipe.getOutput().items.get(0);
+                                                } else {
+                                                    stack4 = item;
+                                                }
+                                                if (this.outputSlot.add(stack4)) {
+                                                    need = true;
+                                                    if (chance > 85) {
+                                                        this.outputSlot.add(stack4);
+                                                    }
+                                                }
+                                            } else {
+                                                if (this.outputSlot.add(item)) {
+                                                    need = true;
+                                                    if (chance > 85) {
+                                                        this.outputSlot.add(item);
+                                                    }
+                                                }
+                                            }
+                                        } else {
+                                            ItemStack stack4 = item;
+                                            ItemStack stack5 = ItemStack.EMPTY;
+                                            if (this.mac_enabled) {
+                                                BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
+                                                        "macerator",
+                                                        false,
+                                                        item
+                                                );
+                                                if (recipe != null) {
+                                                    stack5 = recipe.getOutput().items.get(0).copy();
+                                                }
+
+
+                                            } else if (this.comb_mac_enabled) {
+                                                BaseMachineRecipe recipe = Recipes.recipes.getRecipeOutput(
+                                                        "comb_macerator",
+                                                        false,
+                                                        item
+                                                );
+                                                if (recipe != null) {
+                                                    stack5 = recipe.getOutput().items.get(0).copy();
+                                                }
+
+
+                                            }
+                                            BaseMachineRecipe recipe;
+                                            if (stack5.isEmpty()) {
+                                                recipe = Recipes.recipes.getRecipeOutput("furnace", false,
+                                                        stack4
+                                                );
+                                            } else {
+                                                recipe = Recipes.recipes.getRecipeOutput("furnace", false,
+                                                        stack5
+                                                );
+                                            }
+
+                                            if (recipe != null) {
+                                                stack4 = recipe.getOutput().items.get(0).copy();
+                                            }
+
+                                            if (!stack5.isEmpty()) {
+                                                stack4.setCount(stack5.getCount());
+                                            } else if (!stack4.isEmpty()) {
+                                                stack4.setCount(item.getCount());
+                                            }
+                                            if (stack4.isEmpty()) {
+
+                                                if (this.outputSlot.add(item)) {
+                                                    need = true;
+                                                    if (chance > 85) {
+                                                        this.outputSlot.add(item);
+                                                    }
+                                                }
+                                            } else {
+                                                if (this.outputSlot.add(stack4)) {
+                                                    need = true;
+                                                    if (chance > 85) {
+                                                        this.outputSlot.add(stack4);
+                                                    }
+                                                }
+                                            }
+
+                                        }
+
+                                    }
+                                    if (need) {
+                                        block.removedByPlayer(state, world, this.blockpos, player, true);
+                                        int exp = block.getExpDrop(state, world, this.blockpos, this.chance);
+                                        this.exp.addEnergy(exp);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                int chunkx = this.getWorld().getChunkFromBlockCoords(this.pos).x * 16;
+                int chunkz = this.getWorld().getChunkFromBlockCoords(this.pos).z * 16;
+                if (this.blockpos.getX() < chunkx + 16 * col) {
+                    this.blockpos = blockpos.add(1, 0, 0);
+                } else {
+                    if (this.blockpos.getZ() < chunkz + 16 * col) {
+                        this.blockpos = this.blockpos.add(-16 * col, 0, 1);
+                    } else {
+                        if (this.blockpos.getY() < this.max_y) {
+                            this.blockpos = this.blockpos.add(0, 1, -16 * col);
+                        } else {
+                            this.work = false;
+                        }
+                    }
+                }
+                if (col == 1) {
+                    if (this.blockpos.getX() > chunkx + 16 || this.blockpos.getZ() > chunkz + 16) {
+                        this.blockpos = new BlockPos(chunkx, this.min_y, chunkz);
+                    }
+                }
+
+            } else {
+                if (this.getActive()) {
+                    initiate(2);
+                    setActive(false);
+                }
+            }
+        }
+
+
+        if (!this.outputSlot.isEmpty() && this.world.provider.getWorldTime() % 15 == 0) {
+            ModUtils.tick(this.outputSlot, this);
         }
     }
 

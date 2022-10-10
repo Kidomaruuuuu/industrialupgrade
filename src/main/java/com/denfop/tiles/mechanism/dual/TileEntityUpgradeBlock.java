@@ -1,6 +1,8 @@
 package com.denfop.tiles.mechanism.dual;
 
 import com.denfop.IUItem;
+import com.denfop.api.Recipes;
+import com.denfop.api.recipe.IHasRecipe;
 import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.api.upgrade.IUpgradeItem;
 import com.denfop.api.upgrade.IUpgradeWithBlackList;
@@ -38,13 +40,14 @@ import java.util.Set;
 
 import static com.denfop.events.IUEventHandler.getUpgradeItem;
 
-public class TileEntityUpgradeBlock extends TileEntityDoubleElectricMachine {
+public class TileEntityUpgradeBlock extends TileEntityDoubleElectricMachine implements IHasRecipe {
 
     public TileEntityUpgradeBlock() {
         super(1, 300, 1, EnumDoubleElectricMachine.UPGRADE);
+        Recipes.recipes.addInitRecipes(this);
     }
 
-    public static void init() {
+    public void init() {
 
     }
 

@@ -75,7 +75,7 @@ public class GuiAutoSpawner extends GuiIC2<ContainerAutoSpawner> {
                 77 - 74
         ).withTooltip("EU: " + ModUtils.getString(this.container.base.energy.getEnergy()) + "/" + ModUtils.getString(
                 this.container.base.energy.getCapacity())).drawForeground(par1, par2);
-       new Area(
+        new Area(
                 this,
                 133,
                 87,
@@ -97,7 +97,7 @@ public class GuiAutoSpawner extends GuiIC2<ContainerAutoSpawner> {
                     (100 * this.container.base.progress[i] / this.container.base.tempprogress),
                     100
             );
-           new Area(this, 177,
+            new Area(this, 177,
                     33 + i * 35,
                     3, 63 + (i * 35) - (33 + i * 35)
             ).withTooltip(Localization.translate("gui.MolecularTransformer.progress") +

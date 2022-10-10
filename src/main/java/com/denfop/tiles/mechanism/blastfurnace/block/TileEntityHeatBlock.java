@@ -28,6 +28,7 @@ public class TileEntityHeatBlock extends TileEntityBlock implements IBlastHeat {
         this.heat = this.addComponent(HeatComponent
                 .asBasicSink(this, 1000));
     }
+
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
@@ -39,9 +40,10 @@ public class TileEntityHeatBlock extends TileEntityBlock implements IBlastHeat {
                 0
         ).getUnlocalizedName()));
         tooltip.add(Localization.translate("iu.blastfurnace.info4"));
-        tooltip.add(Localization.translate("iu.blastfurnace.info5") +  Localization.translate(Ic2Items.ForgeHammer.getUnlocalizedName()));
+        tooltip.add(Localization.translate("iu.blastfurnace.info5") + Localization.translate(Ic2Items.ForgeHammer.getUnlocalizedName()));
         tooltip.add(Localization.translate("iu.blastfurnace.info6"));
     }
+
     @Override
     public HeatComponent getHeatComponent() {
         return heat;

@@ -175,7 +175,7 @@ public class InvSlotConsumableLiquid extends InvSlotConsumable {
         if (this.isEmpty()) {
             return false;
         } else {
-            MutableObject<ItemStack> output = new MutableObject();
+            MutableObject<ItemStack> output = new MutableObject<>();
             boolean wasChange = false;
             if (this.transferToTank(tank, output, true) && (StackUtil.isEmpty(output.getValue()) || outputSlot.canAdd(
                     output.getValue()))) {
@@ -191,7 +191,7 @@ public class InvSlotConsumableLiquid extends InvSlotConsumable {
 
     public boolean processFromTank(IFluidTank tank, InvSlotOutput outputSlot) {
         if (!this.isEmpty() && tank.getFluidAmount() > 0) {
-            MutableObject<ItemStack> output = new MutableObject();
+            MutableObject<ItemStack> output = new MutableObject<>();
             boolean wasChange = false;
             if (this.transferFromTank(
                     tank,

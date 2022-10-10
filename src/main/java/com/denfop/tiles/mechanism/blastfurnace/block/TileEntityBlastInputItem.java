@@ -2,11 +2,11 @@ package com.denfop.tiles.mechanism.blastfurnace.block;
 
 import com.denfop.IUItem;
 import com.denfop.Ic2Items;
+import com.denfop.tiles.base.TileEntityInventory;
 import com.denfop.tiles.mechanism.blastfurnace.api.BlastSystem;
 import com.denfop.tiles.mechanism.blastfurnace.api.IBlastInputItem;
 import com.denfop.tiles.mechanism.blastfurnace.api.IBlastMain;
 import com.denfop.tiles.mechanism.blastfurnace.api.InvSlotBlastFurnace;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.init.Localization;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
@@ -56,7 +56,7 @@ public class TileEntityBlastInputItem extends TileEntityInventory implements IBl
                 0
         ).getUnlocalizedName()));
         tooltip.add(Localization.translate("iu.blastfurnace.info4"));
-        tooltip.add(Localization.translate("iu.blastfurnace.info5") +  Localization.translate(Ic2Items.ForgeHammer.getUnlocalizedName()));
+        tooltip.add(Localization.translate("iu.blastfurnace.info5") + Localization.translate(Ic2Items.ForgeHammer.getUnlocalizedName()));
         tooltip.add(Localization.translate("iu.blastfurnace.info6"));
     }
 

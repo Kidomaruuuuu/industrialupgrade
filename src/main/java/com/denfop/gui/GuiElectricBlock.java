@@ -72,7 +72,8 @@ public class GuiElectricBlock extends GuiIC2<ContainerElectricBlock> {
         String output = Localization.translate(
                 "ic2.EUStorage.gui.info.output",
                 ModUtils.getString(EnergyNet.instance.getPowerFromTier(this.container.base.energy.getSourceTier())
-        ));
+                )
+        );
         this.fontRenderer.drawString(output, 85, 70, 4210752);
         this.fontRenderer.drawString(
                 TextFormatting.BOLD + "" + TextFormatting.AQUA + Localization.translate("button.rg"),

@@ -1,7 +1,8 @@
 package com.denfop.tiles.base;
 
+import com.denfop.IUCore;
 import com.denfop.IUItem;
-import com.denfop.api.vein.Vein;
+import com.denfop.api.vein.IVein;
 import com.denfop.api.vein.VeinSystem;
 import com.denfop.container.ContainerQuarryVein;
 import com.denfop.gui.GuiQuarryVein;
@@ -23,6 +24,8 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.List;
+
 public class TileEntityQuarryVein extends TileEntityElectricMachine implements INetworkUpdateListener, INetworkDataProvider,
         INetworkClientTileEntityEventListener {
 
@@ -30,10 +33,9 @@ public class TileEntityQuarryVein extends TileEntityElectricMachine implements I
     public int level;
     public int time;
     public int progress;
-    public Vein vein;
-    public boolean find;
-    public int count;
+    public IVein vein;
     public boolean start = true;
+    private int count;
 
     public TileEntityQuarryVein() {
         super(400, 14, 1);
@@ -114,46 +116,56 @@ public class TileEntityQuarryVein extends TileEntityElectricMachine implements I
     public void onPlaced(final ItemStack stack, final EntityLivingBase placer, final EnumFacing facing) {
         super.onPlaced(stack, placer, facing);
         final NBTTagCompound nbt = ModUtils.nbt(stack);
+
         this.level = nbt.getInteger("level") != 0 ? nbt.getInteger("level") : 1;
         if (getWorld().provider.getDimension() != 0) {
             this.vein = null;
         } else {
+            if (this.world.isRemote) {
+                return;
+            }
             this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
-            this.find = this.vein.get();
             if (this.vein.get()) {
                 this.progress = 1200;
             }
-            this.count = this.vein.getCol();
+            IUCore.network.get(true).updateTileEntityField(this, "vein");
+
         }
 
 
     }
 
     @Override
+    public List<String> getNetworkedFields() {
+        final List<String> list = super.getNetworkedFields();
+        list.add("level");
+        return list;
+    }
+
+
+    @Override
     protected void onLoaded() {
         super.onLoaded();
+        if (this.world.isRemote) {
+            return;
+        }
         if (getWorld().provider.getDimension() != 0) {
             this.vein = null;
         } else {
             this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
-            this.find = this.vein.get();
             if (this.vein.get()) {
                 this.progress = 1200;
             }
             if (this.progress >= 1200) {
-                this.find = true;
                 this.vein.setFind(true);
             }
-            this.count = this.vein.getCol();
-
         }
         updateTileEntityField();
     }
 
     private void updateTileEntityField() {
         IC2.network.get(true).updateTileEntityField(this, "level");
-        IC2.network.get(true).updateTileEntityField(this, "find");
-        IC2.network.get(true).updateTileEntityField(this, "count");
+        IUCore.network.get(true).updateTileEntityField(this, "vein");
 
     }
 
@@ -162,13 +174,14 @@ public class TileEntityQuarryVein extends TileEntityElectricMachine implements I
         if (this.vein == null) {
             return;
         }
+
         if (this.vein.getCol() != this.count) {
             this.count = this.vein.getCol();
             if (this.getWorld().provider.getWorldTime() % 4 == 0) {
                 IC2.network.get(true).updateTileEntityField(this, "count");
             }
         }
-        if (this.find) {
+        if (this.vein.get()) {
             return;
         }
         if (this.progress < 1200 && this.energy.getEnergy() >= 5 && !this.vein.get()) {
@@ -191,7 +204,6 @@ public class TileEntityQuarryVein extends TileEntityElectricMachine implements I
                 initiate(2);
                 this.progress = 1200;
                 this.vein.setFind(true);
-                this.find = this.vein.get();
                 updateTileEntityField();
             }
 

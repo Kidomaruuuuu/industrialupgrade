@@ -18,6 +18,8 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
+import java.io.DataInput;
+import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
@@ -27,35 +29,31 @@ public class ProcessMultiComponent extends TileEntityComponent implements IMulti
     public final InvSlotUpgrade upgradeSlot;
     public final AdvEnergy energy;
     public final InvSlotMultiRecipes inputSlots;
+    public final int defaultEnergyConsume;
+    public final int defaultOperationLength;
     private final RFComponent energy2;
     private final int sizeWorkingSlot;
     private final short[] progress;
     private final double[] guiProgress;
     private final TileEntityMultiMachine multimachine;
-    private int mode;
-    public int energyConsume;
-    public int operationLength;
     private final int defaultTier;
-    public final int defaultEnergyConsume;
-    public final int defaultOperationLength;
     private final int defaultEnergyStorage;
     private final EnumMultiMachine enumMultiMachine;
-    public boolean quickly;
-    public int module;
     private final boolean random;
-    public int[] col = new int[4];
-    public MachineRecipe[] output;
     private final int min;
     private final int max;
-    public boolean modulesize = false;
-    public boolean modulestorage = false;
     private final CoolComponent cold;
     private final EXPComponent exp;
+    public int energyConsume;
+    public int operationLength;
+    public boolean quickly;
+    public int module;
+    public int[] col = new int[4];
+    public MachineRecipe[] output;
+    public boolean modulesize = false;
+    public boolean modulestorage = false;
+    private int mode;
     private int operationsPerTick = 1;
-
-    public EnumMultiMachine getEnumMultiMachine() {
-        return enumMultiMachine;
-    }
 
     public ProcessMultiComponent(
             final TileEntityMultiMachine parent, EnumMultiMachine enumMultiMachine
@@ -70,7 +68,6 @@ public class ProcessMultiComponent extends TileEntityComponent implements IMulti
         );
         this.outputSlot = new InvSlotOutput(parent, "output", enumMultiMachine.sizeWorkingSlot);
         this.upgradeSlot = new InvSlotUpgrade(parent, "upgrade", 4);
-        this.upgradeSlot.setSlot(this.outputSlot);
         this.energy = parent.getComponent(AdvEnergy.class);
         this.enumMultiMachine = enumMultiMachine;
         this.energy2 = parent.getComponent(RFComponent.class);
@@ -92,6 +89,10 @@ public class ProcessMultiComponent extends TileEntityComponent implements IMulti
         this.output = new MachineRecipe[sizeWorkingSlot];
         this.cold = parent.getComponent(CoolComponent.class);
         this.exp = parent.getComponent(EXPComponent.class);
+    }
+
+    public EnumMultiMachine getEnumMultiMachine() {
+        return enumMultiMachine;
     }
 
     public MachineRecipe getRecipeOutput(int slotId) {
@@ -126,29 +127,6 @@ public class ProcessMultiComponent extends TileEntityComponent implements IMulti
         }
     }
 
-    public void setMode(int mode1) {
-        if (this.enumMultiMachine.type == EnumTypeMachines.METALFOMER) {
-            final InvSlotMultiRecipes slot = this.inputSlots;
-            switch (mode1) {
-                case 0:
-                    slot.setNameRecipe("extruding");
-                    break;
-                case 1:
-                    slot.setNameRecipe("rolling");
-                    break;
-                case 2:
-                    slot.setNameRecipe("cutting");
-                    break;
-                default:
-                    throw new RuntimeException("invalid mode: " + mode1);
-            }
-            this.mode = mode1;
-            for (int i = 0; i < this.getSizeWorkingSlot(); i++) {
-                this.setRecipeOutput(this.inputSlots.process(i), i);
-            }
-        }
-    }
-
     public void cycleMode() {
         setMode((this.mode + 1) % 3);
     }
@@ -180,7 +158,6 @@ public class ProcessMultiComponent extends TileEntityComponent implements IMulti
 
         }
     }
-
 
     public void operateOnce(int slotId, List<ItemStack> processResult, int size) {
 
@@ -233,6 +210,9 @@ public class ProcessMultiComponent extends TileEntityComponent implements IMulti
 
     @Override
     public void onWorldTick() {
+        if (this.parent.getWorld().isRemote) {
+            return;
+        }
         int quickly = 1;
 
         if (this.parent.getWorld().provider.getWorldTime() % 10 == 0) {
@@ -295,7 +275,8 @@ public class ProcessMultiComponent extends TileEntityComponent implements IMulti
                     try {
                         size = this.output[i].getRecipe().input.getInputs().get(0).getInputs().get(0).getCount();
 
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) {
+                    }
                     size = (int) Math.floor((float) this.inputSlots.get(i).getCount() / size);
                     int size1 = 0;
 
@@ -459,25 +440,34 @@ public class ProcessMultiComponent extends TileEntityComponent implements IMulti
         ));
         this.energy2.setCapacity(this.upgradeSlot.getEnergyStorage(
                 this.defaultEnergyStorage
-        )* Config.coefficientrf);
+        ) * Config.coefficientrf);
 
     }
 
     public double getProgress(int slotId) {
-        return (progress[slotId] * 1D / this.operationLength);
+        return this.guiProgress[slotId];
     }
 
     @Override
     public void onContainerUpdate(final EntityPlayerMP player) {
         GrowingBuffer buffer = new GrowingBuffer(16);
         for (int i = 0; i < sizeWorkingSlot; i++) {
-            buffer.writeShort(this.progress[i]);
+            buffer.writeDouble(this.guiProgress[i]);
         }
-        buffer.writeInt(this.operationLength);
         buffer.writeInt(this.energyConsume);
         buffer.writeInt(this.mode);
         buffer.flip();
         this.setNetworkUpdate(player, buffer);
+    }
+
+    @Override
+    public void onNetworkUpdate(final DataInput is) throws IOException {
+        super.onNetworkUpdate(is);
+        for (int i = 0; i < sizeWorkingSlot; i++) {
+            this.guiProgress[i] = is.readDouble();
+        }
+        this.energyConsume = is.readInt();
+        this.mode = is.readInt();
     }
 
     private double getspeed() {
@@ -563,6 +553,29 @@ public class ProcessMultiComponent extends TileEntityComponent implements IMulti
 
     public int getMode() {
         return this.mode;
+    }
+
+    public void setMode(int mode1) {
+        if (this.enumMultiMachine.type == EnumTypeMachines.METALFOMER) {
+            final InvSlotMultiRecipes slot = this.inputSlots;
+            switch (mode1) {
+                case 0:
+                    slot.setNameRecipe("extruding");
+                    break;
+                case 1:
+                    slot.setNameRecipe("rolling");
+                    break;
+                case 2:
+                    slot.setNameRecipe("cutting");
+                    break;
+                default:
+                    throw new RuntimeException("invalid mode: " + mode1);
+            }
+            this.mode = mode1;
+            for (int i = 0; i < this.getSizeWorkingSlot(); i++) {
+                this.setRecipeOutput(this.inputSlots.process(i), i);
+            }
+        }
     }
 
 }

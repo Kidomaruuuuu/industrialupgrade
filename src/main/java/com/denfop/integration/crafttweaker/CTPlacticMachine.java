@@ -26,7 +26,8 @@ public class CTPlacticMachine {
         Recipes.recipes.addRecipe(
                 "plasticplate",
                 new BaseMachineRecipe(
-                        new Input(new IC2FluidRecipeInput(liquidStack).getInputs(),
+                        new Input(
+                                new IC2FluidRecipeInput(liquidStack).getInputs(),
                                 new IC2RecipeInput(container)
                         ),
                         new RecipeOutput(null, CraftTweakerMC.getItemStacks(output))

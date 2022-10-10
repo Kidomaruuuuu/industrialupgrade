@@ -3,6 +3,7 @@ package com.denfop.tiles.mechanism;
 import com.denfop.IUItem;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
+import com.denfop.api.recipe.IHasRecipe;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.api.recipe.RecipeOutput;
@@ -28,7 +29,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-public class TileEntitySunnariumPanelMaker extends TileEntityDoubleElectricMachine {
+public class TileEntitySunnariumPanelMaker extends TileEntityDoubleElectricMachine implements IHasRecipe {
 
     public final SEComponent sunenergy;
 
@@ -36,9 +37,39 @@ public class TileEntitySunnariumPanelMaker extends TileEntityDoubleElectricMachi
         super(1, 300, 1, EnumDoubleElectricMachine.SUNNARIUM_PANEL);
         this.sunenergy = this.addComponent(SEComponent
                 .asBasicSink(this, 10000, 1));
+        Recipes.recipes.addInitRecipes(this);
     }
 
-    public static void init() {
+    public static void addsunnuriumpanel(ItemStack container, ItemStack fill, ItemStack output) {
+        int id = OreDictionary.getOreIDs(fill)[0];
+        String name = OreDictionary.getOreName(id);
+        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
+        if (name == null && fill.getItem() != IUItem.neutroniumingot) {
+            Recipes.recipes.addRecipe(
+                    "sunnuriumpanel",
+                    new BaseMachineRecipe(
+                            new Input(
+                                    input.forStack(container),
+                                    input.forStack(fill)
+                            ),
+                            new RecipeOutput(null, output)
+                    )
+            );
+        } else {
+            Recipes.recipes.addRecipe(
+                    "sunnuriumpanel",
+                    new BaseMachineRecipe(
+                            new Input(
+                                    input.forStack(container),
+                                    input.forOreDict(name)
+                            ),
+                            new RecipeOutput(null, output)
+                    )
+            );
+        }
+    }
+
+    public void init() {
 
         addsunnuriumpanel(
                 new ItemStack(IUItem.sunnarium, 1, 2),
@@ -111,35 +142,6 @@ public class TileEntitySunnariumPanelMaker extends TileEntityDoubleElectricMachi
                 new ItemStack(IUItem.sunnariumpanel, 1, 12)
         );
 
-    }
-
-    public static void addsunnuriumpanel(ItemStack container, ItemStack fill, ItemStack output) {
-        int id = OreDictionary.getOreIDs(fill)[0];
-        String name = OreDictionary.getOreName(id);
-        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
-        if (name == null && fill.getItem() != IUItem.neutroniumingot) {
-            Recipes.recipes.addRecipe(
-                    "sunnuriumpanel",
-                    new BaseMachineRecipe(
-                            new Input(
-                                    input.forStack(container),
-                                    input.forStack(fill)
-                            ),
-                            new RecipeOutput(null, output)
-                    )
-            );
-        } else {
-            Recipes.recipes.addRecipe(
-                    "sunnuriumpanel",
-                    new BaseMachineRecipe(
-                            new Input(
-                                    input.forStack(container),
-                                    input.forOreDict(name)
-                            ),
-                            new RecipeOutput(null, output)
-                    )
-            );
-        }
     }
 
     protected void updateEntityServer() {

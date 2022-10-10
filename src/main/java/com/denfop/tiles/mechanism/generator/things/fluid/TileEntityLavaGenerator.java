@@ -51,10 +51,16 @@ public class TileEntityLavaGenerator extends TileEntityElectricMachine implement
 
         this.energycost = 80;
         this.outputSlot = new InvSlotOutput(this, "output", 1);
-        this.containerslot = new InvSlotConsumableLiquidByList(this, "container", Access.I, 1, InvSide.TOP, InvSlotConsumableLiquid.OpType.Fill,
+        this.containerslot = new InvSlotConsumableLiquidByList(
+                this,
+                "container",
+                Access.I,
+                1,
+                InvSide.TOP,
+                InvSlotConsumableLiquid.OpType.Fill,
                 FluidRegistry.LAVA
         );
-         this.fluids = this.addComponent(new Fluids(this));
+        this.fluids = this.addComponent(new Fluids(this));
         this.fluidTank = this.fluids.addTank("fluidTank", 20 * 1000, InvSlot.Access.O, InvSide.ANY,
                 Fluids.fluidPredicate(FluidRegistry.LAVA)
         );

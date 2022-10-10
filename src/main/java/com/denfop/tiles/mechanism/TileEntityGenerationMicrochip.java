@@ -4,6 +4,7 @@ import com.denfop.IUItem;
 import com.denfop.Ic2Items;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
+import com.denfop.api.recipe.IHasRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.InvSlotRecipes;
@@ -32,7 +33,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-public class TileEntityGenerationMicrochip extends TileEntityBaseGenerationMicrochip implements IUpdateTick {
+public class TileEntityGenerationMicrochip extends TileEntityBaseGenerationMicrochip implements IUpdateTick, IHasRecipe {
 
     private boolean auto;
 
@@ -40,124 +41,14 @@ public class TileEntityGenerationMicrochip extends TileEntityBaseGenerationMicro
         super(1, 300, 1);
         this.inputSlotA = new InvSlotRecipes(this, "microchip", this);
         this.auto = false;
+        Recipes.recipes.addInitRecipes(this);
     }
 
-    public static void init() {
-        add(new ItemStack(Items.FLINT), new ItemStack(Items.DYE, 1, 4), new ItemStack(Items.IRON_INGOT),
-                new ItemStack(IUItem.iuingot, 1
-                        , 11), new ItemStack(IUItem.iuingot, 1, 15), new ItemStack(IUItem.basecircuit), (short) 2000, false
-        );
-        add(
-                new ItemStack(Items.IRON_INGOT),
-                new ItemStack(Items.REDSTONE),
-                new ItemStack(Items.GOLD_INGOT),
-                new ItemStack(Items.FLINT),
-                new ItemStack(IUItem.iuingot, 1, 14),
-                new ItemStack(IUItem.basecircuit, 1, 15),
-                (short) 1000, true
-        );
-        add(
-                new ItemStack(Items.IRON_INGOT),
-                ModUtils.getCable(Ic2Items.copperCableItem
-                        , 1),
-                new ItemStack(IUItem.basecircuit, 1, 15),
-                new ItemStack(IUItem.basecircuit, 1, 16),
-                new ItemStack(IUItem.basecircuit, 1, 17),
-                Ic2Items.electronicCircuit,
-                (short) 1000,
-                true
-        );
-        add(
-                new ItemStack(IUItem.iuingot, 1, 1),
-                new ItemStack(Items.REDSTONE, 1),
-                new ItemStack(Items.GOLD_INGOT),
-                new ItemStack(IUItem.iuingot, 1, 7),
-                "ingotCopper",
-                new ItemStack(IUItem.basecircuit, 1, 1),
-                (short) 4000, true
-        );
-        add(
-                "ingotAluminum",
-                new ItemStack(Items.REDSTONE, 1),
-                new ItemStack(Items.GOLD_INGOT),
-                new ItemStack(IUItem.iuingot, 1, 7),
-                Ic2Items.copperIngot,
-                new ItemStack(IUItem.basecircuit, 1, 1),
-                (short) 4000, true
-        );
-        add(
-                new ItemStack(IUItem.iuingot, 1, 18),
-                new ItemStack(Items.REDSTONE, 1),
-                new ItemStack(Items.DIAMOND),
-                new ItemStack(IUItem.iuingot, 1, 0),
-                new ItemStack(IUItem.iuingot, 1, 5),
-                new ItemStack(IUItem.basecircuit, 1, 2),
-                (short) 5000, true
-        );
-        add(
-                new ItemStack(IUItem.iuingot, 1, 18),
-                new ItemStack(Items.REDSTONE, 1),
-                new ItemStack(Items.EMERALD),
-                new ItemStack(IUItem.iuingot, 1, 0),
-                new ItemStack(IUItem.iuingot, 1, 5),
-                new ItemStack(IUItem.basecircuit, 1, 2),
-                (short) 5000, true
-        );
-
-
-        add(
-                new ItemStack(IUItem.iuingot, 1, 2),
-                new ItemStack(IUItem.iuingot, 1, 3),
-                new ItemStack(IUItem.basecircuit, 1, 0),
-                new ItemStack(IUItem.basecircuit, 1, 3),
-                new ItemStack(IUItem.basecircuit, 1, 6),
-                new ItemStack(IUItem.basecircuit, 1, 9),
-                (short) 3000,
-                true
-        );
-
-        add(
-                new ItemStack(IUItem.iuingot, 1, 8),
-                new ItemStack(IUItem.iuingot, 1, 6),
-                new ItemStack(IUItem.basecircuit, 1, 1),
-                new ItemStack(IUItem.basecircuit, 1, 4),
-                new ItemStack(IUItem.basecircuit, 1, 7),
-                new ItemStack(IUItem.basecircuit, 1, 10),
-                (short) 4000,
-                true
-        );
-        add(
-                new ItemStack(IUItem.iuingot, 1, 2),
-                new ItemStack(IUItem.iuingot, 1, 10),
-                new ItemStack(IUItem.basecircuit, 1, 2),
-                new ItemStack(IUItem.basecircuit, 1, 5),
-                new ItemStack(IUItem.basecircuit, 1, 8),
-                new ItemStack(IUItem.basecircuit, 1, 11),
-                (short) 5000, true
-        );
-        add(new ItemStack(Items.GLOWSTONE_DUST),
-                new ItemStack(Items.DYE, 1, 4),
-                new ItemStack(IUItem.basecircuit, 1, 12),
-                new ItemStack(IUItem.basecircuit, 1, 13),
-                new ItemStack(IUItem.basecircuit, 1, 14),
-                Ic2Items.advancedCircuit,
-                (short) 2000, false
-        );
-        add(
-                new ItemStack(Items.FLINT),
-                new ItemStack(Items.DYE, 1, 4),
-                new ItemStack(IUItem.iuingot, 1, 9),
-                "ingotSteel", new ItemStack(Items.GOLD_INGOT),
-
-                new ItemStack(IUItem.basecircuit, 1, 12),
-                true
-        );
-
-    }
-
-    private static void add(String first, ItemStack second, ItemStack three,
-                            ItemStack four, ItemStack five,
-                            ItemStack output, short temperatures, boolean check) {
+    private static void add(
+            ItemStack second, ItemStack three,
+            ItemStack four, ItemStack five,
+            ItemStack output
+    ) {
         IRecipeInput first1;
         IRecipeInput second1;
         IRecipeInput three1;
@@ -165,10 +56,10 @@ public class TileEntityGenerationMicrochip extends TileEntityBaseGenerationMicro
         IRecipeInput five1;
 
         NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setShort("temperature", temperatures);
+        nbt.setShort("temperature", (short) 4000);
         final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
-        if (check) {
-            first1 = input.forOreDict(first);
+        if (true) {
+            first1 = input.forOreDict("ingotAluminum");
             if (OreDictionary.getOreIDs(second).length > 0 && !OreDictionary
                     .getOreName(OreDictionary.getOreIDs(second)[0])
                     .isEmpty() && second.getItem() instanceof ItemIngots) {
@@ -207,7 +98,7 @@ public class TileEntityGenerationMicrochip extends TileEntityBaseGenerationMicro
         } else {
             Recipes.recipes.addRecipe("microchip", new BaseMachineRecipe(
                     new Input(
-                            input.forOreDict(first),
+                            input.forOreDict("ingotAluminum"),
                             input.forStack(second),
                             input.forStack(three),
                             input.forStack(four),
@@ -499,6 +390,117 @@ public class TileEntityGenerationMicrochip extends TileEntityBaseGenerationMicro
 
 
         }
+    }
+
+    public void init() {
+        add(new ItemStack(Items.FLINT), new ItemStack(Items.DYE, 1, 4), new ItemStack(Items.IRON_INGOT),
+                new ItemStack(IUItem.iuingot, 1
+                        , 11), new ItemStack(IUItem.iuingot, 1, 15), new ItemStack(IUItem.basecircuit), (short) 2000, false
+        );
+        add(
+                new ItemStack(Items.IRON_INGOT),
+                new ItemStack(Items.REDSTONE),
+                new ItemStack(Items.GOLD_INGOT),
+                new ItemStack(Items.FLINT),
+                new ItemStack(IUItem.iuingot, 1, 14),
+                new ItemStack(IUItem.basecircuit, 1, 15),
+                (short) 1000, true
+        );
+        add(
+                new ItemStack(Items.IRON_INGOT),
+                ModUtils.getCable(Ic2Items.copperCableItem
+                        , 1),
+                new ItemStack(IUItem.basecircuit, 1, 15),
+                new ItemStack(IUItem.basecircuit, 1, 16),
+                new ItemStack(IUItem.basecircuit, 1, 17),
+                Ic2Items.electronicCircuit,
+                (short) 1000,
+                true
+        );
+        add(
+                new ItemStack(IUItem.iuingot, 1, 1),
+                new ItemStack(Items.REDSTONE, 1),
+                new ItemStack(Items.GOLD_INGOT),
+                new ItemStack(IUItem.iuingot, 1, 7),
+                "ingotCopper",
+                new ItemStack(IUItem.basecircuit, 1, 1),
+                (short) 4000, true
+        );
+        add(
+                new ItemStack(Items.REDSTONE, 1),
+                new ItemStack(Items.GOLD_INGOT),
+                new ItemStack(IUItem.iuingot, 1, 7),
+                Ic2Items.copperIngot,
+                new ItemStack(IUItem.basecircuit, 1, 1)
+        );
+        add(
+                new ItemStack(IUItem.iuingot, 1, 18),
+                new ItemStack(Items.REDSTONE, 1),
+                new ItemStack(Items.DIAMOND),
+                new ItemStack(IUItem.iuingot, 1, 0),
+                new ItemStack(IUItem.iuingot, 1, 5),
+                new ItemStack(IUItem.basecircuit, 1, 2),
+                (short) 5000, true
+        );
+        add(
+                new ItemStack(IUItem.iuingot, 1, 18),
+                new ItemStack(Items.REDSTONE, 1),
+                new ItemStack(Items.EMERALD),
+                new ItemStack(IUItem.iuingot, 1, 0),
+                new ItemStack(IUItem.iuingot, 1, 5),
+                new ItemStack(IUItem.basecircuit, 1, 2),
+                (short) 5000, true
+        );
+
+
+        add(
+                new ItemStack(IUItem.iuingot, 1, 2),
+                new ItemStack(IUItem.iuingot, 1, 3),
+                new ItemStack(IUItem.basecircuit, 1, 0),
+                new ItemStack(IUItem.basecircuit, 1, 3),
+                new ItemStack(IUItem.basecircuit, 1, 6),
+                new ItemStack(IUItem.basecircuit, 1, 9),
+                (short) 3000,
+                true
+        );
+
+        add(
+                new ItemStack(IUItem.iuingot, 1, 8),
+                new ItemStack(IUItem.iuingot, 1, 6),
+                new ItemStack(IUItem.basecircuit, 1, 1),
+                new ItemStack(IUItem.basecircuit, 1, 4),
+                new ItemStack(IUItem.basecircuit, 1, 7),
+                new ItemStack(IUItem.basecircuit, 1, 10),
+                (short) 4000,
+                true
+        );
+        add(
+                new ItemStack(IUItem.iuingot, 1, 2),
+                new ItemStack(IUItem.iuingot, 1, 10),
+                new ItemStack(IUItem.basecircuit, 1, 2),
+                new ItemStack(IUItem.basecircuit, 1, 5),
+                new ItemStack(IUItem.basecircuit, 1, 8),
+                new ItemStack(IUItem.basecircuit, 1, 11),
+                (short) 5000, true
+        );
+        add(new ItemStack(Items.GLOWSTONE_DUST),
+                new ItemStack(Items.DYE, 1, 4),
+                new ItemStack(IUItem.basecircuit, 1, 12),
+                new ItemStack(IUItem.basecircuit, 1, 13),
+                new ItemStack(IUItem.basecircuit, 1, 14),
+                Ic2Items.advancedCircuit,
+                (short) 2000, false
+        );
+        add(
+                new ItemStack(Items.FLINT),
+                new ItemStack(Items.DYE, 1, 4),
+                new ItemStack(IUItem.iuingot, 1, 9),
+                "ingotSteel", new ItemStack(Items.GOLD_INGOT),
+
+                new ItemStack(IUItem.basecircuit, 1, 12),
+                true
+        );
+
     }
 
     protected List<ItemStack> getWrenchDrops(EntityPlayer player, int fortune) {

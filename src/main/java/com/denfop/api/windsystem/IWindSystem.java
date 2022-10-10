@@ -7,7 +7,9 @@ import net.minecraft.world.World;
 
 public interface IWindSystem {
 
-    double getPower(World world, BlockPos pos, boolean min);
+    double getPower(World world, BlockPos pos, boolean min, IWindMechanism rotor);
+
+    double getSpeedFromPower(BlockPos pos, IWindMechanism rotor, double power);
 
     double getPowerFromWindRotor(World world, BlockPos pos, IWindMechanism rotor, ItemStack stack);
 
@@ -23,6 +25,8 @@ public interface IWindSystem {
 
     double getSpeed();
 
+    double getSpeed(double speed);
+
     EnumWindSide getWindSide();
 
     void getNewFacing(EnumFacing facing, IWindMechanism windMechanism);
@@ -32,4 +36,6 @@ public interface IWindSystem {
     int getLevelWind();
 
     EnumTypeWind getEnumTypeWind();
+
+
 }

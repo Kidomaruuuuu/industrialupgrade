@@ -4,7 +4,6 @@ import com.denfop.Constants;
 import com.denfop.container.ContainerQuantumQuarry;
 import com.denfop.utils.ListInformationUtils;
 import com.denfop.utils.ModUtils;
-import ic2.core.GuiIC2;
 import ic2.core.IC2;
 import ic2.core.init.Localization;
 import net.minecraft.util.ResourceLocation;
@@ -19,7 +18,7 @@ public class GuiQuantumQuarry extends GuiIU<ContainerQuantumQuarry> {
     public final ContainerQuantumQuarry container;
 
     public GuiQuantumQuarry(ContainerQuantumQuarry container1) {
-        super(container1,container1.base.getStyle());
+        super(container1, container1.base.getStyle());
         this.container = container1;
     }
 
@@ -74,10 +73,10 @@ public class GuiQuantumQuarry extends GuiIU<ContainerQuantumQuarry> {
                     48 - chargeLevel, 48, chargeLevel
             );
         }
-
-        this.drawString(fontRenderer,
-                "" + ModUtils.getString(this.container.base.getblock),
-                h + 143, k + 7, 4210752
+        String getblock = ModUtils.getString(this.container.base.getblock);
+        fontRenderer.drawString(getblock
+                ,
+                h + 151 - getblock.length() + 1, k + 13, 4210752
         );
 
     }

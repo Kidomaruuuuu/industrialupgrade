@@ -8,7 +8,6 @@ import com.denfop.Ic2Items;
 import com.denfop.componets.EXPComponent;
 import com.denfop.container.ContainerAutoSpawner;
 import com.denfop.gui.GuiAutoSpawner;
-import com.denfop.invslot.InvSlotBook;
 import com.denfop.invslot.InvSlotModules;
 import com.denfop.invslot.InvSlotUpgradeModule;
 import com.denfop.utils.ModUtils;
@@ -25,11 +24,9 @@ import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.monster.EntityWitherSkeleton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
-import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.WorldServer;
@@ -85,10 +82,12 @@ public class TileEntityAutoSpawner extends TileEntityElectricMachine
         this.exp = this.addComponent(EXPComponent.asBasicSource(this, 15000, 14));
 
     }
+
     @Override
     public int getSizeInventory() {
         return 1;
     }
+
     public int receiveEnergy(EnumFacing from, int maxReceive, boolean simulate) {
 
         return receiveEnergy(maxReceive, simulate);
@@ -102,7 +101,8 @@ public class TileEntityAutoSpawner extends TileEntityElectricMachine
             tooltip.add(Localization.translate("press.lshift"));
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            tooltip.add(Localization.translate("iu.machines_work_energy")+this.defaultconsume+Localization.translate("iu.machines_work_energy_type_eu"));
+            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultconsume + Localization.translate(
+                    "iu.machines_work_energy_type_eu"));
         }
         super.addInformation(stack, tooltip, advanced);
 
@@ -160,7 +160,7 @@ public class TileEntityAutoSpawner extends TileEntityElectricMachine
 
         ItemStack stack3 = Ic2Items.ejectorUpgrade;
         if (this.world.provider.getWorldTime() % 20 == 0 && !this.outputSlot.isEmpty()) {
-            ModUtils.tick(stack3, this.outputSlot, this);
+            ModUtils.tick(this.outputSlot, this);
         }
 
 
@@ -205,8 +205,9 @@ public class TileEntityAutoSpawner extends TileEntityElectricMachine
             if (!this.world.isRemote) {
                 int i = this.chance;
                 LootContext.Builder lootcontext$builder = this.lootContext[index];
-                if(table == null)
+                if (table == null) {
                     return;
+                }
                 if (lootcontext$builder == null) {
                     lootcontext$builder = this.lootContext[index] = (new LootContext.Builder((WorldServer) this.world))
                             .withLootedEntity(entity)
@@ -218,14 +219,14 @@ public class TileEntityAutoSpawner extends TileEntityElectricMachine
                 );
 
                 if (entity instanceof EntityBlaze) {
-                    list.add(new ItemStack(Items.BLAZE_ROD,  this.getWorld().rand.nextInt(i + 1) + 1));
+                    list.add(new ItemStack(Items.BLAZE_ROD, this.getWorld().rand.nextInt(i + 1) + 1));
                 } else if (entity instanceof EntitySlime) {
                     if (((EntitySlime) entity).isSmallSlime()) {
-                        list.add(new ItemStack(Items.SLIME_BALL,  this.getWorld().rand.nextInt(i + 1) + 1));
+                        list.add(new ItemStack(Items.SLIME_BALL, this.getWorld().rand.nextInt(i + 1) + 1));
                     }
-                }else if (entity instanceof EntityWitherSkeleton) {
-                    if(this.world.rand.nextInt(101) >= 100 - (chance + 2)){
-                        list.add(new ItemStack(Items.SKULL,  1,1));
+                } else if (entity instanceof EntityWitherSkeleton) {
+                    if (this.world.rand.nextInt(101) >= 100 - (chance + 2)) {
+                        list.add(new ItemStack(Items.SKULL, 1, 1));
                     }
                 }
                 for (ItemStack item : list) {
@@ -259,8 +260,6 @@ public class TileEntityAutoSpawner extends TileEntityElectricMachine
     public void onNetworkEvent(int i) {
 
     }
-
-
 
 
     @Override

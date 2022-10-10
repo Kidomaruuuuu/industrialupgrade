@@ -2,7 +2,9 @@ package com.denfop.gui;
 
 import com.denfop.Constants;
 import com.denfop.container.ContainerCombinerSolidMatter;
+import com.denfop.utils.ModUtils;
 import ic2.core.GuiIC2;
+import ic2.core.init.Localization;
 import net.minecraft.util.ResourceLocation;
 
 
@@ -30,6 +32,26 @@ public class GuiCombinerSolidMatter extends GuiIC2<ContainerCombinerSolidMatter>
 
     }
 
+    protected void drawForegroundLayer(int par1, int par2) {
+        super.drawForegroundLayer(par1, par2);
+        if (this.container.base.energy.getCapacity() != 0) {
+            this.fontRenderer.drawString(
+                    Localization.translate("gui.MolecularTransformer.progress") + ": " + ModUtils.getString(
+                            this.container.base.energy.getEnergy() * 100D / this.container.base.energy.getCapacity()) + "%",
+                    +58,
+                    +70,
+                    4210752
+            );
+        }
+        new AdvArea(
+                this,
+                58,
+                70,
+                107,
+                77
+        ).withTooltip("EU: " + ModUtils.getString(this.container.base.energy.getEnergy()) + "/" + ModUtils.getString(
+                this.container.base.energy.getCapacity())).drawForeground(par1, par2);
+    }
 
     public String getName() {
         return container.base.getInventoryName();

@@ -5,6 +5,7 @@ import com.denfop.IUItem;
 import com.denfop.Ic2Items;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
+import com.denfop.api.recipe.IHasRecipe;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.api.recipe.RecipeOutput;
@@ -23,31 +24,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-public class TileEntityEnrichment extends TileEntityDoubleElectricMachine {
+public class TileEntityEnrichment extends TileEntityDoubleElectricMachine implements IHasRecipe {
 
     public TileEntityEnrichment() {
         super(1, 300, 1, EnumDoubleElectricMachine.ENRICH);
-    }
-
-    public static void init() {
-        addenrichment(
-                new ItemStack(IUItem.toriy),
-                new ItemStack(Items.GLOWSTONE_DUST),
-                new ItemStack(IUItem.radiationresources, 1, 4)
-        );
-        addenrichment(
-                new ItemStack(Blocks.GLOWSTONE, 1),
-                "ingotUranium",
-                new ItemStack(IUItem.itemiu, 1, 0)
-        );
-        addenrichment(new ItemStack(IUItem.itemiu, 1, 0), Ic2Items.reinforcedGlass, new ItemStack(IUItem.itemiu, 2, 1));
-
-        addenrichment(
-                new ItemStack(IUItem.sunnarium, 1, 3),
-                new ItemStack(IUItem.itemiu, 1, 0),
-                new ItemStack(IUItem.sunnarium, 1, 0)
-        );
-
+        Recipes.recipes.addInitRecipes(this);
     }
 
     public static void addenrichment(ItemStack container, ItemStack fill, ItemStack output) {
@@ -67,6 +48,27 @@ public class TileEntityEnrichment extends TileEntityDoubleElectricMachine {
                 new Input(input.forStack(container), input.forOreDict(fill)),
                 new RecipeOutput(null, output)
         ));
+    }
+
+    public void init() {
+        addenrichment(
+                new ItemStack(IUItem.toriy),
+                new ItemStack(Items.GLOWSTONE_DUST),
+                new ItemStack(IUItem.radiationresources, 1, 4)
+        );
+        addenrichment(
+                new ItemStack(Blocks.GLOWSTONE, 1),
+                "ingotUranium",
+                new ItemStack(IUItem.itemiu, 1, 0)
+        );
+        addenrichment(new ItemStack(IUItem.itemiu, 1, 0), Ic2Items.reinforcedGlass, new ItemStack(IUItem.itemiu, 2, 1));
+
+        addenrichment(
+                new ItemStack(IUItem.sunnarium, 1, 3),
+                new ItemStack(IUItem.itemiu, 1, 0),
+                new ItemStack(IUItem.sunnarium, 1, 0)
+        );
+
     }
 
     @Override

@@ -86,6 +86,7 @@ public class TileEntityFisher extends TileEntityElectricMachine
     public void removeLevel(final int level) {
         this.level -= level;
     }
+
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
@@ -93,12 +94,13 @@ public class TileEntityFisher extends TileEntityElectricMachine
             tooltip.add(Localization.translate("press.lshift"));
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            tooltip.add(Localization.translate("iu.machines_work_energy")+this.energyconsume+Localization.translate("iu" +
+            tooltip.add(Localization.translate("iu.machines_work_energy") + this.energyconsume + Localization.translate("iu" +
                     ".machines_work_energy_type_eu"));
         }
         super.addInformation(stack, tooltip, advanced);
 
     }
+
     private boolean checkwater() {
         int x1 = this.pos.getX();
         int y1 = this.pos.getY() - 2;
@@ -234,16 +236,16 @@ public class TileEntityFisher extends TileEntityElectricMachine
         if (getActive()) {
             if (this.world.getWorldTime() % 20 == 0 && !this.outputSlot.isEmpty()) {
                 ItemStack stack3 = Ic2Items.ejectorUpgrade;
-                ModUtils.tick(stack3, this.outputSlot, this);
+                ModUtils.tick(this.outputSlot, this);
             }
         }
     }
 
     protected List<ItemStack> getWrenchDrops(EntityPlayer player, int fortune) {
         List<ItemStack> ret = super.getWrenchDrops(player, fortune);
-        if (this.level != 0) {
+        if (this.level != 1) {
             ret.add(new ItemStack(IUItem.upgrade_speed_creation, this.level));
-            this.level = 0;
+            this.level = 1;
         }
         return ret;
     }

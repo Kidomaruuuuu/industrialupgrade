@@ -1,7 +1,6 @@
 package com.denfop.tiles.base;
 
 import com.denfop.componets.AdvEnergy;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.block.comp.Fluids;
 import ic2.core.init.Localization;
 import net.minecraft.client.util.ITooltipFlag;

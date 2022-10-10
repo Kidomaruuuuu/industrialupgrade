@@ -29,24 +29,24 @@ public class GuiOilPump extends GuiIC2<ContainerOilPump> {
 
         String tooltip;
 
-            if (this.container.base.find && this.container.base.count > 0 && this.container.base.maxcount > 0 && this.container.base.type == Type.OIL.ordinal()) {
+        if (this.container.base.find && this.container.base.count > 0 && this.container.base.maxcount > 0 && this.container.base.type == Type.OIL.ordinal()) {
 
 
-                tooltip =
-                        Localization.translate("iu.fluidneft") + ": " + this.container.base
-                                .count + "/" + this.container.base.maxcount
-                                + Localization.translate("ic2.generic.text.mb");
-                new AdvArea(this, 43, 39, 52, 53).withTooltip(tooltip).drawForeground(par1, par2);
+            tooltip =
+                    Localization.translate("iu.fluidneft") + ": " + this.container.base
+                            .count + "/" + this.container.base.maxcount
+                            + Localization.translate("ic2.generic.text.mb");
+            new AdvArea(this, 43, 39, 52, 53).withTooltip(tooltip).drawForeground(par1, par2);
 
-            } else {
-                tooltip = Localization.translate("iu.notfindoil");
+        } else {
+            tooltip = Localization.translate("iu.notfindoil");
 
-            }
+        }
 
         new AdvArea(this, 43, 39, 52, 53).withTooltip(tooltip).drawForeground(par1, par2);
 
         int temp = 0;
-        if (this.container.base.find && this.container.base.maxcount > 0&& this.container.base.type == Type.OIL.ordinal()) {
+        if (this.container.base.find && this.container.base.maxcount > 0 && this.container.base.type == Type.OIL.ordinal()) {
 
             temp = 14 * this.container.base
                     .count / this.container.base.maxcount;

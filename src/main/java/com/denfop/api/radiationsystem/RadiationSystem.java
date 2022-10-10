@@ -1,5 +1,6 @@
 package com.denfop.api.radiationsystem;
 
+import com.denfop.IUCore;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;
@@ -32,12 +33,33 @@ public class RadiationSystem {
         }
     }
 
+    public Map<ChunkPos, Radiation> getMap() {
+        return map;
+    }
+
+    public List<Radiation> getRadiationList() {
+        return radiationList;
+    }
+
     public void addRadiation(NBTTagCompound tagCompound) {
         Radiation rad = new Radiation(tagCompound);
         if (!this.map.containsKey(rad.getPos())) {
             this.map.put(rad.getPos(), rad);
             this.radiationList.add(rad);
         }
+    }
+
+    public void addRadiation(Radiation radiation) {
+        if (!this.map.containsKey(radiation.getPos())) {
+            this.map.put(radiation.getPos(), radiation);
+            this.radiationList.add(radiation);
+            IUCore.network.get(true).initiateRadiation(radiation);
+        }
+
+    }
+
+    public void update(EntityPlayer player) {
+        IUCore.network.get(true).initiateRadiation(this.radiationList, player);
     }
 
 }

@@ -4,6 +4,7 @@ import com.denfop.Constants;
 import com.denfop.IUCore;
 import com.denfop.api.IModelRegister;
 import com.denfop.api.Recipes;
+import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.api.upgrade.IUpgradeWithBlackList;
 import com.denfop.api.upgrade.UpgradeItemInform;
@@ -546,8 +547,8 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
             par3List.add(Localization.translate("iu.changemode_key") + Keyboard.getKeyName(Math.abs(KeyboardClient.changemode.getKeyCode())) + Localization.translate(
                     "iu.changemode_rcm"));
 
-                par3List.add(Localization.translate("iu.blacklist_key") + Keyboard.getKeyName(Math.abs(KeyboardClient.blackmode.getKeyCode())) + Localization.translate(
-                        "iu.changemode_rcm"));
+            par3List.add(Localization.translate("iu.blacklist_key") + Keyboard.getKeyName(Math.abs(KeyboardClient.blackmode.getKeyCode())) + Localization.translate(
+                    "iu.changemode_rcm"));
 
             par3List.add(Localization.translate("iu.savemode_key") + Keyboard.getKeyName(Math.abs(KeyboardClient.savemode.getKeyCode())) + Localization.translate(
                     "iu.changemode_rcm"));
@@ -1368,23 +1369,31 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                                 ItemStack stack1 = item.getItem();
 
                                 if (comb) {
-                                    RecipeOutput rec = Recipes.recipes.getRecipeOutput("comb_macerator", false, stack1).output;
+                                    final BaseMachineRecipe rec = Recipes.recipes.getRecipeOutput(
+                                            "comb_macerator",
+                                            false,
+                                            stack1
+                                    );
                                     if (rec != null) {
-                                        stack1 = rec.items.get(0).copy();
-                                        stack1.setCount(3);
+                                        stack1 = rec.output.items.get(0).copy();
+                                        item.setItem(stack1);
                                     }
                                 } else if (mac) {
-                                    RecipeOutput rec = Recipes.recipes.getRecipeOutput("macerator", false, stack1).output;
+                                    final BaseMachineRecipe rec = Recipes.recipes.getRecipeOutput("macerator", false, stack1);
                                     if (rec != null) {
-                                        stack1 = rec.items.get(0).copy();
-
+                                        stack1 = rec.output.items.get(0).copy();
+                                        item.setItem(stack1);
                                     }
                                 }
-                                ItemStack smelt = new ItemStack(Items.AIR);
+
+                                ItemStack smelt;
                                 if (smelter) {
                                     smelt = FurnaceRecipes.instance().getSmeltingResult(stack1).copy();
                                     if (!smelt.isEmpty()) {
                                         smelt.setCount(stack1.getCount());
+                                        item.setItem(smelt);
+                                    } else {
+                                        item.setItem(item.getItem());
                                     }
                                 }
                                 if (generator) {
@@ -1407,15 +1416,10 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                                         stack1.setCount(amount);
                                     }
                                 }
-                                if (!smelt.isEmpty()) {
-                                    item.setItem(smelt);
-                                } else {
-                                    item.setItem(stack1);
-                                }
-
                                 item.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, 0.0F, 0.0F);
-                                ((EntityPlayerMP) entity).connection.sendPacket(new SPacketEntityTeleport(item));
                                 item.setPickupDelay(0);
+                                ((EntityPlayerMP) entity).connection.sendPacket(new SPacketEntityTeleport(item));
+
 
                             }
                         }
@@ -1437,7 +1441,6 @@ public class ItemEnergyInstruments extends ItemTool implements IElectricItem, IH
                         item.setItem(IUCore.get_ingot.get(world.rand.nextInt(IUCore.get_ingot.size())));
                         item.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, 0.0F, 0.0F);
                         ((EntityPlayerMP) entity).connection.sendPacket(new SPacketEntityTeleport(item));
-                        item.setPickupDelay(0);
                     }
                 }
                 EntityPlayerMP mpPlayer = (EntityPlayerMP) entity;

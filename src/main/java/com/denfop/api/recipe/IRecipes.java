@@ -19,6 +19,8 @@ public interface IRecipes {
 
     Set<Map.Entry<ItemStack, BaseMachineRecipe>> getRecipeStack(String name);
 
+    void initializationRecipes();
+
     void addRecipeManager(String name, int size, boolean consume);
 
     List<BaseFluidMachineRecipe> getFluidRecipes(String name);
@@ -28,6 +30,8 @@ public interface IRecipes {
     void addRecipeManagerFluid(String name, int size, boolean consume);
 
     List<IRecipeInputStack> getMap_recipe_managers_itemStack(String name);
+
+    List<IHasRecipe> getRecipesForInit();
 
     BaseMachineRecipe getRecipeOutput(
             final IBaseRecipe recipe,
@@ -114,5 +118,7 @@ public interface IRecipes {
             List<ItemStack> list,
             FluidTank tank
     );
+
+    void addInitRecipes(IHasRecipe hasRecipe);
 
 }

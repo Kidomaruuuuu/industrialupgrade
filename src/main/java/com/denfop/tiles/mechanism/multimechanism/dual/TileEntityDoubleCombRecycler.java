@@ -1,6 +1,5 @@
 package com.denfop.tiles.mechanism.multimechanism.dual;
 
-import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.tiles.base.EnumMultiMachine;
 import com.denfop.tiles.base.TileEntityMultiMachine;
 import ic2.core.init.Localization;
@@ -16,14 +15,11 @@ public class TileEntityDoubleCombRecycler extends TileEntityMultiMachine {
     }
 
 
-
-
     public void initiate(int soundEvent) {
         if (this.getWorld().provider.getWorldTime() % 40 == 0) {
             super.initiate(soundEvent);
         }
     }
-
 
 
     @Override

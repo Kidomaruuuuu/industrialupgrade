@@ -13,4 +13,5 @@ public class TileEntityUltimateMatter extends TileEntityMultiMatter {
     public EnumTypeStyle getStyle() {
         return EnumTypeStyle.PERFECT;
     }
+
 }

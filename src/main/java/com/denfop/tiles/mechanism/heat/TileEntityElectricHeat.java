@@ -23,7 +23,7 @@ public class TileEntityElectricHeat extends TileEntityBaseHeatMachine {
             tooltip.add(Localization.translate("press.lshift"));
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            tooltip.add(Localization.translate("iu.machines_work_energy") + 50 + Localization.translate("iu" +
+            tooltip.add(Localization.translate("iu.machines_work_energy") + 30 + Localization.translate("iu" +
                     ".machines_work_energy_type_eu"));
         }
         super.addInformation(stack, tooltip, advanced);

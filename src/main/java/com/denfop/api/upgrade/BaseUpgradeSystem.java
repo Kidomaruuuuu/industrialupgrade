@@ -121,17 +121,13 @@ public class BaseUpgradeSystem implements IUpgradeSystem {
 
     @SubscribeEvent
     public void loadItem(EventItemLoad event) {
-        if (event.getWorld().isRemote) {
-            return;
-        }
+
         this.updateListFromNBT(event.item, event.stack);
     }
 
     @SubscribeEvent
     public void loadItem(EventItemBlackListLoad event) {
-        if (event.getWorld().isRemote) {
-            return;
-        }
+
         this.updateBlackListFromNBT(event.item, event.stack, event.nbt);
     }
 

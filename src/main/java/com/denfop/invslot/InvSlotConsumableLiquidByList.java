@@ -1,6 +1,6 @@
 package com.denfop.invslot;
 
-import ic2.core.block.TileEntityInventory;
+import com.denfop.tiles.base.TileEntityInventory;
 import net.minecraftforge.fluids.Fluid;
 
 import java.util.Arrays;

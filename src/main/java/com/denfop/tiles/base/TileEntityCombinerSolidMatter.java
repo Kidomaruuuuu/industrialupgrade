@@ -13,7 +13,6 @@ import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.util.ITooltipFlag;
@@ -125,10 +124,6 @@ public class TileEntityCombinerSolidMatter extends TileEntityInventory implement
 
     }
 
-    @Override
-    public int getInventoryStackLimit() {
-        return 1;
-    }
 
     protected void updateEntityServer() {
         super.updateEntityServer();

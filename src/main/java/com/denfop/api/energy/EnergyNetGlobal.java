@@ -13,6 +13,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -201,6 +203,26 @@ public class EnergyNetGlobal implements IAdvEnergyNet {
     @Override
     public boolean hasRestrictions() {
         return getTransformerMode() && this.hasrestrictions;
+    }
+
+    @Override
+    public TileEntity getBlockPosFromEnergyTile(final IEnergyTile tile) {
+        final EnergyNetLocal local = getForWorld(getWorld(tile));
+        try {
+            return local.getTileFromIEnergy(tile);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
+    public List<EnergyNetLocal.EnergyPath> getEnergyPaths(final World world, final BlockPos pos) {
+        final EnergyNetLocal local = getForWorld(world);
+        IEnergyTile energyTile = local.getChunkCoordinatesIEnergyTileMap().get(pos);
+        if (energyTile != null) {
+            return local.getEnergyPaths(energyTile);
+        }
+        return new ArrayList<>();
     }
 
     @Override

@@ -1,9 +1,7 @@
 package com.denfop.tiles.base;
 
-import com.denfop.componets.AdvEnergy;
 import com.denfop.tiles.mechanism.TileEntityMagnet;
 import ic2.core.ExplosionIC2;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.init.Localization;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
@@ -70,11 +68,13 @@ public class TileEntityAntiMagnet extends TileEntityInventory {
     public boolean shouldRenderInPass(int pass) {
         return true;
     }
+
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
         tooltip.add(Localization.translate("iu.antimagnet.info"));
 
     }
+
     @Override
     public void onPlaced(final ItemStack stack, final EntityLivingBase placer, final EnumFacing facing) {
         super.onPlaced(stack, placer, facing);

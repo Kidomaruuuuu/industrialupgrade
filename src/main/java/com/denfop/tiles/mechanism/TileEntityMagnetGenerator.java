@@ -79,7 +79,7 @@ public class TileEntityMagnetGenerator extends TileEntityElectricMachine {
 
         super.updateEntityServer();
         if (timer == 0) {
-            if(this.getActive()) {
+            if (this.getActive()) {
                 initiate(2);
                 setActive(false);
             }

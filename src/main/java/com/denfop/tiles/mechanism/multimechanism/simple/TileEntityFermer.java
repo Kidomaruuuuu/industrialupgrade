@@ -20,34 +20,7 @@ public class TileEntityFermer extends TileEntityMultiMachine {
 
     public TileEntityFermer() {
         super(EnumMultiMachine.Fermer.usagePerTick, EnumMultiMachine.Fermer.lenghtOperation, 3);
-    }
-
-    public static void init() {
-        addrecipe(Items.WHEAT_SEEDS, Items.WHEAT, 2);
-        addrecipe(Items.WHEAT, Items.WHEAT_SEEDS, 1);
-        addrecipe(Items.CARROT, Items.CARROT, 2);
-        addrecipe(Items.POTATO, Items.POTATO, 2);
-        addrecipe(Item.getItemFromBlock(Blocks.PUMPKIN), Items.PUMPKIN_SEEDS, 1);
-
-        addrecipe(Items.PUMPKIN_SEEDS, Item.getItemFromBlock(Blocks.PUMPKIN), 2);
-        addrecipe(Items.MELON_SEEDS, Items.MELON, 2);
-        addrecipe(Items.MELON, Items.MELON_SEEDS, 1);
-        for (int i = 0; i < 4; i++) {
-            addrecipe(new ItemStack(Blocks.SAPLING, 1, i), new ItemStack(Blocks.LOG, 2, i));
-        }
-        for (int i = 0; i < 2; i++) {
-            addrecipe(new ItemStack(Blocks.SAPLING, 1, i + 4), new ItemStack(Blocks.LOG2, 2, i));
-        }
-        for (int i = 0; i < 4; i++) {
-            addrecipe(new ItemStack(Blocks.LOG, 1, i), new ItemStack(Blocks.SAPLING, 1, i));
-        }
-        for (int i = 0; i < 2; i++) {
-            addrecipe(new ItemStack(Blocks.LOG2, 1, i), new ItemStack(Blocks.SAPLING, 1, i + 4));
-        }
-        addrecipe(ItemName.crafting.getItemStack(CraftingItemType.rubber),
-                BlockName.sapling.getItemStack().getItem(), 1
-        );
-        addrecipe(BlockName.sapling.getItemStack().getItem(), ItemName.crafting.getItemStack(CraftingItemType.rubber), 2);
+        Recipes.recipes.addInitRecipes(this);
     }
 
     public static void addrecipe(ItemStack input, Item output) {
@@ -62,7 +35,6 @@ public class TileEntityFermer extends TileEntityMultiMachine {
                 )
         );
     }
-
 
     public static void addrecipe(ItemStack input, Item output, int n) {
         final IRecipeInputFactory input1 = ic2.api.recipe.Recipes.inputFactory;
@@ -135,6 +107,34 @@ public class TileEntityFermer extends TileEntityMultiMachine {
                         )
                 )
         );
+    }
+
+    public void init() {
+        addrecipe(Items.WHEAT_SEEDS, Items.WHEAT, 2);
+        addrecipe(Items.WHEAT, Items.WHEAT_SEEDS, 1);
+        addrecipe(Items.CARROT, Items.CARROT, 2);
+        addrecipe(Items.POTATO, Items.POTATO, 2);
+        addrecipe(Item.getItemFromBlock(Blocks.PUMPKIN), Items.PUMPKIN_SEEDS, 1);
+
+        addrecipe(Items.PUMPKIN_SEEDS, Item.getItemFromBlock(Blocks.PUMPKIN), 2);
+        addrecipe(Items.MELON_SEEDS, Items.MELON, 2);
+        addrecipe(Items.MELON, Items.MELON_SEEDS, 1);
+        for (int i = 0; i < 4; i++) {
+            addrecipe(new ItemStack(Blocks.SAPLING, 1, i), new ItemStack(Blocks.LOG, 2, i));
+        }
+        for (int i = 0; i < 2; i++) {
+            addrecipe(new ItemStack(Blocks.SAPLING, 1, i + 4), new ItemStack(Blocks.LOG2, 2, i));
+        }
+        for (int i = 0; i < 4; i++) {
+            addrecipe(new ItemStack(Blocks.LOG, 1, i), new ItemStack(Blocks.SAPLING, 1, i));
+        }
+        for (int i = 0; i < 2; i++) {
+            addrecipe(new ItemStack(Blocks.LOG2, 1, i), new ItemStack(Blocks.SAPLING, 1, i + 4));
+        }
+        addrecipe(ItemName.crafting.getItemStack(CraftingItemType.rubber),
+                BlockName.sapling.getItemStack().getItem(), 1
+        );
+        addrecipe(BlockName.sapling.getItemStack().getItem(), ItemName.crafting.getItemStack(CraftingItemType.rubber), 2);
     }
 
     @Override

@@ -31,13 +31,15 @@ public class ItemWindRod extends ItemMulti<ItemWindRod.Types> implements IModelR
         BlocksItems.registerItem((Item) this, IUCore.getIdentifier(NAME)).setUnlocalizedName(NAME);
         IUCore.proxy.addIModelRegister(this);
     }
-    public boolean getLevel(int level, int damage){
-       if(level == 9 && damage == 10)
-           return true;
-       else if(level == 10 && damage == 9)
+
+    public boolean getLevel(int level, int damage) {
+        if (level == 9 && damage == 10) {
             return true;
-       else
-           return level - 1 == damage ;
+        } else if (level == 10 && damage == 9) {
+            return true;
+        } else {
+            return level - 1 == damage;
+        }
     }
 
     @Override

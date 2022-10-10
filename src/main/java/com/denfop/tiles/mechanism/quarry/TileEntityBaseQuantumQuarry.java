@@ -3,7 +3,6 @@ package com.denfop.tiles.mechanism.quarry;
 import com.denfop.Config;
 import com.denfop.IUCore;
 import com.denfop.IUItem;
-import com.denfop.Ic2Items;
 import com.denfop.api.audio.EnumTypeAudio;
 import com.denfop.api.audio.IAudioFixer;
 import com.denfop.api.gui.IType;
@@ -20,25 +19,25 @@ import com.denfop.gui.GuiQuantumQuarry;
 import com.denfop.invslot.InvSlotQuantumQuarry;
 import com.denfop.items.modules.EnumQuarryModules;
 import com.denfop.items.modules.EnumQuarryType;
+import com.denfop.tiles.base.TileEntityInventory;
 import com.denfop.utils.ModUtils;
 import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.oredict.OreDictionary;
 import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
@@ -62,7 +61,7 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
     public boolean furnace;
     public int chance;
     public int col;
-    public List<ItemStack> list;
+    public List<QuarryItem> list;
     public AudioSource audioSource;
     public double getblock;
     public QEComponent energy;
@@ -70,7 +69,7 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
     public int progress;
     public EnumQuarryModules list_modules;
     public Vein vein;
-    public List<ItemStack> main_list = new ArrayList<>(IUCore.list);
+    public List<QuarryItem> main_list = new ArrayList<>(IUCore.list_quarry);
     public boolean original = true;
     public boolean can_dig_vein = true;
     public EnumTypeAudio typeAudio = EnumTypeAudio.OFF;
@@ -103,7 +102,8 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             tooltip.add(Localization.translate("iu.quarry_energy.info"));
-            tooltip.add(Localization.translate("iu.machines_work_energy")+ this.energyconsume+Localization.translate("iu.machines_work_energy_type_qe"));
+            tooltip.add(Localization.translate("iu.machines_work_energy") + this.energyconsume + Localization.translate(
+                    "iu.machines_work_energy_type_qe"));
         }
         super.addInformation(stack, tooltip, advanced);
 
@@ -216,13 +216,11 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
             int coble = rand.nextInt((int) col + 1);
             this.getblock += coble;
             col -= coble;
-
+            boolean work = this.energy.getEnergy() >= proccent;
             for (double i = 0; i < col; i++) {
                 if (this.energy.getEnergy() >= proccent) {
-                    if (!this.getActive()) {
-                        this.setActive(true);
-                        initiate(0);
-                    }
+                    work = true;
+
                     this.energy.useEnergy(proccent);
                     this.getblock++;
                     int num = main_list.size();
@@ -236,38 +234,39 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
                             continue;
                         }
                     }
-                    ItemStack stack = main_list.get(chance1);
+                    QuarryItem stack = main_list.get(chance1);
                     if (this.original) {
-                        if (OreDictionary.getOreIDs(stack).length > 0) {
-                            String name = OreDictionary.getOreName(OreDictionary.getOreIDs(stack)[0]);
-                            if ((!name
-                                    .startsWith("gem") && !name
-                                    .startsWith("shard")
-                                    && stack.getItem() != Items.REDSTONE && stack
-                                    .getItem() != Items.DYE && stack.getItem() != Items.COAL && stack
-                                    .getItem() != Items.GLOWSTONE_DUST) && chance2 >= 1) {
+                        Item item = stack.getStack().getItem();
+                        if ((!stack.isGem() && !stack.isShard()
+                                && item != Items.REDSTONE && item != Items.DYE && item != Items.COAL && item != Items.GLOWSTONE_DUST) && chance2 >= 1) {
 
-                                this.outputSlot.add(stack);
+                            this.outputSlot.add(stack.getStack());
 
-                            } else {
-                                int k = this.world.rand.nextInt(chance2 + 1);
-                                for (int j = 0; j < k + 1; j++) {
-                                    this.outputSlot.add(stack);
-                                }
+                        } else {
+                            int k = this.world.rand.nextInt(chance2 + 1);
+                            for (int j = 0; j < k + 1; j++) {
+                                this.outputSlot.add(stack.getStack());
                             }
                         }
+
                     } else {
 
-                        this.outputSlot.add(main_list.get(chance1));
+                        this.outputSlot.add(main_list.get(chance1).getStack());
 
                     }
 
 
-                } else {
-                    if (this.getActive()) {
-                        initiate(2);
-                        this.setActive(false);
-                    }
+                }
+            }
+            if (work) {
+                if (!this.getActive()) {
+                    this.setActive(true);
+                    initiate(0);
+                }
+            } else {
+                if (this.getActive()) {
+                    initiate(2);
+                    this.setActive(false);
                 }
             }
         } else {
@@ -277,12 +276,11 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
             }
         }
 
-        if (getActive()) {
-            if (this.world.getWorldTime() % 20 == 0 && !this.outputSlot.isEmpty()) {
-                ItemStack stack3 = Ic2Items.ejectorUpgrade;
-                ModUtils.tick(stack3, this.outputSlot, this);
-            }
+
+        if (this.world.getWorldTime() % 20 == 0 && !this.outputSlot.isEmpty()) {
+            ModUtils.tick(this.outputSlot, this);
         }
+
     }
 
     public ContainerBase<? extends TileEntityBaseQuantumQuarry> getGuiContainer(EntityPlayer player) {
@@ -347,6 +345,23 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
         }
         if (type.type == EnumQuarryType.BLACKLIST) {
 
+            return this.list.contains(new QuarryItem(stack1));
+
+
+        } else if (type.type == EnumQuarryType.WHITELIST) {
+
+            return !this.list.contains(new QuarryItem(stack1));
+
+        }
+        return false;
+    }
+
+    public boolean list(EnumQuarryModules type, QuarryItem stack1) {
+        if (type == null) {
+            return false;
+        }
+        if (type.type == EnumQuarryType.BLACKLIST) {
+
             return this.list.contains(stack1);
 
 
@@ -357,7 +372,6 @@ public class TileEntityBaseQuantumQuarry extends TileEntityInventory implements 
         }
         return false;
     }
-
 
     @Override
     public double getEnergy() {

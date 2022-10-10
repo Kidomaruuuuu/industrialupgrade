@@ -2,7 +2,6 @@ package com.denfop.gui;
 
 import com.denfop.Constants;
 import com.denfop.container.ContainerBaseNuclearReactor;
-import ic2.core.GuiIC2;
 import ic2.core.IC2;
 import ic2.core.gui.Gauge;
 import ic2.core.gui.LinkedGauge;
@@ -24,7 +23,7 @@ public class GuiNuclearReactor extends GuiIU<ContainerBaseNuclearReactor> {
     private final ResourceLocation background;
 
     public GuiNuclearReactor(ContainerBaseNuclearReactor container1) {
-        super(container1,container1.base.getStyle());
+        super(container1, container1.base.getStyle());
 
         this.background = new ResourceLocation(Constants.TEXTURES, container1.base.background);
 

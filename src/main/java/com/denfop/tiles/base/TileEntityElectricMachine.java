@@ -9,7 +9,6 @@ import com.denfop.audio.PositionSpec;
 import com.denfop.componets.AdvEnergy;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.block.invslot.InvSlotDischarge;
 import ic2.core.init.Localization;

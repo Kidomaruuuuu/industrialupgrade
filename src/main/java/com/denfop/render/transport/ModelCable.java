@@ -69,7 +69,7 @@ public class ModelCable extends AbstractModel implements ISpecialParticleModel {
             name.append("_cable");
             int reset1 = name.length();
 
-            for (int insulation = 0; insulation <= type.maxInsulation; ++insulation) {
+            for (int insulation = 0; insulation <= 0; ++insulation) {
 
 
                 ret.put(new ResourceLocation(Constants.MOD_ID, name.toString()), null);
@@ -130,7 +130,7 @@ public class ModelCable extends AbstractModel implements ISpecialParticleModel {
     }
 
     private IBakedModel generateModel(CableRenderState prop) {
-        float th = prop.type.thickness + (float) (prop.insulation * 2) * 0.0625F;
+        float th = prop.type.thickness + (float) (0) * 0.0625F;
         float sp = (1.0F - th) / 2.0F;
         List<BakedQuad>[] faceQuads = new List[EnumFacing.VALUES.length];
 

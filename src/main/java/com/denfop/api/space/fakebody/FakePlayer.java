@@ -12,6 +12,11 @@ public class FakePlayer implements IFakePlayer {
         this.tag = tag;
     }
 
+    public FakePlayer(NBTTagCompound tag) {
+        this.name = tag.getString("name");
+        this.tag = tag;
+    }
+
     @Override
     public NBTTagCompound getTag() {
         return this.tag;

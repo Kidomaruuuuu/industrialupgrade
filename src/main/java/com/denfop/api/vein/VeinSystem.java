@@ -36,6 +36,9 @@ public class VeinSystem implements IVeinSystem {
     @SubscribeEvent
     public void load(ChunkEvent.Load event) {
         if (event.getChunk().getWorld().provider.getDimension() == 0) {
+            if (event.getWorld().isRemote) {
+                return;
+            }
             ChunkPos pos1 = event.getChunk().getPos();
             if (!this.chunkPos.contains(pos1)) {
                 this.addVein(event.getChunk());

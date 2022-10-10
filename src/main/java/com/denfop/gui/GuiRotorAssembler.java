@@ -6,9 +6,6 @@ import com.denfop.api.gui.EnumTypeComponent;
 import com.denfop.api.gui.GuiComponent;
 import com.denfop.api.windsystem.IWindRotor;
 import com.denfop.container.ContainerRotorAssembler;
-import com.denfop.items.book.RenderItemIU;
-import com.denfop.utils.ModUtils;
-import ic2.core.GuiIC2;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -17,6 +14,7 @@ public class GuiRotorAssembler extends GuiIU<ContainerRotorAssembler> {
 
     public final ResourceLocation rotors_gui = new ResourceLocation(Constants.TEXTURES, "textures/gui/guirotors.png");
     public final ResourceLocation rotors_gui1 = new ResourceLocation(Constants.TEXTURES, "textures/gui/guirotors1.png");
+
     public GuiRotorAssembler(ContainerRotorAssembler guiContainer) {
         super(guiContainer);
         this.xSize = 206;
@@ -40,7 +38,7 @@ public class GuiRotorAssembler extends GuiIU<ContainerRotorAssembler> {
     @Override
     protected void drawForegroundLayer(final int mouseX, final int mouseY) {
         super.drawForegroundLayer(mouseX, mouseY);
-       }
+    }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(final float partialTicks, final int mouseX, final int mouseY) {

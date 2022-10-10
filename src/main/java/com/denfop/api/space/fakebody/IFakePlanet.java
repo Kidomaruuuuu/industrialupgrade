@@ -3,6 +3,7 @@ package com.denfop.api.space.fakebody;
 import com.denfop.api.space.IBaseResource;
 import com.denfop.api.space.IPlanet;
 import com.denfop.api.space.rovers.IRovers;
+import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.List;
 
@@ -24,7 +25,10 @@ public interface IFakePlanet extends IFakeBody {
 
     void readNBT(FakePlayer player, String name);
 
+
     void writeNBT(List<IBaseResource> list);
+
+    NBTTagCompound write(List<IBaseResource> list);
 
     void remove();
 

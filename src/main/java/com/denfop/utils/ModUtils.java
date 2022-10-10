@@ -3,9 +3,9 @@ package com.denfop.utils;
 import com.denfop.IUCore;
 import com.denfop.Ic2Items;
 import com.denfop.api.recipe.InvSlotOutput;
+import com.denfop.tiles.mechanism.quarry.QuarryItem;
 import ic2.core.block.TileEntityBlock;
 import ic2.core.init.Localization;
-import ic2.core.util.StackUtil;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
@@ -32,6 +32,7 @@ import java.util.List;
 public class ModUtils {
 
     public static Logger log;
+    public static EnumFacing[] facings = EnumFacing.values();
 
     public static ItemStack getCable(ItemStack stack, int insulation) {
         final NBTTagCompound nbt = nbt(stack);
@@ -80,6 +81,21 @@ public class ModUtils {
                 String l = "number_" + j;
                 String temp = ModUtils.NBTGetString(stack, l);
                 stacks.addAll(OreDictionary.getOres(temp));
+
+            }
+        }
+        return stacks;
+    }
+
+    public static List<QuarryItem> getQuarryListFromModule(ItemStack stack) {
+        List<QuarryItem> stacks = new ArrayList<>();
+        if (!stack.isEmpty()) {
+            final NBTTagCompound nbt = ModUtils.nbt(stack);
+            int size = nbt.getInteger("size");
+            for (int j = 0; j < size; j++) {
+                String l = "number_" + j;
+                String temp = ModUtils.NBTGetString(stack, l);
+                stacks.add(new QuarryItem(OreDictionary.getOres(temp).get(0), temp));
 
             }
         }
@@ -379,6 +395,13 @@ public class ModUtils {
         return NBTTagCompound;
     }
 
+    public static NBTTagCompound nbtOrNull(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return null;
+        }
+        return stack.getTagCompound();
+    }
+
     public static int slot(List<Integer> list) {
         int meta = 0;
         for (Integer integer : list) {
@@ -455,14 +478,14 @@ public class ModUtils {
         return handler;
     }
 
-    public static void tick(ItemStack stack, InvSlotOutput slot, TileEntityBlock tile) {
-        EnumFacing facing = getDirection(stack);
-        if (facing != null) {
-            BlockPos pos = tile.getPos().offset(facing);
+    public static void tick(InvSlotOutput slot, TileEntityBlock tile) {
+
+        for (EnumFacing facing1 : facings) {
+            BlockPos pos = tile.getPos().offset(facing1);
             final TileEntity tile1 = tile.getWorld().getTileEntity(pos);
-            final IItemHandler handler = getItemHandler(tile1, facing.getOpposite());
+            final IItemHandler handler = getItemHandler(tile1, facing1.getOpposite());
             if (handler == null) {
-                return;
+                continue;
             }
             final int slots = handler.getSlots();
             for (int j = 0; j < slot.size(); j++) {
@@ -470,9 +493,9 @@ public class ModUtils {
                 if (took.isEmpty()) {
                     continue;
                 }
-                took = took.copy();
-                if (!(handler instanceof ISidedInventory)) {
 
+                if (!(handler instanceof ISidedInventory)) {
+                    took = took.copy();
                     if (insertItem(handler, took, true, slots).isEmpty()) {
                         slot.put(j, ItemStack.EMPTY);
                         insertItem(handler, took, false, slots);
@@ -486,38 +509,8 @@ public class ModUtils {
                 }
 
             }
-        } else {
-            for (EnumFacing facing1 : EnumFacing.values()) {
-                BlockPos pos = tile.getPos().offset(facing1);
-                final TileEntity tile1 = tile.getWorld().getTileEntity(pos);
-                final IItemHandler handler = getItemHandler(tile1, facing1.getOpposite());
-                if (handler == null) {
-                    continue;
-                }
-                final int slots = handler.getSlots();
-                for (int j = 0; j < slot.size(); j++) {
-                    ItemStack took = slot.get(j);
-                    if (took.isEmpty()) {
-                        continue;
-                    }
-                    took = took.copy();
-                    if (!(handler instanceof ISidedInventory)) {
-
-                        if (insertItem(handler, took, true, slots).isEmpty()) {
-                            slot.put(j, ItemStack.EMPTY);
-                            insertItem(handler, took, false, slots);
-                        }
-                    } else {
-                        if (insertItem1(handler, took, true, slots).isEmpty()) {
-                            slot.put(j, ItemStack.EMPTY);
-                            insertItem1(handler, took, false, slots);
-
-                        }
-                    }
-
-                }
-            }
         }
+
     }
 
     @Nonnull
@@ -622,9 +615,5 @@ public class ModUtils {
         return stack;
     }
 
-    private static EnumFacing getDirection(ItemStack stack) {
-        int rawDir = StackUtil.getOrCreateNbtData(stack).getByte("dir");
-        return rawDir >= 1 && rawDir <= 6 ? EnumFacing.VALUES[rawDir - 1] : null;
-    }
 
 }

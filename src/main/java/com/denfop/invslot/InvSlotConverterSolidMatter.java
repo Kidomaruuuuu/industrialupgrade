@@ -3,7 +3,7 @@ package com.denfop.invslot;
 
 import com.denfop.items.ItemSolidMatter;
 import com.denfop.tiles.base.TileEntityConverterSolidMatter;
-import ic2.core.block.TileEntityInventory;
+import com.denfop.tiles.base.TileEntityInventory;
 import ic2.core.block.invslot.InvSlot;
 import net.minecraft.item.ItemStack;
 
@@ -30,7 +30,7 @@ public class InvSlotConverterSolidMatter extends InvSlot {
             if (!get(i).isEmpty()) {
                 TileEntityConverterSolidMatter tile = (TileEntityConverterSolidMatter) base;
                 int meta = get(i).getItemDamage();
-                while (!this.get(i).isEmpty() && tile.quantitysolid[meta % tile.quantitysolid.length] <= 4800) {
+                while (!this.get(i).isEmpty() && tile.quantitysolid[meta % tile.quantitysolid.length] <= 98000) {
                     tile.quantitysolid[meta % tile.quantitysolid.length] += 200;
                     this.consume(i, 1);
 

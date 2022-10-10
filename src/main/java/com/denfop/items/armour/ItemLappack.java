@@ -22,6 +22,7 @@ import ic2.core.init.BlocksItems;
 import ic2.core.init.Localization;
 import ic2.core.item.BaseElectricItem;
 import ic2.core.item.armor.ItemArmorElectric;
+import ic2.core.util.KeyboardClient;
 import ic2.core.util.LogCategory;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -299,7 +300,7 @@ public class ItemLappack extends ItemArmorElectric implements IElectricItem, IMo
             par3List.add(Localization.translate("press.lshift"));
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            par3List.add(Localization.translate("iu.changemode_key") + Localization.translate(
+            par3List.add(Localization.translate("iu.changemode_key") + "M + " + Localization.translate(
                     "iu.changemode_rcm1"));
         }
     }
@@ -362,7 +363,6 @@ public class ItemLappack extends ItemArmorElectric implements IElectricItem, IMo
                         );
 
                         if (sentPacket > 0.0D) {
-                            System.out.println(sentPacket);
                             ElectricItem.manager.discharge(itemStack, sentPacket, Integer.MAX_VALUE, true, false,
                                     false
                             );

@@ -10,7 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.oredict.OreDictionary;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -83,10 +82,10 @@ public class MaceratorRecipe {
 
         final IRecipeInputFactory input1 = Recipes.inputFactory;
 
-            Recipes.macerator.addRecipe(input1.forOreDict(input, 1), null, false,
-                    stack
-            );
-        
+        Recipes.macerator.addRecipe(input1.forOreDict(input, 1), null, false,
+                stack
+        );
+
 
     }
 

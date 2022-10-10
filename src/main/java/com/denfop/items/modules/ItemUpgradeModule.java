@@ -50,7 +50,7 @@ public class ItemUpgradeModule extends ItemMulti<ItemUpgradeModule.Types> implem
     ) {
         final UpgradeItemInform upgrade = new UpgradeItemInform(getType(stack.getItemDamage()), 1);
         tooltip.add(upgrade.getName());
-        tooltip.add(Localization.translate("iu.upgrade_item.info")+upgrade.upgrade.max);
+        tooltip.add(Localization.translate("iu.upgrade_item.info") + upgrade.upgrade.max);
         super.addInformation(stack, worldIn, tooltip, flagIn);
     }
 

@@ -4,9 +4,8 @@ package com.denfop.api.recipe;
 import com.denfop.Ic2Items;
 import com.denfop.api.Recipes;
 import com.denfop.componets.ProcessMultiComponent;
-import com.denfop.tiles.base.TileEntityMultiMachine;
+import com.denfop.tiles.base.TileEntityInventory;
 import ic2.api.upgrade.IUpgradeItem;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidTank;
@@ -25,8 +24,10 @@ public class InvSlotMultiRecipes extends InvSlot {
     private IBaseRecipe recipe;
     private FluidTank tank;
 
-    public InvSlotMultiRecipes(final TileEntityInventory base, IBaseRecipe baseRecipe, IMultiUpdateTick tile, int size,
-                               ProcessMultiComponent processMultiComponent) {
+    public InvSlotMultiRecipes(
+            final TileEntityInventory base, IBaseRecipe baseRecipe, IMultiUpdateTick tile, int size,
+            ProcessMultiComponent processMultiComponent
+    ) {
         super(base, "input", Access.I, size);
         this.recipe = baseRecipe;
         this.recipe_list = Recipes.recipes.getRecipeList(this.recipe.getName());
@@ -38,12 +39,14 @@ public class InvSlotMultiRecipes extends InvSlot {
                 null,
                 Ic2Items.scrap
         )), Collections.singletonList(1));
-        this.processMultiComponent=processMultiComponent;
+        this.processMultiComponent = processMultiComponent;
     }
 
-    public InvSlotMultiRecipes(final TileEntityInventory base, String baseRecipe, IMultiUpdateTick tile, int size,
-                               ProcessMultiComponent processMultiComponent) {
-        this(base, Recipes.recipes.getRecipe(baseRecipe), tile, size,processMultiComponent);
+    public InvSlotMultiRecipes(
+            final TileEntityInventory base, String baseRecipe, IMultiUpdateTick tile, int size,
+            ProcessMultiComponent processMultiComponent
+    ) {
+        this(base, Recipes.recipes.getRecipe(baseRecipe), tile, size, processMultiComponent);
 
     }
 
@@ -52,9 +55,9 @@ public class InvSlotMultiRecipes extends InvSlot {
             String baseRecipe,
             IMultiUpdateTick tile,
             FluidTank tank,
-            int size,ProcessMultiComponent processMultiComponent
+            int size, ProcessMultiComponent processMultiComponent
     ) {
-        this(base, Recipes.recipes.getRecipe(baseRecipe), tile, size,processMultiComponent);
+        this(base, Recipes.recipes.getRecipe(baseRecipe), tile, size, processMultiComponent);
         this.tank = tank;
     }
 
@@ -185,8 +188,9 @@ public class InvSlotMultiRecipes extends InvSlot {
     public MachineRecipe consume(int slotid) {
 
         if (this.get(slotid).isEmpty()) {
-            if(fastprocess(slotid) == null)
+            if (fastprocess(slotid) == null) {
                 return null;
+            }
             throw new NullPointerException();
         }
         if (!this.recipe.getName().equals("recycler")) {

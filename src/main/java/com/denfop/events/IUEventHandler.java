@@ -1,8 +1,10 @@
 package com.denfop.events;
 
 
+import com.denfop.IUCore;
 import com.denfop.IUItem;
 import com.denfop.api.IItemSoon;
+import com.denfop.api.radiationsystem.RadiationSystem;
 import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.api.upgrade.IUpgradeItem;
@@ -17,9 +19,12 @@ import com.denfop.items.modules.EnumBaseType;
 import com.denfop.items.modules.EnumModule;
 import com.denfop.items.modules.ItemBaseModules;
 import com.denfop.items.modules.ItemEntityModule;
+import com.denfop.network.WorldData;
 import com.denfop.utils.CapturedMobUtils;
 import com.denfop.utils.ListInformationUtils;
 import com.denfop.utils.ModUtils;
+import ic2.core.IC2;
+import ic2.core.IWorldTickCallback;
 import ic2.core.init.Localization;
 import ic2.core.util.Util;
 import net.minecraft.entity.Entity;
@@ -29,17 +34,22 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.World;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -59,10 +69,90 @@ public class IUEventHandler {
 
     }
 
+    private static void processUpdates(World world, WorldData worldData) {
+        IC2.platform.profilerStartSection("single-update");
+
+        IWorldTickCallback callback;
+        for (; (callback = worldData.singleUpdates.poll()) != null; callback.onTick(world)) {
+
+        }
+
+        IC2.platform.profilerEndStartSection("cont-update");
+        worldData.continuousUpdatesInUse = true;
+
+        IWorldTickCallback update;
+        for (Iterator var3 = worldData.continuousUpdates.iterator(); var3.hasNext(); update.onTick(world)) {
+            update = (IWorldTickCallback) var3.next();
+
+        }
+
+        worldData.continuousUpdatesInUse = false;
+
+
+        worldData.continuousUpdates.addAll(worldData.continuousUpdatesToAdd);
+        worldData.continuousUpdatesToAdd.clear();
+        worldData.continuousUpdates.removeAll(worldData.continuousUpdatesToRemove);
+        worldData.continuousUpdatesToRemove.clear();
+        IC2.platform.profilerEndSection();
+    }
+
+    @SubscribeEvent
+    public void loginPlayer(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.player.getEntityWorld().isRemote) {
+            return;
+        }
+        RadiationSystem.rad_system.update(event.player);
+    }
+
+    @SubscribeEvent
+    public void onWorldUnload(WorldEvent.Unload event) {
+        WorldData.onWorldUnload(event.getWorld());
+    }
+
+    @SubscribeEvent
+    public void onWorldTick(TickEvent.WorldTickEvent event) {
+        World world = event.world;
+        WorldData worldData = WorldData.get(world, false);
+        if (worldData != null) {
+            if (event.phase == TickEvent.Phase.START) {
+                IC2.platform.profilerStartSection("updates");
+                processUpdates(world, worldData);
+
+
+                IC2.platform.profilerEndSection();
+            } else {
+                IC2.platform.profilerStartSection("Networking");
+                IUCore.network.get(!world.isRemote).onTickEnd(worldData);
+                IC2.platform.profilerEndSection();
+            }
+
+        }
+    }
+
     @SubscribeEvent
     public void bag_pickup(EntityItemPickupEvent event) {
         EntityPlayer player = event.getEntityPlayer();
-        if (!(player.openContainer instanceof ContainerBags)) {
+        try {
+            if (!(player.openContainer instanceof ContainerBags)) {
+                InventoryPlayer inventory = player.inventory;
+
+                for (int i = 0; i < inventory.mainInventory.size(); ++i) {
+                    ItemStack stack = inventory.mainInventory.get(i);
+                    if (stack.getItem() instanceof ItemEnergyBags) {
+                        if (UpgradeSystem.system.hasModules(EnumInfoUpgradeModules.BAGS, stack)) {
+                            ItemEnergyBags bags = (ItemEnergyBags) stack.getItem();
+                            if (!(event.getItem().getItem().getItem() instanceof ItemEnergyBags)) {
+                                if (bags.canInsert(player, stack, event.getItem().getItem())) {
+                                    bags.insert(player, stack, event.getItem().getItem());
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+        } catch (NoClassDefFoundError error) {
             InventoryPlayer inventory = player.inventory;
 
             for (int i = 0; i < inventory.mainInventory.size(); ++i) {
@@ -79,7 +169,6 @@ public class IUEventHandler {
                     }
                 }
             }
-
         }
     }
 
@@ -250,7 +339,7 @@ public class IUEventHandler {
             }
 
         }
-        if(item.equals(
+        if (item.equals(
                 IUItem.coolupgrade)) {
             event.getToolTip().add(Localization.translate("using_kit"));
             final List<String> list = ListInformationUtils.integerListMap.get(stack.getItemDamage());

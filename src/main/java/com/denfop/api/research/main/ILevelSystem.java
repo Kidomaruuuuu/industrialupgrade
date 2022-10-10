@@ -1,5 +1,8 @@
 package com.denfop.api.research.main;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+
 public interface ILevelSystem {
 
     int getLevel(EnumLeveling enumLeveling);
@@ -13,5 +16,10 @@ public interface ILevelSystem {
     double getBar(EnumLeveling enumLeveling, int length);
 
     void setOwnBaseLevel(EnumLeveling enumLeveling, int level);
+
+    EntityPlayer getPlayer();
+
+    NBTTagCompound write();
+
 
 }

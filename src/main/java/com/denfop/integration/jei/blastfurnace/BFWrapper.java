@@ -44,8 +44,13 @@ public class BFWrapper implements IRecipeWrapper {
                 1,
                 0
         ).getUnlocalizedName()), 75, 35, 4210752);
-        minecraft.fontRenderer.drawString(Localization.translate("iu.blastfurnace.info4") , 75, 42, 4210752);
-        minecraft.fontRenderer.drawString(Localization.translate("iu.blastfurnace.info5") + Localization.translate(Ic2Items.ForgeHammer.getUnlocalizedName()), 75, 49, 4210752);
+        minecraft.fontRenderer.drawString(Localization.translate("iu.blastfurnace.info4"), 75, 42, 4210752);
+        minecraft.fontRenderer.drawString(
+                Localization.translate("iu.blastfurnace.info5") + Localization.translate(Ic2Items.ForgeHammer.getUnlocalizedName()),
+                75,
+                49,
+                4210752
+        );
 
     }
 

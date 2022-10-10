@@ -3,7 +3,6 @@ package com.denfop.gui;
 import com.denfop.container.ContainerGeoGenerator;
 import com.denfop.utils.ModUtils;
 import ic2.api.upgrade.IUpgradableBlock;
-import ic2.core.GuiIC2;
 import ic2.core.IC2;
 import ic2.core.gui.GuiElement;
 import ic2.core.gui.TankGauge;
@@ -20,7 +19,7 @@ public class GuiGeoGenerator extends GuiIU<ContainerGeoGenerator> {
     public String name;
 
     public GuiGeoGenerator(ContainerGeoGenerator container1) {
-        super(container1,container1.base.getStyle());
+        super(container1, container1.base.getStyle());
         this.container = container1;
         this.name = Localization.translate((container.base).getName());
         this.addElement(TankGauge.createNormal(this, 70, 20, (container.base).fluidTank));

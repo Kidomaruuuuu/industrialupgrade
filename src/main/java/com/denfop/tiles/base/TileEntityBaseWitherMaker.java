@@ -58,21 +58,24 @@ public abstract class TileEntityBaseWitherMaker extends TileEntityElectricMachin
         this.upgradeSlot = new com.denfop.invslot.InvSlotUpgrade(this, "upgrade", 4);
         this.output = null;
     }
+
+    public static int applyModifier(int base, int extra, double multiplier) {
+        double ret = Math.round((base + extra) * multiplier);
+        return (ret > 2.147483647E9D) ? Integer.MAX_VALUE : (int) ret;
+    }
+
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
         if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             tooltip.add(Localization.translate("press.lshift"));
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate("iu.machines_work_energy_type_eu"));
+            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate(
+                    "iu.machines_work_energy_type_eu"));
             tooltip.add(Localization.translate("iu.machines_work_length") + this.defaultOperationLength);
         }
-        super.addInformation(stack,tooltip,advanced);
+        super.addInformation(stack, tooltip, advanced);
 
-    }
-    public static int applyModifier(int base, int extra, double multiplier) {
-        double ret = Math.round((base + extra) * multiplier);
-        return (ret > 2.147483647E9D) ? Integer.MAX_VALUE : (int) ret;
     }
 
     public void readFromNBT(NBTTagCompound nbttagcompound) {

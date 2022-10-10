@@ -3,9 +3,9 @@ package com.denfop.invslot;
 
 import com.denfop.items.modules.ItemAdditionModule;
 import com.denfop.items.modules.ItemEntityModule;
+import com.denfop.tiles.base.TileEntityInventory;
 import com.denfop.tiles.mechanism.TileEntityPrivatizer;
 import com.denfop.utils.ModUtils;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;

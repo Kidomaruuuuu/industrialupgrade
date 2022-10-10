@@ -18,7 +18,6 @@ import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.block.invslot.InvSlotDischarge;
 import ic2.core.init.Localization;
@@ -97,30 +96,31 @@ public abstract class TileEntityDoubleElectricMachine extends TileEntityInventor
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
                 tooltip.add(Localization.translate("iu.heatmachine.info"));
-                tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate("iu.machines_work_energy_type_eu"));
+                tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate(
+                        "iu.machines_work_energy_type_eu"));
                 tooltip.add(Localization.translate("iu.machines_work_length") + this.defaultOperationLength);
 
             }
-        }
-       else if (stack.getItemDamage() == 0 && EnumDoubleElectricMachine.SUNNARIUM_PANEL == type) {
+        } else if (stack.getItemDamage() == 0 && EnumDoubleElectricMachine.SUNNARIUM_PANEL == type) {
             if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
                 tooltip.add(Localization.translate("press.lshift"));
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
                 tooltip.add(Localization.translate("iu.solarium_energy_sink.info"));
-                tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate("iu.machines_work_energy_type_eu"));
+                tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate(
+                        "iu.machines_work_energy_type_eu"));
                 tooltip.add(Localization.translate("iu.machines_work_energy") + 5 + Localization.translate("iu" +
                         ".machines_work_energy_type_se"));
                 tooltip.add(Localization.translate("iu.machines_work_length") + this.defaultOperationLength);
 
             }
-        }
-       else{
+        } else {
             if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
                 tooltip.add(Localization.translate("press.lshift"));
             }
             if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-                tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate("iu.machines_work_energy_type_eu"));
+                tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate(
+                        "iu.machines_work_energy_type_eu"));
                 tooltip.add(Localization.translate("iu.machines_work_length") + this.defaultOperationLength);
             }
         }
@@ -180,9 +180,11 @@ public abstract class TileEntityDoubleElectricMachine extends TileEntityInventor
             this.setOverclockRates();
             inputSlotA.load();
             this.getOutput();
-            if (this.type.equals(EnumDoubleElectricMachine.ALLOY_SMELTER))
-                if (output == null )
+            if (this.type.equals(EnumDoubleElectricMachine.ALLOY_SMELTER)) {
+                if (output == null) {
                     ((TileEntityAlloySmelter) this).heat.need = false;
+                }
+            }
         }
 
 
@@ -215,12 +217,13 @@ public abstract class TileEntityDoubleElectricMachine extends TileEntityInventor
 
                 if (output.getRecipe().output.metadata.getShort("temperature") == 0 || output.getRecipe().output.metadata.getInteger(
                         "temperature") > ((TileEntityAlloySmelter) this).heat.getEnergy()) {
-                    if(!((TileEntityAlloySmelter) this).heat.need)
+                    if (!((TileEntityAlloySmelter) this).heat.need) {
                         ((TileEntityAlloySmelter) this).heat.need = true;
+                    }
                     return;
-                }else
-                if(((TileEntityAlloySmelter) this).heat.need)
+                } else if (((TileEntityAlloySmelter) this).heat.need) {
                     ((TileEntityAlloySmelter) this).heat.need = false;
+                }
                 ((TileEntityAlloySmelter) this).heat.storage--;
             }
             if (!this.getActive()) {
@@ -257,9 +260,11 @@ public abstract class TileEntityDoubleElectricMachine extends TileEntityInventor
                 setActive(false);
             }
         }
-        if (this.type.equals(EnumDoubleElectricMachine.ALLOY_SMELTER))
-            if (output == null )
+        if (this.type.equals(EnumDoubleElectricMachine.ALLOY_SMELTER)) {
+            if (output == null) {
                 ((TileEntityAlloySmelter) this).heat.useEnergy(1);
+            }
+        }
 
 
         if ((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark()) {

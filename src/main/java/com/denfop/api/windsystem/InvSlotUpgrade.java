@@ -6,8 +6,8 @@ import com.denfop.api.windsystem.upgrade.RotorUpgradeItemInform;
 import com.denfop.api.windsystem.upgrade.RotorUpgradeSystem;
 import com.denfop.api.windsystem.upgrade.event.EventRotorItemLoad;
 import com.denfop.items.ItemRotorsUpgrade;
+import com.denfop.tiles.base.TileEntityInventory;
 import com.denfop.utils.ModUtils;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -38,9 +38,19 @@ public class InvSlotUpgrade extends InvSlot {
                 this.tile.getItemStack());
         EnumInfoRotorUpgradeModules enumInfoRotorUpgradeModules = EnumInfoRotorUpgradeModules.getFromID(stack.getItemDamage());
         final RotorUpgradeItemInform modules = RotorUpgradeSystem.instance.getModules(enumInfoRotorUpgradeModules, list);
+        if (enumInfoRotorUpgradeModules.getLimition()) {
+
+            for (RotorUpgradeItemInform itemInform : list) {
+                if (enumInfoRotorUpgradeModules.getIds().contains(itemInform.upgrade.ordinal())) {
+                    return false;
+                }
+            }
+        }
         if (modules == null) {
             return true;
         }
+
+
         return modules.number < enumInfoRotorUpgradeModules.getMax();
     }
 

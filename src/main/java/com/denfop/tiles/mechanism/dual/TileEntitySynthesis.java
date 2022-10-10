@@ -4,6 +4,7 @@ import com.denfop.IUItem;
 import com.denfop.Ic2Items;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
+import com.denfop.api.recipe.IHasRecipe;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.api.recipe.RecipeOutput;
@@ -23,13 +24,27 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.List;
 import java.util.Random;
 
-public class TileEntitySynthesis extends TileEntityDoubleElectricMachine {
+public class TileEntitySynthesis extends TileEntityDoubleElectricMachine implements IHasRecipe {
 
     public TileEntitySynthesis() {
         super(1, 300, 1, EnumDoubleElectricMachine.SYNTHESIS);
+        Recipes.recipes.addInitRecipes(this);
     }
 
-    public static void init() {
+    public static void addsynthesis(ItemStack container, ItemStack fill, int number, ItemStack output) {
+        NBTTagCompound nbt = ModUtils.nbt();
+        nbt.setInteger("percent", number);
+        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
+        Recipes.recipes.addRecipe("synthesis", new BaseMachineRecipe(
+                new Input(
+                        input.forStack(container),
+                        input.forStack(fill)
+                ),
+                new RecipeOutput(nbt, output)
+        ));
+    }
+
+    public void init() {
         addsynthesis(
                 new ItemStack(IUItem.radiationresources, 1, 2),
                 new ItemStack(IUItem.cell_all, 1, 2),
@@ -57,19 +72,6 @@ public class TileEntitySynthesis extends TileEntityDoubleElectricMachine {
         addsynthesis(Ic2Items.uraniumBlock, new ItemStack(IUItem.toriy), 22, new ItemStack(IUItem.radiationresources, 1, 8));
         addsynthesis(new ItemStack(IUItem.radiationresources, 1, 1), new ItemStack(IUItem.toriy), 20, Ic2Items.Plutonium);
 
-    }
-
-    public static void addsynthesis(ItemStack container, ItemStack fill, int number, ItemStack output) {
-        NBTTagCompound nbt = ModUtils.nbt();
-        nbt.setInteger("percent", number);
-        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
-        Recipes.recipes.addRecipe("synthesis", new BaseMachineRecipe(
-                new Input(
-                        input.forStack(container),
-                        input.forStack(fill)
-                ),
-                new RecipeOutput(nbt, output)
-        ));
     }
 
     public void operateOnce(MachineRecipe output, List<ItemStack> processResult) {

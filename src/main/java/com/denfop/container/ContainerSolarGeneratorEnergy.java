@@ -23,6 +23,8 @@ public class ContainerSolarGeneratorEnergy extends ContainerFullInv<TileEntitySo
         List<String> ret = super.getNetworkedFields();
         ret.add("sunenergy");
         ret.add("work");
+        ret.add("generation");
+
         return ret;
 
     }

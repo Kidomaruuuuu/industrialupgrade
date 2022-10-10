@@ -32,6 +32,7 @@ import net.minecraft.item.ItemStack;
 
 public final class Ic2Items {
 
+
     public static ItemStack tank = BlockName.te.getItemStack(TeBlock.bronze_tank);
     public static ItemStack tank1 = BlockName.te.getItemStack(TeBlock.iridium_tank);
     public static ItemStack tank2 = BlockName.te.getItemStack(TeBlock.iron_tank);
@@ -56,7 +57,6 @@ public final class Ic2Items {
     public static ItemStack bronzeBlock = BlockName.resource.getItemStack(ResourceBlock.bronze_block);
     public static ItemStack copperBlock = BlockName.resource.getItemStack(ResourceBlock.copper_block);
     public static ItemStack silverBlock = BlockName.resource.getItemStack(ResourceBlock.silver_block);
-
     public static ItemStack tinBlock = BlockName.resource.getItemStack(ResourceBlock.tin_block);
     public static ItemStack uraniumBlock = BlockName.resource.getItemStack(ResourceBlock.uranium_block);
     public static ItemStack leadBlock = BlockName.resource.getItemStack(ResourceBlock.lead_block);
@@ -70,7 +70,6 @@ public final class Ic2Items {
     public static ItemStack semifluidGenerator = BlockName.te.getItemStack(TeBlock.semifluid_generator);
     public static ItemStack stirlingGenerator = BlockName.te.getItemStack(TeBlock.stirling_generator);
     public static ItemStack kineticGenerator = BlockName.te.getItemStack(TeBlock.kinetic_generator);
-
     public static ItemStack nuclearReactor = BlockName.te.getItemStack(TeBlock.nuclear_reactor);
     public static ItemStack reactorChamber = BlockName.te.getItemStack(TeBlock.reactor_chamber);
     public static ItemStack reactorFluidPort = BlockName.te.getItemStack(TeBlock.reactor_fluid_port);
@@ -146,7 +145,6 @@ public final class Ic2Items {
     public static ItemStack industrialTnt = BlockName.te.getItemStack(TeBlock.itnt);
     public static ItemStack nuke = BlockName.te.getItemStack(TeBlock.nuke);
     public static ItemStack CoffeBeans = ItemName.crop_res.getItemStack(CropResItemType.coffee_beans);
-
     public static ItemStack rubber = ItemName.crafting.getItemStack(CraftingItemType.rubber);
     public static ItemStack woodrotor = ItemName.rotor_wood.getItemStack();
     public static ItemStack ironrotor = ItemName.rotor_iron.getItemStack();
@@ -230,6 +228,8 @@ public final class Ic2Items {
     public static ItemStack lithiumDust = ItemName.dust.getItemStack(DustResourceType.lithium);
     public static ItemStack silicondioxideDust = ItemName.dust.getItemStack(DustResourceType.silicon_dioxide);
     public static ItemStack diamondDust = ItemName.dust.getItemStack(DustResourceType.diamond);
+    public static ItemStack emeraldDust = ItemName.dust.getItemStack(DustResourceType.emerald);
+
     public static ItemStack AshesDust = ItemName.misc_resource.getItemStack(MiscResourceType.ashes);
     public static ItemStack smallIronDust = ItemName.dust.getItemStack(DustResourceType.small_iron);
     public static ItemStack smallCopperDust = ItemName.dust.getItemStack(DustResourceType.small_copper);
@@ -431,7 +431,6 @@ public final class Ic2Items {
     public static ItemStack energyStorageUpgrade = ItemName.upgrade.getItemStack(ItemUpgradeModule.UpgradeType.energy_storage);
     public static ItemStack ejectorUpgrade = ItemName.upgrade.getItemStack(ItemUpgradeModule.UpgradeType.ejector);
     public static ItemStack advejectorUpgrade = ItemName.upgrade.getItemStack(ItemUpgradeModule.UpgradeType.advanced_ejector);
-
     public static ItemStack fluidEjectorUpgrade = ItemName.upgrade.getItemStack(ItemUpgradeModule.UpgradeType.fluid_ejector);
     public static ItemStack redstoneinvUpgrade = ItemName.upgrade.getItemStack(ItemUpgradeModule.UpgradeType.redstone_inverter);
     public static ItemStack pullingUpgrade = ItemName.upgrade.getItemStack(ItemUpgradeModule.UpgradeType.pulling);
@@ -455,6 +454,7 @@ public final class Ic2Items {
     public static ItemStack weedingTrowel = ItemName.weeding_trowel.getItemStack();
     public static ItemStack weed = ItemName.crop_res.getItemStack(CropResItemType.weed);
     public static ItemStack mugEmpty = ItemName.mug.getItemStack(ItemMug.MugType.empty);
+    public static ItemStack latex = ItemName.misc_resource.getItemStack(MiscResourceType.resin);
     public static ItemStack coffeeBeans = ItemName.crop_res.getItemStack(CropResItemType.coffee_beans);
     public static ItemStack coffeePowder = ItemName.crop_res.getItemStack(CropResItemType.coffee_powder);
     public static ItemStack mugCoffee = ItemName.mug.getItemStack(ItemMug.MugType.coffee);
@@ -463,6 +463,8 @@ public final class Ic2Items {
     public static ItemStack blockBarrel = ItemName.barrel.getItemStack();
 
     public Ic2Items() {
+
     }
+
 
 }

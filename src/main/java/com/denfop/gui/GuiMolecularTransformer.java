@@ -7,7 +7,6 @@ import com.denfop.utils.ModUtils;
 import ic2.core.GuiIC2;
 import ic2.core.IC2;
 import ic2.core.init.Localization;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -105,15 +104,28 @@ public class GuiMolecularTransformer extends GuiIC2<ContainerBaseMolecular> {
                     drawTexturedModalRect(this.guiLeft + 23, this.guiTop + 48, 221, 7, 10, (int) chargeLevel);
                     this.bindTexture();
                     int coef =
-                            (int) ( this.container.base.energy.getCapacity() / this.container.base.getOutput().getRecipe().output.metadata.getDouble("energy") );
-                     this.fontRenderer.drawString(input + this.container.base.getOutput().getRecipe().input.getInputs().get(0).getInputs().get(0).getCount() * coef + "x" + this.container.base.inputSlot
+                            (int) (this.container.base.energy.getCapacity() / this.container.base
+                                    .getOutput()
+                                    .getRecipe().output.metadata.getDouble("energy"));
+                    this.fontRenderer.drawString(input + this.container.base
+                                    .getOutput()
+                                    .getRecipe().input
+                                    .getInputs()
+                                    .get(0)
+                                    .getInputs()
+                                    .get(0)
+                                    .getCount() * coef + "x" + this.container.base.inputSlot
                                     .get()
                                     .getDisplayName(),
                             this.guiLeft + 60, this.guiTop + 25, 4210752
                     );
 
                     this.fontRenderer.drawString(
-                            output + this.container.base.getOutput().getRecipe().output.items.get(0).getCount() * coef + "x" + output1.getRecipe().output.items.get(0).getDisplayName(),
+                            output + this.container.base
+                                    .getOutput()
+                                    .getRecipe().output.items
+                                    .get(0)
+                                    .getCount() * coef + "x" + output1.getRecipe().output.items.get(0).getDisplayName(),
                             this.guiLeft + 60,
                             this.guiTop + 25 + 11,
                             4210752

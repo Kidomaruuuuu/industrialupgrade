@@ -3,17 +3,21 @@ package com.denfop.proxy;
 
 import com.denfop.Config;
 import com.denfop.Constants;
+import com.denfop.IUItem;
 import com.denfop.api.IFluidModelProvider;
 import com.denfop.api.IModelRegister;
 import com.denfop.blocks.FluidName;
 import com.denfop.events.TickHandler;
+import com.denfop.gui.GuiColorPicker;
 import com.denfop.render.advoilrefiner.TileEntityAdvOilRefinerRender;
 import com.denfop.render.base.IUModelLoader;
+import com.denfop.render.base.RenderCoreProcess;
 import com.denfop.render.oilquarry.TileEntityQuarryOilRender;
 import com.denfop.render.oilrefiner.TileEntityOilRefinerRender;
 import com.denfop.render.sintezator.TileEntitySintezatorRender;
 import com.denfop.render.streak.EntityRendererStreak;
 import com.denfop.render.streak.EntityStreak;
+import com.denfop.render.streak.EventSpectralSuitEffect;
 import com.denfop.render.streak.EventStreakEffect;
 import com.denfop.render.tank.TileEntityTankRender;
 import com.denfop.render.tile.TileEntityAdminPanelRender;
@@ -26,12 +30,15 @@ import com.denfop.render.transport.ModelSCable;
 import com.denfop.render.windgenerator.KineticGeneratorRenderer;
 import com.denfop.tiles.base.EnumMultiMachine;
 import com.denfop.tiles.base.TileEntityAdminSolarPanel;
+import com.denfop.tiles.base.TileEntityDoubleMolecular;
 import com.denfop.tiles.base.TileEntityLiquedTank;
+import com.denfop.tiles.base.TileEntityMolecularTransformer;
 import com.denfop.tiles.base.TileEntityQuarryVein;
 import com.denfop.tiles.base.TileEntitySintezator;
 import com.denfop.tiles.mechanism.TileEntityAdvOilRefiner;
 import com.denfop.tiles.mechanism.TileEntityOilRefiner;
 import com.denfop.tiles.mechanism.wind.TileEntityWindGenerator;
+import com.denfop.tiles.mechanism.worlcollector.TileEntityCrystallize;
 import ic2.core.IC2;
 import ic2.core.profile.ProfileManager;
 import ic2.core.util.LogCategory;
@@ -80,7 +87,18 @@ public class ClientProxy extends CommonProxy {
                 }
             }
         }
-
+        ClientRegistry.bindTileEntitySpecialRenderer(
+                TileEntityCrystallize.class,
+                new RenderCoreProcess<TileEntityCrystallize>()
+        );
+        ClientRegistry.bindTileEntitySpecialRenderer(
+                TileEntityMolecularTransformer.class,
+                new RenderCoreProcess<TileEntityMolecularTransformer>()
+        );
+        ClientRegistry.bindTileEntitySpecialRenderer(
+                TileEntityDoubleMolecular.class,
+                new RenderCoreProcess<TileEntityDoubleMolecular>()
+        );
         RenderingRegistry.registerEntityRenderingHandler(
                 EntityStreak.class,
                 renderManager -> new EntityRendererStreak(renderManager) {
@@ -149,7 +167,13 @@ public class ClientProxy extends CommonProxy {
             final int y,
             final int z
     ) {
-
+        if (ID == 4) {
+            if (!player.inventory.armorInventory.get(2).isEmpty() && player.inventory.armorInventory
+                    .get(2)
+                    .getItem() == IUItem.spectral_chestplate) {
+                return new GuiColorPicker(player);
+            }
+        }
         return null;
     }
 
@@ -162,7 +186,7 @@ public class ClientProxy extends CommonProxy {
         super.init(event);
         MinecraftForge.EVENT_BUS.register(new EventStreakEffect());
 
-
+        MinecraftForge.EVENT_BUS.register(new EventSpectralSuitEffect());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySintezator.class, new TileEntitySintezatorRender());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityQuarryVein.class, new TileEntityQuarryOilRender());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAdminSolarPanel.class, new TileEntityAdminPanelRender());

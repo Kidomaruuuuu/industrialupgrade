@@ -60,6 +60,12 @@ public class KeyboardIU implements IKeyboard {
         return keys != null && keys.contains(key);
     }
 
+    @Override
+    public boolean isStreakKeyDown(final EntityPlayer player) {
+        return this.get(player, Key.STREAK);
+    }
+
+
     public enum Key {
         CHANGE,
         BLACKLISTVIEWMODE,
@@ -67,6 +73,7 @@ public class KeyboardIU implements IKeyboard {
         VERTICALMODE,
         SAVEMODE,
         SHIFT,
+        STREAK,
         BLACKMODE;
 
         public static final KeyboardIU.Key[] keys = values();

@@ -57,7 +57,6 @@ import com.denfop.items.CellType;
 import com.denfop.items.IUItemBase;
 import com.denfop.items.ItemAdvancedWindRotor;
 import com.denfop.items.ItemBaseCircuit;
-import com.denfop.items.ItemBlueprint;
 import com.denfop.items.ItemCell;
 import com.denfop.items.ItemChemistry;
 import com.denfop.items.ItemCore;
@@ -126,7 +125,7 @@ import com.denfop.items.resource.ItemNugget;
 import com.denfop.items.resource.ItemPlate;
 import com.denfop.items.resource.ItemPurifiedCrushed;
 import com.denfop.items.resource.ItemSmallDust;
-import com.denfop.items.resource.ItemStiks;
+import com.denfop.items.resource.ItemSticks;
 import com.denfop.items.resource.ItemSunnariumPanel;
 import com.denfop.items.resource.ItemVerySmallDust;
 import com.denfop.items.resource.alloys.ItemAlloysCasing;
@@ -189,9 +188,9 @@ public class Register {
                 "ic2",
                 "textures/items/rotor/steel_rotor_model.png"
         ), 4, 3);
-        IUItem.rotor_carbon = new ItemAdvancedWindRotor("rotor_carbon", 11, (int) (604800 / 1.5) , 1.0F, new ResourceLocation(
+        IUItem.rotor_carbon = new ItemAdvancedWindRotor("rotor_carbon", 11, (int) (604800 / 1.5), 1.0F, new ResourceLocation(
                 "ic2", "textures/items/rotor/carbon_rotor_model.png"), 5, 4);
-        IUItem.blueprint = new ItemBlueprint();
+        //TODO:    IUItem.blueprint = new ItemBlueprint();
         IUItem.neutroniumingot = new IUItemBase("neutroniumingot");
         IUItem.upgrade_speed_creation = (IUItemBase) new IUItemBase("upgrade_speed_creation").setCreativeTab(IUCore.ModuleTab);
         IUItem.core = new ItemCore();
@@ -584,7 +583,7 @@ public class Register {
         IUItem.purifiedcrushed = new ItemPurifiedCrushed();
         IUItem.smalldust = new ItemSmallDust();
         IUItem.verysmalldust = new ItemVerySmallDust();
-        IUItem.stik = new ItemStiks();
+        IUItem.stik = new ItemSticks();
         IUItem.basemodules = new ItemBaseModules();
         IUItem.module7 = new ItemAdditionModule();
         IUItem.module5 = new ItemModuleType();

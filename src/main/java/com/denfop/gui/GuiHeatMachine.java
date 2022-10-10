@@ -45,8 +45,11 @@ public class GuiHeatMachine extends GuiIC2<ContainerHeatMachine> {
         if (x >= 73 && x <= 83 && y >= 54 && y <= 64) {
             IC2.network.get(false).initiateClientTileEntityEvent(this.container.base, 1);
         }
-
+        if (x >= 61 && x <= 74 && y >= 26 && y <= 38) {
+            IC2.network.get(false).initiateClientTileEntityEvent(this.container.base, 2);
+        }
     }
+
     private void handleUpgradeTooltip(int mouseX, int mouseY) {
         if (mouseX >= 3 && mouseX <= 15 && mouseY >= 3 && mouseY <= 15) {
             List<String> text = new ArrayList<>();
@@ -62,6 +65,7 @@ public class GuiHeatMachine extends GuiIC2<ContainerHeatMachine> {
             this.drawTooltip(mouseX, mouseY, text);
         }
     }
+
     protected void drawForegroundLayer(int par1, int par2) {
         super.drawForegroundLayer(par1, par2);
         handleUpgradeTooltip(par1, par2);
@@ -79,6 +83,10 @@ public class GuiHeatMachine extends GuiIC2<ContainerHeatMachine> {
                     .withTooltip(tooltip2)
                     .drawForeground(par1, par2);
         }
+
+        new AdvArea(this, 61, 26, 74, 38).withTooltip(this.container.base.work ? Localization.translate("turn_off") :
+                Localization.translate("turn_on")).drawForeground(par1, par2);
+
     }
 
     protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
@@ -90,7 +98,9 @@ public class GuiHeatMachine extends GuiIC2<ContainerHeatMachine> {
         this.mc.getTextureManager()
                 .bindTexture(new ResourceLocation(IC2.RESOURCE_DOMAIN, "textures/gui/infobutton.png"));
         drawTexturedModalRect(xOffset + 3, yOffset + 3, 0, 0, 10, 10);
+
         this.mc.getTextureManager().bindTexture(getTexture());
+
         int temperature = 0;
         if (this.container.base.maxtemperature > 0) {
             temperature = (int) (30 * this.container.base.heat.getEnergy() / this.container.base.maxtemperature);
@@ -106,6 +116,11 @@ public class GuiHeatMachine extends GuiIC2<ContainerHeatMachine> {
                         115 + 48 - chargeLevel, 12, chargeLevel
                 );
             }
+        }
+        if (this.container.base.work) {
+            drawTexturedModalRect(xOffset + 60, yOffset + 25, 172,
+                    166, 239 - 224, 84 - 70
+            );
         }
         x -= this.guiLeft;
         y -= this.guiTop;

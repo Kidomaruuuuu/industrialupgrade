@@ -230,7 +230,7 @@ public abstract class TileEntityBaseLiquedMachine extends TileEntityElectricMach
 
         for (final InvSlotConsumableLiquidByTank itemStacks : fluidSlot) {
             for (final FluidTank tank : fluidTank) {
-                if (tank.equals(fluidTank[0])) {
+                if (tank.equals(fluidTank[0]) && !itemStacks.get().isEmpty()) {
                     if (itemStacks.processIntoTank(tank, this.outputSlot)) {
                         needsInvUpdate = true;
 

@@ -4,8 +4,8 @@ import com.denfop.api.Recipes;
 import com.denfop.api.gui.EnumTypeSlot;
 import com.denfop.api.gui.ITypeSlot;
 import com.denfop.tiles.base.TileEntityConverterSolidMatter;
+import com.denfop.tiles.base.TileEntityInventory;
 import ic2.api.upgrade.IUpgradeItem;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidTank;
@@ -20,6 +20,7 @@ public class InvSlotRecipes extends InvSlot implements ITypeSlot {
     private final List<IRecipeInputStack> accepts;
     private List<BaseMachineRecipe> recipe_list;
     private FluidTank tank;
+
 
     public InvSlotRecipes(final TileEntityInventory base, IBaseRecipe baseRecipe, IUpdateTick tile) {
         super(base, "input", Access.I, baseRecipe.getSize());
@@ -54,6 +55,7 @@ public class InvSlotRecipes extends InvSlot implements ITypeSlot {
 
     @Override
     public boolean accepts(final ItemStack itemStack) {
+
         return !itemStack.isEmpty() && !(itemStack.getItem() instanceof IUpgradeItem) && (recipe
                 .getName()
                 .equals("painter") || recipe
@@ -108,7 +110,9 @@ public class InvSlotRecipes extends InvSlot implements ITypeSlot {
         output = this.getOutputFor();
         if (this.tile instanceof TileEntityConverterSolidMatter) {
             TileEntityConverterSolidMatter mechanism = (TileEntityConverterSolidMatter) this.tile;
-            mechanism.getrequiredmatter(output.getRecipe().getOutput());
+            if (output != null) {
+                mechanism.getrequiredmatter(output.getRecipe().getOutput());
+            }
         }
 
         return output;
@@ -160,9 +164,10 @@ public class InvSlotRecipes extends InvSlot implements ITypeSlot {
             return Recipes.recipes.getRecipeOutputMachineFluid(this.recipe, this.recipe_list, false, list, this.tank);
         }
     }
+
     @Override
     public EnumTypeSlot getTypeSlot(int slotid) {
-        switch (recipe.getName()){
+        switch (recipe.getName()) {
             case "rotor_assembler":
                 if (slotid == 4) {
                     return EnumTypeSlot.ROD_PART1;
@@ -172,4 +177,5 @@ public class InvSlotRecipes extends InvSlot implements ITypeSlot {
 
         return null;
     }
+
 }

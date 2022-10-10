@@ -4,6 +4,7 @@ import com.denfop.IUItem;
 import com.denfop.Ic2Items;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
+import com.denfop.api.recipe.IHasRecipe;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.MachineRecipe;
 import com.denfop.api.recipe.RecipeOutput;
@@ -32,15 +33,36 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
+public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre implements IHasRecipe {
 
     private boolean auto;
 
     public TileEntityHandlerHeavyOre() {
         super(1, 300, 3);
+        Recipes.recipes.addInitRecipes(this);
     }
 
-    public static void init() {
+    public static void addhandlerore(ItemStack container, ItemStack[] output, short temperature, int... col) {
+        NBTTagCompound nbt = ModUtils.nbt();
+        nbt.setShort("temperature", temperature);
+        for (int i = 0; i < col.length; i++) {
+            nbt.setInteger("input" + i, col[i]);
+        }
+        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
+        Recipes.recipes.addRecipe(
+                "handlerho",
+                new BaseMachineRecipe(
+                        new Input(
+                                input.forStack(container)
+                        ),
+                        new RecipeOutput(nbt, output)
+                )
+        );
+
+
+    }
+
+    public void init() {
         addhandlerore(
                 new ItemStack(IUItem.heavyore),
                 new ItemStack[]{new ItemStack(Blocks.IRON_ORE), new ItemStack(Blocks.GOLD_ORE)},
@@ -109,26 +131,6 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
 
     }
 
-    public static void addhandlerore(ItemStack container, ItemStack[] output, short temperature, int... col) {
-        NBTTagCompound nbt = ModUtils.nbt();
-        nbt.setShort("temperature", temperature);
-        for (int i = 0; i < col.length; i++) {
-            nbt.setInteger("input" + i, col[i]);
-        }
-        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
-        Recipes.recipes.addRecipe(
-                "handlerho",
-                new BaseMachineRecipe(
-                        new Input(
-                                input.forStack(container)
-                        ),
-                        new RecipeOutput(nbt, output)
-                )
-        );
-
-
-    }
-
     protected List<ItemStack> getWrenchDrops(EntityPlayer player, int fortune) {
         List<ItemStack> ret = super.getWrenchDrops(player, fortune);
         if (this.auto) {
@@ -144,14 +146,15 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
 
             if (output.getRecipe().output.metadata.getShort("temperature") == 0 || output.getRecipe().output.metadata.getInteger(
                     "temperature") > this.heat.getEnergy()) {
-                if(!( this).heat.need)
-                    ( this).heat.need = true;
+                if (!(this).heat.need) {
+                    (this).heat.need = true;
+                }
                 return;
 
-            } else
-            if(( this).heat.need)
-                ( this).heat.need = false;
-            ( this).heat.storage--;
+            } else if ((this).heat.need) {
+                (this).heat.need = false;
+            }
+            (this).heat.storage--;
 
             if (!this.getActive()) {
                 setActive(true);
@@ -191,8 +194,9 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
                 this.heat.addEnergy(2);
             }
         }
-        if (output == null )
-            ( this).heat.useEnergy(1);
+        if (output == null) {
+            (this).heat.useEnergy(1);
+        }
         if ((!this.inputSlotA.isEmpty() || !this.outputSlot.isEmpty()) && this.upgradeSlot.tickNoMark()) {
             setOverclockRates();
         }
@@ -271,8 +275,9 @@ public class TileEntityHandlerHeavyOre extends TileEntityBaseHandlerHeavyOre {
         }
         inputSlotA.load();
         this.getOutput();
-        if(this.output == null)
-            ( this).heat.need = false;
+        if (this.output == null) {
+            (this).heat.need = false;
+        }
     }
 
     protected void onUnloaded() {

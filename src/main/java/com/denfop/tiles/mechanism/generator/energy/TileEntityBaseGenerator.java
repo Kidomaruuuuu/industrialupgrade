@@ -6,13 +6,13 @@
 package com.denfop.tiles.mechanism.generator.energy;
 
 import com.denfop.componets.AdvEnergy;
+import com.denfop.tiles.base.TileEntityInventory;
 import ic2.api.item.ElectricItem;
 import ic2.core.ContainerBase;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.audio.AudioSource;
 import ic2.core.audio.PositionSpec;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlotCharge;
 import ic2.core.gui.dynamic.DynamicContainer;
 import ic2.core.gui.dynamic.DynamicGui;
@@ -25,7 +25,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Keyboard;
 
 import java.util.List;
 

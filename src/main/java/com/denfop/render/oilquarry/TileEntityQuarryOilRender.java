@@ -76,7 +76,7 @@ public class TileEntityQuarryOilRender extends TileEntitySpecialRenderer<TileEnt
         model.renderAll();
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glPopMatrix();
-        if (tile.find) {
+        if (tile.vein != null && tile.vein.get()) {
             if (tile.vein.getType() != Type.EMPTY) {
                 GL11.glPushMatrix();
                 GL11.glTranslated(x, y, z);

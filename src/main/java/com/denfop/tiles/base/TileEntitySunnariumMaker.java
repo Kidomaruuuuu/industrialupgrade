@@ -4,6 +4,7 @@ import com.denfop.IUItem;
 import com.denfop.Ic2Items;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
+import com.denfop.api.recipe.IHasRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.InvSlotRecipes;
@@ -28,16 +29,58 @@ import net.minecraftforge.oredict.OreDictionary;
 import java.util.EnumSet;
 import java.util.Set;
 
-public class TileEntitySunnariumMaker extends TileEntityBaseSunnariumMaker implements IUpdateTick {
+public class TileEntitySunnariumMaker extends TileEntityBaseSunnariumMaker implements IUpdateTick, IHasRecipe {
 
 
     public TileEntitySunnariumMaker() {
         super(1, 300, 1);
         this.inputSlotA = new InvSlotRecipes(this, "sunnurium", this);
+        Recipes.recipes.addInitRecipes(this);
 
     }
 
-    public static void init() {
+    public static void addSunnariumMaker(
+            ItemStack container,
+            ItemStack container1,
+            ItemStack container2,
+            ItemStack container3,
+            ItemStack output
+    ) {
+        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
+        String name1 = "";
+        String name2 = "";
+        String name3 = "";
+        String name4 = "";
+        if (OreDictionary.getOreIDs(container).length > 0) {
+            name1 = OreDictionary.getOreName(OreDictionary.getOreIDs(container)[0]);
+        }
+        if (OreDictionary.getOreIDs(container1).length > 0) {
+            name2 = OreDictionary.getOreName(OreDictionary.getOreIDs(container1)[0]);
+        }
+        if (OreDictionary.getOreIDs(container2).length > 0) {
+            name3 = OreDictionary.getOreName(OreDictionary.getOreIDs(container2)[0]);
+        }
+        if (OreDictionary.getOreIDs(container3).length > 0) {
+            name4 = OreDictionary.getOreName(OreDictionary.getOreIDs(container3)[0]);
+        }
+        Recipes.recipes.addRecipe(
+                "sunnurium",
+                new BaseMachineRecipe(
+                        new Input(
+                                name1.isEmpty() ? input.forStack(container) : input.forOreDict(name1, container.getCount()),
+                                name2.isEmpty() ? input.forStack(container1) : input.forOreDict(name2, container1.getCount()),
+                                name3.isEmpty() ? input.forStack(container2) : input.forOreDict(name3, container2.getCount()),
+                                name4.isEmpty() ? input.forStack(container3) : input.forOreDict(name4, container3.getCount())
+
+                        ),
+                        new RecipeOutput(null, output)
+                )
+        );
+
+
+    }
+
+    public void init() {
         addSunnariumMaker(
                 new ItemStack(IUItem.sunnarium, 4, 4),
                 new ItemStack(Items.GLOWSTONE_DUST),
@@ -144,47 +187,6 @@ public class TileEntitySunnariumMaker extends TileEntityBaseSunnariumMaker imple
                 new ItemStack(IUItem.sunnarium, 1, 0),
                 new ItemStack(IUItem.excitednucleus, 1, 13)
         );
-    }
-
-    public static void addSunnariumMaker(
-            ItemStack container,
-            ItemStack container1,
-            ItemStack container2,
-            ItemStack container3,
-            ItemStack output
-    ) {
-        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
-        String name1 = "";
-        String name2 = "";
-        String name3 = "";
-        String name4 = "";
-        if (OreDictionary.getOreIDs(container).length > 0) {
-            name1 = OreDictionary.getOreName(OreDictionary.getOreIDs(container)[0]);
-        }
-        if (OreDictionary.getOreIDs(container1).length > 0) {
-            name2 = OreDictionary.getOreName(OreDictionary.getOreIDs(container1)[0]);
-        }
-        if (OreDictionary.getOreIDs(container2).length > 0) {
-            name3 = OreDictionary.getOreName(OreDictionary.getOreIDs(container2)[0]);
-        }
-        if (OreDictionary.getOreIDs(container3).length > 0) {
-            name4 = OreDictionary.getOreName(OreDictionary.getOreIDs(container3)[0]);
-        }
-        Recipes.recipes.addRecipe(
-                "sunnurium",
-                new BaseMachineRecipe(
-                        new Input(
-                                name1.isEmpty() ? input.forStack(container) : input.forOreDict(name1, container.getCount()),
-                                name2.isEmpty() ? input.forStack(container1) : input.forOreDict(name2, container1.getCount()),
-                                name3.isEmpty() ? input.forStack(container2) : input.forOreDict(name3, container2.getCount()),
-                                name4.isEmpty() ? input.forStack(container3) : input.forOreDict(name4, container3.getCount())
-
-                        ),
-                        new RecipeOutput(null, output)
-                )
-        );
-
-
     }
 
     @Override

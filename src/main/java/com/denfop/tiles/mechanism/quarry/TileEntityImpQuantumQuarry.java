@@ -8,8 +8,10 @@ public class TileEntityImpQuantumQuarry extends TileEntityBaseQuantumQuarry {
     public TileEntityImpQuantumQuarry() {
         super(2);
     }
+
     @Override
     public EnumTypeStyle getStyle() {
         return EnumTypeStyle.IMPROVED;
     }
+
 }

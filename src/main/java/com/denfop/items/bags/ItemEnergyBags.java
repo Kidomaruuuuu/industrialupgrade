@@ -94,16 +94,16 @@ public class ItemEnergyBags extends Item implements IHandHeldInventory, IUpgrade
             final boolean isSelected
     ) {
         NBTTagCompound nbt = ModUtils.nbt(stack);
-        if(entityIn instanceof EntityPlayer){
-            EntityPlayer  player = (EntityPlayer) entityIn;
-            if(nbt.getBoolean("open")){
+        if (entityIn instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) entityIn;
+            if (nbt.getBoolean("open")) {
                 int slot_id = nbt.getInteger("slot_inventory");
                 if (slot_id != itemSlot && !player.getEntityWorld().isRemote && !StackUtil.isEmpty(stack) && player.openContainer instanceof ContainerBags) {
                     HandHeldBags toolbox = ((ContainerBags) player.openContainer).base;
                     if (toolbox.isThisContainer(stack)) {
                         toolbox.saveAsThrown(stack);
                         player.closeScreen();
-                        nbt.setBoolean("open",false);
+                        nbt.setBoolean("open", false);
                     }
                 }
             }
@@ -177,7 +177,7 @@ public class ItemEnergyBags extends Item implements IHandHeldInventory, IUpgrade
             ElectricItem.manager.use(player.getHeldItem(hand), 350 * coef, player);
             ItemStack stack = StackUtil.get(player, hand);
             if (IC2.platform.isSimulating()) {
-                save(stack,player);
+                save(stack, player);
                 IC2.platform.launchGui(player, this.getInventory(player, stack));
                 return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
 
@@ -185,11 +185,13 @@ public class ItemEnergyBags extends Item implements IHandHeldInventory, IUpgrade
         }
         return new ActionResult<>(EnumActionResult.PASS, player.getHeldItem(hand));
     }
-    public void save(ItemStack stack,EntityPlayer player){
+
+    public void save(ItemStack stack, EntityPlayer player) {
         final NBTTagCompound nbt = ModUtils.nbt(stack);
-        nbt.setBoolean("open",true);
-        nbt.setInteger("slot_inventory",player.inventory.currentItem);
+        nbt.setBoolean("open", true);
+        nbt.setInteger("slot_inventory", player.inventory.currentItem);
     }
+
     public boolean onDroppedByPlayer(@Nonnull ItemStack stack, EntityPlayer player) {
         if (!player.getEntityWorld().isRemote && !StackUtil.isEmpty(stack) && player.openContainer instanceof ContainerBags) {
             HandHeldBags toolbox = ((ContainerBags) player.openContainer).base;

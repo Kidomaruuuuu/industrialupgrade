@@ -55,15 +55,16 @@ public class TileEntityGeoGenerator extends TileEntityBaseGenerator implements I
                 this.fluidTank
         );
         this.outputSlot = new InvSlotOutput(this, "output", 1);
-        this.coef=coef;
+        this.coef = coef;
     }
+
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
         if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             tooltip.add(Localization.translate("press.lshift"));
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            tooltip.add(Localization.translate("iu.info_upgrade_energy")+this.coef);
+            tooltip.add(Localization.translate("iu.info_upgrade_energy") + this.coef);
         }
         if (this.hasComponent(AdvEnergy.class)) {
             AdvEnergy energy = this.getComponent(AdvEnergy.class);
@@ -75,10 +76,12 @@ public class TileEntityGeoGenerator extends TileEntityBaseGenerator implements I
         }
 
     }
+
     @Override
     public EnumTypeStyle getStyle() {
         return EnumTypeStyle.DEFAULT;
     }
+
     public AdvEnergy getEnergy() {
         return energy;
     }

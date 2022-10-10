@@ -3,6 +3,8 @@ package com.denfop.api.vein;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;
 
+import java.util.Objects;
+
 public class Vein implements IVein {
 
     private final ChunkPos chunk;
@@ -163,6 +165,11 @@ public class Vein implements IVein {
         Vein vein = (Vein) o;
         return vein.chunk.equals(this.chunk);
 
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(chunk, find, type, meta, col, maxcol);
     }
 
     @Override

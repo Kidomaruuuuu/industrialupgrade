@@ -14,5 +14,6 @@ public interface IKeyboard {
 
     boolean isBlackListModeViewKeyDown(final EntityPlayer player);
 
+    boolean isStreakKeyDown(final EntityPlayer player);
 
 }

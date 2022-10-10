@@ -5,6 +5,7 @@ import com.denfop.Config;
 import com.denfop.IUItem;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
+import com.denfop.api.recipe.IHasRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.InvSlotRecipes;
@@ -38,12 +39,11 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.List;
 
 public class TileEntityMolecularTransformer extends TileEntityElectricMachine implements
-        IEnergyReceiver, INetworkClientTileEntityEventListener, IUpdateTick {
+        IEnergyReceiver, INetworkClientTileEntityEventListener, IUpdateTick, IHasRecipe, IIsMolecular {
 
     public boolean queue;
     public byte redstoneMode;
@@ -69,12 +69,32 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
         this.energy = this.addComponent(AdvEnergy.asBasicSink(this, 0, 14).addManagedSlot(this.dischargeSlot));
         this.inputSlot = new InvSlotRecipes(this, "molecular", this);
         this.output = null;
+        Recipes.recipes.addInitRecipes(this);
     }
 
-    public static void init() {
+    public static void addrecipe(ItemStack stack, ItemStack stack1, double energy) {
+        NBTTagCompound nbt = new NBTTagCompound();
+        nbt.setDouble("energy", energy);
+        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
+        Recipes.recipes.addRecipe(
+                "molecular",
+                new BaseMachineRecipe(new Input(input.forStack(stack)), new RecipeOutput(nbt, stack1))
+        );
+    }
 
+    public static void addrecipe(String stack, ItemStack stack1, double energy) {
+        NBTTagCompound nbt = new NBTTagCompound();
+        nbt.setDouble("energy", energy);
+        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
+        Recipes.recipes.addRecipe(
+                "molecular",
+                new BaseMachineRecipe(new Input(input.forOreDict(stack)), new RecipeOutput(nbt, stack1))
+        );
 
-        addrecipe(new ItemStack(Items.SKULL, 1, 0), new ItemStack(Items.SKULL, 1, 1), Config.molecular);
+    }
+
+    public void init() {
+
 
         addrecipe(new ItemStack(Items.SKULL, 1, 1), new ItemStack(Items.NETHER_STAR, 1), Config.molecular1);
 
@@ -88,7 +108,7 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
                 Config.molecular3
         );
 
-        addrecipe("ingotSpinel", OreDictionary.getOres("ingotIridium").get(0), Config.molecular4);
+        addrecipe("ingotCaravky", new ItemStack(IUItem.iuingot, 1, 18), 1500000);
 
         addrecipe(new ItemStack(IUItem.photoniy), new ItemStack(IUItem.photoniy_ingot), Config.molecular5);
 
@@ -96,35 +116,6 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
 
         addrecipe(new ItemStack(Blocks.SAND), new ItemStack(Blocks.GRAVEL, 1), Config.molecular7);
 
-        addrecipe("dustCoal", new ItemStack(Items.DIAMOND), Config.molecular8);
-
-        addrecipe("ingotCopper", OreDictionary.getOres("ingotNickel").get(0), Config.molecular9);
-
-        addrecipe("ingotLead", OreDictionary.getOres("ingotGold").get(0), Config.molecular10);
-
-        if (OreDictionary.getOres("ingotSilver").size() >= 1) {
-            addrecipe("ingotTin", OreDictionary.getOres("ingotSilver").get(0), Config.molecular11);
-        }
-
-        if (OreDictionary.getOres("ingotSilver").size() >= 1) {
-            addrecipe("ingotSilver",
-                    OreDictionary.getOres("ingotTungsten").get(0), Config.molecular12
-            );
-        }
-
-        addrecipe("ingotTungsten",
-                OreDictionary.getOres("ingotSpinel").get(0), Config.molecular13
-        );
-
-        addrecipe("ingotChromium",
-                OreDictionary.getOres("ingotMikhail").get(0), Config.molecular14
-        );
-
-        addrecipe("ingotPlatinum",
-                OreDictionary.getOres("ingotChromium").get(0), Config.molecular15
-        );
-
-        addrecipe("ingotGold", OreDictionary.getOres("ingotPlatinum").get(0), Config.molecular16);
 
         addrecipe("ingotIridium", new ItemStack(IUItem.core, 1, 0), Config.molecular17);
 
@@ -173,39 +164,6 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
                 Config.molecular34
         );
 
-        addrecipe("ingotMikhail",
-                OreDictionary.getOres("ingotMagnesium").get(0), Config.molecular35
-        );
-
-        addrecipe("ingotMagnesium", OreDictionary.getOres("ingotCaravky").get(0), Config.molecular36);
-
-        addrecipe("ingotManganese", OreDictionary.getOres("ingotCobalt").get(0), 350000);
-
-
-        addrecipe("ingotCaravky", new ItemStack(IUItem.iuingot, 1, 18), 600000);
-        addrecipe("ingotCobalt", new ItemStack(IUItem.iuingot, 1, 16), 350000);
-        addrecipe("ingotGermanium", new ItemStack(IUItem.iuingot, 1, 15), 300000);
-
-    }
-
-    public static void addrecipe(ItemStack stack, ItemStack stack1, double energy) {
-        NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setDouble("energy", energy);
-        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
-        Recipes.recipes.addRecipe(
-                "molecular",
-                new BaseMachineRecipe(new Input(input.forStack(stack)), new RecipeOutput(nbt, stack1))
-        );
-    }
-
-    public static void addrecipe(String stack, ItemStack stack1, double energy) {
-        NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setDouble("energy", energy);
-        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
-        Recipes.recipes.addRecipe(
-                "molecular",
-                new BaseMachineRecipe(new Input(input.forOreDict(stack)), new RecipeOutput(nbt, stack1))
-        );
 
     }
 
@@ -315,14 +273,15 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
 
 
     public void onNetworkEvent(EntityPlayer player, int event) {
-
+        if (this.getWorld().isRemote) {
+            return;
+        }
         if (event == 0) {
             this.redstoneMode = (byte) (this.redstoneMode + 1);
             if (this.redstoneMode >= 8) {
                 this.redstoneMode = 0;
             }
             IC2.network.get(true).updateTileEntityField(this, "redstoneMode");
-            this.getWorld().notifyBlockUpdate(this.getPos(), this.getBlockState(), this.getBlockState(), 2);
         }
         if (event == 1) {
             this.queue = !this.queue;
@@ -370,11 +329,17 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
         }
     }
 
+    @Override
+    public int getMode() {
+        return this.redstoneMode;
+    }
+
     protected void onLoaded() {
         super.onLoaded();
         if (IC2.platform.isSimulating()) {
             inputSlot.load();
             this.setOverclockRates();
+            IC2.network.get(true).updateTileEntityField(this, "redstoneMode");
 
         }
 
@@ -419,6 +384,8 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
         super.updateEntityServer();
 
         MachineRecipe output = this.getRecipeOutput();
+
+
         if (!queue) {
             if (output != null && this.outputSlot.canAdd(output.getRecipe().output.items)) {
                 this.differenceenergy = this.energy.getEnergy() - this.perenergy;
@@ -434,7 +401,7 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
 
                 try {
                     this.guiProgress = (this.energy.getEnergy() / this.energy.getCapacity());
-                }catch (Exception e){
+                } catch (Exception e) {
                     this.guiProgress = 0;
                 }
 
@@ -489,11 +456,11 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
 
                 try {
                     this.guiProgress = (this.energy.getEnergy() / this.energy.getCapacity());
-                }catch (Exception e){
+                } catch (Exception e) {
                     this.guiProgress = 0;
                 }
 
-                if ( this.guiProgress >= 1) {
+                if (this.guiProgress >= 1) {
                     operate(output, size);
 
                     this.progress = 0;
@@ -590,6 +557,7 @@ public class TileEntityMolecularTransformer extends TileEntityElectricMachine im
     public void setRecipeOutput(final MachineRecipe output) {
         this.output = output;
         this.setOverclockRates();
+
     }
 
 }

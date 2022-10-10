@@ -65,7 +65,7 @@ public class GuiConverterSolidMatter extends GuiIC2<ContainerConverterSolidMatte
 
 
         for (int i = 0; i < container.base.quantitysolid.length; i++) {
-            String tooltip1 = container.base.quantitysolid[i] + "/" + 5000;
+            String tooltip1 = container.base.quantitysolid[i] + "/" + 100000;
 
             new AdvArea(this, 23, 20 + 15 * i, 40, 28 + 15 * i).withTooltip(name[i] + tooltip1).drawForeground(par1, par2);
 
@@ -118,7 +118,7 @@ public class GuiConverterSolidMatter extends GuiIC2<ContainerConverterSolidMatte
         drawTexturedModalRect(j, k, 0, 0, this.xSize, this.ySize);
 
         for (int i = 0; i < container.base.quantitysolid.length; i++) {
-            double p = ((container.base.quantitysolid[i] / 5000) * 11);
+            double p = ((container.base.quantitysolid[i] / 100000) * 11);
             int l = i - 6;
             if (l != 1) {
                 l = 0;

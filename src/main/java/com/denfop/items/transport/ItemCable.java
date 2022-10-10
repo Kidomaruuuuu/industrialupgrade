@@ -68,7 +68,7 @@ public class ItemCable extends ItemIC2 implements IMultiItem<CableType>, IBoxabl
 
 
         for (CableType type : var1) {
-            for (int insulation = 0; insulation <= type.maxInsulation; ++insulation) {
+            for (int insulation = 0; insulation <= 0; ++insulation) {
                 variants.add(getCable(type));
             }
         }
@@ -88,15 +88,11 @@ public class ItemCable extends ItemIC2 implements IMultiItem<CableType>, IBoxabl
     }
 
 
-    private static CableType getCableType(ItemStack stack) {
+    public static CableType getCableType(ItemStack stack) {
         int type = stack.getItemDamage();
         return type < CableType.values.length ? CableType.values[type] : CableType.glass;
     }
 
-    private static int getInsulation(ItemStack stack) {
-        CableType type = getCableType(stack);
-        return Math.min(0, type.maxInsulation);
-    }
 
     private static String getName(ItemStack stack) {
         CableType type = getCableType(stack);
@@ -171,7 +167,7 @@ public class ItemCable extends ItemIC2 implements IMultiItem<CableType>, IBoxabl
 
         if (type == null) {
             return null;
-        } else if (insulation >= 0 && insulation <= type.maxInsulation) {
+        } else if (insulation == 0) {
             return getCable(type);
         } else {
             IC2.log.warn(LogCategory.Item, "Invalid cable insulation: %d", insulation);
@@ -186,7 +182,7 @@ public class ItemCable extends ItemIC2 implements IMultiItem<CableType>, IBoxabl
             throw new IllegalArgumentException("The stack " + stack + " doesn't match " + this);
         } else {
             CableType type = getCableType(stack);
-            int insulation = getInsulation(stack);
+            int insulation = 0;
             return "type:" + type.getName() + ",insulation:" + insulation;
         }
     }
@@ -246,7 +242,7 @@ public class ItemCable extends ItemIC2 implements IMultiItem<CableType>, IBoxabl
         ) && ((BlockTileEntity) newBlock).canReplace(world, pos, side, BlockName.te.getItemStack(TeBlock.cable))) {
             newBlock.getStateForPlacement(world, pos, side, hitX, hitY, hitZ, 0, player, hand);
             CableType type = getCableType(stack);
-            int insulation = getInsulation(stack);
+            int insulation = 0;
 
             TileEntityCable te;
             te = TileEntityCable.delegate(type, insulation);

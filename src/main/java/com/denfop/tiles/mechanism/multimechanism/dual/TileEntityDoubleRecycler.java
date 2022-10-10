@@ -16,13 +16,11 @@ public class TileEntityDoubleRecycler extends TileEntityMultiMachine {
     }
 
 
-
     public void initiate(int soundEvent) {
         if (this.getWorld().provider.getWorldTime() % 40 == 0) {
             super.initiate(soundEvent);
         }
     }
-
 
 
     @Override

@@ -23,7 +23,7 @@ public class RegisterOreDictionary {
     public static final List<Item> list_item1 = new ArrayList<>();
     public static final String[] string1 = {"casing", "doubleplate", "dust", "ingot", "nugget", "plate", "block"};
 
-    public static final String[] string = {"casing", "crushed", "doubleplate", "dust", "ingot", "nugget", "plate", "purifiedcrushed", "smalldust", "stik", "verysmalldust", "block"};
+    public static final String[] string = {"casing", "crushed", "doubleplate", "dust", "ingot", "nugget", "plate", "purifiedcrushed", "smalldust", "stick", "verysmalldust", "block"};
     public static final String[] string2 = {"heavyore", "baseore", "radiationore", "radiationresources", "preciousore", "preciousgem"};
 
     public static void writelist() {
@@ -108,7 +108,7 @@ public class RegisterOreDictionary {
         List<String> list = new ArrayList<>();
         list.add("Mikhail");//0
         list.add("Aluminium");//1
-        list.add("Vanady");//2
+        list.add("Vanadium");//2
         list.add("Tungsten");//3
         list.add("Invar");//4
         list.add("Caravky");//5
@@ -132,7 +132,7 @@ public class RegisterOreDictionary {
         List<String> list = new ArrayList<>();
         list.add("Mikhail");//0
         list.add("Aluminium");//1
-        list.add("Vanady");//2
+        list.add("Vanadium");//2
         list.add("Tungsten");//3
         list.add("Cobalt");//4
         list.add("Magnesium");//5
@@ -148,10 +148,12 @@ public class RegisterOreDictionary {
         list.add("Germanium");//15
         return list;
     }
-    public static void deleteOre(String name, ItemStack stack){
+
+    public static void deleteOre(String name, ItemStack stack) {
         final NonNullList<ItemStack> list = OreDictionary.getOres(name);
         list.removeIf(stack1 -> stack1.isItemEqual(stack));
     }
+
     public static void oredict() {
         writelist();
         writelist1();
@@ -161,7 +163,6 @@ public class RegisterOreDictionary {
         OreDictionary.registerOre("ingotUranium", new ItemStack(IUItem.itemiu, 1, 2));
         OreDictionary.getOres("ingotUranium").remove(0);
         OreDictionary.registerOre("oreRedstone", Blocks.REDSTONE_ORE);
-        OreDictionary.registerOre("oreRedstone", Blocks.LIT_REDSTONE_ORE);
         OreDictionary.registerOre("casingBronze", Ic2Items.casingbronze);
         OreDictionary.registerOre("casingIron", Ic2Items.casingiron);
         OreDictionary.registerOre("casingSteel", Ic2Items.casingadviron);
@@ -171,12 +172,12 @@ public class RegisterOreDictionary {
         OreDictionary.registerOre("ingotNeutron", IUItem.neutroniumingot);
         OreDictionary.registerOre("casingLead", Ic2Items.casinglead);
 
-        deleteOre("ingotSilver",Ic2Items.silverIngot);
-        deleteOre("crushedPurifiedSilver",Ic2Items.purifiedCrushedSilverOre);
-        deleteOre("crushedSilver",Ic2Items.crushedSilverOre);
-        deleteOre("dustTinySilver",Ic2Items.smallSilverDust);
-        deleteOre("dustSilver",Ic2Items.silverDust);
-        deleteOre("blockSilver",Ic2Items.silverBlock);
+        deleteOre("ingotSilver", Ic2Items.silverIngot);
+        deleteOre("crushedPurifiedSilver", Ic2Items.purifiedCrushedSilverOre);
+        deleteOre("crushedSilver", Ic2Items.crushedSilverOre);
+        deleteOre("dustTinySilver", Ic2Items.smallSilverDust);
+        deleteOre("dustSilver", Ic2Items.silverDust);
+        deleteOre("blockSilver", Ic2Items.silverBlock);
         for (int j = 0; j < list_item1.size(); j++) {
             for (int i = 0; i < list_string1.size(); i++) {
 

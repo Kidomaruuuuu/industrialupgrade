@@ -19,7 +19,7 @@ public class CentrifugeRecipe {
         final Iterable<? extends MachineRecipe<IRecipeInput, Collection<ItemStack>>> recipe1 = Recipes.centrifuge.getRecipes();
         for (final MachineRecipe<IRecipeInput, Collection<ItemStack>> recipe2 : recipe1) {
             List<ItemStack> list = (List<ItemStack>) recipe2.getOutput();
-            for(int i =0; i<list.size();i++){
+            for (int i = 0; i < list.size(); i++) {
                 if (list.get(i).isItemEqual(Ic2Items.smallSilverDust)) {
                     list.remove(i);
                     list.add(new ItemStack(IUItem.smalldust, 1, 14));

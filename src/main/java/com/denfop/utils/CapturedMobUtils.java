@@ -32,7 +32,7 @@ public final class CapturedMobUtils {
     private final String customName;
     private final String resource;
     private int color;
-    private String loottable = "";
+
     private CapturedMobUtils(@Nonnull EntityLivingBase entity) {
         ResourceLocation id = EntityList.getKey(entity);
         this.entityId = id == null ? PIG : id;
@@ -79,7 +79,7 @@ public final class CapturedMobUtils {
         this.customName = nbt.getString("customName");
         color = nbt.getInteger("color");
         if (color >= 0) {
-             builder.append("_").append(EnumDyeColor.byMetadata(color));
+            builder.append("_").append(EnumDyeColor.byMetadata(color));
         }
         this.resource = builder.toString();
     }
@@ -96,10 +96,6 @@ public final class CapturedMobUtils {
     public static CapturedMobUtils create(@Nullable Entity entity) {
         return entity instanceof EntityLivingBase && entity.isEntityAlive() && !entity.world.isRemote && !(entity instanceof EntityPlayer) && !isBlacklisted(
                 entity) ? new CapturedMobUtils((EntityLivingBase) entity) : null;
-    }
-
-    public String getResource() {
-        return resource;
     }
 
     @Nullable
@@ -150,6 +146,9 @@ public final class CapturedMobUtils {
         return entityId == null;
     }
 
+    public String getResource() {
+        return resource;
+    }
 
     @Nonnull
     public ItemStack toStack(@Nonnull Item item, int meta, int amount) {

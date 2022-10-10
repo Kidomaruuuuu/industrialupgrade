@@ -1,8 +1,12 @@
 package com.denfop.tiles.base;
 
 public enum EnumTypeCollector {
-    END(3),
-    NETHER(5);
+    END(6),
+    EARTH(5),
+    AER(7),
+    AQUA(2),
+    DEFAULT(0),
+    NETHER(3);
 
     private final int meta;
 

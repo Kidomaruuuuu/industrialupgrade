@@ -31,6 +31,7 @@ public class GuiAntiUpgradeBlock extends GuiIC2<ContainerAntiUpgrade> {
         super(container1);
         this.container = container1;
     }
+
     private void handleUpgradeTooltip(int mouseX, int mouseY) {
         if (mouseX >= 3 && mouseX <= 15 && mouseY >= 3 && mouseY <= 15) {
             List<String> text = new ArrayList<>();
@@ -46,6 +47,7 @@ public class GuiAntiUpgradeBlock extends GuiIC2<ContainerAntiUpgrade> {
             this.drawTooltip(mouseX, mouseY, text);
         }
     }
+
     protected void mouseClicked(int i, int j, int k) throws IOException {
         super.mouseClicked(i, j, k);
         int xMin = (this.width - this.xSize) / 2;

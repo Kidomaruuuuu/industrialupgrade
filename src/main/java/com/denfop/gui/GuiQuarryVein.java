@@ -3,7 +3,6 @@ package com.denfop.gui;
 import com.denfop.Constants;
 import com.denfop.IUItem;
 import com.denfop.api.vein.Type;
-import com.denfop.api.vein.Vein;
 import com.denfop.container.ContainerQuarryVein;
 import com.denfop.utils.ListInformationUtils;
 import com.denfop.utils.ModUtils;
@@ -81,7 +80,7 @@ public class GuiQuarryVein extends GuiIC2<ContainerQuarryVein> {
             }
 
             this.drawTooltip(mouseX, mouseY, text);
-        }else  if (mouseX >= 3 && mouseX <= 15 && mouseY >= 3 && mouseY <= 15) {
+        } else if (mouseX >= 3 && mouseX <= 15 && mouseY >= 3 && mouseY <= 15) {
             List<String> text = new ArrayList<>();
             text.add(Localization.translate("iu.quarryvein_info"));
             List<String> compatibleUpgrades = ListInformationUtils.quarryvein;
@@ -182,40 +181,39 @@ public class GuiQuarryVein extends GuiIC2<ContainerQuarryVein> {
 
         }
         handleUpgradeTooltip(par1, par2);
-        if (this.container.base.vein != null) {
-            if (this.container.base.find) {
-                if (this.container.base.vein.getType() == Type.EMPTY) {
-                    this.fontRenderer.drawString(
-                            Localization.translate("iu.empty"),
-                            29,
-                            32,
-                            ModUtils.convertRGBcolorToInt(13, 229, 34)
-                    );
+
+        if (this.container.base.vein != null && this.container.base.vein.get()) {
+            if (this.container.base.vein.getType() == Type.EMPTY || this.container.base.vein.getMaxCol() == 0) {
+                this.fontRenderer.drawString(
+                        Localization.translate("iu.empty"),
+                        29,
+                        32,
+                        ModUtils.convertRGBcolorToInt(13, 229, 34)
+                );
+            } else {
+                this.fontRenderer.drawString(
+                        Localization.translate("iu.find"),
+                        26,
+                        32,
+                        ModUtils.convertRGBcolorToInt(13, 229, 34)
+                );
+                int col = this.container.base.vein.getCol();
+                int colmax = this.container.base.vein.getMaxCol();
+                boolean isOil = this.container.base.vein.getType() == Type.OIL;
+                String name_vein;
+                if (!isOil) {
+                    name_vein = new ItemStack(IUItem.heavyore, 1, this.container.base.vein.getMeta()).getDisplayName();
                 } else {
-                    this.fontRenderer.drawString(
-                            Localization.translate("iu.find"),
-                            26,
-                            32,
-                            ModUtils.convertRGBcolorToInt(13, 229, 34)
-                    );
-                    Vein vein = this.container.base.vein;
-                    int col = this.container.base.count;
-                    int colmax = vein.getMaxCol();
-                    boolean isOil = vein.getType() == Type.OIL;
-                    String name_vein;
-                    if (!isOil) {
-                        name_vein = new ItemStack(IUItem.heavyore, 1, vein.getMeta()).getDisplayName();
-                    } else {
-                        name_vein = Localization.translate("iu.fluidneft");
-                    }
-                    new AdvArea(this, 20, 54, 68, 72).withTooltip(name_vein + " " + col + (isOil ? "mb" : "") + "/" + colmax + (
-                            isOil
-                                    ?
-                                    "mb"
-                                    : "")).drawForeground(par1, par2);
+                    name_vein = Localization.translate("iu.fluidneft");
                 }
+                new AdvArea(this, 20, 54, 68, 72).withTooltip(name_vein + " " + col + (isOil ? "mb" : "") + "/" + colmax + (
+                        isOil
+                                ?
+                                "mb"
+                                : "")).drawForeground(par1, par2);
             }
         }
+
         String tooltip2 =
                 ModUtils.getString(Math.min(
                         this.container.base.energy.getEnergy(),
@@ -259,39 +257,39 @@ public class GuiQuarryVein extends GuiIC2<ContainerQuarryVein> {
                     85 - chargeLevel, 48, chargeLevel
             );
         }
-        if (this.container.base.vein != null) {
-            if (this.container.base.find) {
-                if (this.container.base.vein.getType() != Type.EMPTY) {
-                    RenderHelper.enableGUIStandardItemLighting();
-                    GL11.glPushMatrix();
-                    GL11.glColor4f(0.1F, 1, 0.1F, 1);
-                    GL11.glDisable(GL11.GL_LIGHTING);
-                    GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-                    GlStateManager.disableLighting();
-                    GlStateManager.enableDepth();
-                    this.zLevel = 100.0F;
-                    mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-                    ItemStack stack;
-                    if (this.container.base.vein.getType() == Type.VEIN) {
-                        stack = new ItemStack(IUItem.heavyore, 1, this.container.base.vein.getMeta());
 
-                    } else {
-                        stack = new ItemStack(IUItem.oilblock);
-                    }
-                    itemRender.renderItemAndEffectIntoGUI(
-                            stack,
-                            h + 32,
-                            k + 54
-                    );
-                    GL11.glEnable(GL11.GL_LIGHTING);
-                    GlStateManager.enableLighting();
+        if (this.container.base.vein != null && this.container.base.vein.get()) {
+            if (this.container.base.vein.getType() != Type.EMPTY) {
+                RenderHelper.enableGUIStandardItemLighting();
+                GL11.glPushMatrix();
+                GL11.glColor4f(0.1F, 1, 0.1F, 1);
+                GL11.glDisable(GL11.GL_LIGHTING);
+                GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+                GlStateManager.disableLighting();
+                GlStateManager.enableDepth();
+                this.zLevel = 100.0F;
+                mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+                ItemStack stack;
+                if (this.container.base.vein.getType() == Type.VEIN) {
+                    stack = new ItemStack(IUItem.heavyore, 1, this.container.base.vein.getMeta());
 
-                    RenderHelper.enableStandardItemLighting();
-                    GL11.glColor4f(0.1F, 1, 0.1F, 1);
-                    GL11.glPopMatrix();
+                } else {
+                    stack = new ItemStack(IUItem.oilblock);
                 }
+                itemRender.renderItemAndEffectIntoGUI(
+                        stack,
+                        h + 32,
+                        k + 54
+                );
+                GL11.glEnable(GL11.GL_LIGHTING);
+                GlStateManager.enableLighting();
+
+                RenderHelper.enableStandardItemLighting();
+                GL11.glColor4f(0.1F, 1, 0.1F, 1);
+                GL11.glPopMatrix();
             }
         }
+
     }
 
 

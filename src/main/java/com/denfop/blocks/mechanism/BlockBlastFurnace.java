@@ -131,13 +131,13 @@ public enum BlockBlastFurnace implements ITeBlock {
     @Override
     @Nonnull
     public TeBlock.HarvestTool getHarvestTool() {
-        return TeBlock.HarvestTool.Wrench;
+        return TeBlock.HarvestTool.Pickaxe;
     }
 
     @Override
     @Nonnull
     public TeBlock.DefaultDrop getDefaultDrop() {
-        return TeBlock.DefaultDrop.Machine;
+        return TeBlock.DefaultDrop.Self;
     }
 
     @Override

@@ -17,6 +17,8 @@ public class ContainerCoolMachine extends ContainerFullInv<TileEntityCooling> {
         ret.add("energy");
         ret.add("cold");
         ret.add("max");
+        ret.add("work");
+
         return ret;
     }
 

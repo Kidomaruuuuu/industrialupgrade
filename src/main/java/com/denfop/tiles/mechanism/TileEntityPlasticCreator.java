@@ -3,6 +3,7 @@ package com.denfop.tiles.mechanism;
 import com.denfop.IUItem;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
+import com.denfop.api.recipe.IHasRecipe;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.api.recipe.RecipeOutput;
@@ -24,14 +25,15 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.EnumSet;
 import java.util.Set;
 
-public class TileEntityPlasticCreator extends TileEntityBasePlasticCreator {
+public class TileEntityPlasticCreator extends TileEntityBasePlasticCreator implements IHasRecipe {
 
     public TileEntityPlasticCreator() {
         super(1, 300, 1);
         this.inputSlotA = new InvSlotRecipes(this, "plastic", this, this.fluidTank);
+        Recipes.recipes.addInitRecipes(this);
     }
 
-    public static void init() {
+    public void init() {
         final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
         Recipes.recipes.addRecipe("plastic", new BaseMachineRecipe(
                 new Input(

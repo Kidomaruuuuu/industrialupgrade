@@ -5,7 +5,6 @@ import com.denfop.api.vein.Type;
 import com.denfop.api.vein.Vein;
 import com.denfop.api.vein.VeinSystem;
 import com.denfop.blocks.FluidName;
-import com.denfop.componets.EnumTypeStyle;
 import com.denfop.container.ContainerOilPump;
 import com.denfop.gui.GuiOilPump;
 import com.denfop.invslot.InvSlotUpgrade;
@@ -184,6 +183,9 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
     @Override
     public void onPlaced(final ItemStack stack, final EntityLivingBase placer, final EnumFacing facing) {
         super.onPlaced(stack, placer, facing);
+        if (this.world.isRemote) {
+            return;
+        }
         this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
         if (this.vein != null) {
             this.find = this.vein.get();
@@ -204,6 +206,9 @@ public class TileEntityOilPump extends TileEntityElectricLiquidTankInventory imp
     @Override
     protected void onLoaded() {
         super.onLoaded();
+        if (this.world.isRemote) {
+            return;
+        }
         this.vein = VeinSystem.system.getVein(this.getWorld().getChunkFromBlockCoords(this.pos).getPos());
         if (this.vein != null) {
             boolean find = this.vein.get();

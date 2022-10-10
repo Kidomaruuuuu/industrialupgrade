@@ -104,7 +104,8 @@ public final class PowerUtils {
                 Character.valueOf('D'),
                 new ItemStack(IUItem.module7, 1, 4)
         );
-        Recipes.advRecipes.addRecipe(new ItemStack(PowerItem.module_fe),
+        Recipes.advRecipes.addRecipe(
+                new ItemStack(PowerItem.module_fe),
                 "ABA",
                 "CDC",
                 "ABA",

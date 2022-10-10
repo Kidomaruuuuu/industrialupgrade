@@ -30,7 +30,7 @@ public class InvSlotGenCombinerSunarrium extends InvSlot {
         super.put(index, content);
         this.tile.lst = this.coefday();
 
-        this.tile.coef_day =  this.tile.lst.get(0);
+        this.tile.coef_day = this.tile.lst.get(0);
         this.tile.coef_night = this.tile.lst.get(1);
         this.tile.update_night = this.tile.lst.get(2);
     }

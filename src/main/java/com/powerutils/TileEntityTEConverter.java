@@ -2,6 +2,7 @@ package com.powerutils;
 
 import com.denfop.Config;
 import com.denfop.componets.AdvEnergy;
+import com.denfop.tiles.base.TileEntityInventory;
 import com.powerutils.handler.TeslaHelper;
 import ic2.api.energy.EnergyNet;
 import ic2.api.energy.NodeStats;
@@ -10,7 +11,6 @@ import ic2.api.upgrade.IUpgradableBlock;
 import ic2.api.upgrade.UpgradableProperty;
 import ic2.core.IC2;
 import ic2.core.IHasGui;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.block.invslot.InvSlotUpgrade;
 import ic2.core.init.Localization;
 import ic2.core.util.Util;

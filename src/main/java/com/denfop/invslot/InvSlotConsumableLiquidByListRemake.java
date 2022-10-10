@@ -39,7 +39,7 @@ public class InvSlotConsumableLiquidByListRemake extends InvSlotConsumableLiquid
 
     public boolean processFromTank(IFluidTank tank, InvSlotOutput outputSlot) {
         if (!this.isEmpty() && tank.getFluidAmount() > 0) {
-            MutableObject<ItemStack> output = new MutableObject();
+            MutableObject<ItemStack> output = new MutableObject<>();
             boolean wasChange = false;
             if (this.transferFromTank(
                     tank,

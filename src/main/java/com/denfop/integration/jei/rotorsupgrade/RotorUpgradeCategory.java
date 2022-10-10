@@ -2,9 +2,7 @@ package com.denfop.integration.jei.rotorsupgrade;
 
 import com.denfop.Constants;
 import com.denfop.IUItem;
-import com.denfop.blocks.mechanism.BlockBaseMachine;
 import com.denfop.blocks.mechanism.BlockBaseMachine3;
-import com.denfop.integration.jei.rotorsupgrade.RotorUpgradeWrapper;
 import ic2.core.init.Localization;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
@@ -71,9 +69,9 @@ public class RotorUpgradeCategory extends Gui implements IRecipeCategory<RotorUp
     ) {
         IGuiItemStackGroup isg = layout.getItemStacks();
 
-        isg.init(0, true, 51+22, 36);
+        isg.init(0, true, 51 + 22, 36);
         isg.set(0, recipes.getInput()[1]);
-        isg.init(1, true, 29+22, 36);
+        isg.init(1, true, 29 + 22, 36);
         isg.set(1, recipes.getInput()[0]);
     }
 

@@ -36,7 +36,7 @@ public class InvSlotQuantumQuarry extends InvSlot implements ITypeSlot {
                 this.tile.col = 1;
                 this.tile.chance = 0;
                 this.tile.furnace = false;
-                this.tile.main_list = new ArrayList<>(IUCore.list);
+                this.tile.main_list = new ArrayList<>(IUCore.list_quarry);
                 if (!this.isEmpty()) {
                     ItemStack type1 = this.get();
                     EnumQuarryModules module = EnumQuarryModules.getFromID(type1.getItemDamage());
@@ -56,17 +56,17 @@ public class InvSlotQuantumQuarry extends InvSlot implements ITypeSlot {
                             break;
                         case FURNACE:
                             this.tile.furnace = true;
-                            this.tile.main_list = new ArrayList<>(IUCore.get_ingot);
+                            this.tile.main_list = new ArrayList<>(IUCore.get_ingot_quarry);
                             this.tile.original = false;
                             break;
                         case COMB_MAC:
                             this.tile.comb_mac_enabled = true;
-                            this.tile.main_list = new ArrayList<>(IUCore.get_comb_crushed);
+                            this.tile.main_list = new ArrayList<>(IUCore.get_comb_crushed_quarry);
                             this.tile.original = false;
                             break;
                         case MACERATOR:
                             this.tile.mac_enabled = true;
-                            this.tile.main_list = new ArrayList<>(IUCore.get_crushed);
+                            this.tile.main_list = new ArrayList<>(IUCore.get_crushed_quarry);
                             this.tile.original = false;
                             break;
                     }
@@ -81,7 +81,7 @@ public class InvSlotQuantumQuarry extends InvSlot implements ITypeSlot {
                     this.tile.furnace = false;
                     this.tile.comb_mac_enabled = false;
                     this.tile.mac_enabled = false;
-                    this.tile.main_list = new ArrayList<>(IUCore.list);
+                    this.tile.main_list = new ArrayList<>(IUCore.list_quarry);
                     this.tile.main_list.removeIf(stack -> this.tile.list(this.tile.list_modules, stack));
                     this.tile.original = true;
                 }
@@ -92,17 +92,17 @@ public class InvSlotQuantumQuarry extends InvSlot implements ITypeSlot {
                 } else {
                     this.tile.list_modules = EnumQuarryModules.getFromID(this.get().getItemDamage());
                 }
-                this.tile.list = ModUtils.getListFromModule(this.get());
+                this.tile.list = ModUtils.getQuarryListFromModule(this.get());
                 if (this.tile.furnace) {
-                    this.tile.main_list = new ArrayList<>(IUCore.get_ingot);
+                    this.tile.main_list = new ArrayList<>(IUCore.get_ingot_quarry);
                 } else if (this.tile.comb_mac_enabled) {
-                    this.tile.main_list = new ArrayList<>(IUCore.get_comb_crushed);
+                    this.tile.main_list = new ArrayList<>(IUCore.get_comb_crushed_quarry);
 
                 } else if (this.tile.mac_enabled) {
-                    this.tile.main_list = new ArrayList<>(IUCore.get_crushed);
+                    this.tile.main_list = new ArrayList<>(IUCore.get_crushed_quarry);
 
                 } else {
-                    this.tile.main_list = new ArrayList<>(IUCore.list);
+                    this.tile.main_list = new ArrayList<>(IUCore.list_quarry);
                 }
                 this.tile.main_list.removeIf(stack -> this.tile.list(this.tile.list_modules, stack));
                 this.tile.inputslot.update();
@@ -123,7 +123,7 @@ public class InvSlotQuantumQuarry extends InvSlot implements ITypeSlot {
                 this.tile.col = 1;
                 this.tile.chance = 0;
                 this.tile.furnace = false;
-                this.tile.main_list = new ArrayList<>(IUCore.list);
+                this.tile.main_list = new ArrayList<>(IUCore.list_quarry);
                 if (!this.isEmpty()) {
                     ItemStack type1 = this.get();
                     EnumQuarryModules module = EnumQuarryModules.getFromID(type1.getItemDamage());
@@ -143,17 +143,17 @@ public class InvSlotQuantumQuarry extends InvSlot implements ITypeSlot {
                             break;
                         case FURNACE:
                             this.tile.furnace = true;
-                            this.tile.main_list = new ArrayList<>(IUCore.get_ingot);
+                            this.tile.main_list = new ArrayList<>(IUCore.get_ingot_quarry);
                             this.tile.original = false;
                             break;
                         case COMB_MAC:
                             this.tile.comb_mac_enabled = true;
-                            this.tile.main_list = new ArrayList<>(IUCore.get_comb_crushed);
+                            this.tile.main_list = new ArrayList<>(IUCore.get_comb_crushed_quarry);
                             this.tile.original = false;
                             break;
                         case MACERATOR:
                             this.tile.mac_enabled = true;
-                            this.tile.main_list = new ArrayList<>(IUCore.get_crushed);
+                            this.tile.main_list = new ArrayList<>(IUCore.get_crushed_quarry);
                             this.tile.original = false;
                             break;
                     }
@@ -168,7 +168,7 @@ public class InvSlotQuantumQuarry extends InvSlot implements ITypeSlot {
                     this.tile.furnace = false;
                     this.tile.comb_mac_enabled = false;
                     this.tile.mac_enabled = false;
-                    this.tile.main_list = new ArrayList<>(IUCore.list);
+                    this.tile.main_list = new ArrayList<>(IUCore.list_quarry);
                     this.tile.main_list.removeIf(stack -> this.tile.list(this.tile.list_modules, stack));
                     this.tile.original = true;
                 }
@@ -179,7 +179,7 @@ public class InvSlotQuantumQuarry extends InvSlot implements ITypeSlot {
                 } else {
                     this.tile.list_modules = EnumQuarryModules.getFromID(this.get().getItemDamage());
                 }
-                this.tile.list = ModUtils.getListFromModule(this.get());
+                this.tile.list = ModUtils.getQuarryListFromModule(this.get());
                 this.tile.main_list.removeIf(stack -> this.tile.list(this.tile.list_modules, stack));
                 this.tile.inputslot.update();
                 break;
@@ -197,7 +197,7 @@ public class InvSlotQuantumQuarry extends InvSlot implements ITypeSlot {
         } else if (type == 1) {
             if (itemStack.getItem() instanceof ItemQuarryModule && (EnumQuarryModules.getFromID(itemStack.getItemDamage()).type == EnumQuarryType.WHITELIST || EnumQuarryModules.getFromID(
                     itemStack.getItemDamage()).type == EnumQuarryType.BLACKLIST)) {
-                ((TileEntityBaseQuantumQuarry) this.base).list = ModUtils.getListFromModule(itemStack);
+                ((TileEntityBaseQuantumQuarry) this.base).list = ModUtils.getQuarryListFromModule(itemStack);
                 return !itemStack.getItem().equals(IUItem.analyzermodule);
             }
 
@@ -212,9 +212,10 @@ public class InvSlotQuantumQuarry extends InvSlot implements ITypeSlot {
     public void setStackSizeLimit(int stackSizeLimit) {
         this.stackSizeLimit = stackSizeLimit;
     }
+
     @Override
     public EnumTypeSlot getTypeSlot(int slotid) {
-        switch (this.type){
+        switch (this.type) {
             case 0:
                 return EnumTypeSlot.QUARRY1;
             case 1:
@@ -225,4 +226,5 @@ public class InvSlotQuantumQuarry extends InvSlot implements ITypeSlot {
 
         return null;
     }
+
 }

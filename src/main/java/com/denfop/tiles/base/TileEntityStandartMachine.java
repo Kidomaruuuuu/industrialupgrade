@@ -8,7 +8,6 @@ import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.audio.AudioSource;
 import ic2.core.audio.PositionSpec;
-import ic2.core.block.TileEntityInventory;
 import net.minecraft.entity.player.EntityPlayer;
 
 public abstract class TileEntityStandartMachine extends TileEntityInventory implements IHasGui, IAudioFixer {

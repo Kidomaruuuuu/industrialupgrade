@@ -5,6 +5,7 @@ import com.denfop.Ic2Items;
 import com.denfop.componets.HeatComponent;
 import com.denfop.container.ContainerBlastFurnace;
 import com.denfop.gui.GuiBlastFurnace;
+import com.denfop.tiles.base.TileEntityInventory;
 import com.denfop.tiles.mechanism.blastfurnace.api.BlastSystem;
 import com.denfop.tiles.mechanism.blastfurnace.api.IBlastHeat;
 import com.denfop.tiles.mechanism.blastfurnace.api.IBlastInputFluid;
@@ -13,7 +14,6 @@ import com.denfop.tiles.mechanism.blastfurnace.api.IBlastMain;
 import com.denfop.tiles.mechanism.blastfurnace.api.IBlastOutputItem;
 import ic2.api.network.INetworkClientTileEntityEventListener;
 import ic2.core.IHasGui;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.block.comp.Fluids;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.init.Localization;
@@ -55,6 +55,7 @@ public class TileEntityBlastFurnaceMain extends TileEntityInventory implements I
         );
         this.entityPlayerList = new ArrayList<>();
     }
+
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
@@ -66,9 +67,10 @@ public class TileEntityBlastFurnaceMain extends TileEntityInventory implements I
                 0
         ).getUnlocalizedName()));
         tooltip.add(Localization.translate("iu.blastfurnace.info4"));
-        tooltip.add(Localization.translate("iu.blastfurnace.info5") +  Localization.translate(Ic2Items.ForgeHammer.getUnlocalizedName()));
+        tooltip.add(Localization.translate("iu.blastfurnace.info5") + Localization.translate(Ic2Items.ForgeHammer.getUnlocalizedName()));
         tooltip.add(Localization.translate("iu.blastfurnace.info6"));
     }
+
     @Override
     public boolean getFull() {
         return full;
@@ -247,14 +249,16 @@ public class TileEntityBlastFurnaceMain extends TileEntityInventory implements I
             final float hitZ
     ) {
         if (!this.full) {
-            if(player.getHeldItem(hand).isEmpty())
-            return false;
-            if(player.getHeldItem(hand).isItemEqual(Ic2Items.ForgeHammer)) {
+            if (player.getHeldItem(hand).isEmpty()) {
+                return false;
+            }
+            if (player.getHeldItem(hand).isItemEqual(Ic2Items.ForgeHammer)) {
                 update_block();
-                if (!this.full)
+                if (!this.full) {
                     return false;
-                else
+                } else {
                     return super.onActivated(player, hand, side, hitX, hitY, hitZ);
+                }
             }
             return false;
         }

@@ -312,7 +312,7 @@ public final class Config {
     public static boolean SkeletonType;
     public static boolean MikhailOre;
     public static boolean AluminiumOre;
-    public static boolean VanadyOre;
+    public static boolean VanadiumOre;
     public static boolean TungstenOre;
     public static boolean CobaltOre;
     public static boolean MagnesiumOre;
@@ -825,7 +825,7 @@ public final class Config {
 
             MikhailOre = config.get("spawn ore", "Enable spawn MikhailOre", true).getBoolean(true);
             AluminiumOre = config.get("spawn ore", "Enable spawn AluminiumOre", true).getBoolean(true);
-            VanadyOre = config.get("spawn ore", "Enable spawn VanadyOre", true).getBoolean(true);
+            VanadiumOre = config.get("spawn ore", "Enable spawn VanadiumOre", true).getBoolean(true);
             TungstenOre = config.get("spawn ore", "Enable spawn TungstenOre", true).getBoolean(true);
             CobaltOre = config.get("spawn ore", "Enable spawn CobaltOre", true).getBoolean(true);
             MagnesiumOre = config.get("spawn ore", "Enable spawn MagnesiumOre", true).getBoolean(true);

@@ -7,6 +7,9 @@ public class EventHandler {
 
     @SubscribeEvent
     public void tick(TickEvent.PlayerTickEvent event) {
+        if (event.player.getEntityWorld().isRemote) {
+            return;
+        }
         RadiationSystem.rad_system.work(event.player);
     }
 

@@ -36,9 +36,7 @@ public class RotorUpgradeSystem implements IRotorUpgradeSystem {
 
     @SubscribeEvent
     public void loadItem(EventRotorItemLoad event) {
-        if (event.getWorld().isRemote) {
-            return;
-        }
+
         this.updateListFromNBT(event.item, event.stack);
     }
 

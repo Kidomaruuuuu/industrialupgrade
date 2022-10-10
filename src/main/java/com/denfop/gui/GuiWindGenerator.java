@@ -4,12 +4,12 @@ import com.denfop.Constants;
 import com.denfop.api.gui.Component;
 import com.denfop.api.gui.EnumTypeComponent;
 import com.denfop.api.gui.GuiComponent;
+import com.denfop.api.windsystem.EnumTypeWind;
 import com.denfop.api.windsystem.WindSystem;
 import com.denfop.api.windsystem.upgrade.RotorUpgradeSystem;
 import com.denfop.container.ContainerWindGenerator;
 import com.denfop.utils.ListInformationUtils;
 import com.denfop.utils.ModUtils;
-import ic2.core.GuiIC2;
 import ic2.core.IC2;
 import ic2.core.init.Localization;
 import net.minecraft.client.renderer.GlStateManager;
@@ -30,15 +30,17 @@ public class GuiWindGenerator extends GuiIU<ContainerWindGenerator> {
     private final ResourceLocation background;
 
     public GuiWindGenerator(ContainerWindGenerator guiContainer) {
-        super(guiContainer,guiContainer.base.getStyle());
+        super(guiContainer, guiContainer.base.getStyle());
         this.ySize = 236;
         this.xSize = 211;
         this.background = new ResourceLocation(Constants.MOD_ID, "textures/gui/guiwindgenerator.png");
-        this.addComponent( new GuiComponent(this,167,98, EnumTypeComponent.ENERGY_WEIGHT,
-                new Component<>(this.container.base.energy)));
+        this.addComponent(new GuiComponent(this, 167, 98, EnumTypeComponent.ENERGY_WEIGHT,
+                new Component<>(this.container.base.energy)
+        ));
         this.inventory.setY(153);
         this.inventory.setX(7);
     }
+
     private void handleUpgradeTooltip(int mouseX, int mouseY) {
         if (mouseX >= 3 && mouseX <= 15 && mouseY >= 3 && mouseY <= 15) {
             List<String> text = new ArrayList<>();
@@ -54,6 +56,7 @@ public class GuiWindGenerator extends GuiIU<ContainerWindGenerator> {
             this.drawTooltip(mouseX, mouseY, text);
         }
     }
+
     protected void mouseClicked(int i, int j, int k) throws IOException {
         super.mouseClicked(i, j, k);
         int xMin = (this.width - this.xSize) / 2;
@@ -121,12 +124,28 @@ public class GuiWindGenerator extends GuiIU<ContainerWindGenerator> {
     protected void drawForegroundLayer(final int mouseX, final int mouseY) {
         super.drawForegroundLayer(mouseX, mouseY);
         handleUpgradeTooltip(mouseX, mouseY);
-        this.fontRenderer.drawString(Localization.translate("iu.wind_meter.info") + String.format(
-                        "%.1f",
-                        WindSystem.windSystem.getWind_Strength()
-                ) + " m/s",
-                63, 48, ModUtils.convertRGBcolorToInt(13, 229, 34)
-        );
+        if (this.container.base.getWorld().provider.getDimension() == 0) {
+            if (this.container.base.getMinWind() != 0) {
+                this.fontRenderer.drawString(Localization.translate("iu.wind_meter.info") + String.format(
+                                "%.1f",
+                                Math.min(24.7 + this.container.base.mind_speed, WindSystem.windSystem.getSpeedFromPower(
+                                                this.container.base.getPos(),
+                                                this.container.base,
+                                                this.container.base.generation
+                                        ) / this.container.base.getCoefficient()
+                                )
+                        ) + " m/s",
+                        63, 48, ModUtils.convertRGBcolorToInt(13, 229, 34)
+                );
+            } else {
+                this.fontRenderer.drawString(Localization.translate("iu.wind_meter.info") + String.format(
+                                "%.1f",
+                                this.container.base.wind_speed + this.container.base.mind_speed
+                        ) + " m/s",
+                        63, 48, ModUtils.convertRGBcolorToInt(13, 229, 34)
+                );
+            }
+        }
         String tooltip2 =
                 Localization.translate("iu.wind_change_side");
         new AdvArea(this, 12, 45, 25, 58)
@@ -149,8 +168,7 @@ public class GuiWindGenerator extends GuiIU<ContainerWindGenerator> {
             }
         }
         if (this.container.base.getRotor() != null) {
-            this.fontRenderer.drawString(Localization.translate("iu.wind_side") + Localization.translate(("iu.wind." + WindSystem.windSystem
-                            .getWindSide()
+            this.fontRenderer.drawString(Localization.translate("iu.wind_side") + Localization.translate(("iu.wind." + container.base.wind_side
                             .name()
                             .toLowerCase())),
                     33, 70, ModUtils.convertRGBcolorToInt(13, 229, 34)
@@ -177,16 +195,22 @@ public class GuiWindGenerator extends GuiIU<ContainerWindGenerator> {
                     ),
                     33, 110, ModUtils.convertRGBcolorToInt(13, 229, 34)
             );
+
+            int meta = Math.min(this.container.base.enumTypeWind.ordinal() + this.container.base.getMinWind(), 9);
+            EnumTypeWind enumTypeWinds = WindSystem.windSystem.getEnumTypeWind().values()[meta];
+
+
             this.fontRenderer.drawString(Localization.translate("iu.wind_level_info") + String.format(
                             "%d",
-                            WindSystem.windSystem.getLevelWind()
+                            enumTypeWinds.ordinal() + 1
                     ),
                     33, 120, ModUtils.convertRGBcolorToInt(13, 229, 34)
             );
+
             double hours = 0;
             double minutes = 0;
             double seconds = 0;
-            final List<Double> time = ModUtils.Time(WindSystem.windSystem.getTime() / 20D);
+            final List<Double> time = ModUtils.Time(this.container.base.timers / 20D);
             if (time.size() > 0) {
                 hours = time.get(0);
                 minutes = time.get(1);
@@ -195,19 +219,18 @@ public class GuiWindGenerator extends GuiIU<ContainerWindGenerator> {
             String time1 = hours > 0 ? ModUtils.getString(hours) + Localization.translate("iu.hour") + "" : "";
             String time2 = minutes > 0 ? ModUtils.getString(minutes) + Localization.translate("iu.minutes") + "" : "";
             String time3 = seconds > 0 ? ModUtils.getString(seconds) + Localization.translate("iu.seconds") + "" : "";
-
             this.fontRenderer.drawString(Localization.translate("iu.wind_change_time") + time1 + time2 + time3
                     ,
                     33, 130, ModUtils.convertRGBcolorToInt(13, 229, 34)
             );
-            String tooltip3 = Localization.translate("iu.wind_meter.info")+
-                     String.format(
+            String tooltip3 = Localization.translate("iu.wind_meter.info") +
+                    String.format(
                             "%.1f",
-                            WindSystem.windSystem.getEnumTypeWind().getMin()
-                    )+"-"+ String.format(
-                            "%.1f",
-                            WindSystem.windSystem.getEnumTypeWind().getMax()
-                    )+" m/s";
+                            enumTypeWinds.getMin() + this.container.base.getMinWindSpeed()
+                    ) + "-" + String.format(
+                    "%.1f",
+                    enumTypeWinds.getMax() + this.container.base.getMinWindSpeed()
+            ) + " m/s";
             new AdvArea(this, 33, 120, 123, 130)
                     .withTooltip(tooltip3)
                     .drawForeground(mouseX, mouseY);

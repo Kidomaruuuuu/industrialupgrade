@@ -24,7 +24,6 @@ public class ContainerAutoSpawner extends ContainerFullInv<TileEntityAutoSpawner
         }
 
 
-
         for (int i = 0; i < 4; i++) {
             addSlotToContainer(new SlotInvSlot(tileEntity1.module_upgrade, i, 191, 99 + i * 18));
         }

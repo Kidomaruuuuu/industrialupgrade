@@ -22,8 +22,9 @@ public class RFComponent extends TileEntityComponent implements IEnergyReceiver 
     public RFComponent(final TileEntityBlock parent, int capacity, AdvEnergy energy) {
         super(parent);
         this.energy = energy;
-        this.capacity=capacity;
+        this.capacity = capacity;
     }
+
     public void readFromNbt(NBTTagCompound nbt) {
         this.storage = nbt.getDouble("storage");
         this.rf = nbt.getBoolean("rf");
@@ -35,6 +36,7 @@ public class RFComponent extends TileEntityComponent implements IEnergyReceiver 
         ret.setBoolean("rf", this.rf);
         return ret;
     }
+
     public void onContainerUpdate(EntityPlayerMP player) {
         GrowingBuffer buffer = new GrowingBuffer(16);
         buffer.writeDouble(this.capacity);
@@ -42,10 +44,6 @@ public class RFComponent extends TileEntityComponent implements IEnergyReceiver 
         buffer.writeBoolean(this.rf);
         buffer.flip();
         this.setNetworkUpdate(player, buffer);
-    }
-
-    public void setRf(final boolean rf) {
-        this.rf = rf;
     }
 
     public void setStorage(final double storage) {
@@ -56,10 +54,16 @@ public class RFComponent extends TileEntityComponent implements IEnergyReceiver 
         return rf;
     }
 
+    public void setRf(final boolean rf) {
+        this.rf = rf;
+    }
+
     public void onNetworkUpdate(DataInput is) throws IOException {
         this.capacity = is.readDouble();
         this.storage = is.readDouble();
+        this.rf = is.readBoolean();
     }
+
     public double getCapacity() {
         return this.capacity;
     }
@@ -120,6 +124,7 @@ public class RFComponent extends TileEntityComponent implements IEnergyReceiver 
         }
         return ret;
     }
+
     @Override
     public boolean canConnectEnergy(final EnumFacing var1) {
         return true;

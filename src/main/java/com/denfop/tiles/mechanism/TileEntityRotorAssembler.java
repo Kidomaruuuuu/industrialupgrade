@@ -3,6 +3,7 @@ package com.denfop.tiles.mechanism;
 import com.denfop.IUItem;
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
+import com.denfop.api.recipe.IHasRecipe;
 import com.denfop.api.recipe.IUpdateTick;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.InvSlotOutput;
@@ -12,9 +13,9 @@ import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.componets.AdvEnergy;
 import com.denfop.container.ContainerRotorAssembler;
 import com.denfop.gui.GuiRotorAssembler;
+import com.denfop.tiles.base.TileEntityInventory;
 import ic2.api.recipe.IRecipeInputFactory;
 import ic2.core.IHasGui;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.util.ITooltipFlag;
@@ -27,7 +28,7 @@ import org.lwjgl.input.Keyboard;
 
 import java.util.List;
 
-public class TileEntityRotorAssembler extends TileEntityInventory implements IHasGui, IUpdateTick {
+public class TileEntityRotorAssembler extends TileEntityInventory implements IHasGui, IUpdateTick, IHasRecipe {
 
     public final InvSlotRecipes inputSlotA;
     public final AdvEnergy energy;
@@ -53,29 +54,25 @@ public class TileEntityRotorAssembler extends TileEntityInventory implements IHa
         this.recipe = null;
         this.outputSlot = new InvSlotOutput(this, "output", 1);
         this.energy = this.addComponent(AdvEnergy.asBasicSink(this, defaultEnergyStorage, defaultTier));
-
+        Recipes.recipes.addInitRecipes(this);
     }
 
-    @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
-        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            tooltip.add(Localization.translate("press.lshift"));
-        }
-        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate("iu.machines_work_energy_type_eu"));
-            tooltip.add(Localization.translate("iu.machines_work_length") + this.defaultOperationLength);
-        }
-        if (this.hasComponent(AdvEnergy.class)) {
-            AdvEnergy energy = this.getComponent(AdvEnergy.class);
-            if (!energy.getSourceDirs().isEmpty()) {
-                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSourceTier()));
-            } else if (!energy.getSinkDirs().isEmpty()) {
-                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSinkTier()));
-            }
-        }
+    public static void addRecipe(int meta, int meta1, ItemStack stack) {
+        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
+        Recipes.recipes.addRecipe("rotor_assembler", new BaseMachineRecipe(
+                new Input(
+                        input.forStack(new ItemStack(IUItem.windrod, 1, meta)),
+                        input.forStack(new ItemStack(IUItem.windrod, 1, meta)),
+                        input.forStack(new ItemStack(IUItem.windrod, 1, meta)),
+                        input.forStack(new ItemStack(IUItem.windrod, 1, meta)),
+                        input.forStack(new ItemStack(IUItem.corewind, 1, meta1))
 
+                ),
+                new RecipeOutput(null, stack)
+        ));
     }
-    public static void init() {
+
+    public void init() {
         addRecipe(0, 0, new ItemStack(IUItem.rotor_wood));
         addRecipe(1, 1, new ItemStack(IUItem.rotor_bronze));
         addRecipe(2, 2, new ItemStack(IUItem.rotor_iron));
@@ -93,19 +90,25 @@ public class TileEntityRotorAssembler extends TileEntityInventory implements IHa
         addRecipe(13, 13, IUItem.ultramarinerotor);
     }
 
-    public static void addRecipe(int meta, int meta1, ItemStack stack) {
-        final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
-        Recipes.recipes.addRecipe("rotor_assembler", new BaseMachineRecipe(
-                new Input(
-                        input.forStack(new ItemStack(IUItem.windrod, 1, meta)),
-                        input.forStack(new ItemStack(IUItem.windrod, 1, meta)),
-                        input.forStack(new ItemStack(IUItem.windrod, 1, meta)),
-                        input.forStack(new ItemStack(IUItem.windrod, 1, meta)),
-                        input.forStack(new ItemStack(IUItem.corewind, 1, meta1))
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, List<String> tooltip, ITooltipFlag advanced) {
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("press.lshift"));
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate(
+                    "iu.machines_work_energy_type_eu"));
+            tooltip.add(Localization.translate("iu.machines_work_length") + this.defaultOperationLength);
+        }
+        if (this.hasComponent(AdvEnergy.class)) {
+            AdvEnergy energy = this.getComponent(AdvEnergy.class);
+            if (!energy.getSourceDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSourceTier()));
+            } else if (!energy.getSinkDirs().isEmpty()) {
+                tooltip.add(Localization.translate("ic2.item.tooltip.PowerTier", energy.getSinkTier()));
+            }
+        }
 
-                ),
-                new RecipeOutput(null, stack)
-        ));
     }
 
     public void readFromNBT(NBTTagCompound nbttagcompound) {

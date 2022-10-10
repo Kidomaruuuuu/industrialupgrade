@@ -9,6 +9,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -21,14 +22,16 @@ import java.util.Random;
 public class WindSystem implements IWindSystem {
 
     public static IWindSystem windSystem;
-    public double Wind_Strength = 0;
     public EnumTypeWind enumTypeWind = EnumTypeWind.ONE;
     public EnumWindSide windSide;
     public int tick = 12000;
+    public EnumTypeWind[] enumTypeWinds = EnumTypeWind.values();
     List<IWindMechanism> mechanismList = new ArrayList<>();
     Random rand;
     Map<EnumFacing, EnumFacing> facingMap = new HashMap<>();
-    public int time = 0;
+    private int time;
+    private double Wind_Strength;
+
     public WindSystem() {
         windSystem = this;
         MinecraftForge.EVENT_BUS.register(this);
@@ -44,9 +47,10 @@ public class WindSystem implements IWindSystem {
         return enumTypeWind;
     }
 
-    public int getLevelWind(){
-        return enumTypeWind.ordinal()+1;
+    public int getLevelWind() {
+        return enumTypeWind.ordinal() + 1;
     }
+
     public EnumWindSide getWindSide() {
         return windSide;
     }
@@ -78,9 +82,13 @@ public class WindSystem implements IWindSystem {
 
 
     }
-
+    @SubscribeEvent
+    public void EventWorldUnload(WorldEvent.Unload event){
+        if(event.getWorld().provider.getDimension() == 0)
+            this.mechanismList.clear();
+    }
     public double getWind_Strength() {
-        return Wind_Strength;
+        return this.Wind_Strength;
     }
 
     public void changeRotorSide(IWindMechanism windMechanism, EnumFacing facing) {
@@ -92,7 +100,7 @@ public class WindSystem implements IWindSystem {
         final EnumFacing newFacing = getNewFacing();
         ((TileEntityWindGenerator) windMechanism).setFacingWrench(newFacing, null);
         this.changeRotorSide(windMechanism, windMechanism.getFacing());
-        IC2.network.get(true).updateTileEntityField( ((TileEntityWindGenerator) windMechanism), "facing");
+        IC2.network.get(true).updateTileEntityField(((TileEntityWindGenerator) windMechanism), "facing");
     }
 
     public EnumFacing getNewFacing() {
@@ -161,6 +169,10 @@ public class WindSystem implements IWindSystem {
         return Util.limit((this.getWind_Strength()) / (EnumTypeWind.TEN.getMax() * 1.5), 0.0D, 2.0D);
     }
 
+    public double getSpeed(double speed) {
+        return Util.limit((speed) / (EnumTypeWind.TEN.getMax() * 1.5), 0.0D, 2.0D);
+    }
+
     @SubscribeEvent
     public void windTick(TickEvent.WorldTickEvent event) {
         if (event.world.provider.getDimension() != 0) {
@@ -178,6 +190,7 @@ public class WindSystem implements IWindSystem {
                 }
             }
         }
+
         World world = event.world;
         if (world.getWorldTime() % 40 == 0) {
             if (!world.isRaining()) {
@@ -185,15 +198,15 @@ public class WindSystem implements IWindSystem {
                     if (world.getWorldInfo().getCleanWeatherTime() > 0) {
                         int time = world.getWorldInfo().getCleanWeatherTime();
                         if (time < 11000 && time >= 8000) {
-                            this.time = time-8000;
+                            this.time = time - 8000;
                             this.enumTypeWind = EnumTypeWind.ONE;
                         }
                         if (time < 8000 && time >= 5000) {
-                            this.time = time-5000;
+                            this.time = time - 5000;
                             this.enumTypeWind = EnumTypeWind.TWO;
                         }
                         if (time < 5000 && time >= 2500) {
-                            this.time = time-2500;
+                            this.time = time - 2500;
                             this.enumTypeWind = EnumTypeWind.THREE;
                         }
                         if (time < 2500 && time >= 1) {
@@ -207,20 +220,17 @@ public class WindSystem implements IWindSystem {
                         int time = world.getWorldInfo().getRainTime();
                         if (time > 150000) {
                             this.enumTypeWind = EnumTypeWind.ONE;
-                            this.time = time-150000;
-                        }
-                       else if (time < 150000 && time >= 100000) {
+                            this.time = time - 150000;
+                        } else if (time < 150000 && time >= 100000) {
                             this.enumTypeWind = EnumTypeWind.TWO;
-                            this.time = time-100000;
-                        }
-                        else  if (time < 100000 && time >= 60000) {
+                            this.time = time - 100000;
+                        } else if (time < 100000 && time >= 60000) {
                             this.enumTypeWind = EnumTypeWind.THREE;
-                            this.time = time-60000;
-                        }
-                        else  if (time < 60000 && time >= 20000) {
+                            this.time = time - 60000;
+                        } else if (time < 60000 && time >= 20000) {
                             this.enumTypeWind = EnumTypeWind.FOUR;
-                            this.time = time-20000;
-                        }else  if (time < 20000 && time >= 1) {
+                            this.time = time - 20000;
+                        } else if (time < 20000 && time >= 1) {
                             this.time = time;
                             this.enumTypeWind = EnumTypeWind.FIVE;
                         }
@@ -232,20 +242,17 @@ public class WindSystem implements IWindSystem {
                         int time = world.getWorldInfo().getThunderTime();
                         if (time > 150000) {
                             this.enumTypeWind = EnumTypeWind.ONE;
-                            this.time = time-100000;
-                        }
-                        else if (time < 150000 && time >= 100000) {
+                            this.time = time - 100000;
+                        } else if (time < 150000 && time >= 100000) {
                             this.enumTypeWind = EnumTypeWind.TWO;
-                            this.time = time-100000;
-                        }
-                        else  if (time < 100000 && time >= 60000) {
+                            this.time = time - 100000;
+                        } else if (time < 100000 && time >= 60000) {
                             this.enumTypeWind = EnumTypeWind.THREE;
-                            this.time = time-60000;
-                        }
-                        else  if (time < 60000 && time >= 20000) {
+                            this.time = time - 60000;
+                        } else if (time < 60000 && time >= 20000) {
                             this.enumTypeWind = EnumTypeWind.FOUR;
-                            this.time = time-20000;
-                        }else  if (time < 20000 && time >= 1) {
+                            this.time = time - 20000;
+                        } else if (time < 20000 && time >= 1) {
                             this.enumTypeWind = EnumTypeWind.FIVE;
                             this.time = time;
                         }
@@ -259,14 +266,14 @@ public class WindSystem implements IWindSystem {
                     int time = world.getWorldInfo().getThunderTime();
                     if (time > 20000) {
                         this.enumTypeWind = EnumTypeWind.SEVEN;
-                        this.time = time-20000;
+                        this.time = time - 20000;
                     }
                     if (time < 20000 && time >= 12000) {
                         this.enumTypeWind = EnumTypeWind.EIGHT;
-                        this.time = time-12000;
+                        this.time = time - 12000;
                     }
                     if (time < 12000 && time >= 5000) {
-                        this.time = time-5000;
+                        this.time = time - 5000;
                         this.enumTypeWind = EnumTypeWind.NINE;
                     }
                     if (time < 5000 && time >= 1) {
@@ -283,15 +290,15 @@ public class WindSystem implements IWindSystem {
                 if (world.getWorldInfo().getRainTime() > 0 && world.isRaining() && !world.isThundering()) {
                     int time = world.getWorldInfo().getRainTime();
                     if (time > 20000) {
-                        this.time = time-20000;
+                        this.time = time - 20000;
                         this.enumTypeWind = EnumTypeWind.FIVE;
                     }
                     if (time < 20000 && time >= 12000) {
-                        this.time = time-12000;
+                        this.time = time - 12000;
                         this.enumTypeWind = EnumTypeWind.SIX;
                     }
                     if (time < 12000 && time >= 5000) {
-                        this.time = time-5000;
+                        this.time = time - 5000;
                         this.enumTypeWind = EnumTypeWind.SEVEN;
                     }
                     if (time < 5000 && time >= 1) {
@@ -305,15 +312,15 @@ public class WindSystem implements IWindSystem {
                 } else if (world.getWorldInfo().getThunderTime() > 0) {
                     int time = world.getWorldInfo().getThunderTime();
                     if (time > 20000) {
-                        this.time = time-20000;
+                        this.time = time - 20000;
                         this.enumTypeWind = EnumTypeWind.SEVEN;
                     }
                     if (time < 20000 && time >= 12000) {
-                        this.time = time-12000;
+                        this.time = time - 12000;
                         this.enumTypeWind = EnumTypeWind.EIGHT;
                     }
                     if (time < 12000 && time >= 5000) {
-                        this.time = time-5000;
+                        this.time = time - 5000;
                         this.enumTypeWind = EnumTypeWind.NINE;
                     }
                     if (time < 5000 && time >= 1) {
@@ -328,6 +335,7 @@ public class WindSystem implements IWindSystem {
             }
             final double speed = getSpeed();
             for (IWindMechanism windMechanism : this.mechanismList) {
+                if(windMechanism != null)
                 windMechanism.setRotationSpeed((float) speed);
             }
         }
@@ -338,25 +346,69 @@ public class WindSystem implements IWindSystem {
     }
 
     @Override
-    public double getPower(final World world, final BlockPos pos, boolean min) {
+    public double getPower(final World world, final BlockPos pos, boolean min, IWindMechanism rotor) {
         if (world.provider.getDimension() != 0) {
             return 0;
         }
         if (world.isRemote) {
             return 0;
         }
+        if (rotor.getMinWind() != 0) {
+            int meta = Math.min(this.enumTypeWind.ordinal() + rotor.getMinWind(), 9);
+            EnumTypeWind enumTypeWinds = this.enumTypeWinds[meta];
+            double coef = enumTypeWinds.getMax() - enumTypeWinds.getMin();
+            coef *= 10;
 
-        double coef = this.Wind_Strength;
+            coef = enumTypeWinds.getMin() + world.rand.nextInt((int) coef + 1) / 10D;
+            coef += rotor.getMinWindSpeed();
+            coef = Math.min(coef, EnumTypeWind.TEN.getMax());
+            int y = pos.getY();
+            if (min) {
+                y = 150;
+            }
+            if (y < 150) {
+                coef = coef * (y / 150D);
+            } else {
+                coef = coef * (150D / y);
+            }
+            return coef * 27;
+        } else {
+            double coef = this.Wind_Strength;
+            coef += rotor.getMinWindSpeed();
+            int y = pos.getY();
+            if (min) {
+                y = 150;
+            }
+            if (y < 150) {
+                coef = coef * (y / 150D);
+            } else {
+                coef = coef * (150D / y);
+            }
+            return coef * 27;
+        }
+    }
+
+    @Override
+    public double getSpeedFromPower(final BlockPos pos, final IWindMechanism rotor, double power) {
+
+
+        double copy_power = power / 27;
+        copy_power = copy_power / ((rotor
+                .getRotor()
+                .getEfficiency(rotor.getItemStack()) * (1 + rotor.getAdditionalPower())) * (rotor.getCoefficient() * (1 + rotor.getAdditionalCoefficient())));
+
         int y = pos.getY();
-        if (min) {
+        if (rotor.getMin()) {
             y = 150;
         }
         if (y < 150) {
-            coef = coef * (y / 150D);
+            copy_power = copy_power / (y / 150D);
         } else {
-            coef = coef * (150D / y);
+            copy_power = copy_power / (150D / y);
         }
-        return coef * 27;
+
+        return copy_power;
+
     }
 
     @Override
@@ -367,7 +419,7 @@ public class WindSystem implements IWindSystem {
             ItemStack stack
     ) {
 
-        return this.getPower(world, pos, windMechanism.getMin()) * (windMechanism
+        return this.getPower(world, pos, windMechanism.getMin(), windMechanism) * (windMechanism
                 .getRotor()
                 .getEfficiency(stack) * (1 + windMechanism.getAdditionalPower())) * (windMechanism.getCoefficient() * (1 + windMechanism.getAdditionalCoefficient()));
     }

@@ -35,8 +35,8 @@ public class ClientTickHandler {
             itemRender.zLevel = 100.0F;
             mc.getTextureManager().bindTexture(new ResourceLocation(Constants.MOD_ID, "textures/gui/guilevel.png"));
             BaseLevelSystem system = ResearchSystem.instance.getLevel(entityClientPlayer);
-            GL11.glScalef(2f, 2f, 2f);
-            if (system == null) {
+            GL11.glScalef(1.7f, 1.7f, 1.7f);
+           /* if (system == null) {
                 GL11.glEnable(GL11.GL_LIGHTING);
                 GlStateManager.enableLighting();
 
@@ -45,7 +45,7 @@ public class ClientTickHandler {
 
                 GL11.glPopMatrix();
                 return;
-            }
+            }*/
             mc.ingameGUI.drawString(mc.fontRenderer, system.getLevelPoint(EnumLeveling.BASE) + "",
                     8, 6, ModUtils.convertRGBcolorToInt(44, 192, 224)
             );

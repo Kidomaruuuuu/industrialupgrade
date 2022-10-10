@@ -2,6 +2,7 @@ package com.denfop.tiles.mechanism;
 
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.BaseMachineRecipe;
+import com.denfop.api.recipe.IHasRecipe;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.InvSlotRecipes;
 import com.denfop.api.recipe.MachineRecipe;
@@ -26,20 +27,23 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.EnumSet;
 import java.util.Set;
 
-public class TileEntityGenerationStone extends TileEntityBaseGenStone {
+public class TileEntityGenerationStone extends TileEntityBaseGenStone implements IHasRecipe {
 
 
     public TileEntityGenerationStone() {
         super(1, 100, 12);
         this.inputSlotA = new InvSlotRecipes(this, "genstone", this);
+        Recipes.recipes.addInitRecipes(this);
     }
 
-    @Override
-    public int getSizeInventory() {
-        return 1;
+    public static void addGen(IRecipeInput container, IRecipeInput fill, ItemStack output) {
+        Recipes.recipes.addRecipe("genstone", new BaseMachineRecipe(
+                new Input(container, fill),
+                new RecipeOutput(null, output)
+        ));
     }
 
-    public static void init() {
+    public void init() {
         final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
         addGen(input.forStack(new ItemStack(Items.LAVA_BUCKET), 1), input.forStack(
                 new ItemStack(Items.WATER_BUCKET),
@@ -58,11 +62,9 @@ public class TileEntityGenerationStone extends TileEntityBaseGenStone {
 
     }
 
-    public static void addGen(IRecipeInput container, IRecipeInput fill, ItemStack output) {
-        Recipes.recipes.addRecipe("genstone", new BaseMachineRecipe(
-                new Input(container, fill),
-                new RecipeOutput(null, output)
-        ));
+    @Override
+    public int getSizeInventory() {
+        return 1;
     }
 
     public String getInventoryName() {

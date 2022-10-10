@@ -5,8 +5,8 @@ public class ComponentRenderInventory {
     private final EnumTypeComponentSlot typeComponentSlot;
 
 
-    public ComponentRenderInventory(EnumTypeComponentSlot typeComponentSlot){
-        this.typeComponentSlot=typeComponentSlot;
+    public ComponentRenderInventory(EnumTypeComponentSlot typeComponentSlot) {
+        this.typeComponentSlot = typeComponentSlot;
     }
 
     public EnumTypeComponentSlot getTypeComponentSlot() {

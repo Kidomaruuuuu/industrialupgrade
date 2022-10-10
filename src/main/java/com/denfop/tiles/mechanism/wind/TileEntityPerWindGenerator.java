@@ -8,8 +8,10 @@ public class TileEntityPerWindGenerator extends TileEntityWindGenerator {
     public TileEntityPerWindGenerator() {
         super(EnumLevelGenerators.FOUR);
     }
+
     @Override
     public EnumTypeStyle getStyle() {
         return EnumTypeStyle.PERFECT;
     }
+
 }

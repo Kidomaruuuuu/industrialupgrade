@@ -9,4 +9,5 @@ public interface IHeatSource extends IHeatEmitter {
     boolean isAllowed();
 
     boolean setAllowed(boolean allowed);
+
 }

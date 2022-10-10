@@ -8,7 +8,6 @@ import ic2.api.energy.EnergyNet;
 import ic2.api.network.INetworkClientTileEntityEventListener;
 import ic2.core.ContainerBase;
 import ic2.core.IHasGui;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.init.Localization;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.util.ITooltipFlag;

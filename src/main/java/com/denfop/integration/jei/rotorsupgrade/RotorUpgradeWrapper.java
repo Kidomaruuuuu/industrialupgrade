@@ -1,6 +1,5 @@
 package com.denfop.integration.jei.rotorsupgrade;
 
-import com.denfop.integration.jei.rotorsupgrade.RotorUpgradeHandler;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeWrapper;
@@ -32,7 +31,7 @@ public class RotorUpgradeWrapper implements IRecipeWrapper {
 
     public List<List<ItemStack>> getInputs() {
         List<ItemStack> stack = new ArrayList<>();
-        for(ItemStack inputs : this.inputstack) {
+        for (ItemStack inputs : this.inputstack) {
             if (OreDictionary.getOreIDs(inputs).length > 0) {
                 int id = OreDictionary.getOreIDs(inputs)[0];
                 stack.addAll(OreDictionary.getOres(OreDictionary.getOreName(id)));
@@ -44,12 +43,9 @@ public class RotorUpgradeWrapper implements IRecipeWrapper {
     }
 
 
-
     public void getIngredients(IIngredients ingredients) {
         ingredients.setInputLists(VanillaTypes.ITEM, this.getInputs());
     }
-
-
 
 
     public void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {

@@ -56,6 +56,12 @@ public class GuiPlasticCreator extends GuiIC2<ContainerPlasticCreator> {
                 .withTooltip(tooltip2)
                 .drawForeground(par1, par2);
         this.handleUpgradeTooltip(par1, par2);
+        new AdvArea(this, 80, 35, 101, 49)
+                .withTooltip(Localization.translate("gui.MolecularTransformer.progress") + ": " + (int) (Math.min(
+                        this.container.base.getProgress(),
+                        1D
+                ) * 100) + "%")
+                .drawForeground(par1, par2);
     }
 
     public void handleUpgradeTooltip(int mouseX, int mouseY) {

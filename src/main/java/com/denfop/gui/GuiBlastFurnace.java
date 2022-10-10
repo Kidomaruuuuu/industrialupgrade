@@ -27,6 +27,7 @@ public class GuiBlastFurnace extends GuiIC2<ContainerBlastFurnace> {
         super(container1);
         this.container = container1;
     }
+
     private void handleUpgradeTooltip(int mouseX, int mouseY) {
         if (mouseX >= 3 && mouseX <= 15 && mouseY >= 3 && mouseY <= 15) {
             List<String> text = new ArrayList<>();
@@ -42,6 +43,7 @@ public class GuiBlastFurnace extends GuiIC2<ContainerBlastFurnace> {
             this.drawTooltip(mouseX, mouseY, text);
         }
     }
+
     protected void drawForegroundLayer(int par1, int par2) {
         super.drawForegroundLayer(par1, par2);
         handleUpgradeTooltip(par1, par2);
@@ -91,7 +93,7 @@ public class GuiBlastFurnace extends GuiIC2<ContainerBlastFurnace> {
         int xoffset = (this.width - this.xSize) / 2;
         int yoffset = (this.height - this.ySize) / 2;
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-           this.mc.getTextureManager().bindTexture(getTexture());
+        this.mc.getTextureManager().bindTexture(getTexture());
         if (progress > 0) {
             drawTexturedModalRect(xoffset + 79, yoffset + 34, 176, 14, progress + 1, 16);
         }

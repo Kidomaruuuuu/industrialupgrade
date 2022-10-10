@@ -149,7 +149,6 @@ public enum EnumMultiMachine {
     ),
 
 
-
     DOUBLE_RECYCLER(
             "Double Recycler",
             1,
@@ -160,7 +159,7 @@ public enum EnumMultiMachine {
             1,
             0,
             EnumTypeMachines.RECYCLER,
-            IUItem.machines_base1,1,4
+            IUItem.machines_base1, 1, 4
     ),
     TRIPLE_RECYCLER(
             "Triple Recycler",
@@ -172,10 +171,11 @@ public enum EnumMultiMachine {
             2,
             1,
             EnumTypeMachines.RECYCLER,
-            IUItem.machines_base1,1,3
+            IUItem.machines_base1, 1, 3
     ),
     QUAD_RECYCLER("Quad Recycler", 1, 45, 4, IUItem.machines_base1, 3, -1, 2, EnumTypeMachines.RECYCLER, IUItem.machines_base1,
-            1,2),
+            1, 2
+    ),
 
     DOUBLE_COMB_RECYCLER(
             "Double Combined  Recycler",
@@ -437,6 +437,7 @@ public enum EnumMultiMachine {
     public final Block block;
     private final int min;
     private final int max;
+
     EnumMultiMachine(
             String name,
             int usagePerTick,
@@ -458,9 +459,10 @@ public enum EnumMultiMachine {
         this.type = type;
         this.recipe = type.recipe;
         this.block = block;
-        this.min= 0;
-        this.max= 0;
+        this.min = 0;
+        this.max = 0;
     }
+
     EnumMultiMachine(
             String name,
             int usagePerTick,
@@ -485,6 +487,7 @@ public enum EnumMultiMachine {
         this.min = min;
         this.max = max;
     }
+
     public static void write() {
         IUItem.map_upgrades = new HashMap<>();
         for (EnumMultiMachine multiMachine : values()) {
@@ -533,7 +536,7 @@ public enum EnumMultiMachine {
     }
 
     public EnumTypeComponent getComponent() {
-        switch (this.sizeWorkingSlot){
+        switch (this.sizeWorkingSlot) {
             case 2:
                 return EnumTypeComponent.ADVANCED;
             case 3:

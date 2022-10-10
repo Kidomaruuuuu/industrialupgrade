@@ -12,6 +12,7 @@ public class ContainerWindGenerator extends ContainerFullInv<TileEntityWindGener
     public ContainerWindGenerator(TileEntityWindGenerator windGenerator, EntityPlayer entityPlayer) {
         super(entityPlayer, windGenerator, 236);
         this.addSlotToContainer(new SlotInvSlot(windGenerator.slot, 0, 89, 19));
+        this.addSlotToContainer(new SlotInvSlot(windGenerator.slot_blades, 0, 30, 19));
 
     }
 
@@ -24,6 +25,12 @@ public class ContainerWindGenerator extends ContainerFullInv<TileEntityWindGener
         ret.add("rotorSide");
         ret.add("generation");
         ret.add("energy");
+        ret.add("timers");
+        ret.add("wind_speed");
+        ret.add("wind_side");
+        ret.add("mind_wind");
+        ret.add("mind_speed");
+        ret.add("enumTypeWind");
         return ret;
     }
 

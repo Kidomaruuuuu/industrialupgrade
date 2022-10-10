@@ -6,7 +6,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Objects;
 
-public class IC2FluidRecipeInput   {
+public class IC2FluidRecipeInput {
 
     private final ILiquidStack ingredient;
 

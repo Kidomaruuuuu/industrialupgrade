@@ -17,6 +17,7 @@ import ic2.core.IC2;
 import ic2.core.IHasGui;
 import ic2.core.audio.AudioSource;
 import ic2.core.audio.PositionSpec;
+import ic2.core.block.comp.ComparatorEmitter;
 import ic2.core.block.comp.Redstone;
 import ic2.core.block.invslot.InvSlot;
 import ic2.core.block.invslot.InvSlotConsumableLiquid;
@@ -46,6 +47,7 @@ public class TileEntityCombinerMatter extends TileEntityElectricLiquidTankInvent
     public final InvSlotOutput outputSlot;
     public final InvSlotConsumableLiquid containerslot;
     protected final Redstone redstone;
+    private final ComparatorEmitter comparator;
     public int scrap;
     public double energycost;
     private int state, prevState;
@@ -72,7 +74,7 @@ public class TileEntityCombinerMatter extends TileEntityElectricLiquidTankInvent
         this.inputSlot = new InvSlotMatter(this);
 
         this.redstone = addComponent(new Redstone(this));
-
+        this.comparator = this.addComponent(new ComparatorEmitter(this));
         this.comparator.setUpdate(() -> {
             int count = calcRedstoneFromInvSlots(this.amplifierSlot);
             if (count > 0) {
@@ -84,13 +86,15 @@ public class TileEntityCombinerMatter extends TileEntityElectricLiquidTankInvent
         this.energy = this.addComponent(AdvEnergy.asBasicSink(this, 0, 14).addManagedSlot(this.dischargeSlot));
 
     }
-    @Override
-    public int getInventoryStackLimit() {
-        return 4;
-    }
+
     private static int applyModifier(int base) {
         double ret = Math.round((base + 14) * 1.0);
         return (ret > 2.147483647E9D) ? Integer.MAX_VALUE : (int) ret;
+    }
+
+    @Override
+    public int getInventoryStackLimit() {
+        return 4;
     }
 
     public void readFromNBT(NBTTagCompound nbttagcompound) {

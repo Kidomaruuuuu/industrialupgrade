@@ -71,7 +71,8 @@ public abstract class TileEntityBaseHandlerHeavyOre extends TileEntityElectricMa
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
             tooltip.add(Localization.translate("iu.heatmachine.info"));
-            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate("iu.machines_work_energy_type_eu"));
+            tooltip.add(Localization.translate("iu.machines_work_energy") + this.defaultEnergyConsume + Localization.translate(
+                    "iu.machines_work_energy_type_eu"));
             tooltip.add(Localization.translate("iu.machines_work_length") + this.defaultOperationLength);
 
         }
@@ -108,7 +109,7 @@ public abstract class TileEntityBaseHandlerHeavyOre extends TileEntityElectricMa
         if (this.operationLength < 1) {
             this.operationLength = 1;
         }
-     }
+    }
 
     public void operate(MachineRecipe output) {
         for (int i = 0; i < this.operationsPerTick; i++) {

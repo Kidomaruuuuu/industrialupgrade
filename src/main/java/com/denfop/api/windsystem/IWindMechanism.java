@@ -44,4 +44,14 @@ public interface IWindMechanism {
 
     boolean getSpace();
 
+    int getTime();
+
+    boolean need_repair();
+
+    boolean can_repair();
+
+    int getMinWind();
+
+    int getMinWindSpeed();
+
 }

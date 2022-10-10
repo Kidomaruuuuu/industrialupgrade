@@ -51,7 +51,7 @@ public class TileEntityNeutronGenerator extends TileEntityElectricMachine implem
     public TileEntityNeutronGenerator() {
         super((int) (Config.energy * 128), 14, 1);
 
-        this.energycost = (float) Config.energy;
+        this.energycost = (float) Config.energy / 100;
         this.outputSlot = new InvSlotOutput(this, "output", 1);
         this.containerslot = new InvSlotConsumableLiquidByList(
                 this,

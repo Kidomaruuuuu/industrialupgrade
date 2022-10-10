@@ -62,7 +62,10 @@ public class InvSlotWindRotor extends InvSlot {
                         }
                     } while (amount > 0 && !StackUtil.isEmpty(stack));
 
+
                     if (!simulate) {
+
+
                         this.put(i, stack);
                     }
                 }
@@ -72,49 +75,44 @@ public class InvSlotWindRotor extends InvSlot {
         return damageApplied;
     }
 
-    public int damage(int amount, boolean simulate, double chance) {
+    public int damage(int amount, double chance) {
         int damageApplied = 0;
-        ItemStack target = null;
-        if (this.windGenerator.getWorld().rand.nextInt(101) <= (int) (chance * 100)) {
-            return 0;
-        }
-        for (int i = 0; i < this.size(); ++i) {
-            ItemStack stack = this.get(i);
-            if (!StackUtil.isEmpty(stack)) {
-                Item item = stack.getItem();
-                if (item.isDamageable() && (target == null || item == target.getItem() && ItemStack.areItemStackTagsEqual(
-                        stack,
-                        target
-                ))) {
-                    if (target == null) {
-                        target = stack.copy();
-                    }
-
-                    if (simulate) {
-                        stack = stack.copy();
-                    }
-
-                    int maxDamage = DamageHandler.getMaxDamage(stack);
-
-                    do {
-                        int currentAmount = Math.min(amount, maxDamage - DamageHandler.getDamage(stack));
-                        DamageHandler.damage(stack, currentAmount, null);
-                        damageApplied += currentAmount;
-                        amount -= currentAmount;
-                        if (DamageHandler.getDamage(stack) >= maxDamage) {
-                            stack = StackUtil.decSize(stack);
-                            if (StackUtil.isEmpty(stack)) {
-                                break;
-                            }
-
-                            DamageHandler.setDamage(stack, 0, false);
-                        }
-                    } while (amount > 0 && !StackUtil.isEmpty(stack));
-
-
-                }
+        if (chance > 0) {
+            if (this.windGenerator.getWorld().rand.nextInt(101) <= (int) (chance * 100)) {
+                return 0;
             }
         }
+
+        ItemStack stack = this.get(0);
+        if (!StackUtil.isEmpty(stack)) {
+            Item item = stack.getItem();
+            if (item.isDamageable()) {
+                int maxDamage = DamageHandler.getMaxDamage(stack);
+
+                do {
+                    int currentAmount = Math.min(amount, maxDamage - DamageHandler.getDamage(stack));
+                    DamageHandler.damage(stack, currentAmount, null);
+                    damageApplied += currentAmount;
+                    amount -= currentAmount;
+                    if (DamageHandler.getDamage(stack) >= maxDamage) {
+                        stack = StackUtil.decSize(stack);
+                        if (StackUtil.isEmpty(stack)) {
+                            break;
+                        }
+
+                        DamageHandler.setDamage(stack, 0, false);
+                    }
+                } while (amount > 0 && !StackUtil.isEmpty(stack));
+                if (stack.getItemDamage() >= stack.getMaxDamage() * 0.25) {
+                    this.windGenerator.need_repair = true;
+                }
+                if (stack.getItemDamage() >= 1) {
+                    this.windGenerator.can_repair = true;
+                }
+
+            }
+        }
+
 
         return damageApplied;
     }
@@ -131,10 +129,11 @@ public class InvSlotWindRotor extends InvSlot {
     public void put(final int index, final ItemStack content) {
         super.put(index, content);
         this.windGenerator.change();
-        if(!content.isEmpty())
+        if (!content.isEmpty()) {
             this.windGenerator.energy.setSourceTier(this.windGenerator.getRotor().getSourceTier());
-        else
+        } else {
             this.windGenerator.energy.setSourceTier(1);
+        }
 
     }
 

@@ -2,9 +2,7 @@ package com.denfop.integration.jei.rotorrods;
 
 import com.denfop.Constants;
 import com.denfop.IUItem;
-import com.denfop.blocks.mechanism.BlockBaseMachine;
 import com.denfop.blocks.mechanism.BlockBaseMachine3;
-import com.denfop.integration.jei.rotorrods.RotorsRodWrapper;
 import ic2.core.init.Localization;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
@@ -80,12 +78,12 @@ public class RotorsRodCategory extends Gui implements IRecipeCategory<RotorsRodW
             @Nonnull final IIngredients ingredients
     ) {
         IGuiItemStackGroup isg = layout.getItemStacks();
-        for( int i = 0; i < recipes.getInput().length;i++){
-            isg.init(i, true, 32 +18 *  (i / 3), 10 +18 *  (i % 3));
+        for (int i = 0; i < recipes.getInput().length; i++) {
+            isg.init(i, true, 32 + 18 * (i / 3), 10 + 18 * (i % 3));
             isg.set(i, recipes.getInput()[i]);
         }
-        isg.init( recipes.getInput().length, false, 110, 28);
-        isg.set( recipes.getInput().length, recipes.getOutput());
+        isg.init(recipes.getInput().length, false, 110, 28);
+        isg.set(recipes.getInput().length, recipes.getOutput());
     }
 
     protected ResourceLocation getTexture() {

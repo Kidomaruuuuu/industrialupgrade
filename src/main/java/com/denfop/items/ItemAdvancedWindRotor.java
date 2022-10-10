@@ -8,6 +8,7 @@ import com.denfop.api.recipe.BaseMachineRecipe;
 import com.denfop.api.recipe.Input;
 import com.denfop.api.recipe.RecipeOutput;
 import com.denfop.api.windsystem.IWindRotor;
+import com.denfop.api.windsystem.upgrade.EnumInfoRotorUpgradeModules;
 import com.denfop.api.windsystem.upgrade.IRotorUpgradeItem;
 import com.denfop.api.windsystem.upgrade.RotorUpgradeItemInform;
 import com.denfop.api.windsystem.upgrade.RotorUpgradeSystem;
@@ -29,7 +30,6 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -59,17 +59,18 @@ public class ItemAdvancedWindRotor extends ItemGradualInt implements IWindRotor,
         double KU1 = 20 * efficiency * 27.0F;
         this.tier = EnergyNet.instance.getTierFromPower(KU1);
         final IRecipeInputFactory input = ic2.api.recipe.Recipes.inputFactory;
-        for(int i = 0; i<11;i++)
-        Recipes.recipes.addRecipe(
-                "rotor_upgrade",
-                new BaseMachineRecipe(
-                        new Input(
-                                input.forStack(new ItemStack(this,1,0)),
-                                input.forStack(new ItemStack(IUItem.rotors_upgrade,1, i))
-                        ),
-                        new RecipeOutput(null, new ItemStack(this,1,0))
-                )
-        );
+        for (int i = 0; i < EnumInfoRotorUpgradeModules.values().length; i++) {
+            Recipes.recipes.addRecipe(
+                    "rotor_upgrade",
+                    new BaseMachineRecipe(
+                            new Input(
+                                    input.forStack(new ItemStack(this, 1, 0)),
+                                    input.forStack(new ItemStack(IUItem.rotors_upgrade, 1, i))
+                            ),
+                            new RecipeOutput(null, new ItemStack(this, 1, 0))
+                    )
+            );
+        }
     }
 
     @SideOnly(Side.CLIENT)
@@ -124,7 +125,7 @@ public class ItemAdvancedWindRotor extends ItemGradualInt implements IWindRotor,
                 ".windgenerator1") + ModUtils.getString(KU));
         tooltip.add(Localization.translate("iu.windgenerator") + windStrength1 + " m/s " + Localization.translate("iu" +
                 ".windgenerator1") + ModUtils.getString(KU1));
-        tooltip.add(Localization.translate("gui.iu.tier")+": " + this.getLevel());
+        tooltip.add(Localization.translate("gui.iu.tier") + ": " + this.getLevel());
 
         if (RotorUpgradeSystem.instance.hasInMap(stack)) {
             final List<RotorUpgradeItemInform> lst = RotorUpgradeSystem.instance.getInformation(stack);

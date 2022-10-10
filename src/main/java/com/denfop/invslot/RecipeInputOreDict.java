@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class RecipeInputOreDict extends RecipeInputBase implements IRecipeInput {
 
@@ -98,7 +99,7 @@ public class RecipeInputOreDict extends RecipeInputBase implements IRecipeInput 
     public boolean equals(Object obj) {
         RecipeInputOreDict other;
         if (obj != null && this.getClass() == obj.getClass() && this.input.equals((other = (RecipeInputOreDict) obj).input) && other.amount == this.amount) {
-            return this.meta == null ? other.meta == null : this.meta.equals(other.meta);
+            return Objects.equals(this.meta, other.meta);
         } else {
             return false;
         }

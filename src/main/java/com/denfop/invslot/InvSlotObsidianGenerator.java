@@ -2,8 +2,8 @@ package com.denfop.invslot;
 
 import com.denfop.api.Recipes;
 import com.denfop.api.recipe.RecipeOutput;
+import com.denfop.tiles.base.TileEntityInventory;
 import com.denfop.tiles.base.TileEntityObsidianGenerator;
-import ic2.core.block.TileEntityInventory;
 import ic2.core.item.upgrade.ItemUpgradeModule;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;

@@ -395,6 +395,15 @@ iu.rotors_upgrade.rotorupgrade7=Роторный модуль: Сила II
 iu.rotors_upgrade.rotorupgrade8=Роторный модуль: Сила III
 iu.rotors_upgrade.rotorupgrade9=Роторный модуль: Поворотный механизм
 iu.rotors_upgrade.rotorupgrade10=Роторный модуль: Высота
+iu.rotors_upgrade.rotorupgrade11=Роторный модуль: Скорость ветра I
+iu.rotors_upgrade.rotorupgrade12=Роторный модуль: Скорость ветра II
+iu.rotors_upgrade.rotorupgrade13=Роторный модуль: Скорость ветра III
+iu.rotors_upgrade.rotorupgrade14=Роторный модуль: Уровень ветра I
+iu.rotors_upgrade.rotorupgrade15=Роторный модуль: Уровень ветра II
+iu.rotors_upgrade.rotorupgrade16=Роторный модуль: Уровень ветра III
+iu.rotors_upgrade.rotorupgrade17=Роторный модуль: Автопочинка I
+iu.rotors_upgrade.rotorupgrade18=Роторный модуль: Автопочинка II
+iu.rotors_upgrade.rotorupgrade19=Роторный модуль: Автопочинка III
 
 ic2.item.tooltip.Output=Выход:
 ic2.item.tooltip.Capacity=Хранит:
@@ -1865,6 +1874,7 @@ item.adv_iu_bags.name=Улучшенная сумка
 item.imp_iu_bags.name=Продвинутая сумка
 
 iu.vertical=Чтобы включить вертикальный режим, нажмите 
+iu.streak=Чтобы изменить цвет линии за игроком, нажмите 
 iu.magnet_mode=Чтобы включить магнит, нажмите 
 iu.notfindoil=Нефть не обнаружена, поставьте буровую установку, чтобы изучить чанк
 iu.create_sunnarium=Создаётся в генераторах солнечной энергии
@@ -2139,6 +2149,15 @@ industrialupgrade.basemachine3.research_table=Стол исследований
 industrialupgrade.basemachine3.creator_schedules=Создатель шаблонов
 industrialupgrade.basemachine3.gas_combiner=Газовый смеситель
 industrialupgrade.basemachine3.analyzer_chest=Сундук анализатора
+
+industrialupgrade.basemachine3.energy_controller=Контроллер энергии
+industrialupgrade.basemachine3.substitute=Устройство управления кабелем
+industrialupgrade.basemachine3.aer_assembler=Воздушный преобразователь
+industrialupgrade.basemachine3.aqua_assembler=Водяной преобразователь
+industrialupgrade.basemachine3.earth_assembler=Земляной преобразователь
+industrialupgrade.basemachine3.nether_assembler=Адский преобразователь
+industrialupgrade.basemachine3.auto_digger=Экскаватор
+industrialupgrade.basemachine3.crystallize=Кристаллизатор
 
 # Схемы
 iu.templates.templates=Шаблон схемы
@@ -2485,8 +2504,25 @@ iu.simplyquarries_info4=Карьер имеет нагрев
 iu.simplyquarries_info5=Чтобы карьер копал жилу, нажмите на кнопку в виде руды,
 iu.simplyquarries_info6=напишет «режим: "Руды и жилы"»
 iu.simplyquarries_info7=Кнопки сверху справа для изменения нижней высоты копания
-iu.simplyquarries_info8=Снизу этих кнопок, настройка верхней высоты копания
+iu.simplyquarries_info7=Снизу этих кнопок, настройка верхней высоты копания
 iu.quarryvein_info=Информация о буровой установке для поиска жил
 iu.quarryvein_info1=В зависимости от уровня, меняется скорость
 iu.quarryvein_info2=Для добычи нефти, используйте станок-качалку
 iu.quarryvein_info3=Для добычи жилы, используйте карьер или анализатор
+
+iu.solar_generator_info=Можно использовать следующие модули: 
+wind.wind_speed_info=Увеличивает скорость ветра в ветрогенераторе на 
+wind.wind_power_info=Увеличивает уровень ветра в ветрогенераторе на 
+wind.rotor_repair_info=Чинит ротор каждые 
+wind.limit_upgrades.info=Доступен только один тип данного улучшения
+button.find_energypaths=Найти энергосети
+button.set_value_energypaths=Обновить энергосети
+iu.energy_controller_info=Энергосетей: 
+iu.need_info=Нужно: 
+iu.need_info_matter= материи
+iu.excavator.info=Кладите туда руду, чтобы он сам её сломал
+iu.excavator.info1=Можно использовать карьерные модули
+iu.controller.info=Контролирует сеть от взрывов
+iu.controller.info1=Сначала найдите и обновите энергосети для работы контроллера
+iu.controller_cables.info=Заменяет самостоятельно в сети на новые(лучшие) провода в энергосетях
+iu.controller_cables.info1=Кладите провод внутрь, найдите и обновите энергосети

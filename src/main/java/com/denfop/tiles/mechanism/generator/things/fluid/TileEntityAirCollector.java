@@ -66,6 +66,7 @@ public class TileEntityAirCollector extends TileEntityElectricMachine implements
         this.upgradeSlot = new InvSlotUpgrade(this, "upgrade", 4);
         this.level = 0;
     }
+
     @SideOnly(Side.CLIENT)
     public void addInformation(final ItemStack stack, final List<String> tooltip, final ITooltipFlag advanced) {
         if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
@@ -77,6 +78,7 @@ public class TileEntityAirCollector extends TileEntityElectricMachine implements
         }
         super.addInformation(stack, tooltip, advanced);
     }
+
     protected List<ItemStack> getWrenchDrops(EntityPlayer player, int fortune) {
         List<ItemStack> ret = super.getWrenchDrops(player, fortune);
         if (this.level != 0) {
