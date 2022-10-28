@@ -674,13 +674,13 @@ public final class Config {
             EnableNetherOres = config.get("general", "Spawn ores in Nether", true).getBoolean(true);
             EnableEndOres = config.get("general", "Spawn ores in End", true).getBoolean(true);
             enableIC2EasyMode = config
-                    .get("general", "Easy Mode(turns off not to loss energy in cable)", false)
-                    .getBoolean(false);
+                    .get("general", "Easy Mode(turns off not to loss energy in cable)", true)
+                    .getBoolean(true);
             enableexlposion = config.get(
                     "general",
                     "Enable explosion from mechanisms is on (does not turn off transformer mode) ",
-                    true
-            ).getBoolean(true);
+                    false
+            ).getBoolean(false);
             enableefficiency = config.get("UltimateDrill", "Enable Efficiency tool mode 1", true).getBoolean(true);
             if (efficiencylevel1 > 1 && efficiencylevel1 < 15) {
                 efficiencylevel1 = config.get("UltimateDrill", "Level efficiency(tool mode 1)", 10).getInt(10);
